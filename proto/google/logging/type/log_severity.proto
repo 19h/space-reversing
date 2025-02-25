@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package google.logging.type;
+
+option java_package = "com.google.logging.type";
+option java_outer_classname = "LogSeverityProto";
+option java_multiple_files = true;
+option go_package = "google/logging/type;ltype";
+option csharp_namespace = "Google.Cloud.Logging.Type";
+
+import "google/api/annotations/annotations.proto";
+
+enum LogSeverity {
+  DEFAULT = 0;
+  DEBUG = 100;
+  INFO = 200;
+  NOTICE = 300;
+  WARNING = 400;
+  ERROR = 500;
+  CRITICAL = 600;
+  ALERT = 700;
+  EMERGENCY = 800;
+}
+

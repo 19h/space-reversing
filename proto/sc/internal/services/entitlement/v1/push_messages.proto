@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "google/rpc/status/status.proto";
+import "google/protobuf/any.proto";
+
+message WorkerResponseBody {
+  string command_id = 1;
+  bool success = 2;
+  .google.rpc.Status error = 3;
+  .google.protobuf.Any response = 4;
+}
+

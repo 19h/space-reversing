@@ -1,0 +1,280 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_service.v1;
+
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+
+service MissionService {
+  rpc CreateMission (.sc.internal.services.mission_service.v1.CreateMissionRequest) returns (.sc.internal.services.mission_service.v1.CreateMissionResponse) {}
+  rpc AbandonMission (.sc.internal.services.mission_service.v1.AbandonMissionRequest) returns (.sc.internal.services.mission_service.v1.AbandonMissionResponse) {}
+  rpc OnPlayerJoinShard (.sc.internal.services.mission_service.v1.OnPlayerJoinShardRequest) returns (.sc.internal.services.mission_service.v1.OnPlayerJoinShardResponse) {}
+  rpc OnPlayerLeaveShard (.sc.internal.services.mission_service.v1.OnPlayerLeaveShardRequest) returns (.sc.internal.services.mission_service.v1.OnPlayerLeaveShardResponse) {}
+  rpc CreateMissionPhase (.sc.internal.services.mission_service.v1.CreateMissionPhaseRequest) returns (.sc.internal.services.mission_service.v1.CreateMissionPhaseResponse) {}
+  rpc UpdateMissionPhase (.sc.internal.services.mission_service.v1.UpdateMissionPhaseRequest) returns (.sc.internal.services.mission_service.v1.UpdateMissionPhaseResponse) {}
+  rpc CompleteMissionPhase (.sc.internal.services.mission_service.v1.CompleteMissionPhaseRequest) returns (.sc.internal.services.mission_service.v1.CompleteMissionPhaseResponse) {}
+  rpc UpsertObjective (.sc.internal.services.mission_service.v1.UpsertObjectiveRequest) returns (.sc.internal.services.mission_service.v1.UpsertObjectiveResponse) {}
+  rpc UpdateObjectiveProgress (.sc.internal.services.mission_service.v1.UpdateObjectiveProgressRequest) returns (.sc.internal.services.mission_service.v1.UpdateObjectiveProgressResponse) {}
+  rpc CompleteObjective (.sc.internal.services.mission_service.v1.CompleteObjectiveRequest) returns (.sc.internal.services.mission_service.v1.CompleteObjectiveResponse) {}
+  rpc QueryMissions (.sc.internal.services.mission_service.v1.QueryMissionsRequest) returns (.sc.internal.services.mission_service.v1.QueryMissionsResponse) {}
+  rpc QueryMissionLogs (.sc.internal.services.mission_service.v1.QueryMissionLogsRequest) returns (.sc.internal.services.mission_service.v1.QueryMissionLogsResponse) {}
+  rpc UpdateObjective (.sc.internal.services.mission_service.v1.UpdateObjectiveRequest) returns (.sc.internal.services.mission_service.v1.UpdateObjectiveResponse) {}
+  rpc AddContributorToObjective (.sc.internal.services.mission_service.v1.AddContributorToObjectiveRequest) returns (.sc.internal.services.mission_service.v1.AddContributorToObjectiveResponse) {}
+  rpc RemoveContributorFromObjective (.sc.internal.services.mission_service.v1.RemoveContributorFromObjectiveRequest) returns (.sc.internal.services.mission_service.v1.RemoveContributorFromObjectiveResponse) {}
+  rpc DisableMissionExpiry (.sc.internal.services.mission_service.v1.DisableMissionExpiryRequest) returns (.sc.internal.services.mission_service.v1.DisableMissionExpiryResponse) {}
+  rpc EnableMissionExpiry (.sc.internal.services.mission_service.v1.EnableMissionExpiryRequest) returns (.sc.internal.services.mission_service.v1.EnableMissionExpiryResponse) {}
+  rpc ReenableMissionExpiry (.sc.internal.services.mission_service.v1.ReenableMissionExpiryRequest) returns (.sc.internal.services.mission_service.v1.ReenableMissionExpiryResponse) {}
+}
+
+message CreateMissionRequest {
+  .sc.external.common.mission.v1.MissionContract contract = 1;
+  string mission_owner_urn = 2;
+  .sc.external.common.command.v1.CommandArguments arguments = 3;
+  string shard_id = 4;
+  bool ignore_objective_contributors = 5;
+  .google.protobuf.Any context = 6;
+}
+
+message CreateMissionResponse {
+  string mission_id = 1;
+  string active_mission_key = 2;
+}
+
+message AbandonMissionRequest {
+  string mission_id = 1;
+  .sc.external.common.mission.v1.MissionState mission_state = 2;
+  string reason = 3;
+  .sc.external.common.command.v1.CommandArguments arguments = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message AbandonMissionResponse {
+}
+
+message OnPlayerJoinShardRequest {
+  message Body {
+    string player_urn = 1;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.OnPlayerJoinShardRequest.Body players = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string shard_id = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message OnPlayerJoinShardResponse {
+}
+
+message OnPlayerLeaveShardRequest {
+  message Body {
+    string player_urn = 1;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.OnPlayerLeaveShardRequest.Body players = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string shard_id = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message OnPlayerLeaveShardResponse {
+}
+
+message CreateMissionPhaseRequest {
+  message Body {
+    string mission_phase_guid = 1;
+    .google.protobuf.Timestamp expiry = 2;
+    string autocomplete_objective_id = 3;
+    .sc.external.common.mission.v1.MissionPhaseData data = 4;
+    string mission_phase_id = 5;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.CreateMissionPhaseRequest.Body phases = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message CreateMissionPhaseResponse {
+}
+
+message UpdateMissionPhaseRequest {
+  message Body {
+    string active_phase_key = 1;
+    .sc.external.common.mission.v1.MissionPhaseData data = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.UpdateMissionPhaseRequest.Body phases = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string mission_id = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message UpdateMissionPhaseResponse {
+}
+
+message CompleteMissionPhaseRequest {
+  message Body {
+    .sc.external.common.mission.v1.MissionPhaseData data = 1;
+    string active_phase_key = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.CompleteMissionPhaseRequest.Body phases = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string mission_id = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message CompleteMissionPhaseResponse {
+}
+
+message UpsertObjectiveRequest {
+  message Body {
+    .sc.external.common.mission.v1.MissionObjective objective = 1;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.UpsertObjectiveRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message UpsertObjectiveResponse {
+}
+
+message UpdateObjectiveProgressRequest {
+  message Body {
+    string objective_id = 1;
+    int64 progress_delta = 2;
+    string player_urn = 3;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.UpdateObjectiveProgressRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message UpdateObjectiveProgressResponse {
+}
+
+message CompleteObjectiveRequest {
+  message Body {
+    string objective_id = 1;
+    .sc.external.common.mission.v1.MissionObjectiveState state = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.CompleteObjectiveRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message CompleteObjectiveResponse {
+}
+
+message QueryMissionsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryMissionsResponse {
+  repeated .sc.external.common.mission.v1.ActiveMission missions = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message QueryMissionLogsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryMissionLogsResponse {
+  repeated .sc.external.common.mission.v1.MissionLog logs = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message UpdateObjectiveRequest {
+  message Body {
+    string objective_id = 1;
+    uint32 flags = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.UpdateObjectiveRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message UpdateObjectiveResponse {
+}
+
+message AddContributorToObjectiveRequest {
+  message Body {
+    string objective_id = 1;
+    string player_urn = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.AddContributorToObjectiveRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message AddContributorToObjectiveResponse {
+}
+
+message RemoveContributorFromObjectiveRequest {
+  message Body {
+    string objective_id = 1;
+    string player_urn = 2;
+  }
+
+  repeated .sc.internal.services.mission_service.v1.RemoveContributorFromObjectiveRequest.Body objectives = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  string active_mission_key = 3;
+  string mission_id = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message RemoveContributorFromObjectiveResponse {
+}
+
+message DisableMissionExpiryRequest {
+  string mission_id = 1;
+  string reason = 2;
+  .sc.external.common.command.v1.CommandArguments arguments = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message DisableMissionExpiryResponse {
+}
+
+message EnableMissionExpiryRequest {
+  string mission_id = 1;
+  string reason = 2;
+  .sc.external.common.command.v1.CommandArguments arguments = 3;
+  .google.protobuf.Timestamp expiry = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message EnableMissionExpiryResponse {
+}
+
+message ReenableMissionExpiryRequest {
+  string mission_id = 1;
+  string reason = 2;
+  .sc.external.common.command.v1.CommandArguments arguments = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message ReenableMissionExpiryResponse {
+}
+

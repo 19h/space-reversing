@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sc.external.services.discipline.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/discipline/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service DisciplineService {
+  rpc QuerySanctions (.sc.external.services.discipline.v1.QuerySanctionsRequest) returns (.sc.external.services.discipline.v1.QuerySanctionsResponse) {}
+}
+
+message QuerySanctionsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QuerySanctionsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.discipline.v1.Sanction results = 2;
+}
+

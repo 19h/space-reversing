@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sc.external.common.types.v1;
+
+message GameVersion {
+  int32 game_version = 1;
+  int32 data_core_crc = 2;
+  int32 class_registry_crc = 3;
+  int32 entity_archetypes_crc = 4;
+  int32 component_registry_crc = 5;
+  int32 object_containers_crc = 6;
+  string version_identifier = 7;
+}
+

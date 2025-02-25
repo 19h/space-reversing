@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/discipline/v1/rpc_messages.proto";
+
+service DisciplineService {
+  rpc CreateSanction (.sc.internal.services.discipline.v1.CreateSanctionRequest) returns (.sc.internal.services.discipline.v1.CreateSanctionResponse) {}
+  rpc ChangeSanction (.sc.internal.services.discipline.v1.ChangeSanctionRequest) returns (.sc.internal.services.discipline.v1.ChangeSanctionResponse) {}
+  rpc ActivateSanction (.sc.internal.services.discipline.v1.ActivateSanctionRequest) returns (.sc.internal.services.discipline.v1.ActivateSanctionResponse) {}
+  rpc LiftSanction (.sc.internal.services.discipline.v1.LiftSanctionRequest) returns (.sc.internal.services.discipline.v1.LiftSanctionResponse) {}
+  rpc GetSanction (.sc.internal.services.discipline.v1.GetSanctionRequest) returns (.sc.internal.services.discipline.v1.GetSanctionResponse) {}
+  rpc QuerySanctions (.sc.internal.services.discipline.v1.QuerySanctionsRequest) returns (.sc.internal.services.discipline.v1.QuerySanctionsResponse) {}
+  rpc CreateWatchList (.sc.internal.services.discipline.v1.CreateWatchListRequest) returns (.sc.internal.services.discipline.v1.CreateWatchListResponse) {}
+  rpc ChangeWatchList (.sc.internal.services.discipline.v1.ChangeWatchListRequest) returns (.sc.internal.services.discipline.v1.ChangeWatchListResponse) {}
+  rpc EraseWatchList (.sc.internal.services.discipline.v1.EraseWatchListRequest) returns (.sc.internal.services.discipline.v1.EraseWatchListResponse) {}
+  rpc AddToWatchList (.sc.internal.services.discipline.v1.AddToWatchListRequest) returns (.sc.internal.services.discipline.v1.AddToWatchListResponse) {}
+  rpc RemoveFromWatchList (.sc.internal.services.discipline.v1.RemoveFromWatchListRequest) returns (.sc.internal.services.discipline.v1.RemoveFromWatchListResponse) {}
+  rpc SanctionWatchlist (.sc.internal.services.discipline.v1.SanctionWatchlistRequest) returns (.sc.internal.services.discipline.v1.SanctionWatchlistResponse) {}
+  rpc LiftSanctionWatchlist (.sc.internal.services.discipline.v1.LiftSanctionWatchlistRequest) returns (.sc.internal.services.discipline.v1.LiftSanctionWatchlistResponse) {}
+  rpc QueryWatchlists (.sc.internal.services.discipline.v1.QueryWatchlistsRequest) returns (.sc.internal.services.discipline.v1.QueryWatchlistsResponse) {}
+  rpc QueryWatchlistEntries (.sc.internal.services.discipline.v1.QueryWatchlistEntriesRequest) returns (.sc.internal.services.discipline.v1.QueryWatchlistEntriesResponse) {}
+  rpc CreateInfraction (.sc.internal.services.discipline.v1.CreateInfractionRequest) returns (.sc.internal.services.discipline.v1.CreateInfractionResponse) {}
+  rpc EraseInfraction (.sc.internal.services.discipline.v1.EraseInfractionRequest) returns (.sc.internal.services.discipline.v1.EraseInfractionResponse) {}
+  rpc ChangeInfraction (.sc.internal.services.discipline.v1.ChangeInfractionRequest) returns (.sc.internal.services.discipline.v1.ChangeInfractionResponse) {}
+  rpc QueryInfraction (.sc.internal.services.discipline.v1.QueryInfractionRequest) returns (.sc.internal.services.discipline.v1.QueryInfractionResponse) {}
+  rpc CreateNote (.sc.internal.services.discipline.v1.CreateNoteRequest) returns (.sc.internal.services.discipline.v1.CreateNoteResponse) {}
+  rpc ReplyNote (.sc.internal.services.discipline.v1.ReplyNoteRequest) returns (.sc.internal.services.discipline.v1.ReplyNoteResponse) {}
+  rpc ChangeNote (.sc.internal.services.discipline.v1.ChangeNoteRequest) returns (.sc.internal.services.discipline.v1.ChangeNoteResponse) {}
+  rpc EraseNote (.sc.internal.services.discipline.v1.EraseNoteRequest) returns (.sc.internal.services.discipline.v1.EraseNoteResponse) {}
+  rpc QueryNote (.sc.internal.services.discipline.v1.QueryNoteRequest) returns (.sc.internal.services.discipline.v1.QueryNoteResponse) {}
+  rpc VerifyEnforcement (.sc.internal.services.discipline.v1.VerifyEnforcementRequest) returns (.sc.internal.services.discipline.v1.VerifyEnforcementResponse) {}
+}
+

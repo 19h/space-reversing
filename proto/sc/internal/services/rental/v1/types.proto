@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sc.internal.services.rental.v1;
+
+import "sc/external/services/entitlement/v1/types.proto";
+
+message Rental {
+  string id = 1;
+  .sc.internal.services.rental.v1.RentalStatus status = 2;
+  uint64 created_at = 3;
+  uint64 began_at = 4;
+  uint64 expire_at = 5;
+  uint32 duration = 6;
+  string account_urn = 7;
+  string player_urn = 8;
+  string entitlement_urn = 9;
+  uint32 renewals = 10;
+}
+
+message RentalHistory {
+  string id = 1;
+  string account_urn = 2;
+  string player_urn = 3;
+  string entitlement_urn = 4;
+  .sc.external.services.entitlement.v1.EntitlementSource source = 5;
+  string name = 6;
+  string entity_class_guid = 7;
+  uint64 created_at = 8;
+  .sc.internal.services.rental.v1.RentalLogAction log_action = 9;
+  string log_message = 10;
+}
+
+enum RentalStatus {
+  RENTAL_STATUS_UNSPECIFIED = 0;
+  RENTAL_STATUS_AVAILABLE = 1;
+  RENTAL_STATUS_ACTIVE = 2;
+  RENTAL_STATUS_FINISHED = 3;
+}
+
+enum RentalLogAction {
+  RENTAL_LOG_ACTION_UNSPECIFIED = 0;
+  RENTAL_LOG_ACTION_CREATED = 1;
+  RENTAL_LOG_ACTION_STARTED = 2;
+  RENTAL_LOG_ACTION_RENEWED = 3;
+  RENTAL_LOG_ACTION_CANCELLED = 4;
+  RENTAL_LOG_ACTION_EXPIRED = 5;
+  RENTAL_LOG_ACTION_REVERTED_START = 6;
+}
+

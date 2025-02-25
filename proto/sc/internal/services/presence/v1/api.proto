@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sc.internal.services.presence.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/presence/v1/types.proto";
+
+service PresenceService {
+  rpc SetPresence (.sc.internal.services.presence.v1.SetPresenceRequest) returns (.sc.internal.services.presence.v1.SetPresenceResponse) {}
+  rpc GetPresenceByAccountIds (.sc.internal.services.presence.v1.GetPresenceByAccountIdsRequest) returns (.sc.internal.services.presence.v1.GetPresenceByAccountIdsResponse) {}
+}
+
+message GetPresenceByAccountIdsRequest {
+  repeated uint32 account_ids = 1;
+}
+
+message GetPresenceByAccountIdsResponse {
+  message AccountPresence {
+    uint32 account_id = 1;
+    .sc.external.services.presence.v1.Presence presence = 2;
+  }
+
+  repeated .sc.internal.services.presence.v1.GetPresenceByAccountIdsResponse.AccountPresence results = 1;
+}
+
+message SetPresenceRequest {
+  message Body {
+    .sc.external.services.presence.v1.Presence presence = 1;
+    uint32 account_id = 2;
+    string environment = 3;
+  }
+
+  repeated .sc.internal.services.presence.v1.SetPresenceRequest.Body bodies = 1;
+}
+
+message SetPresenceResponse {
+}
+

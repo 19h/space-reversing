@@ -1,0 +1,422 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.Persistence;
+
+import "pbcommon.proto";
+
+message MsgRequestPlayerData {
+  required uint32 web_account_id = 1;
+}
+
+message MsgItem {
+  required uint64 item_GUID = 1;
+  optional string custom_name = 2;
+  optional string class_name = 3;
+  optional uint64 location_id = 4;
+  optional uint64 owner_GUID = 5;
+  optional uint64 root_parent_GUID = 6;
+  optional uint64 parent_GUID = 7;
+  optional uint64 oem_parent_GUID = 8;
+  optional uint64 inventory_GUID = 9;
+  optional uint64 flags = 10;
+  optional string parent_port_id = 11;
+  optional uint64 class_id = 12;
+  optional uint64 item_type = 13;
+  optional int64 ownership = 14;
+  optional uint64 version = 15;
+  optional int64 quantity = 16;
+  optional uint64 expiration_time = 17;
+}
+
+message MsgItemList {
+  optional bool not_trusted = 1;
+  repeated .cig.Protocols.Public.Persistence.MsgItem items = 2;
+}
+
+message MsgEntitlement {
+  required uint32 account_id = 1;
+  required string uuid = 2;
+  required string config_uuid = 3;
+  required uint64 geid = 4;
+  required string code = 5;
+  required string class_guid = 6;
+  required uint32 type = 7;
+  optional string created_date = 8;
+  optional string expired_date = 9;
+  optional uint32 duration = 10;
+  optional uint32 renewal_count = 11;
+  optional uint32 rate = 12;
+  optional bool deleted = 13;
+  required uint64 player_geid = 14;
+  optional .cig.Protocols.Common.RSIItemLoadoutKit loadout = 15;
+  repeated .cig.Protocols.Common.RSIItemCustomizations customizations = 16;
+  optional bool dummy_entity = 17;
+}
+
+message MsgAccount {
+  required int32 web_account_id = 1;
+  required uint64 player_geid = 2;
+  required string account_name = 3;
+  required string nickname = 4;
+  required string handle = 5;
+  repeated int32 badges = 6;
+  required uint64 last_update = 7;
+  required uint64 last_login = 8;
+  required uint64 last_rsi_item_update = 9;
+  required uint64 create_date = 10;
+  required uint64 total_online_time = 11;
+  required uint64 total_logins = 12;
+  required uint64 last_character_geid = 13;
+  optional string entitlements = 14;
+}
+
+message MsgAccountList {
+  repeated .cig.Protocols.Public.Persistence.MsgAccount items = 1;
+}
+
+message MsgCharacter {
+  required uint64 character_geid = 1;
+  required uint32 account_id = 2;
+  required string name = 3;
+  required uint64 last_update = 4;
+  required uint64 create_date = 5;
+  required uint64 total_time_online = 6;
+  required uint64 num_logins = 7;
+}
+
+message MsgPersistentAccountData {
+  required int32 result_code = 1;
+  optional .cig.Protocols.Public.Persistence.MsgAccount account = 2;
+  repeated .cig.Protocols.Public.Persistence.MsgCharacter characters = 3;
+  optional uint64 ticket = 4;
+}
+
+message MsgPersistentPlayerData {
+  required uint32 account_id = 1;
+  repeated .cig.Protocols.Public.Persistence.MsgItem items = 2;
+  repeated uint64 dependedIds = 3;
+  optional uint64 ticket = 4;
+}
+
+message MsgPersistentData {
+  required .cig.Protocols.Public.Persistence.MsgPersistentAccountData account = 1;
+  repeated .cig.Protocols.Public.Persistence.MsgItemList items = 2;
+  required bool super_pcache_enabled = 3;
+}
+
+message MsgPersistentItemIds {
+  repeated uint64 items_GEIDs = 1;
+}
+
+message MsgPlayerLoginState {
+  required int32 account_id = 1;
+  required bool online_state = 2;
+}
+
+message MsgItemWrite {
+  repeated .cig.Protocols.Public.Persistence.MsgItem items = 1;
+}
+
+message SMsgItemWriteResp {
+  required int32 result_code = 1;
+}
+
+message SMsgItemRemoveResp {
+  required int32 result_code = 1;
+}
+
+message MsgAccountRequest {
+  required int32 account_id = 1;
+  required uint64 character_id = 2;
+  required string account_name = 3;
+  required string display_name = 4;
+  required string nickname = 5;
+  required uint64 ticket = 6;
+}
+
+message MsgPlayerDataRequest {
+  required uint64 player_geid = 1;
+  required uint64 ticket = 2;
+}
+
+message MsgPlayerRelationship {
+  required int64 player_a_id = 1;
+  required string player_a_name = 2;
+  required uint64 player_b_id = 3;
+  required string player_b_name = 4;
+  required int32 relationship_type = 5;
+}
+
+message CMsgGetPlayerRelationships {
+  required int64 player_id = 1;
+  required string player_name = 2;
+  required int32 relationship_type = 3;
+  required uint64 saved_msg_handler_id = 4;
+  required uint64 saved_receipt = 5;
+  required .cig.Protocols.Common.Uuid saved_player_session_id = 6;
+}
+
+message SMsgGetPlayerRelationshipsResp {
+  required int32 result_code = 1;
+  required int64 player_id = 2;
+  required string player_name = 3;
+  repeated .cig.Protocols.Public.Persistence.MsgPlayerRelationship player_relationships = 4;
+  required uint64 saved_msg_handler_id = 5;
+  required uint64 saved_receipt = 6;
+  required .cig.Protocols.Common.Uuid saved_player_session_id = 7;
+}
+
+message CMsgFriendAdd {
+  required .cig.Protocols.Common.ePlayerType player_type = 1;
+  required int64 source_player_id = 2;
+  required string source_player_name = 3;
+  required int64 target_player_id = 4;
+  required string target_player_name = 5;
+  required int32 saved_source_account_id = 6;
+  required int32 saved_target_account_id = 7;
+}
+
+message SMsgFriendAddResp {
+  required int32 result_code = 1;
+  required .cig.Protocols.Common.ePlayerType player_type = 2;
+  required int32 saved_source_account_id = 3;
+  required int32 saved_target_account_id = 4;
+}
+
+message CMsgFriendRemove {
+  required .cig.Protocols.Common.ePlayerType player_type = 1;
+  required int64 source_player_id = 2;
+  required string source_player_name = 3;
+  optional int64 target_player_id = 4;
+  optional string target_player_name = 5;
+  required int32 saved_source_account_id = 6;
+  optional int32 saved_target_account_id = 7;
+}
+
+message SMsgFriendRemoveResp {
+  required int32 result_code = 1;
+  required .cig.Protocols.Common.ePlayerType player_type = 2;
+  required int32 saved_source_account_id = 3;
+  optional int32 saved_target_account_id = 4;
+  optional int64 saved_target_player_id = 5;
+  optional string saved_target_player_name = 6;
+}
+
+message CMsgIgnorePlayerAdd {
+  required .cig.Protocols.Common.ePlayerType player_type = 1;
+  required int64 source_player_id = 2;
+  required string source_player_name = 3;
+  optional int64 target_player_id = 4;
+  optional string target_player_name = 5;
+  required int32 saved_source_account_id = 6;
+  optional int32 saved_target_account_id = 7;
+}
+
+message SMsgIgnorePlayerAddResp {
+  required int32 result_code = 1;
+  required .cig.Protocols.Common.ePlayerType player_type = 2;
+  required int32 saved_source_account_id = 3;
+  optional int32 saved_target_account_id = 4;
+  optional int64 saved_target_player_id = 5;
+  optional string saved_target_player_name = 6;
+}
+
+message CMsgIgnorePlayerRemove {
+  required .cig.Protocols.Common.ePlayerType player_type = 1;
+  required int64 source_player_id = 2;
+  required string source_player_name = 3;
+  optional int64 target_player_id = 4;
+  optional string target_player_name = 5;
+  required int32 saved_source_account_id = 6;
+  optional int32 saved_target_account_id = 7;
+}
+
+message SMsgIgnorePlayerRemoveResp {
+  required int32 result_code = 1;
+  required .cig.Protocols.Common.ePlayerType player_type = 2;
+  required int32 saved_source_account_id = 3;
+  optional int32 saved_target_account_id = 4;
+  optional int64 saved_target_player_id = 5;
+  optional string saved_target_player_name = 6;
+}
+
+message CMsgStorePurchaseReq {
+  required uint64 ticket_id = 1;
+  required int32 web_account_id = 2;
+  required uint64 character_id = 3;
+  required uint64 purchase_price = 4;
+  required int32 currency_type = 5;
+  repeated .cig.Protocols.Public.Persistence.MsgItem purchase_items = 6;
+}
+
+message SMsgStorePurchaseResp {
+  required uint64 ticket_id = 1;
+  required int32 result_code = 2;
+  required int32 store_purchase_result = 3;
+  required int32 currency_type = 4;
+  required uint32 new_balance = 5;
+  required int32 web_account_id = 6;
+  required uint64 player_geid = 7;
+  required uint64 character_id = 8;
+  repeated .cig.Protocols.Public.Persistence.MsgItem purchased_items = 9;
+}
+
+message CMsgProcessStorePurchaseRequest {
+  required uint64 store_purchase_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 web_account_id = 3;
+  required uint64 character_id = 4;
+  required uint32 purchase_price = 5;
+  required int32 currency_type = 6;
+  repeated .cig.Protocols.Public.Persistence.MsgItem purchase_items = 7;
+}
+
+message SMsgProcessStorePurchaseResponse {
+  required uint64 store_purchase_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 result_code = 3;
+  required int32 store_purchase_result = 4;
+  required int32 currency_type = 5;
+  required uint64 new_balance = 6;
+}
+
+message CMsgItemBuyReq {
+  required uint64 ticket_id = 1;
+  required int32 web_account_id = 2;
+  required uint64 player_geid = 3;
+  required int64 buy_price = 4;
+  required int32 currency_type = 5;
+  repeated .cig.Protocols.Public.Persistence.MsgItem buy_items = 6;
+}
+
+message SMsgItemBuyResp {
+  required uint64 ticket_id = 1;
+  required int32 result_code = 2;
+  required int32 currency_type = 3;
+  required int64 new_balance = 4;
+  required int32 web_account_id = 5;
+  required uint64 player_geid = 6;
+  repeated .cig.Protocols.Public.Persistence.MsgItem buy_items = 7;
+}
+
+message CMsgProcessItemBuyRequest {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 web_account_id = 3;
+  required uint64 player_geid = 4;
+  required int64 buy_price = 5;
+  required int32 currency_type = 6;
+  repeated .cig.Protocols.Public.Persistence.MsgItem buy_items = 7;
+}
+
+message SMsgProcessItemBuyResponse {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 result_code = 3;
+  required int32 currency_type = 4;
+  required int64 new_balance = 5;
+}
+
+message CMsgItemSellReq {
+  required uint64 ticket_id = 1;
+  required int32 web_account_id = 2;
+  required uint64 player_geid = 3;
+  required int64 sell_price = 4;
+  required int32 currency_type = 5;
+  repeated .cig.Protocols.Public.Persistence.MsgItem sell_items = 6;
+}
+
+message SMsgItemSellResp {
+  required uint64 ticket_id = 1;
+  required int32 result_code = 2;
+  required int32 currency_type = 3;
+  required int64 new_balance = 4;
+  required int32 web_account_id = 5;
+  required uint64 player_geid = 6;
+  repeated .cig.Protocols.Public.Persistence.MsgItem sell_items = 7;
+}
+
+message CMsgProcessItemSellRequest {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 web_account_id = 3;
+  required uint64 player_geid = 4;
+  required int64 sell_price = 5;
+  required int32 currency_type = 6;
+  repeated .cig.Protocols.Public.Persistence.MsgItem sell_items = 7;
+}
+
+message SMsgProcessItemSellResponse {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 result_code = 3;
+  required int32 currency_type = 4;
+  required int64 new_balance = 5;
+}
+
+message CMsgItemUpdateReq {
+  required uint64 ticket_id = 1;
+  required int32 web_account_id = 2;
+  required uint64 player_geid = 3;
+  repeated .cig.Protocols.Public.Persistence.MsgItem update_items = 4;
+}
+
+message SMsgItemUpdateResp {
+  required uint64 ticket_id = 1;
+  required int32 result_code = 2;
+  required int32 web_account_id = 3;
+  required uint64 player_geid = 4;
+  repeated .cig.Protocols.Public.Persistence.MsgItem update_items = 5;
+}
+
+message CMsgProcessItemUpdateRequest {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 web_account_id = 3;
+  required uint64 player_geid = 4;
+  repeated .cig.Protocols.Public.Persistence.MsgItem update_items = 5;
+}
+
+message SMsgProcessItemUpdateResponse {
+  required uint64 trx_id = 1;
+  required uint64 ticket_id = 2;
+  required int32 result_code = 3;
+}
+
+message Loadout {
+  required uint64 owner_id = 1;
+  required uint64 loadout_id = 2;
+  required string data = 3;
+}
+
+message LoadoutGetRequest {
+  required uint64 owner_id = 1;
+}
+
+message LoadoutGetResponse {
+  required int32 result_code = 1;
+  optional .cig.Protocols.Public.Persistence.Loadout loadout = 2;
+}
+
+message LoadoutResponse {
+  required uint64 owner_id = 1;
+  required int32 result_code = 2;
+}
+
+message CMsgLoadoutRequest {
+  required uint64 owner_id = 1;
+  required uint64 loadout_id = 2;
+  required uint64 ticket_id = 3;
+}
+
+message SMsgLoadoutRequestResp {
+  required int32 result_code = 1;
+  required uint64 ticket_id = 2;
+  repeated .cig.Protocols.Public.Persistence.Loadout loadout_info = 3;
+}
+
+message CMsgLoadoutPush {
+  required uint64 ticket_id = 1;
+  repeated .cig.Protocols.Public.Persistence.Loadout loadout_info = 2;
+}
+

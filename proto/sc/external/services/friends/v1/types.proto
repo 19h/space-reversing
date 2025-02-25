@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sc.external.services.friends.v1;
+
+import "sc/external/services/presence/v1/types.proto";
+
+message FriendInfo {
+  string nickname = 1;
+  string display_name = 2;
+  string avatar_url = 3;
+  uint32 account_id = 4;
+  uint64 player_id = 5;
+}
+
+message Friend {
+  .sc.external.services.friends.v1.FriendInfo account = 1;
+  .sc.external.services.presence.v1.Presence presence = 2;
+}
+
+message FriendRequest {
+  string id = 1;
+  int64 created_at = 2;
+  .sc.external.services.friends.v1.FriendInfo sender = 3;
+  .sc.external.services.friends.v1.FriendInfo receiver = 4;
+}
+

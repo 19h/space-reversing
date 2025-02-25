@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package sc.internal.services.seeding.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/types/v1/gameversion.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+service SeedingService {
+  rpc SeedGlobal (.sc.internal.services.seeding.v1.SeedGlobalRequest) returns (.sc.internal.services.seeding.v1.SeedGlobalResponse) {}
+  rpc SeedShard (.sc.internal.services.seeding.v1.SeedShardRequest) returns (.sc.internal.services.seeding.v1.SeedShardResponse) {}
+}
+
+message Heartbeat {
+  string id = 1;
+  string context = 2;
+}
+
+message HeartbeatArguments {
+  uint32 interval = 1;
+  .sc.external.services.push.v1.PushDestination destination = 2;
+}
+
+message SeedGlobalRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  .sc.internal.services.seeding.v1.HeartbeatArguments heartbeat_arguments = 2;
+}
+
+message SeedGlobalResponse {
+}
+
+message SeedShardRequest {
+  message ShardParams {
+    string game_mode = 1;
+    string level = 2;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  string shard_id = 2;
+  .sc.internal.services.seeding.v1.SeedShardRequest.ShardParams params = 3;
+  .sc.internal.services.seeding.v1.HeartbeatArguments heartbeat_arguments = 4;
+}
+
+message SeedShardResponse {
+  .sc.external.common.types.v1.GameVersion game_version = 1;
+}
+

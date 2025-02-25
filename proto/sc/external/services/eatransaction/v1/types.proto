@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sc.external.services.eatransaction.v1;
+
+message TransactionLogContext {
+  message DetailsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string message = 1;
+  repeated .sc.external.services.eatransaction.v1.TransactionLogContext.DetailsEntry details = 2;
+}
+

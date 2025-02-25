@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sc.external.services.rental.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/services/rental/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+service ExternalRentalService {
+  rpc Start (.sc.external.services.rental.v1.StartRequest) returns (.sc.external.services.rental.v1.StartResponse) {}
+  rpc QueryRentals (.sc.external.services.rental.v1.QueryRentalsRequest) returns (.sc.external.services.rental.v1.QueryRentalsResponse) {}
+}
+
+message StartRequest {
+  message Body {
+    string id = 1;
+    string log_message = 2;
+    string target_inventory = 3;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  .sc.external.services.rental.v1.StartRequest.Body body = 2;
+}
+
+message StartResponse {
+}
+
+message QueryRentalsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryRentalsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.rental.v1.Rental results = 2;
+}
+

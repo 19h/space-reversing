@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package sc.internal.services.matchmaking.v1;
+
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+
+message GameAndModeExtension {
+  .sc.external.common.game.v1.Game game = 1;
+  .sc.external.common.game.v1.Mode mode = 2;
+  .sc.external.common.network.v1.Region region = 3;
+  repeated string maps = 4;
+  string shard_id = 5;
+}
+
+message SquadExtension {
+  repeated string player_ids = 1;
+  string id = 2;
+}
+
+message PartyExtension {
+  repeated string player_ids = 1;
+  string id = 2;
+}
+
+message TicketCreatorExtension {
+  string id = 1;
+  string name = 2;
+}
+
+message InstanceExtension {
+  string id = 1;
+  string seat_reservation_endpoint = 2;
+}
+
+message BookingExtension {
+  repeated string player_ids = 1;
+}
+

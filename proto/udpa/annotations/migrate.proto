@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package udpa.annotations;
+
+option go_package = "github.com/cncf/xds/go/annotations";
+
+import "google/protobuf/descriptor.proto";
+
+message MigrateAnnotation {
+  string rename = 1;
+}
+
+message FieldMigrateAnnotation {
+  string rename = 1;
+  string oneof_promotion = 2;
+}
+
+message FileMigrateAnnotation {
+  string move_to_package = 2;
+}
+

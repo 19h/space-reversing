@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message MissionLocationReservation {
+  uint64 location_entity_id = 1;
+  string contract_slot_type = 2;
+}
+
+message MissionLocationAquisition {
+  string contract_id = 1;
+  string contract_slot_type = 2;
+  string acquisition_tag = 3;
+  string contract_definition_id = 4;
+}
+
+message MissionLocationTag {
+  string tag_name = 1;
+  .google.protobuf.Timestamp expiry = 2;
+  .google.protobuf.Timestamp timestamp = 3;
+}
+
+message MissionLocation {
+  uint64 location_entity_id = 1;
+  string shard_id = 2;
+  bool is_occupied = 3;
+  repeated .sc.external.common.mission.v1.MissionLocationAquisition acquisitions = 4;
+  repeated .sc.external.common.mission.v1.MissionLocationTag location_tags = 5;
+}
+

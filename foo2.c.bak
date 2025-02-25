@@ -1,0 +1,315 @@
+// File: socket_hook.c
+
+#include <winsock2.h>
+#include <winsock.h>
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <dbghelp.h>
+#include <psapi.h>
+#include <ws2tcpip.h>
+#include "hook.c"  // MinHook header
+
+#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "Ws2_32.lib")
+
+// --- Forward declarations ---
+void print_backtrace(void);
+void hexdump(const void *data, size_t size);
+void log_sockaddr(struct sockaddr* addr, int addrlen);
+
+// --- Offsets from original pseudocode (for reference) ---
+// (Not used in this hook, but provided for context)
+// #define OFFSET_RECV_FLAG         0xB50
+// #define OFFSET_MSG_BUFFER        0xB58
+// #define OFFSET_PROCESSED         0xCA8
+// #define OFFSET_STATE_PTR         0x1C0
+// #define OFFSET_CALLBACK          0xC90
+// #define OFFSET_CALLBACK_CONTEXT  0xC98
+// #define OFFSET_FLAGS             0x1C8
+
+// --- Absolute address of FUN_1475d8480 ---
+// In practice, this address must be verified/adjusted for ASLR.
+#define RECV_BUFFER_ADDR ((LPVOID)0x1475d8480)
+
+// --- Global log file pointer ---
+static FILE *g_logFile = NULL;
+
+// --- Logging helper ---
+static void log_printf(const char *fmt, ...)
+{
+    if (g_logFile)
+    {
+        va_list args;
+        va_start(args, fmt);
+        vfprintf(g_logFile, fmt, args);
+        va_end(args);
+        fflush(g_logFile);
+    }
+}
+
+// --- Function pointer typedefs for ws2_32 functions ---
+typedef int (WINAPI *recv_t)(SOCKET s, char* buf, int len, int flags);
+typedef int (WINAPI *recvfrom_t)(SOCKET s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen);
+
+// --- Typedef for FUN_1475d8480 ---
+// Prototype: undefined8 * FUN_1475d8480(longlong param_1, undefined8 *param_2)
+// We'll use unsigned long long* for undefined8* and long long for longlong.
+typedef unsigned long long* (*recv_buffer_t)(long long param_1, unsigned long long *param_2);
+
+// --- Global variables to hold the original functions ---
+static recv_t         orig_recv         = NULL;
+static recvfrom_t     orig_recvfrom     = NULL;
+static recv_buffer_t  orig_recv_buffer  = NULL;
+
+// --- Hook function for ws2_32.dll's recv ---
+int WINAPI my_recv(SOCKET s, char* buf, int len, int flags)
+{
+    int ret = orig_recv(s, buf, len, flags);
+
+    if (ret >= 32)
+    {
+        log_printf("\n[+] Backtrace on recv leave:\n");
+        print_backtrace();
+
+        {
+            char info[256];
+            sprintf(info, "\n[+] recv received %d bytes from socket %d\n", ret, (int)s);
+            log_printf("%s", info);
+        }
+        hexdump(buf, (size_t)ret);
+    }
+
+    return ret;
+}
+
+// --- Hook function for ws2_32.dll's recvfrom ---
+int WINAPI my_recvfrom(SOCKET s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen)
+{
+    int ret = orig_recvfrom(s, buf, len, flags, from, fromlen);
+
+    if (ret >= 32)
+    {
+        log_printf("\n[+] Backtrace on recvfrom leave:\n");
+        print_backtrace();
+
+        {
+            char info[256];
+            sprintf(info, "\n[+] recvfrom received %d bytes from socket %d\n", ret, (int)s);
+            log_printf("%s", info);
+        }
+        hexdump(buf, (size_t)ret);
+
+        if (from != NULL)
+        {
+            log_sockaddr(from, (fromlen ? *fromlen : 0));
+        }
+    }
+
+    return ret;
+}
+
+// --- Hook function for FUN_1475d8480 (recv_buffer) ---
+unsigned long long* my_recv_buffer(long long param_1, unsigned long long *param_2)
+{
+    log_printf("\n[+] Hooked recv_buffer (FUN_1475d8480) called with param_1 = 0x%llx, param_2 = %p\n", param_1, param_2);
+    print_backtrace();
+
+    // Optionally, inspect initial state of the output buffer.
+    log_printf("    Before call: param_2[2] = 0x%llx, param_2[3] = 0x%llx\n", param_2[2], param_2[3]);
+
+    // Call the original function.
+    unsigned long long* ret = orig_recv_buffer(param_1, param_2);
+
+    // Log the result, e.g. the new assembled length at param_2[2].
+    log_printf("    After call: param_2[2] = 0x%llx\n", param_2[2]);
+
+    return ret;
+}
+
+// --- Helper: print a hexdump of data ---
+void hexdump(const void *data, size_t size)
+{
+    const unsigned char *p = (const unsigned char*)data;
+    char line[100];
+    char ascii[17];
+    ascii[16] = '\0';
+
+    for (size_t i = 0; i < size; i += 16)
+    {
+        int linePos = sprintf(line, "%08zx: ", i);
+        for (size_t j = 0; j < 16; j++)
+        {
+            if (i + j < size)
+            {
+                linePos += sprintf(line + linePos, "%02x ", p[i + j]);
+                ascii[j] = (p[i + j] >= 32 && p[i + j] < 127) ? p[i + j] : '.';
+            }
+            else
+            {
+                linePos += sprintf(line + linePos, "   ");
+                ascii[j] = ' ';
+            }
+        }
+        sprintf(line + linePos, " %s\n", ascii);
+        log_printf("%s", line);
+    }
+}
+
+// --- Helper: print a backtrace ---
+void print_backtrace(void)
+{
+    void* stack[62];
+    USHORT frames = CaptureStackBackTrace(0, 62, stack, NULL);
+    HMODULE hMain = GetModuleHandle(NULL);
+    MODULEINFO modInfo = {0};
+    if (!GetModuleInformation(GetCurrentProcess(), hMain, &modInfo, sizeof(modInfo)))
+    {
+        log_printf("Failed to get module information.\n");
+        return;
+    }
+    DWORD64 base    = (DWORD64)hMain;
+    DWORD64 modSize = modInfo.SizeOfImage;
+    char buffer[1024];
+
+    for (USHORT i = 0; i < frames; i++)
+    {
+        DWORD64 addr = (DWORD64)stack[i];
+        SYMBOL_INFO *symbol = (SYMBOL_INFO*)malloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char));
+        if (!symbol)
+            continue;
+        memset(symbol, 0, sizeof(SYMBOL_INFO) + 256 * sizeof(char));
+        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+        symbol->MaxNameLen   = 255;
+        DWORD64 displacement = 0;
+        if (SymFromAddr(GetCurrentProcess(), addr, &displacement, symbol))
+        {
+            if (addr >= base && addr < base + modSize)
+            {
+                DWORD64 offset = addr - base;
+                sprintf(buffer, "ModuleBase+0x%llx %s", offset, symbol->Name);
+            }
+            else
+            {
+                sprintf(buffer, "%s+0x%llx", symbol->Name, displacement);
+            }
+        }
+        else
+        {
+            sprintf(buffer, "0x%llx", addr);
+        }
+        log_printf("%s\n", buffer);
+        free(symbol);
+    }
+}
+
+// --- Helper: log a human-readable source address ---
+void log_sockaddr(struct sockaddr* addr, int addrlen)
+{
+    if (addr == NULL)
+    {
+        log_printf("Source address: NULL\n");
+        return;
+    }
+
+    if (addr->sa_family == AF_INET && addrlen >= (int)sizeof(struct sockaddr_in))
+    {
+        struct sockaddr_in *sin = (struct sockaddr_in*)addr;
+        char ip[INET_ADDRSTRLEN] = {0};
+        inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
+        int port = ntohs(sin->sin_port);
+        char buf[256];
+        sprintf(buf, "Source address: %s:%d\n", ip, port);
+        log_printf("%s", buf);
+    }
+    else if (addr->sa_family == AF_INET6 && addrlen >= (int)sizeof(struct sockaddr_in6))
+    {
+        struct sockaddr_in6 *sin6 = (struct sockaddr_in6*)addr;
+        char ip[INET6_ADDRSTRLEN] = {0};
+        inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
+        int port = ntohs(sin6->sin6_port);
+        char buf[256];
+        sprintf(buf, "Source address: [%s]:%d\n", ip, port);
+        log_printf("%s", buf);
+    }
+    else
+    {
+        log_printf("Source address: <unknown address family>\n");
+    }
+}
+
+// --- DllMain: Set up hooks and open the log file when the DLL is loaded ---
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hModule);
+
+        // Open log file in user's home directory.
+        char *home = getenv("USERPROFILE");
+        if (!home)
+        {
+            home = "C:\\";
+        }
+        char logPath[512];
+        sprintf(logPath, "%s\\stardump.log", home);
+        g_logFile = fopen(logPath, "a+");
+        if (!g_logFile)
+        {
+            // Fallback: current directory.
+            g_logFile = fopen("stardump.log", "a+");
+        }
+
+        // Initialize DbgHelp for symbol resolution.
+        if (!SymInitialize(GetCurrentProcess(), NULL, TRUE))
+        {
+            log_printf("Failed to initialize DbgHelp.\n");
+        }
+
+        // Initialize MinHook.
+        if (MH_Initialize() != MH_OK)
+        {
+            log_printf("Failed to initialize MinHook.\n");
+            return FALSE;
+        }
+
+        // Hook ws2_32.dll's recv.
+        if (MH_CreateHookApi(L"ws2_32.dll", "recv", &my_recv, (LPVOID*)&orig_recv) != MH_OK)
+        {
+            log_printf("Failed to hook recv.\n");
+        }
+
+        // Hook ws2_32.dll's recvfrom.
+        if (MH_CreateHookApi(L"ws2_32.dll", "recvfrom", &my_recvfrom, (LPVOID*)&orig_recvfrom) != MH_OK)
+        {
+            log_printf("Failed to hook recvfrom.\n");
+        }
+
+        // Hook FUN_1475d8480 (the recv_buffer function).
+        if (MH_CreateHook(RECV_BUFFER_ADDR, &my_recv_buffer, (LPVOID*)&orig_recv_buffer) != MH_OK)
+        {
+            log_printf("Failed to hook recv_buffer function at %p.\n", RECV_BUFFER_ADDR);
+        }
+
+        // Enable all hooks.
+        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
+        {
+            log_printf("Failed to enable hooks.\n");
+        }
+
+        log_printf("[+] Socket and buffer hooks installed\n");
+    }
+    else if (ul_reason_for_call == DLL_PROCESS_DETACH)
+    {
+        MH_Uninitialize();
+        SymCleanup(GetCurrentProcess());
+        if (g_logFile)
+        {
+            fclose(g_logFile);
+            g_logFile = NULL;
+        }
+    }
+    return TRUE;
+}

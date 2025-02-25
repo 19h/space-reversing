@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package google.rpc.context;
+
+option java_package = "com.google.rpc.context";
+option java_outer_classname = "AttributeContextProto";
+option java_multiple_files = true;
+option go_package = "google/rpc/context/attribute_context;attribute_context";
+option cc_enable_arenas = true;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message AttributeContext {
+  message Peer {
+    message LabelsEntry {
+      string key = 1;
+      string value = 2;
+    }
+
+    string ip = 1;
+    int64 port = 2;
+    repeated .google.rpc.context.AttributeContext.Peer.LabelsEntry labels = 6;
+    string principal = 7;
+    string region_code = 8;
+  }
+
+  message Api {
+    string service = 1;
+    string operation = 2;
+    string protocol = 3;
+    string version = 4;
+  }
+
+  message Auth {
+    string principal = 1;
+    repeated string audiences = 2;
+    string presenter = 3;
+    .google.protobuf.Struct claims = 4;
+    repeated string access_levels = 5;
+  }
+
+  message Request {
+    message HeadersEntry {
+      string key = 1;
+      string value = 2;
+    }
+
+    string id = 1;
+    string method = 2;
+    repeated .google.rpc.context.AttributeContext.Request.HeadersEntry headers = 3;
+    string path = 4;
+    string host = 5;
+    string scheme = 6;
+    string query = 7;
+    .google.protobuf.Timestamp time = 9;
+    int64 size = 10;
+    string protocol = 11;
+    string reason = 12;
+    .google.rpc.context.AttributeContext.Auth auth = 13;
+  }
+
+  message Response {
+    message HeadersEntry {
+      string key = 1;
+      string value = 2;
+    }
+
+    int64 code = 1;
+    int64 size = 2;
+    repeated .google.rpc.context.AttributeContext.Response.HeadersEntry headers = 3;
+    .google.protobuf.Timestamp time = 4;
+  }
+
+  message Resource {
+    message LabelsEntry {
+      string key = 1;
+      string value = 2;
+    }
+
+    string service = 1;
+    string name = 2;
+    string type = 3;
+    repeated .google.rpc.context.AttributeContext.Resource.LabelsEntry labels = 4;
+  }
+
+  .google.rpc.context.AttributeContext.Peer origin = 7;
+  .google.rpc.context.AttributeContext.Peer source = 1;
+  .google.rpc.context.AttributeContext.Peer destination = 2;
+  .google.rpc.context.AttributeContext.Request request = 3;
+  .google.rpc.context.AttributeContext.Response response = 4;
+  .google.rpc.context.AttributeContext.Resource resource = 5;
+  .google.rpc.context.AttributeContext.Api api = 6;
+}
+

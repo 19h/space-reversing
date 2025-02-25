@@ -1,0 +1,12 @@
+*.exe
+*.dll
+*.a
+*.so
+frida-trace
+gumrs
+pnpm-lock.yaml
+node_modules
+loginData.json
+merged_descriptor_set.pb
+.vscode
+

@@ -1,0 +1,252 @@
+syntax = "proto3";
+
+package grpc.gateway.protoc_gen_openapiv2.options;
+
+option go_package = "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options";
+
+import "google/protobuf/struct.proto";
+
+message Swagger {
+  reserved 8;
+  reserved 9;
+  reserved 13;
+  message ResponsesEntry {
+    string key = 1;
+    .grpc.gateway.protoc_gen_openapiv2.options.Response value = 2;
+  }
+
+  message ExtensionsEntry {
+    string key = 1;
+    .google.protobuf.Value value = 2;
+  }
+
+  string swagger = 1;
+  .grpc.gateway.protoc_gen_openapiv2.options.Info info = 2;
+  string host = 3;
+  string base_path = 4;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Scheme schemes = 5;
+  repeated string consumes = 6;
+  repeated string produces = 7;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Swagger.ResponsesEntry responses = 10;
+  .grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions security_definitions = 11;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement security = 12;
+  .grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation external_docs = 14;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Swagger.ExtensionsEntry extensions = 15;
+}
+
+message Operation {
+  reserved 8;
+  message ResponsesEntry {
+    string key = 1;
+    .grpc.gateway.protoc_gen_openapiv2.options.Response value = 2;
+  }
+
+  message ExtensionsEntry {
+    string key = 1;
+    .google.protobuf.Value value = 2;
+  }
+
+  repeated string tags = 1;
+  string summary = 2;
+  string description = 3;
+  .grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation external_docs = 4;
+  string operation_id = 5;
+  repeated string consumes = 6;
+  repeated string produces = 7;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Operation.ResponsesEntry responses = 9;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Scheme schemes = 10;
+  bool deprecated = 11;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement security = 12;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Operation.ExtensionsEntry extensions = 13;
+}
+
+message Response {
+  reserved 3;
+  message ExamplesEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  message ExtensionsEntry {
+    string key = 1;
+    .google.protobuf.Value value = 2;
+  }
+
+  string description = 1;
+  .grpc.gateway.protoc_gen_openapiv2.options.Schema schema = 2;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Response.ExamplesEntry examples = 4;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Response.ExtensionsEntry extensions = 5;
+}
+
+message Info {
+  message ExtensionsEntry {
+    string key = 1;
+    .google.protobuf.Value value = 2;
+  }
+
+  string title = 1;
+  string description = 2;
+  string terms_of_service = 3;
+  .grpc.gateway.protoc_gen_openapiv2.options.Contact contact = 4;
+  .grpc.gateway.protoc_gen_openapiv2.options.License license = 5;
+  string version = 6;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Info.ExtensionsEntry extensions = 7;
+}
+
+message Contact {
+  string name = 1;
+  string url = 2;
+  string email = 3;
+}
+
+message License {
+  string name = 1;
+  string url = 2;
+}
+
+message ExternalDocumentation {
+  string description = 1;
+  string url = 2;
+}
+
+message Schema {
+  reserved 4;
+  .grpc.gateway.protoc_gen_openapiv2.options.JSONSchema json_schema = 1;
+  string discriminator = 2;
+  bool read_only = 3;
+  .grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation external_docs = 5;
+  string example = 6;
+}
+
+message JSONSchema {
+  reserved 1;
+  reserved 2;
+  reserved 4;
+  reserved 9;
+  reserved 18;
+  reserved 19;
+  reserved 23;
+  reserved 27;
+  reserved 28;
+  reserved 29;
+  reserved 30 to 33;
+  reserved 36 to 41;
+  reserved 42;
+  reserved 43 to 45;
+  enum JSONSchemaSimpleTypes {
+    UNKNOWN = 0;
+    ARRAY = 1;
+    BOOLEAN = 2;
+    INTEGER = 3;
+    NULL = 4;
+    NUMBER = 5;
+    OBJECT = 6;
+    STRING = 7;
+  }
+
+  string ref = 3;
+  string title = 5;
+  string description = 6;
+  string default = 7;
+  bool read_only = 8;
+  double multiple_of = 10;
+  double maximum = 11;
+  bool exclusive_maximum = 12;
+  double minimum = 13;
+  bool exclusive_minimum = 14;
+  uint64 max_length = 15;
+  uint64 min_length = 16;
+  string pattern = 17;
+  uint64 max_items = 20;
+  uint64 min_items = 21;
+  bool unique_items = 22;
+  uint64 max_properties = 24;
+  uint64 min_properties = 25;
+  repeated string required = 26;
+  repeated string array = 34;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.JSONSchemaSimpleTypes type = 35;
+}
+
+message Tag {
+  reserved 1;
+  string description = 2;
+  .grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation external_docs = 3;
+}
+
+message SecurityDefinitions {
+  message SecurityEntry {
+    string key = 1;
+    .grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme value = 2;
+  }
+
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions.SecurityEntry security = 1;
+}
+
+message SecurityScheme {
+  message ExtensionsEntry {
+    string key = 1;
+    .google.protobuf.Value value = 2;
+  }
+
+  enum Type {
+    TYPE_INVALID = 0;
+    TYPE_BASIC = 1;
+    TYPE_API_KEY = 2;
+    TYPE_OAUTH2 = 3;
+  }
+
+  enum In {
+    IN_INVALID = 0;
+    IN_QUERY = 1;
+    IN_HEADER = 2;
+  }
+
+  enum Flow {
+    FLOW_INVALID = 0;
+    FLOW_IMPLICIT = 1;
+    FLOW_PASSWORD = 2;
+    FLOW_APPLICATION = 3;
+    FLOW_ACCESS_CODE = 4;
+  }
+
+  .grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.Type type = 1;
+  string description = 2;
+  string name = 3;
+  .grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.In in = 4;
+  .grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.Flow flow = 5;
+  string authorization_url = 6;
+  string token_url = 7;
+  .grpc.gateway.protoc_gen_openapiv2.options.Scopes scopes = 8;
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.ExtensionsEntry extensions = 9;
+}
+
+message SecurityRequirement {
+  message SecurityRequirementValue {
+    repeated string scope = 1;
+  }
+
+  message SecurityRequirementEntry {
+    string key = 1;
+    .grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue value = 2;
+  }
+
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementEntry security_requirement = 1;
+}
+
+message Scopes {
+  message ScopeEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  repeated .grpc.gateway.protoc_gen_openapiv2.options.Scopes.ScopeEntry scope = 1;
+}
+
+enum Scheme {
+  UNKNOWN = 0;
+  HTTP = 1;
+  HTTPS = 2;
+  WS = 3;
+  WSS = 4;
+}
+

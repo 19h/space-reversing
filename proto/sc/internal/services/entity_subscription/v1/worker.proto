@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_subscription.v1;
+
+import "google/protobuf/any.proto";
+
+message EnqueuedRequest {
+  string name = 1;
+  .sc.internal.services.entity_subscription.v1.EnqueuedRequestBody body = 2;
+}
+
+message EnqueuedRequestBody {
+  string requester_id = 1;
+  .google.protobuf.Any body = 2;
+  string command_id = 3;
+  string front_end_id = 4;
+}
+

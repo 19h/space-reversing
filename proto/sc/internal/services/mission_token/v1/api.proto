@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_token.v1;
+
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service MissionTokenService {
+  rpc QueryTokens (.sc.internal.services.mission_token.v1.QueryTokensRequest) returns (.sc.internal.services.mission_token.v1.QueryTokensResponse) {}
+  rpc UpsertTokens (.sc.internal.services.mission_token.v1.UpsertTokensRequest) returns (.sc.internal.services.mission_token.v1.UpsertTokensResponse) {}
+  rpc RemoveTokens (.sc.internal.services.mission_token.v1.RemoveTokensRequest) returns (.sc.internal.services.mission_token.v1.RemoveTokensResponse) {}
+  rpc QueryTokenLogs (.sc.internal.services.mission_token.v1.QueryTokenLogsRequest) returns (.sc.internal.services.mission_token.v1.QueryTokenLogsResponse) {}
+}
+
+message QueryTokensRequest {
+  repeated string owner_urns = 1;
+}
+
+message QueryTokensResponse {
+  repeated .sc.external.common.mission.v1.MissionToken tokens = 2;
+}
+
+message UpsertTokensRequest {
+  message TokenDetails {
+    string id = 1;
+    .google.protobuf.Timestamp expiry = 2;
+    string reason = 3;
+    optional int32 count = 4;
+  }
+
+  message Body {
+    string owner_urn = 1;
+    repeated .sc.internal.services.mission_token.v1.UpsertTokensRequest.TokenDetails tokens = 2;
+  }
+
+  repeated .sc.internal.services.mission_token.v1.UpsertTokensRequest.Body body = 1;
+}
+
+message UpsertTokensResponse {
+}
+
+message RemoveTokensRequest {
+  message Body {
+    string owner_urn = 1;
+    repeated string token_ids = 2;
+    string reason = 3;
+    repeated string remove_all_token_ids = 4;
+  }
+
+  repeated .sc.internal.services.mission_token.v1.RemoveTokensRequest.Body body = 1;
+}
+
+message RemoveTokensResponse {
+}
+
+message QueryTokenLogsRequest {
+  repeated string owner_urns = 1;
+  repeated string token_ids = 2;
+  .sc.external.common.api.v1.PaginationArguments pagination = 3;
+  .sc.external.common.api.v1.PaginationSort sort = 4;
+}
+
+message QueryTokenLogsResponse {
+  repeated .sc.external.common.mission.v1.MissionTokenLog logs = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+

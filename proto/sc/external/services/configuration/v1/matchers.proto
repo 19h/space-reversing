@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sc.external.services.configuration.v1;
+
+message ConfigMatchers {
+  string environment = 1;
+  string session_uuid = 2;
+  string host_uuid = 3;
+  string product = 4;
+  string branch = 5;
+  string build_cl = 6;
+}
+

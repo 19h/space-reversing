@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sc.game.shard_sup.v1;
+
+import "google/protobuf/any.proto";
+
+message Hello {
+  string service_id = 1;
+  string network_node_id = 2;
+  string application_name = 3;
+}
+
+message ConnectInfo {
+  string network_node_id = 1;
+  string session_id = 2;
+  string address = 3;
+  .google.protobuf.Any construct_data = 4;
+  string replicant_service_id = 5;
+}
+
+message ForeignStow {
+  repeated uint64 entity_ids = 1;
+}
+

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sc.external.services.push.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+service PushService {
+  rpc Listen (stream .sc.external.services.push.v1.ListenRequest) returns (stream .sc.external.services.push.v1.ListenResponse) {}
+}
+
+message ListenRequest {
+  repeated .sc.external.services.push.v1.PushCommand commands = 1;
+}
+
+message ListenResponse {
+  repeated .sc.external.services.push.v1.PushEnvelope envelopes = 1;
+}
+

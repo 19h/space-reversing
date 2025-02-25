@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package sc.internal.services.identity.v1;
+
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/identity/v1/player.proto";
+
+message AccountPropertyFilter {
+  .sc.external.common.api.v1.PropertyFilter.ComparisonOperator operator = 1;
+  oneof property {
+    uint32 id = 2;
+    string urn = 3;
+    string nickname = 4;
+    string display_name = 5;
+    string player_id = 6;
+  }
+}
+
+message AccountFilter {
+  oneof filter_type {
+    .sc.internal.services.identity.v1.AccountCompositeFilter composite_filter = 1;
+    .sc.internal.services.identity.v1.AccountPropertyFilter property_filter = 2;
+  }
+}
+
+message AccountCompositeFilter {
+  .sc.external.common.api.v1.CompositeFilter.LogicalOperator operator = 1;
+  repeated .sc.internal.services.identity.v1.AccountFilter filters = 2;
+}
+
+message PlayerPropertyFilter {
+  .sc.external.common.api.v1.PropertyFilter.ComparisonOperator operator = 1;
+  oneof property {
+    uint64 geid = 2;
+    string urn = 3;
+    string account_urn = 4;
+    .sc.external.services.identity.v1.Player.State state = 5;
+  }
+}
+
+message PlayerFilter {
+  oneof filter_type {
+    .sc.internal.services.identity.v1.PlayerCompositeFilter composite_filter = 1;
+    .sc.internal.services.identity.v1.PlayerPropertyFilter property_filter = 2;
+  }
+}
+
+message PlayerCompositeFilter {
+  .sc.external.common.api.v1.CompositeFilter.LogicalOperator operator = 1;
+  repeated .sc.internal.services.identity.v1.PlayerFilter filters = 2;
+}
+

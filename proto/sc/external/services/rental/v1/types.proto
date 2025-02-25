@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sc.external.services.rental.v1;
+
+message Rental {
+  string id = 1;
+  .sc.external.services.rental.v1.RentalStatus status = 2;
+  uint64 created_at = 3;
+  uint64 began_at = 4;
+  uint64 expire_at = 5;
+  uint32 duration = 6;
+  string account_urn = 7;
+  string player_urn = 8;
+  string entitlement_urn = 9;
+  uint32 renewals = 10;
+}
+
+enum RentalStatus {
+  RENTAL_STATUS_UNSPECIFIED = 0;
+  RENTAL_STATUS_AVAILABLE = 1;
+  RENTAL_STATUS_ACTIVE = 2;
+  RENTAL_STATUS_FINISHED = 3;
+}
+

@@ -1,0 +1,416 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/rpc/status/status.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/entitygraph/v1/entity_commands.proto";
+import "sc/external/services/entitygraph/v1/container_commands.proto";
+import "sc/external/services/entitygraph/v1/inventory_commands.proto";
+import "sc/external/services/entitygraph/v1/query.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/api/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+
+message EntityMutationStreamRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityGraphCommand commands = 5;
+}
+
+message EntityMutationStreamResponseBody {
+  string id = 1;
+  bool success = 2;
+  .google.rpc.Status status = 3;
+  .sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 4;
+}
+
+message LoadAllRequestBody {
+  string shard_id = 1;
+}
+
+message LoadAllResponseBody {
+  repeated .sc.external.services.entitygraph.v1.EntityGraph graphs = 1;
+  repeated .sc.external.services.entitygraph.v1.EntitySnapshot snapshots = 2;
+}
+
+message GetEntitiesOwnersRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  repeated string entity_ids = 2;
+}
+
+message GetEntitiesOwnersResponseBody {
+  repeated .sc.external.services.entitygraph.v1.EntityOwner entity_owners = 1;
+}
+
+message ChangeInventoryConfigurationRequestBody {
+  .sc.external.services.entitygraph.v1.TransMutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.ChangeInventoryConfigurationCommand command = 2;
+}
+
+message ChangeInventoryConfigurationResponseBody {
+}
+
+message StowRequestBody {
+  .sc.external.services.entitygraph.v1.TransMutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.StowCommand stow = 2;
+  string from_shard_id = 3;
+}
+
+message StowResponseBody {
+  string id = 1;
+}
+
+message UnstowRequestBody {
+  .sc.external.services.entitygraph.v1.TransMutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.UnstowCommand unstow = 2;
+  string to_shard_id = 3;
+}
+
+message UnstowResponseBody {
+  string id = 1;
+}
+
+message BuryRequestBody {
+  .sc.external.services.entitygraph.v1.TransMutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.BuryCommand bury = 2;
+  .sc.external.services.entitygraph.v1.Scope from = 3;
+}
+
+message BuryResponseBody {
+  string id = 1;
+}
+
+message SnapshotQueryRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.SnapshotQuery query = 2;
+}
+
+message SnapshotQueryResponseBody {
+  message EntitySnapshotResults {
+    .sc.external.services.entitygraph.v1.EntitySnapshot snapshot = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SnapshotQueryResponseBody.EntitySnapshotResults results = 1;
+}
+
+message CreateMetaRecordsRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.MetaRecord records = 2;
+}
+
+message CreateMetaRecordsResponseBody {
+}
+
+message QueryMetaRecordsRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.MetaRecordsQuery query = 2;
+}
+
+message QueryMetaRecordsResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitygraph.v1.MetaRecord results = 2;
+}
+
+message EraseMetaRecordsRequestBody {
+  message Body {
+    string key = 1;
+    string kind = 2;
+    uint32 generation = 3;
+  }
+
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.EraseMetaRecordsRequestBody.Body erasures = 2;
+}
+
+message EraseMetaRecordsResponseBody {
+}
+
+message CreateEntityClassesRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityClass entity_classes = 2;
+}
+
+message CreateEntityClassesResponseBody {
+}
+
+message EraseEntityClassesRequestBody {
+  message Body {
+    string guid = 1;
+    uint32 generation = 2;
+  }
+
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.EraseEntityClassesRequestBody.Body erasures = 2;
+}
+
+message EraseEntityClassesResponseBody {
+}
+
+message QueryEntityClassesRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.EntityClassesQuery query = 2;
+}
+
+message QueryEntityClassesResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityClass results = 2;
+}
+
+message CreateShardRequestBody {
+  uint32 generation = 1;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 2;
+  string shard_id = 3;
+  .sc.external.common.network.v1.Region region = 4;
+  string host = 5;
+}
+
+message CreateShardResponseBody {
+  .sc.external.services.entitygraph.v1.Shard shard = 1;
+}
+
+message DestroyShardRequestBody {
+  string shard_id = 1;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 2;
+}
+
+message DestroyShardResponseBody {
+}
+
+message GetShardRequestBody {
+  string shard_id = 1;
+}
+
+message GetShardResponseBody {
+  .sc.external.services.entitygraph.v1.Shard shard = 1;
+}
+
+message AcquireShardRequestBody {
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 1;
+  repeated .sc.external.common.network.v1.Region regions = 2;
+}
+
+message AcquireShardResponseBody {
+  .sc.external.services.entitygraph.v1.Shard shard = 1;
+}
+
+message ChangeShardStatusRequestBody {
+  string shard_id = 1;
+  .sc.external.services.entitygraph.v1.ShardStatus status = 2;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 3;
+}
+
+message ChangeShardStatusResponseBody {
+}
+
+message StowShardRequestBody {
+  string shard_id = 1;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 2;
+  bool force = 3;
+}
+
+message StowShardResponseBody {
+  reserved "stowed_ship_count";
+  reserved "failed_ship_count";
+  reserved "ship_errors";
+  reserved 2;
+  reserved 4;
+  reserved 6;
+  message StowError {
+    string name = 1;
+    string message = 2;
+    string geid = 3;
+  }
+
+  uint32 stowed_player_count = 1;
+  uint32 failed_player_count = 3;
+  repeated .sc.external.services.entitygraph.v1.StowShardResponseBody.StowError player_errors = 5;
+  uint32 stowed_entity_count = 7;
+  uint32 failed_entity_count = 8;
+  repeated .sc.external.services.entitygraph.v1.StowShardResponseBody.StowError entity_errors = 9;
+}
+
+message QueryShardsRequestBody {
+  .sc.external.services.entitygraph.v1.ShardQuery query = 1;
+}
+
+message QueryShardsResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitygraph.v1.Shard results = 2;
+}
+
+message RepairShardRequestBody {
+  string shard_id = 1;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 2;
+  bool remove_orphaned_edges = 3;
+  bool remove_orphaned_nodes = 4;
+}
+
+message RepairShardResponseBody {
+}
+
+message RepairShardSchemaRequestBody {
+  string shard_id = 1;
+  .sc.external.services.entitygraph.v1.ShardArguments arguments = 2;
+}
+
+message RepairShardSchemaResponseBody {
+}
+
+message MutateContainerGraphRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.ContainerGraphCommand commands = 2;
+}
+
+message MutateContainerGraphResponseBody {
+}
+
+message ContainerMutationStreamRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.ContainerGraphCommand commands = 2;
+}
+
+message ContainerMutationStreamResponseBody {
+  string id = 1;
+  bool success = 2;
+  .google.rpc.Status status = 3;
+  .sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 4;
+}
+
+message ContainerQueryRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.ContainerGraphQuery query = 2;
+}
+
+message ContainerQueryResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  .sc.external.services.entitygraph.v1.ContainerGraph results = 2;
+}
+
+message ContainerQueryStreamRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.ContainerGraphStreamQuery query = 2;
+  int32 batch_size = 3;
+}
+
+message ContainerQueryStreamResponseBody {
+  .sc.external.services.entitygraph.v1.ContainerGraph results = 1;
+}
+
+message MoveRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.MoveCommand move = 2;
+}
+
+message MoveResponseBody {
+}
+
+message GetInventoriesRequestBody {
+  string owner_id = 1;
+}
+
+message GetInventoriesResponseBody {
+  repeated .sc.external.services.entitygraph.v1.Node inventories = 1;
+}
+
+message EntityQueryRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.EntityGraphQuery query = 2;
+}
+
+message EntityQueryResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  .sc.external.services.entitygraph.v1.EntityGraph results = 2;
+  repeated .sc.external.services.entitygraph.v1.EntitySnapshot snapshots = 3;
+  repeated .sc.external.services.entitygraph.v1.EntityClass entity_classes = 4;
+}
+
+message EntityQueryStreamRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  .sc.external.services.entitygraph.v1.EntityGraphStreamQuery query = 2;
+  int32 batch_size = 3;
+}
+
+message EntityQueryStreamResponseBody {
+  .sc.external.services.entitygraph.v1.EntityGraph results = 1;
+  repeated .sc.external.services.entitygraph.v1.EntitySnapshot snapshots = 2;
+  repeated .sc.external.services.entitygraph.v1.EntityClass entity_classes = 3;
+}
+
+message MutateEntitiesRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityGraphCommand commands = 5;
+}
+
+message MutateEntitiesResponseBody {
+}
+
+message MutateInventoriesRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  repeated .sc.external.services.entitygraph.v1.InventoryCommand commands = 2;
+}
+
+message MutateInventoriesResponseBody {
+}
+
+message InventoryQueryRequestBody {
+  .sc.external.services.entitygraph.v1.InventoryQuery query = 1;
+}
+
+message InventoryQueryResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitygraph.v1.Inventory results = 2;
+}
+
+message MeltRequestBody {
+  .sc.external.services.entitygraph.v1.TransMutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.MeltCommand melt = 2;
+}
+
+message MeltResponseBody {
+}
+
+message GetOverloadControlMetricsRequestBody {
+  string shard_id = 1;
+}
+
+message GetOverloadControlMetricsResponseBody {
+  .sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 1;
+}
+
+message GetEntitiesRootsRequestBody {
+  .sc.external.services.entitygraph.v1.Scope scope = 1;
+  repeated string entity_ids = 2;
+  bool tree = 3;
+  bool snapshots = 4;
+  bool entity_classes = 5;
+}
+
+message GetEntitiesRootsResponseBody {
+  message Body {
+    string entity_id = 1;
+    .sc.external.services.entitygraph.v1.Node root = 2;
+    .sc.external.services.entitygraph.v1.EntityGraph graph = 3;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.GetEntitiesRootsResponseBody.Body entity_roots = 1;
+  repeated .sc.external.services.entitygraph.v1.EntitySnapshot snapshots = 2;
+  repeated .sc.external.services.entitygraph.v1.EntityClass entity_classes = 3;
+}
+
+message GetEntityStowContextsRequestBody {
+  .sc.external.services.entitygraph.v1.EntityStowContextQuery query = 1;
+}
+
+message GetEntityStowContextsResponseBody {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityStowContext results = 2;
+}
+
+message MoveAllRequestBody {
+  .sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+  .sc.external.services.entitygraph.v1.MoveAllCommand move = 2;
+}
+
+message MoveAllResponseBody {
+}
+

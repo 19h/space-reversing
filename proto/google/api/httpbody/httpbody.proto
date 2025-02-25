@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package google.api;
+
+option java_package = "com.google.api";
+option java_outer_classname = "HttpBodyProto";
+option java_multiple_files = true;
+option go_package = "google/api/httpbody;httpbody";
+option objc_class_prefix = "GAPI";
+
+import "google/protobuf/any.proto";
+
+message HttpBody {
+  string content_type = 1;
+  bytes data = 2;
+  repeated .google.protobuf.Any extensions = 3;
+}
+

@@ -1,0 +1,603 @@
+syntax = "proto2";
+
+package service_statistics;
+
+import "pbmatchmakingcommon.proto";
+
+message BattleRoyaleIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required bool won = 6;
+  required int32 flight_time = 7;
+  required bool disconnected = 8;
+  required string ship_type = 9;
+  required int32 damage_dealt = 10;
+  required int32 damage_taken = 11;
+  required int32 accuracy = 12;
+  required string fav_input_device = 13;
+  required string fav_weapon = 14;
+  required int32 earned_rec = 15;
+  optional int64 player_geid = 16;
+}
+
+message BattleRoyaleMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string match_map = 5;
+  repeated int64 player_geids = 6;
+}
+
+message DuelIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required bool won = 6;
+  required int32 flight_time = 7;
+  required bool disconnected = 8;
+  required string ship_type = 9;
+  required int32 damage_dealt = 10;
+  required int32 damage_taken = 11;
+  required int32 accuracy = 12;
+  required string fav_input_device = 13;
+  required string fav_weapon = 14;
+  required int32 earned_rec = 15;
+  optional int64 player_geid = 16;
+}
+
+message DuelMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string match_map = 5;
+  repeated int64 player_geids = 6;
+}
+
+message WeaponStats {
+  required string weapon_name = 1;
+  required int32 shots_fired = 2;
+  required int32 hits = 3;
+  required float accuracy = 4;
+  required int32 head_shots = 5;
+  required int32 time_used = 6;
+}
+
+message ArmorStats {
+  required string armor_type = 1;
+  required int32 time_used = 2;
+}
+
+message StarMarineControlIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 melee_kills = 4;
+  required int32 bleed_out_kills = 5;
+  required int32 team_kills = 6;
+  required int32 first_blood_kills = 7;
+  required int32 ace_status_achieved = 8;
+  required int32 deaths = 9;
+  required int32 captures = 10;
+  required int32 rounds_won = 11;
+  required int32 rounds_lost = 12;
+  required int32 rounds_draw = 13;
+  required int32 earned_rec = 14;
+  required bool left_early = 15;
+  repeated .service_statistics.WeaponStats weapons_used = 16;
+  repeated .service_statistics.ArmorStats armor_used = 17;
+  required int32 score = 18;
+  required int32 play_time = 19;
+  required int32 kill_streaks_achieved = 20;
+  optional int64 player_geid = 21;
+}
+
+message StarMarineControlMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string team_one = 4;
+  repeated string team_two = 5;
+  required int32 team_won = 6;
+  required string mvp_player_id = 7;
+  required int32 team_one_score = 8;
+  required int32 team_two_score = 9;
+  required string match_map = 10;
+  repeated int64 team_one_player_geids = 11;
+  repeated int64 team_two_player_geids = 12;
+  optional int64 mvp_player_geid = 13;
+}
+
+message StarMarineEliminationIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 melee_kills = 4;
+  required int32 bleed_out_kills = 5;
+  required int32 first_blood_kills = 6;
+  required int32 ace_status_achieved = 7;
+  required int32 deaths = 8;
+  required bool won = 9;
+  required int32 earned_rec = 10;
+  required bool left_early = 11;
+  repeated .service_statistics.WeaponStats weapons_used = 12;
+  repeated .service_statistics.ArmorStats armor_used = 13;
+  required int32 score = 14;
+  required int32 play_time = 15;
+  required bool draw = 16;
+  required int32 kill_streaks_achieved = 17;
+  optional int64 player_geid = 18;
+}
+
+message StarMarineEliminationMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string mvp_player_id = 5;
+  required string match_map = 6;
+  repeated int64 player_geids = 7;
+  optional int64 mvp_player_geid = 8;
+}
+
+message FPSGunGameIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 melee_kills = 4;
+  required int32 bleed_out_kills = 5;
+  required int32 first_blood_kills = 6;
+  required int32 ace_status_achieved = 7;
+  required int32 deaths = 8;
+  required bool won = 9;
+  required int32 earned_rec = 10;
+  required bool left_early = 11;
+  repeated .service_statistics.WeaponStats weapons_used = 12;
+  repeated .service_statistics.ArmorStats armor_used = 13;
+  required int32 score = 14;
+  required int32 play_time = 15;
+  required bool draw = 16;
+  required int32 kill_streaks_achieved = 17;
+  optional int64 player_geid = 18;
+}
+
+message FPSGunGameMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string mvp_player_id = 5;
+  required string match_map = 6;
+  repeated int64 player_geids = 7;
+  optional int64 mvp_player_geid = 8;
+}
+
+message SquadronBattleIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required int32 team = 6;
+  required bool won = 7;
+  required int32 flight_time = 8;
+  required bool disconnected = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required int32 accuracy = 13;
+  required string fav_input_device = 14;
+  required string fav_weapon = 15;
+  required int32 earned_rec = 16;
+  optional int64 player_geid = 17;
+}
+
+message SquadronBattleMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string team_one = 4;
+  repeated string team_two = 5;
+  required int32 team_won = 6;
+  required string match_map = 7;
+  repeated int64 team_one_player_geids = 8;
+  repeated int64 team_two_player_geids = 9;
+}
+
+message CaptureTheCoreIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required int32 team = 6;
+  required bool won = 7;
+  required int32 flight_time = 8;
+  required bool disconnected = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required int32 accuracy = 13;
+  required int32 core_pickups = 14;
+  required int32 core_captures = 15;
+  required int32 core_carrier_kills = 16;
+  required string fav_input_device = 17;
+  required string fav_weapon = 18;
+  required int32 earned_rec = 19;
+  optional int64 player_geid = 20;
+}
+
+message CaptureTheCoreMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string team_one = 4;
+  repeated string team_two = 5;
+  required int32 team_won = 6;
+  required int32 team_one_score = 7;
+  required int32 team_two_score = 8;
+  required string match_map = 9;
+  repeated int64 team_one_player_geids = 10;
+  repeated int64 team_two_player_geids = 11;
+}
+
+message ConquestIndividualStats {
+}
+
+message ConquestMatchStats {
+}
+
+message VanduulSwarmIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required bool won = 6;
+  required int32 flight_time = 7;
+  required bool disconnected = 8;
+  required int32 num_waves = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required int32 accuracy = 13;
+  required string fav_input_device = 14;
+  required string fav_weapon = 15;
+  optional int64 player_geid = 16;
+}
+
+message VanduulSwarmMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required int32 num_waves = 5;
+  required string match_map = 6;
+  repeated int64 player_geids = 7;
+}
+
+message RaceIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 score = 3;
+  required int32 position = 4;
+  required int32 race_time = 5;
+  required int32 best_lap = 6;
+  required bool disconnected = 7;
+  required string ship_type = 8;
+  required string fav_input_device = 9;
+  required int32 earned_rec = 10;
+  optional int64 player_geid = 11;
+}
+
+message RaceMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string match_map = 5;
+  repeated int64 player_geids = 6;
+}
+
+message DeathRaceIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required int32 position = 6;
+  required int32 race_time = 7;
+  required int32 best_lap = 8;
+  required bool disconnected = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required string fav_input_device = 13;
+  required string fav_weapon = 14;
+  required int32 earned_rec = 15;
+  optional int64 player_geid = 16;
+}
+
+message DeathRaceMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required string match_map = 5;
+  repeated int64 player_geids = 6;
+}
+
+message VanduulSwarmCoopIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required bool won = 6;
+  required int32 flight_time = 7;
+  required bool disconnected = 8;
+  required int32 num_waves = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required int32 accuracy = 13;
+  required string fav_input_device = 14;
+  required string fav_weapon = 15;
+  required int32 earned_rec = 16;
+  optional int64 player_geid = 17;
+}
+
+message VanduulSwarmCoopMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required int32 num_waves = 5;
+  required string match_map = 6;
+  repeated int64 player_geids = 7;
+}
+
+message BattleRoyalePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message DuelPlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message SquadronBattlePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message CaptureTheCorePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message VanduulSwarmPlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message DeathRacePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_points = 7;
+  optional int64 player_geid = 8;
+}
+
+message RacePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_points = 7;
+  optional int64 player_geid = 8;
+}
+
+message VanduulSwarmCoopPlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message StarMarinePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_time_played = 6;
+  required int32 accrued_points = 7;
+  optional int64 player_geid = 8;
+}
+
+message FPSGunGamePlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_time_played = 6;
+  required int32 accrued_points = 7;
+  optional int64 player_geid = 8;
+}
+
+message PirateSwarmIndividualStats {
+  required string match_id = 1;
+  required string player_id = 2;
+  required int32 kills = 3;
+  required int32 deaths = 4;
+  required int32 score = 5;
+  required bool won = 6;
+  required int32 flight_time = 7;
+  required bool disconnected = 8;
+  required int32 num_waves = 9;
+  required string ship_type = 10;
+  required int32 damage_dealt = 11;
+  required int32 damage_taken = 12;
+  required int32 accuracy = 13;
+  required string fav_input_device = 14;
+  required string fav_weapon = 15;
+  required int32 earned_rec = 16;
+  optional int64 player_geid = 17;
+}
+
+message PirateSwarmMatchStats {
+  required string match_id = 1;
+  required int64 date_time = 2;
+  required int32 match_duration = 3;
+  repeated string player_ids = 4;
+  required int32 num_waves = 5;
+  required string match_map = 6;
+  repeated int64 player_geids = 7;
+}
+
+message PirateSwarmPlayerStats {
+  required string player_id = 1;
+  required int32 lifetime_kills = 2;
+  required int32 lifetime_deaths = 3;
+  required int32 ranking = 4;
+  required int32 total_games_played = 5;
+  required int32 total_flight_time = 6;
+  required int32 accrued_score = 7;
+  optional int64 player_geid = 8;
+}
+
+message RPCStatisticsReport {
+  enum GameType {
+    EA_BattleRoyale = 0;
+    EA_FreeFlight = 1;
+    EA_PirateSwarm = 2;
+    EA_SquadronBattle = 3;
+    EA_VanduulSwarm = 4;
+    EA_ClassicRace = 5;
+    EA_Elimination = 6;
+    EA_TeamElimination = 7;
+    EA_Control = 8;
+    EA_TheatersOfWar = 9;
+    EA_IterativeTesting = 10;
+    EA_Duel = 11;
+    EA_FPSGunGame = 12;
+    EA_Horde = 13;
+    EA_VanduulInvasion = 14;
+    EA_ExperimentalMode_1 = 15;
+    EA_ExperimentalMode_2 = 16;
+    EA_ExperimentalMode_3 = 17;
+    EA_ExperimentalMode_4 = 18;
+    EA_ExperimentalMode_5 = 19;
+    EA_ExperimentalMode_6 = 20;
+    EA_ExperimentalMode_7 = 21;
+    EA_ExperimentalMode_8 = 22;
+    EA_ExperimentalMode_9 = 23;
+    EA_ExperimentalMode_10 = 24;
+    EA_ExperimentalMode_11 = 25;
+    EA_ExperimentalMode_12 = 26;
+    EA_GravRace = 27;
+    SC_Default = 28;
+  }
+
+  required .service_statistics.RPCStatisticsReport.GameType game_type = 1;
+  required string server_version = 2;
+  repeated .service_statistics.VanduulSwarmIndividualStats vanduul_swarm_individual_stats = 3;
+  optional .service_statistics.VanduulSwarmMatchStats vanduul_swarm_match_stats = 4;
+  repeated .service_statistics.BattleRoyaleIndividualStats battle_royale_individual_stats = 5;
+  optional .service_statistics.BattleRoyaleMatchStats battle_royale_match_stats = 6;
+  repeated .service_statistics.SquadronBattleIndividualStats squadron_battle_individual_stats = 7;
+  optional .service_statistics.SquadronBattleMatchStats squadron_battle_match_stats = 8;
+  repeated .service_statistics.CaptureTheCoreIndividualStats capture_the_core_individual_stats = 9;
+  optional .service_statistics.CaptureTheCoreMatchStats capture_the_core_match_stats = 10;
+  repeated .service_statistics.ConquestIndividualStats conquest_individual_stats = 11;
+  optional .service_statistics.ConquestMatchStats conquest_match_stats = 12;
+  repeated .service_statistics.RaceIndividualStats race_individual_stats = 13;
+  optional .service_statistics.RaceMatchStats race_match_stats = 14;
+  repeated .service_statistics.DeathRaceIndividualStats death_race_individual_stats = 15;
+  optional .service_statistics.DeathRaceMatchStats death_race_match_stats = 16;
+  repeated .service_statistics.VanduulSwarmCoopIndividualStats vanduul_swarm_coop_individual_stats = 17;
+  optional .service_statistics.VanduulSwarmCoopMatchStats vanduul_swarm_coop_match_stats = 18;
+  optional .service_statistics.BattleRoyalePlayerStats battle_royale_player_stats = 19;
+  optional .service_statistics.SquadronBattlePlayerStats squadron_battle_player_stats = 20;
+  optional .service_statistics.CaptureTheCorePlayerStats capture_the_core_player_stats = 21;
+  optional .service_statistics.VanduulSwarmPlayerStats vanduul_swarm_player_stats = 22;
+  optional .service_statistics.DeathRacePlayerStats death_race_player_stats = 23;
+  optional .service_statistics.RacePlayerStats race_player_stats = 24;
+  optional .service_statistics.VanduulSwarmCoopPlayerStats vanduul_swarm_coop_player_stats = 25;
+  repeated .service_statistics.StarMarineControlIndividualStats star_marine_control_individual_stats = 26;
+  optional .service_statistics.StarMarineControlMatchStats star_marine_control_match_stats = 27;
+  optional .service_statistics.StarMarinePlayerStats star_marine_control_player_stats = 28;
+  repeated .service_statistics.PirateSwarmIndividualStats pirate_swarm_individual_stats = 29;
+  optional .service_statistics.PirateSwarmMatchStats pirate_swarm_match_stats = 30;
+  optional .service_statistics.PirateSwarmPlayerStats pirate_swarm_player_stats = 31;
+  repeated .service_statistics.StarMarineEliminationIndividualStats star_marine_elimination_individual_stats = 32;
+  optional .service_statistics.StarMarineEliminationMatchStats star_marine_elimination_match_stats = 33;
+  optional .service_statistics.StarMarinePlayerStats star_marine_elimination_player_stats = 34;
+  repeated .service_statistics.DuelIndividualStats duel_individual_stats = 35;
+  optional .service_statistics.DuelMatchStats duel_match_stats = 36;
+  optional .service_statistics.DuelPlayerStats duel_player_stats = 37;
+  repeated .service_statistics.FPSGunGameIndividualStats fpsgungame_individual_stats = 38;
+  optional .service_statistics.FPSGunGameMatchStats fpsgungame_match_stats = 39;
+  optional .service_statistics.FPSGunGamePlayerStats fpsgungame_player_stats = 40;
+}
+
+message RPCRecStatisticsRequest {
+  enum RequestType {
+    REPORT_REC_STATE_START = 1;
+    REPORT_REC_STATE_STOP = 2;
+    REPORT_REC_STATE_HEARTBEAT = 3;
+  }
+
+  required .service_statistics.RPCRecStatisticsRequest.RequestType request_type = 1;
+  repeated string rented_item_id = 2;
+  optional .cig.matchmaking.common.PlayerSessionInfo player_session_info = 3;
+}
+

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package google.logging.type;
+
+option java_package = "com.google.logging.type";
+option java_outer_classname = "HttpRequestProto";
+option java_multiple_files = true;
+option go_package = "google/logging/type;ltype";
+option csharp_namespace = "Google.Cloud.Logging.Type";
+
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/duration.proto";
+
+message HttpRequest {
+  string request_method = 1;
+  string request_url = 2;
+  int64 request_size = 3;
+  int32 status = 4;
+  int64 response_size = 5;
+  string user_agent = 6;
+  string remote_ip = 7;
+  string server_ip = 13;
+  string referer = 8;
+  .google.protobuf.Duration latency = 14;
+  bool cache_lookup = 11;
+  bool cache_hit = 9;
+  bool cache_validated_with_origin_server = 10;
+  int64 cache_fill_bytes = 12;
+  string protocol = 15;
+}
+

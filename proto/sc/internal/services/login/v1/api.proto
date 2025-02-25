@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package sc.internal.services.login.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/login/v1/query.proto";
+import "sc/external/services/login/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+service LoginService {
+  rpc GetQueueStats (.sc.internal.services.login.v1.GetQueueStatsRequest) returns (.sc.internal.services.login.v1.GetQueueStatsResponse) {}
+  rpc ConfigureQueue (.sc.internal.services.login.v1.ConfigureQueueRequest) returns (.sc.internal.services.login.v1.ConfigureQueueResponse) {}
+  rpc QueryPendingLogins (.sc.internal.services.login.v1.QueryPendingLoginsRequest) returns (.sc.internal.services.login.v1.QueryPendingLoginsResponse) {}
+  rpc QueryLoginLogs (.sc.internal.services.login.v1.QueryLoginLogsRequest) returns (.sc.internal.services.login.v1.QueryLoginLogsResponse) {}
+}
+
+message GetQueueStatsRequest {
+}
+
+message GetQueueStatsResponse {
+  message Queue {
+    .sc.external.services.login.v1.LoginQueue queue = 1;
+    .sc.external.services.login.v1.LoginQueueStats stats = 2;
+  }
+
+  repeated .sc.internal.services.login.v1.GetQueueStatsResponse.Queue queues = 1;
+}
+
+message ConfigureQueueRequest {
+  string queue_name = 1;
+  uint32 max_processing_queue_size = 2;
+  uint32 max_players_in_queue = 3;
+}
+
+message ConfigureQueueResponse {
+}
+
+message QueryPendingLoginsRequest {
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  string queue_name = 4;
+  .sc.internal.services.login.v1.QueueType queue_type = 5;
+  .sc.external.common.api.v1.Query query = 6;
+}
+
+message QueryPendingLoginsResponse {
+  repeated .sc.external.services.login.v1.LoginRequestStatus results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message QueryLoginLogsRequest {
+  .sc.internal.services.login.v1.LoginLogsQuery query = 1;
+}
+
+message QueryLoginLogsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.login.v1.LoginLogs results = 2;
+}
+
+enum QueueType {
+  QUEUE_TYPE_UNSPECIFIED = 0;
+  QUEUE_TYPE_LOGIN_QUEUE = 1;
+  QUEUE_TYPE_PROCESSING_QUEUE = 2;
+}
+

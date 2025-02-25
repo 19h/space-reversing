@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+message ReputationRequirement {
+  string organisation_urn = 1;
+  string scope_name = 2;
+  repeated string standing_ids = 3;
+}
+
+message TokenRequirement {
+  string id = 1;
+  int32 count = 2;
+}
+
+message ContractPrerequisites {
+  uint32 location_id = 1;
+  repeated .sc.external.common.mission.v1.TokenRequirement required_token = 2;
+  repeated .sc.external.common.mission.v1.TokenRequirement excluded_token = 3;
+  repeated .sc.external.common.mission.v1.ReputationRequirement required_reputation = 4;
+  repeated .sc.external.common.mission.v1.ReputationRequirement excluded_reputation = 5;
+  string shard_id = 6;
+  repeated string wallet_ids = 7;
+}
+
+message MissionContract {
+  string id = 1;
+  .sc.external.common.mission.v1.MissionTemplate mission_template = 2;
+  .sc.external.common.mission.v1.ContractPrerequisites prerequisites = 3;
+  .sc.external.common.mission.v1.ContractPrerequisites prerequisites_sharing = 4;
+  string contact_type = 5;
+  .google.protobuf.Timestamp expiration_time = 6;
+  repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 7;
+  uint32 count = 8;
+  bool suspendable = 9;
+}
+

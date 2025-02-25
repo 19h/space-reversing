@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package opentelemetry.proto.common.v1;
+
+option java_package = "io.opentelemetry.proto.common.v1";
+option java_outer_classname = "CommonProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/common/v1";
+
+message AnyValue {
+  oneof value {
+    string string_value = 1;
+    bool bool_value = 2;
+    int64 int_value = 3;
+    double double_value = 4;
+    .opentelemetry.proto.common.v1.ArrayValue array_value = 5;
+    .opentelemetry.proto.common.v1.KeyValueList kvlist_value = 6;
+    bytes bytes_value = 7;
+  }
+}
+
+message ArrayValue {
+  repeated .opentelemetry.proto.common.v1.AnyValue values = 1;
+}
+
+message KeyValueList {
+  repeated .opentelemetry.proto.common.v1.KeyValue values = 1;
+}
+
+message KeyValue {
+  string key = 1;
+  .opentelemetry.proto.common.v1.AnyValue value = 2;
+}
+
+message InstrumentationLibrary {
+  string name = 1;
+  string version = 2;
+}
+

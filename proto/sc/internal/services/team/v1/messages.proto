@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package sc.internal.services.team.v1;
+
+message PlayerKicker {
+  string custom_lobby_id = 1;
+  string player_urn = 2;
+}
+

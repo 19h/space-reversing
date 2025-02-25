@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+
+message ContainerGraphCommand {
+  oneof params {
+    .sc.external.services.entitygraph.v1.CreateContainerCommand create = 1;
+    .sc.external.services.entitygraph.v1.EraseContainerCommand erase = 2;
+  }
+}
+
+message CreateContainerCommand {
+  message Body {
+    .sc.external.services.entitygraph.v1.ContainerGraph graphs = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.CreateContainerCommand.Body creates = 1;
+}
+
+message EraseContainerCommand {
+  message Body {
+    uint64 geid = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.EraseContainerCommand.Body erasures = 1;
+}
+

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_document.v1;
+
+import "sc/external/services/entity_document/v1/types.proto";
+import "sc/external/services/entity_document/v1/documents.proto";
+import "sc/external/common/types/v1/loadout.proto";
+
+message EntityDocumentBody {
+  reserved "prisoner_sentence";
+  reserved "criminal_record";
+  reserved "player_insured_entities";
+  reserved "insurance_document";
+  reserved "player_home_inventory";
+  reserved "ship_last_spawn_location";
+  reserved 8;
+  reserved 9;
+  reserved 11;
+  reserved 12;
+  reserved 13;
+  reserved 17;
+  oneof class {
+    .sc.external.services.entity_document.v1.EntityTestDocument test = 1;
+    .sc.external.services.entity_document.v1.EntityClassArenaCommanderLoadoutsDocument entity_class_loadouts_ac = 2;
+    .sc.external.services.entity_document.v1.EntityClassStarMarineLoadoutsDocument entity_class_loadouts_ea = 3;
+    .sc.internal.services.entity_document.v1.EntityClassPULoadoutsDocument entity_class_loadouts_pu = 4;
+    .sc.external.services.entity_document.v1.EntityClassCharacterCustomizerDocument character_customizer_loadouts = 5;
+    .sc.external.services.entity_document.v1.PlayerHomeLocationDocument player_home_location = 6;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument player_spawn_location = 7;
+    .sc.internal.services.entity_document.v1.PersistentSnapshotsDocument persistent_snapshots = 10;
+    .sc.external.services.entity_document.v1.PlayerTutorialDocument player_tutorial = 14;
+    .sc.external.services.entity_document.v1.ShopLicensesDocument shop_licenses = 15;
+    .sc.external.services.entity_document.v1.PlayerCombatLogout combat_logout = 16;
+    .sc.external.services.entity_document.v1.PlayerWarehouseOrderDocument player_warehouse_order = 18;
+    .sc.external.services.entity_document.v1.VehicleStateDocument vehicle_state = 19;
+  }
+}
+
+message EntityDocument {
+  .sc.external.services.entity_document.v1.DocumentHeader header = 1;
+  .sc.internal.services.entity_document.v1.EntityDocumentBody body = 2;
+}
+
+message EntityClassPULoadoutsDocument {
+  .sc.external.common.types.v1.EntityClassLoadout insurance = 1;
+}
+
+message PersistentSnapshotsDocument {
+  message PersistentSnapshotEntry {
+    reserved "name";
+    reserved "bytes";
+    reserved 1;
+    reserved 2;
+    uint32 name_crc = 3;
+    uint32 type = 4;
+    uint32 flags = 5;
+    string snapshot = 6;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.PersistentSnapshotsDocument.PersistentSnapshotEntry persistent_snapshot_entries = 1;
+}
+
+message PlayerHomeInventoryDocument {
+  string home_inventory_id = 1;
+}
+

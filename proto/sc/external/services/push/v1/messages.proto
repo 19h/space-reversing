@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package sc.external.services.push.v1;
+
+import "sc/external/common/trace/v1/types.proto";
+import "google/protobuf/any.proto";
+
+message PushDestination {
+  repeated string addresses = 1;
+  repeated string topics = 2;
+}
+
+message PushControlMessage {
+  message SubscriptionEvent {
+    repeated string subscribed = 2;
+    repeated string unsubscribed = 3;
+  }
+
+  enum Command {
+    COMMAND_UNSPECIFIED = 0;
+    COMMAND_STREAM_OPENED = 1;
+    COMMAND_CLOSE_RECONNECT = 2;
+    COMMAND_EVENT = 4;
+  }
+
+  .sc.external.services.push.v1.PushControlMessage.Command command = 1;
+  oneof event {
+    .sc.external.services.push.v1.PushControlMessage.SubscriptionEvent subscription_event = 2;
+  }
+}
+
+message PushRetry {
+  uint64 until = 1;
+  uint32 max = 2;
+}
+
+message PublishRequest {
+  reserved 1;
+  .sc.external.services.push.v1.PushEnvelopeType type = 2;
+  repeated string addresses = 3;
+  repeated string topics = 4;
+  string transit = 5;
+  .sc.external.services.push.v1.PushMessagePriority priority = 6;
+  .sc.external.services.push.v1.PushRetry retry = 7;
+  repeated .sc.external.services.push.v1.PushMessage messages = 8;
+  bytes subscription_filter = 9;
+}
+
+message PushEnvelope {
+  string id = 1;
+  .sc.external.services.push.v1.PushEnvelopeType type = 2;
+  repeated string addresses = 3;
+  repeated string topics = 4;
+  string transit = 5;
+  .sc.external.services.push.v1.PushMessagePriority priority = 6;
+  .sc.external.services.push.v1.PushRetry retry = 7;
+  repeated .sc.external.services.push.v1.PushMessage messages = 8;
+  .sc.external.common.trace.v1.TraceContext trace_context = 9;
+  bytes subscription_filter = 10;
+}
+
+message PushMessage {
+  oneof data {
+    .sc.external.services.push.v1.PushControlMessage control = 3;
+    .google.protobuf.Any any = 4;
+  }
+}
+
+message PushCommand {
+  oneof command {
+    .sc.external.services.push.v1.SubscribeCommand subscribe = 1;
+    .sc.external.services.push.v1.UnsubscribeCommand unsubscribe = 2;
+    .sc.external.services.push.v1.AckCommand ack = 3;
+  }
+}
+
+message SubscribeCommand {
+  repeated string topics = 1;
+  string key = 2;
+}
+
+message UnsubscribeCommand {
+  repeated string topics = 1;
+}
+
+message AckCommand {
+  repeated string envelope_ids = 1;
+}
+
+message PushExampleMessage {
+  string message = 1;
+}
+
+enum PushMessagePriority {
+  PUSH_MESSAGE_PRIORITY_UNSPECIFIED = 0;
+  PUSH_MESSAGE_PRIORITY_NORMAL = 1;
+  PUSH_MESSAGE_PRIORITY_HIGH = 2;
+  PUSH_MESSAGE_PRIORITY_LOW = 3;
+}
+
+enum PushEnvelopeType {
+  PUSH_ENVELOPE_TYPE_UNSPECIFIED = 0;
+  PUSH_ENVELOPE_TYPE_MESSAGE = 1;
+  PUSH_ENVELOPE_TYPE_BROADCAST = 2;
+}
+

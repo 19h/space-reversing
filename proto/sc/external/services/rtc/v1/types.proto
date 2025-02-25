@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sc.external.services.rtc.v1;
+
+message Server {
+  string host = 1;
+  int32 port = 2;
+}
+
+message Channel {
+  string group_id = 1;
+  bool positional = 2;
+  .sc.external.services.rtc.v1.Server server = 4;
+  int64 created_at = 5;
+  string token = 6;
+}
+
+message Call {
+  string group_id = 1;
+  string caller_urn = 2;
+  string callee_urn = 3;
+}
+

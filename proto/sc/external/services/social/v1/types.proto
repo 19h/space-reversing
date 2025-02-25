@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package sc.external.services.social.v1;
+
+import "sc/external/services/presence/v1/types.proto";
+
+message Invitation {
+  message MetadataEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string id = 1;
+  string from_urn = 2;
+  string to_urn = 3;
+  string group_id = 4;
+  .sc.external.services.social.v1.GroupType group_type = 5;
+  repeated .sc.external.services.social.v1.Invitation.MetadataEntry metadata = 6;
+  int64 created_at = 7;
+}
+
+message GroupSettings {
+  int32 auto_leave_timeout = 1;
+  int32 min_member_count = 2;
+  int32 max_member_count = 3;
+  bool can_leave = 4;
+  bool requires_leader = 5;
+  bool unique_for_type = 6;
+  .sc.external.services.social.v1.RTCSettings rtc = 7;
+  .sc.external.services.social.v1.ChatSettings chat = 8;
+  .sc.external.services.social.v1.InviteMode invite_mode = 9;
+  bool presence_aware = 10;
+  int32 ttl = 11;
+}
+
+message RTCSettings {
+  bool enabled = 1;
+  bool positional = 2;
+}
+
+message ChatSettings {
+  bool enabled = 1;
+}
+
+message GroupMember {
+  string urn = 1;
+  string display_name = 2;
+  .sc.external.services.presence.v1.Status presence_status = 3;
+}
+
+message Group {
+  reserved "entity_subscription_group_urn";
+  reserved 9;
+  string id = 1;
+  string name = 2;
+  repeated .sc.external.services.social.v1.GroupMember members = 3;
+  string leader_urn = 4;
+  .sc.external.services.social.v1.GroupType type = 5;
+  .sc.external.services.social.v1.GroupSettings settings = 6;
+  int64 created_at = 7;
+  string parent_urn = 8;
+  repeated string moderators = 10;
+  repeated string ready_members = 11;
+  bool is_ready = 12;
+}
+
+message GroupMemberPreferences {
+  message PreferencesEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string group_id = 1;
+  string member_urn = 2;
+  repeated .sc.external.services.social.v1.GroupMemberPreferences.PreferencesEntry preferences = 3;
+}
+
+message Mute {
+  string group_id = 1;
+  string member_urn = 2;
+  bool chat = 3;
+  bool rtc = 4;
+}
+
+message GroupFilters {
+  repeated .sc.external.services.social.v1.GroupType types = 1;
+}
+
+message GroupExpiredEvent {
+  string group_id = 1;
+}
+
+message AutoLeaveTriggeredEvent {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+enum InviteMode {
+  INVITE_MODE_UNSPECIFIED = 0;
+  INVITE_MODE_NONE = 1;
+  INVITE_MODE_LEADER_ONLY = 2;
+  INVITE_MODE_ANYONE = 3;
+}
+
+enum GroupType {
+  GROUP_TYPE_UNSPECIFIED = 0;
+  GROUP_TYPE_SYSTEM = 1;
+  GROUP_TYPE_SERVER = 2;
+  GROUP_TYPE_GROUP = 3;
+  GROUP_TYPE_PARTY = 4;
+  GROUP_TYPE_DM = 5;
+  GROUP_TYPE_SHIP = 6;
+  GROUP_TYPE_TEAM = 7;
+  GROUP_TYPE_SQUAD = 8;
+  GROUP_TYPE_CUSTOM_LOBBY = 9;
+  GROUP_TYPE_MATCH = 10;
+}
+

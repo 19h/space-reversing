@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.Reputation;
+
+message MsgNpcRelationshipInfo {
+  required uint64 player_id = 1;
+  required uint64 npc_geid = 2;
+  required string attributes = 3;
+  required int32 numeral = 4;
+  required float f_value = 5;
+  required int32 version = 6;
+  optional uint64 created_date = 7;
+  optional uint64 last_update = 8;
+}
+
+message CMsgRequestNpcRelationship {
+  required uint64 player_id = 1;
+  required uint64 npc_geid = 2;
+  required uint64 ticket_id = 3;
+}
+
+message SMsgRequestNpcRelationshipResponse {
+  required int32 result_code = 1;
+  required uint64 player_id = 2;
+  required uint64 npc_geid = 3;
+  required uint64 ticket_id = 4;
+  repeated .cig.Protocols.Public.Reputation.MsgNpcRelationshipInfo npc_relationships = 5;
+}
+
+message CMsgUpdateNpcRelationship {
+  required uint64 player_id = 1;
+  required uint64 npc_geid = 2;
+  required .cig.Protocols.Public.Reputation.MsgNpcRelationshipInfo npc_relationship = 3;
+  required uint64 ticket_id = 4;
+}
+
+message SMsgUpdateNpcRelationshipResponse {
+  required int32 result_code = 1;
+  required uint64 player_id = 2;
+  required uint64 npc_geid = 3;
+  required uint64 ticket_id = 4;
+}
+

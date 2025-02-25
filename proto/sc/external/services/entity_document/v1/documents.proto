@@ -1,0 +1,176 @@
+syntax = "proto3";
+
+package sc.external.services.entity_document.v1;
+
+import "sc/external/services/entity_document/v1/types.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/common/types/v1/loadout.proto";
+
+message EntityDocument {
+  .sc.external.services.entity_document.v1.DocumentHeader header = 1;
+  .sc.external.services.entity_document.v1.EntityDocumentBody body = 2;
+}
+
+message EntityDocumentBody {
+  reserved "ship_last_spawn_location";
+  reserved 10;
+  oneof class {
+    .sc.external.services.entity_document.v1.EntityTestDocument test = 1;
+    .sc.external.services.entity_document.v1.EntityClassArenaCommanderLoadoutsDocument entity_class_loadouts_ac = 2;
+    .sc.external.services.entity_document.v1.EntityClassStarMarineLoadoutsDocument entity_class_loadouts_ea = 3;
+    .sc.external.services.entity_document.v1.EntityClassCharacterCustomizerDocument character_customizer_loadouts = 4;
+    .sc.external.services.entity_document.v1.PlayerHomeLocationDocument player_home_location = 5;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument player_spawn_location = 6;
+    .sc.external.services.entity_document.v1.PlayerTutorialDocument player_tutorial = 7;
+    .sc.external.services.entity_document.v1.ShopLicensesDocument shop_licenses = 8;
+    .sc.external.services.entity_document.v1.PlayerCombatLogout combat_logout = 9;
+    .sc.external.services.entity_document.v1.PlayerWarehouseOrderDocument player_warehouse_order = 11;
+    .sc.external.services.entity_document.v1.VehicleStateDocument vehicle_state = 12;
+  }
+}
+
+message EntityTestDocument {
+  message Sub {
+    string name = 1;
+    string description = 2;
+  }
+
+  message Record {
+    string property = 1;
+    repeated string locations = 2;
+    .sc.external.services.entity_document.v1.EntityTestDocument.Sub main_sub = 3;
+    repeated .sc.external.services.entity_document.v1.EntityTestDocument.Sub subs = 4;
+  }
+
+  message Meta {
+    oneof class {
+      string foo = 1;
+      string bar = 2;
+    }
+  }
+
+  string id = 1;
+  string name = 2;
+  .sc.external.services.entity_document.v1.EntityTestDocument.Record sub = 3;
+  .sc.external.services.entity_document.v1.EntityTestDocument.Meta meta = 4;
+}
+
+message EntityClassStarMarineLoadoutsDocument {
+  .sc.external.common.types.v1.EntityClassLoadout elimination = 1;
+  .sc.external.common.types.v1.EntityClassLoadout marine = 2;
+  .sc.external.common.types.v1.EntityClassLoadout slaver = 3;
+  .sc.external.common.types.v1.EntityClassLoadout pilot = 4;
+  .sc.external.common.types.v1.EntityClassLoadout marine_soldier = 5;
+  .sc.external.common.types.v1.EntityClassLoadout marine_assault = 6;
+  .sc.external.common.types.v1.EntityClassLoadout marine_sniper = 7;
+  .sc.external.common.types.v1.EntityClassLoadout marine_antivehicle = 8;
+  .sc.external.common.types.v1.EntityClassLoadout outlaw_soldier = 9;
+  .sc.external.common.types.v1.EntityClassLoadout outlaw_assault = 10;
+  .sc.external.common.types.v1.EntityClassLoadout outlaw_sniper = 11;
+  .sc.external.common.types.v1.EntityClassLoadout outlaw_antivehicle = 12;
+}
+
+message EntityClassArenaCommanderLoadoutsDocument {
+  .sc.external.common.types.v1.EntityClassLoadout base = 1;
+}
+
+message EntityClassCharacterCustomizerDocument {
+  .sc.external.common.types.v1.EntityClassLoadout customization = 1;
+}
+
+message PlayerHomeLocationDocument {
+  uint32 home_location_id = 1;
+}
+
+message PlayerSpawnLocationDocument {
+  message PlayerSpawnZonePosition {
+    reserved "zone_geid";
+    reserved 1;
+    .sc.external.common.types.v1.Quatd orientation = 2;
+    .sc.external.common.types.v1.Vec3d position = 3;
+    uint32 location_id = 4;
+  }
+
+  message PlayerSpawnLocation {
+    uint32 location_id = 1;
+  }
+
+  message PlayerSpawnInShip {
+    reserved "zone_geid";
+    reserved 2;
+    uint64 ship_id = 1;
+    uint64 logout_entity_id = 3;
+    .sc.external.common.types.v1.Quatd orientation = 4;
+    .sc.external.common.types.v1.Vec3d position = 5;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnLocation fallback_location = 6;
+    uint32 location_id = 7;
+  }
+
+  message PlayerSpawnInPlace {
+    string logout_shard_id = 1;
+    uint64 logout_parent_entity_id = 2;
+    .sc.external.common.types.v1.Quatd logout_orientation = 3;
+    .sc.external.common.types.v1.Vec3d logout_position = 4;
+    uint64 logout_zone_host_id = 5;
+    uint64 stowed_vehicle_id = 6;
+    .sc.external.common.types.v1.Quatd stowed_vehicle_orientation = 7;
+    .sc.external.common.types.v1.Vec3d stowed_vehicle_position = 8;
+    uint32 stowed_vehicle_location_id = 9;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnLocation fallback_location = 10;
+  }
+
+  oneof spawn_info {
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnZonePosition spawn_zone_position = 1;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnLocation spawn_location = 2;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnInShip spawn_in_ship = 3;
+    .sc.external.services.entity_document.v1.PlayerSpawnLocationDocument.PlayerSpawnInPlace spawn_in_place = 4;
+  }
+}
+
+message ShipLastSpawnLocationDocument {
+  uint32 location_id = 1;
+}
+
+message PlayerTutorialDocument {
+  bool tutorial_available = 1;
+  bool tutorial_mode = 2;
+}
+
+message PlayerWarehouseOrder {
+  uint64 player_id = 1;
+  uint32 location_id = 2;
+  uint64 vehicle_id = 3;
+  string entity_guid = 4;
+  int32 entity_count = 5;
+  int32 type = 6;
+  double price = 7;
+  int32 num_entities_processed = 8;
+  int32 packing_num_entities_processed = 9;
+  int32 order_progress = 10;
+  uint64 pickup_inventory_id = 11;
+  uint64 removal_personal_inventory_id = 12;
+  int64 begin_time = 13;
+  int64 duration = 14;
+  string mission_giver_guid = 15;
+  string mission_guid = 16;
+  repeated uint64 repack_entity_ids = 17;
+  double debug_rate_per_scu = 18;
+  int64 debug_batch_size = 19;
+}
+
+message PlayerWarehouseOrderDocument {
+  repeated .sc.external.services.entity_document.v1.PlayerWarehouseOrder orders = 1;
+}
+
+message ShopLicensesDocument {
+  uint64 shop_licenses = 1;
+}
+
+message PlayerCombatLogout {
+  bool was_in_combat = 1;
+}
+
+message VehicleStateDocument {
+  bool is_vehicle_destroyed = 1;
+}
+

@@ -1,0 +1,523 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/rpc/status/status.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/types/v1/localization.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+
+message Scope {
+  .sc.external.services.entitygraph.v1.ScopeType type = 1;
+  string shard_id = 2;
+}
+
+message NodeProperties {
+  oneof properties {
+    .sc.external.services.entitygraph.v1.EntityNodeProperties entity_properties = 1;
+    .sc.external.services.entitygraph.v1.InventoryNodeProperties inventory_properties = 2;
+  }
+}
+
+message EntityComponent {
+  uint32 hash_id = 1;
+  bool server_only = 2;
+}
+
+message NodeDebugProperties {
+  string entity_class_name = 20;
+  string location_name = 21;
+}
+
+message StowContextFields {
+  optional string inv = 1;
+  optional string shd = 2;
+}
+
+message EntityNodeProperties {
+  reserved "item_type";
+  reserved "star_hash";
+  reserved "status";
+  reserved "unstowed_from_inventory_id";
+  reserved 3;
+  reserved 11;
+  reserved 22;
+  reserved 25;
+  message DebugEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  uint64 geid = 1;
+  uint32 class_guid_crc = 2;
+  uint64 ownership_type = 4;
+  uint64 entity_flags = 5;
+  uint64 game_flags = 6;
+  .sc.external.common.types.v1.Quatd orientation = 7;
+  .sc.external.common.types.v1.Vec3d position = 8;
+  double scale = 9;
+  double radius = 10;
+  uint32 stack_size = 12;
+  uint64 owner_id = 13;
+  string parent_urn = 14;
+  repeated .sc.external.services.entitygraph.v1.EntityNodeLabel labels = 15;
+  uint32 generation = 16;
+  repeated uint32 tags = 17;
+  repeated .sc.external.services.entitygraph.v1.EntityComponent components = 18;
+  uint32 location_id = 19;
+  repeated .sc.external.services.entitygraph.v1.EntityNodeProperties.DebugEntry debug = 20;
+  uint32 version = 21;
+  uint64 created_at = 23;
+  uint64 updated_at = 24;
+  optional .sc.external.services.entitygraph.v1.StowContextFields stow_ctx = 26;
+}
+
+message PhysicalInventoryConfiguration {
+  int32 capacity = 1;
+  int32 occupancy = 2;
+}
+
+message InventoryConfiguration {
+  oneof configuration {
+    .sc.external.services.entitygraph.v1.PhysicalInventoryConfiguration physical = 9;
+  }
+}
+
+message InventoryNodeProperties {
+  reserved "geid";
+  reserved "time_created";
+  reserved "time_modified";
+  reserved "status";
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  reserved 22;
+  message DebugEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  .sc.external.services.entitygraph.v1.InventoryType inventory_type = 4;
+  uint64 owner_id = 5;
+  string unstowed_in = 6;
+  uint32 generation = 7;
+  bool shared = 8;
+  .sc.external.services.entitygraph.v1.InventoryConfiguration configuration = 9;
+  string name = 10;
+  repeated .sc.external.services.entitygraph.v1.InventoryNodeProperties.DebugEntry debug = 11;
+  string id = 12;
+  string context = 13;
+  uint64 subject_id = 14;
+  uint64 created_at = 15;
+  uint64 updated_at = 16;
+}
+
+message PhysicalInventoryEdgeConfiguration {
+  uint32 occupancy = 2;
+}
+
+message EntityEdgeProperties {
+  .sc.external.services.entitygraph.v1.AttachmentType attachment_type = 1;
+  uint32 attachment_port_crc = 2;
+  string rank = 3;
+  string context = 5;
+  uint64 subject_id = 6;
+  uint32 version = 7;
+  oneof inventory {
+    .sc.external.services.entitygraph.v1.PhysicalInventoryEdgeConfiguration physical = 4;
+  }
+}
+
+message Node {
+  .sc.external.services.entitygraph.v1.NodeProperties properties = 1;
+  .sc.external.services.entitygraph.v1.NodeType type = 2;
+}
+
+message EntityEdgeVertex {
+  .sc.external.services.entitygraph.v1.NodeType type = 3;
+  oneof id {
+    uint64 entity_id = 1;
+    string inventory_id = 2;
+    string shard_id = 4;
+  }
+}
+
+message EntityEdge {
+  .sc.external.services.entitygraph.v1.EntityEdgeType type = 1;
+  .sc.external.services.entitygraph.v1.EntityEdgeVertex start = 2;
+  .sc.external.services.entitygraph.v1.EntityEdgeVertex end = 3;
+  .sc.external.services.entitygraph.v1.EntityEdgeProperties properties = 4;
+}
+
+message EntityGraph {
+  repeated .sc.external.services.entitygraph.v1.Node nodes = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityEdge edges = 2;
+}
+
+message EntitySnapshot {
+  uint64 entity_id = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityVariable variables = 2;
+  uint32 version = 3;
+}
+
+message EntityVariable {
+  uint32 name_crc = 1;
+  uint32 type = 2;
+  uint32 flags = 3;
+  bytes snapshot = 4;
+}
+
+message Value {
+  oneof value_type {
+    .sc.external.services.entitygraph.v1.ScalarValue scalar_value = 1;
+    .sc.external.services.entitygraph.v1.ArrayValue array_value = 2;
+    .sc.external.services.entitygraph.v1.StructValue map_value = 3;
+  }
+}
+
+message ScalarValue {
+  oneof scalar_type {
+    .google.protobuf.NullValue null_value = 1;
+    string string_value = 2;
+    bool boolean_value = 3;
+    int32 integer_value = 4;
+    double double_value = 5;
+    int64 bigint_value = 6;
+    .google.protobuf.Timestamp timestamp_value = 7;
+    bytes blob_value = 8;
+    uint32 unsigned_integer_value = 9;
+    uint64 unsigned_bigint_value = 10;
+  }
+}
+
+message ArrayValue {
+  repeated .sc.external.services.entitygraph.v1.Value values = 1;
+}
+
+message StructValue {
+  message FieldsEntry {
+    string key = 1;
+    .sc.external.services.entitygraph.v1.Value value = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.StructValue.FieldsEntry fields = 1;
+}
+
+message ContainerNode {
+  repeated .sc.external.services.entitygraph.v1.ContainerNodeLabel labels = 1;
+  .sc.external.services.entitygraph.v1.ContainerNodeProperties properties = 2;
+}
+
+message ContainerNodeProperties {
+  message Identifiers {
+    uint64 start_id = 1;
+    bool has_planet = 2;
+    uint32 unstreamable_count = 3;
+    uint32 streaming_immovable_count = 4;
+    uint32 streaming_movable_count = 5;
+  }
+
+  string guid = 1;
+  uint64 geid = 2;
+  uint32 socpak_content_hash = 3;
+  uint32 socpak_file_path_hash = 4;
+  .sc.external.services.entitygraph.v1.ContainerNodeProperties.Identifiers identifiers = 5;
+  uint32 generation = 6;
+  uint64 created_at = 23;
+  uint64 updated_at = 24;
+}
+
+message ContainerEdgeProperties {
+}
+
+message ContainerEdge {
+  .sc.external.services.entitygraph.v1.ContainerEdgeType type = 1;
+  uint64 start = 2;
+  uint64 end = 3;
+  .sc.external.services.entitygraph.v1.ContainerEdgeProperties properties = 4;
+}
+
+message ContainerGraph {
+  repeated .sc.external.services.entitygraph.v1.ContainerNode nodes = 1;
+  repeated .sc.external.services.entitygraph.v1.ContainerEdge edges = 2;
+}
+
+message MetaRecord {
+  message DictionaryEntry {
+    string key = 1;
+    .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+  }
+
+  string kind = 1;
+  string key = 2;
+  string name = 3;
+  string type = 4;
+  string description = 5;
+  repeated .sc.external.services.entitygraph.v1.MetaReference references = 6;
+  repeated .sc.external.services.entitygraph.v1.MetaRecord.DictionaryEntry dictionary = 7;
+  uint32 generation = 8;
+}
+
+message MetaReference {
+  string datacore_guid = 1;
+  string geid = 2;
+  string scurn = 3;
+}
+
+message EntityOwner {
+  message Owner {
+    double account_id = 1;
+    string player_id = 2;
+    string name = 3;
+    string nick_name = 4;
+    string display_name = 5;
+  }
+
+  string entity_id = 1;
+  .sc.external.services.entitygraph.v1.EntityOwner.Owner owner = 2;
+}
+
+message StarHash {
+  uint64 level0 = 1;
+  uint64 level1 = 2;
+}
+
+message EntityClass {
+  .sc.external.services.entitygraph.v1.EntityClassProperties properties = 1;
+}
+
+message EntityClassProperties {
+  string guid = 1;
+  uint32 guid_hash_crc = 2;
+  string class_name = 3;
+  string item_type = 4;
+  string item_sub_type = 5;
+  .sc.external.common.types.v1.LocalizedString name = 6;
+  .sc.external.common.types.v1.LocalizedString description = 7;
+  repeated uint32 tags = 8;
+  uint32 generation = 9;
+  int32 item_type_enum = 10;
+  int32 item_sub_type_enum = 11;
+  repeated uint32 components = 12;
+}
+
+message Shard {
+  string id = 1;
+  .sc.external.services.entitygraph.v1.ShardStatus status = 2;
+  string name = 3;
+  uint32 generation = 4;
+  .sc.external.common.network.v1.Region region = 5;
+  string host = 6;
+}
+
+message NotificationBehavior {
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 1;
+  bool only_on_failure = 2;
+}
+
+message MutationArguments {
+  string id = 1;
+  .sc.external.services.entitygraph.v1.Scope scope = 2;
+  string partitioning_key = 3;
+  .sc.external.services.entitygraph.v1.QueueingBehavior queueing = 4;
+  .sc.external.services.entitygraph.v1.NotificationBehavior notifications = 5;
+  string name = 6;
+  uint64 expiry = 7;
+  repeated string affected_inventories = 8;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 9;
+}
+
+message TransMutationArguments {
+  string id = 1;
+  string partitioning_key = 3;
+  .sc.external.services.entitygraph.v1.QueueingBehavior queueing = 4;
+  .sc.external.services.entitygraph.v1.NotificationBehavior notifications = 5;
+  uint64 expiry = 6;
+  repeated string affected_inventories = 7;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 9;
+}
+
+message ShardArguments {
+  string id = 1;
+  string partitioning_key = 2;
+  .sc.external.services.entitygraph.v1.QueueingBehavior queueing = 3;
+  .sc.external.services.entitygraph.v1.NotificationBehavior notifications = 4;
+  uint64 expiry = 5;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 9;
+}
+
+message MutationResponse {
+  string id = 1;
+  .sc.external.services.entitygraph.v1.MutationResponseStatus status = 2;
+  .google.rpc.Status result = 3;
+}
+
+message Inventory {
+  .sc.external.services.entitygraph.v1.InventoryNodeProperties properties = 1;
+}
+
+message UnstowNotificationContext {
+  message ActivationContextEntry {
+    string key = 1;
+    .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+  }
+
+  string from_inventory_id = 1;
+  repeated .sc.external.services.entitygraph.v1.UnstowNotificationContext.ActivationContextEntry activation_context = 2;
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 3;
+}
+
+message ActivateNotificationContext {
+  message ActivationContextEntry {
+    string key = 1;
+    .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ActivateNotificationContext.ActivationContextEntry activation_context = 2;
+}
+
+message DeactivateNotificationContext {
+  message DeactivationContextEntry {
+    string key = 1;
+    .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.DeactivateNotificationContext.DeactivationContextEntry deactivation_context = 2;
+}
+
+message EntitySyncNotificationContext {
+  message EntityVersionUpdate {
+    uint64 geid = 1;
+    uint32 version = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.EntitySyncNotificationContext.EntityVersionUpdate entity_version_updates = 1;
+}
+
+message EntityStowContext {
+  reserved "parent";
+  uint64 entity_id = 1;
+  string parent_urn = 2;
+  uint64 owner_id = 3;
+  bool is_stowed = 4;
+  uint32 class_guid_crc = 7;
+  optional string shard_id = 5;
+  optional string inventory_id = 6;
+}
+
+enum ScopeType {
+  SCOPE_TYPE_UNSPECIFIED = 0;
+  SCOPE_TYPE_SHARD = 1;
+  SCOPE_TYPE_GLOBAL = 2;
+  SCOPE_TYPE_GRAVEYARD = 3;
+}
+
+enum Purpose {
+  PURPOSE_UNSPECIFIED = 0;
+  PURPOSE_ADMIN = 1;
+  PURPOSE_LOGIN = 2;
+  PURPOSE_GAMEPLAY_PLAYER = 3;
+  PURPOSE_GAMEPLAY_SYSTEM = 4;
+}
+
+enum EntityNodeLabel {
+  ENTITY_NODE_LABEL_UNSPECIFIED = 0;
+  ENTITY_NODE_LABEL_AGGREGATE_ROOT = 1;
+  ENTITY_NODE_LABEL_STREAMING_GROUP = 2;
+  ENTITY_NODE_LABEL_ROOT = 3;
+  ENTITY_NODE_LABEL_SYSTEM_ROOT = 4;
+  ENTITY_NODE_LABEL_UNSTREAMABLE = 5;
+  ENTITY_NODE_LABEL_STATIC_ZONE = 6;
+  ENTITY_NODE_LABEL_PLAYER = 7;
+  ENTITY_NODE_LABEL_UNSTOWED = 8;
+  ENTITY_NODE_LABEL_LONGTERM = 9;
+  ENTITY_NODE_LABEL_SHARD_STOW = 10;
+  ENTITY_NODE_LABEL_SHARD_STOW_NESTING_ELIGIBLE = 11;
+  ENTITY_NODE_LABEL_TRACK_STOW_CONTEXT = 12;
+}
+
+enum EntityEdgeType {
+  ENTITY_EDGE_TYPE_UNSPECIFIED = 0;
+  ENTITY_EDGE_TYPE_ATTACHED_TO = 1;
+  ENTITY_EDGE_TYPE_STOWED_IN = 2;
+  ENTITY_EDGE_TYPE_REFERENCES = 3;
+}
+
+enum NodeType {
+  NODE_TYPE_UNSPECIFIED = 0;
+  NODE_TYPE_ENTITY = 1;
+  NODE_TYPE_INVENTORY = 2;
+}
+
+enum AttachmentType {
+  ATTACHMENT_TYPE_UNSPECIFIED = 0;
+  ATTACHMENT_TYPE_ITEM_PORT = 1;
+  ATTACHMENT_TYPE_ATTACHMENT = 2;
+  ATTACHMENT_TYPE_SPAWN = 3;
+  ATTACHMENT_TYPE_PERSISTENT_AREA = 4;
+  ATTACHMENT_TYPE_ZONE = 5;
+  ATTACHMENT_TYPE_SHARD = 6;
+}
+
+enum InventoryType {
+  INVENTORY_TYPE_UNSPECIFIED = 0;
+  INVENTORY_TYPE_INFINITE = 1;
+  INVENTORY_TYPE_PHYSICAL = 2;
+}
+
+enum ContainerNodeLabel {
+  CONTAINER_NODE_LABEL_UNSPECIFIED = 0;
+  CONTAINER_NODE_LABEL_CONTAINER = 1;
+  CONTAINER_NODE_LABEL_STAR_SYSTEM = 2;
+  CONTAINER_NODE_LABEL_HAS_PHYSICS_GRID = 3;
+  CONTAINER_NODE_LABEL_UNIVERSE_ROOT = 4;
+  CONTAINER_NODE_LABEL_LOCATION = 5;
+}
+
+enum ContainerEdgeType {
+  CONTAINER_EDGE_TYPE_UNSPECIFIED = 0;
+  CONTAINER_EDGE_TYPE_CONTAINED_IN = 1;
+}
+
+enum LabelOperator {
+  LABEL_OPERATOR_UNSPECIFIED = 0;
+  LABEL_OPERATOR_HAS_ANY = 1;
+  LABEL_OPERATOR_HAS_ALL = 2;
+  LABEL_OPERATOR_HAS_NONE = 3;
+}
+
+enum BitOperator {
+  BIT_OPERATOR_UNSPECIFIED = 0;
+  BIT_OPERATOR_AND = 1;
+  BIT_OPERATOR_OR = 2;
+  BIT_OPERATOR_NOT = 3;
+}
+
+enum ShardStatus {
+  SHARD_STATUS_UNSPECIFIED = 0;
+  SHARD_STATUS_IDLE = 1;
+  SHARD_STATUS_SEEDING = 2;
+  SHARD_STATUS_ACTIVE = 3;
+  SHARD_STATUS_INACTIVE = 4;
+  SHARD_STATUS_DESTROYED = 5;
+  SHARD_STATUS_CRASHED = 6;
+  SHARD_STATUS_CREATED = 7;
+  SHARD_STATUS_ACQUIRED = 8;
+}
+
+enum QueueingBehavior {
+  QUEUEING_BEHAVIOR_UNSPECIFIED = 0;
+  QUEUEING_BEHAVIOR_ASYNC = 1;
+  QUEUEING_BEHAVIOR_SYNC = 2;
+}
+
+enum MutationResponseStatus {
+  MUTATION_RESPONSE_STATUS_UNSPECIFIED = 0;
+  MUTATION_RESPONSE_STATUS_DONE = 1;
+  MUTATION_RESPONSE_STATUS_FAILED = 2;
+  MUTATION_RESPONSE_STATUS_QUEUED = 3;
+}
+

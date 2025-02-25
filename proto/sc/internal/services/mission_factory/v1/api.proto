@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_factory.v1;
+
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+service MissionFactoryService {
+  rpc CreateMission (.sc.internal.services.mission_factory.v1.CreateMissionRequest) returns (.sc.internal.services.mission_factory.v1.CreateMissionResponse) {}
+  rpc ActivateMission (.sc.internal.services.mission_factory.v1.ActivateMissionRequest) returns (.sc.internal.services.mission_factory.v1.ActivateMissionResponse) {}
+  rpc AdvanceMission (.sc.internal.services.mission_factory.v1.AdvanceMissionRequest) returns (.sc.internal.services.mission_factory.v1.AdvanceMissionResponse) {}
+  rpc ReconcileContracts (.sc.internal.services.mission_factory.v1.ReconcileContractsRequest) returns (.sc.internal.services.mission_factory.v1.ReconcileContractsResponse) {}
+  rpc JoinMission (.sc.internal.services.mission_factory.v1.JoinMissionRequest) returns (.sc.internal.services.mission_factory.v1.JoinMissionResponse) {}
+  rpc LeaveMission (.sc.internal.services.mission_factory.v1.LeaveMissionRequest) returns (.sc.internal.services.mission_factory.v1.LeaveMissionResponse) {}
+}
+
+message CreateMissionRequest {
+  string mission_id = 1;
+  string contract_id = 2;
+  .sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+  repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 4;
+  string shard_id = 5;
+  string mission_owner_urn = 6;
+  string active_mission_key = 7;
+}
+
+message CreateMissionResponse {
+  repeated .sc.external.common.mission.v1.MissionPhase phases = 1;
+  .google.protobuf.Timestamp expiry = 2;
+  repeated .sc.external.common.mission.v1.MissionObjective mission_objectives = 3;
+  bool ignore_objective_contributors = 4;
+}
+
+message ActivateMissionRequest {
+  .sc.external.common.mission.v1.ActiveMission mission = 1;
+}
+
+message ActivateMissionResponse {
+  repeated .sc.external.common.mission.v1.MissionPhase mission_phases = 1;
+  repeated .sc.external.common.mission.v1.MissionObjective mission_objectives = 2;
+  repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 3;
+}
+
+message AdvanceMissionRequest {
+  .sc.external.common.mission.v1.ActiveMission mission = 1;
+}
+
+message AdvanceMissionResponse {
+  repeated .sc.external.common.mission.v1.MissionPhase additional_mission_phases = 1;
+  .sc.external.common.mission.v1.MissionState mission_state = 2;
+  repeated .sc.external.common.mission.v1.MissionObjective mission_objectives = 3;
+}
+
+message ReconcileContractsRequest {
+  message LocationInfo {
+    message ReservedLocationsEntry {
+      string key = 1;
+      uint32 value = 2;
+    }
+
+    uint64 location_entity_id = 1;
+    repeated .sc.internal.services.mission_factory.v1.ReconcileContractsRequest.LocationInfo.ReservedLocationsEntry reserved_locations = 3;
+  }
+
+  message Body {
+    uint32 count = 1;
+    .google.protobuf.Timestamp last_creation_time = 2;
+    repeated .sc.internal.services.mission_factory.v1.ReconcileContractsRequest.LocationInfo reserved_locations = 3;
+  }
+
+  message ContractsEntry {
+    string key = 1;
+    .sc.internal.services.mission_factory.v1.ReconcileContractsRequest.Body value = 2;
+  }
+
+  string shard_id = 1;
+  repeated .sc.internal.services.mission_factory.v1.ReconcileContractsRequest.ContractsEntry contracts = 2;
+}
+
+message ReconcileContractsResponse {
+  .google.protobuf.Timestamp next_notification_time = 1;
+}
+
+message JoinMissionRequest {
+  .sc.external.common.mission.v1.ActiveMission mission = 1;
+  repeated string player_urns = 2;
+}
+
+message JoinMissionResponse {
+}
+
+message LeaveMissionRequest {
+  message Body {
+    string player_urn = 1;
+    string reason = 2;
+    .sc.external.common.mission.v1.MissionState end_state = 3;
+    uint32 end_reason = 4;
+    string analytics_reason = 5;
+  }
+
+  .sc.external.common.mission.v1.ActiveMission mission = 1;
+  repeated .sc.internal.services.mission_factory.v1.LeaveMissionRequest.Body missions = 2;
+}
+
+message LeaveMissionResponse {
+}
+

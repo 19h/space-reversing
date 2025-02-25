@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_location.v1;
+
+import "sc/external/common/mission/v1/locations.proto";
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service MissionLocationService {
+  rpc OccupyLocation (.sc.internal.services.mission_location.v1.OccupyLocationRequest) returns (.sc.internal.services.mission_location.v1.OccupyLocationResponse) {}
+  rpc AcquireLocation (.sc.internal.services.mission_location.v1.AcquireLocationRequest) returns (.sc.internal.services.mission_location.v1.AcquireLocationResponse) {}
+  rpc ReleaseLocation (.sc.internal.services.mission_location.v1.ReleaseLocationRequest) returns (.sc.internal.services.mission_location.v1.ReleaseLocationResponse) {}
+  rpc ReleaseShard (.sc.internal.services.mission_location.v1.ReleaseShardRequest) returns (.sc.internal.services.mission_location.v1.ReleaseShardResponse) {}
+  rpc UpsertLocationTags (.sc.internal.services.mission_location.v1.UpsertLocationTagsRequest) returns (.sc.internal.services.mission_location.v1.UpsertLocationTagsResponse) {}
+  rpc RemoveLocationTags (.sc.internal.services.mission_location.v1.RemoveLocationTagsRequest) returns (.sc.internal.services.mission_location.v1.RemoveLocationTagsResponse) {}
+  rpc QueryAllLocations (.sc.internal.services.mission_location.v1.QueryAllLocationsRequest) returns (stream .sc.internal.services.mission_location.v1.QueryAllLocationsResponse) {}
+  rpc QueryLocations (stream .sc.internal.services.mission_location.v1.QueryLocationsRequest) returns (stream .sc.internal.services.mission_location.v1.QueryLocationsResponse) {}
+  rpc QueryLocationsByContract (.sc.internal.services.mission_location.v1.QueryLocationsByContractRequest) returns (stream .sc.internal.services.mission_location.v1.QueryLocationsByContractResponse) {}
+}
+
+message AcquireLocationRequest {
+  message Body {
+    uint64 location_entity_id = 1;
+    string shard_id = 2;
+    string contract_id = 3;
+    string contract_slot_type = 4;
+    int32 max_contracts_for_slot = 5;
+    string acquisition_tag = 6;
+    string contract_definition_id = 7;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.AcquireLocationRequest.Body acquisitions = 1;
+}
+
+message AcquireLocationResponse {
+  message Body {
+    uint64 location_entity_id = 1;
+    repeated string added_acquisition_tags = 2;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.AcquireLocationResponse.Body acquisitions = 1;
+}
+
+message OccupyLocationRequest {
+  message Body {
+    uint64 location_entity_id = 1;
+    string shard_id = 2;
+    .google.protobuf.Timestamp expiry = 3;
+    repeated string ignored_contract_slot_types = 4;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.OccupyLocationRequest.Body occupations = 1;
+}
+
+message OccupyLocationResponse {
+}
+
+message UpsertLocationTagsRequest {
+  uint64 location_entity_id = 1;
+  string shard_id = 2;
+  repeated .sc.external.common.mission.v1.MissionLocationTag location_tags = 3;
+}
+
+message UpsertLocationTagsResponse {
+}
+
+message RemoveLocationTagsRequest {
+  uint64 location_entity_id = 1;
+  string shard_id = 2;
+  repeated string location_tags = 3;
+}
+
+message RemoveLocationTagsResponse {
+}
+
+message ReleaseLocationRequest {
+  message Body {
+    uint64 location_entity_id = 1;
+    string shard_id = 2;
+    string contract_id = 3;
+    string contract_slot_type = 4;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.ReleaseLocationRequest.Body releases = 1;
+}
+
+message ReleaseLocationResponse {
+  message Body {
+    uint64 location_entity_id = 1;
+    repeated string removed_acquisition_tags = 2;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.ReleaseLocationResponse.Body releases = 1;
+}
+
+message ReleaseShardRequest {
+  message Body {
+    string shard_id = 1;
+  }
+
+  repeated .sc.internal.services.mission_location.v1.ReleaseShardRequest.Body releases = 1;
+}
+
+message ReleaseShardResponse {
+}
+
+message QueryAllLocationsRequest {
+  string shard_id = 1;
+}
+
+message QueryAllLocationsResponse {
+  repeated .sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+
+message QueryLocationsRequest {
+  string shard_id = 1;
+  repeated uint64 location_entity_id = 2;
+}
+
+message QueryLocationsResponse {
+  repeated .sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+
+message QueryLocationsByContractRequest {
+  string shard_id = 1;
+  repeated string contract_id = 2;
+}
+
+message QueryLocationsByContractResponse {
+  repeated .sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+

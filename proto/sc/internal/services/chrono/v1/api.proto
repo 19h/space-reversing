@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package sc.internal.services.chrono.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/chrono/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/internal/services/chrono/v1/query.proto";
+
+service ChronoService {
+  rpc CreateJobs (.sc.internal.services.chrono.v1.CreateJobsRequest) returns (.sc.internal.services.chrono.v1.CreateJobsResponse) {}
+  rpc CancelJobs (.sc.internal.services.chrono.v1.CancelJobsRequest) returns (.sc.internal.services.chrono.v1.CancelJobsResponse) {}
+  rpc RescheduleJobs (.sc.internal.services.chrono.v1.RescheduleJobsRequest) returns (.sc.internal.services.chrono.v1.RescheduleJobsResponse) {}
+  rpc QueryJobs (.sc.internal.services.chrono.v1.QueryJobsRequest) returns (.sc.internal.services.chrono.v1.QueryJobsResponse) {}
+  rpc QueryJobLogs (.sc.internal.services.chrono.v1.QueryJobLogsRequest) returns (.sc.internal.services.chrono.v1.QueryJobLogsResponse) {}
+}
+
+message CreateJobsRequest {
+  repeated .sc.internal.services.chrono.v1.Job jobs = 1;
+}
+
+message CreateJobsResponse {
+  repeated string ids = 1;
+}
+
+message CancelJobsRequest {
+  repeated string ids = 1;
+}
+
+message CancelJobsResponse {
+  repeated string ids = 1;
+}
+
+message RescheduleJobsRequest {
+  message Body {
+    string id = 1;
+    .sc.internal.services.chrono.v1.JobSchedule schedule = 2;
+  }
+
+  repeated .sc.internal.services.chrono.v1.RescheduleJobsRequest.Body reschedules = 1;
+}
+
+message RescheduleJobsResponse {
+  repeated string ids = 1;
+}
+
+message QueryJobsRequest {
+  .sc.internal.services.chrono.v1.JobQuery query = 1;
+}
+
+message QueryJobsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.chrono.v1.ScheduledJob results = 2;
+}
+
+message QueryJobLogsRequest {
+  .sc.internal.services.chrono.v1.JobLogsQuery query = 1;
+}
+
+message QueryJobLogsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.chrono.v1.JobLogs results = 2;
+}
+

@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.PlayerClient;
+
+message ClientInfo {
+  enum ClientState {
+    STATE_NONE = 0;
+    STATE_IN_HANGAR = 1;
+    STATE_IN_SP = 2;
+    STATE_IN_MP = 3;
+    STATE_IN_MAIN_MENU = 4;
+  }
+
+  required .cig.Protocols.Public.PlayerClient.ClientInfo.ClientState client_state = 1;
+  optional int32 game_mode = 2;
+  optional int32 map_type = 3;
+  optional int32 ship_type = 4;
+}
+
+message SetConnectionTimeoutCommand {
+  required bool extended = 1;
+}
+
+message HeartbeatNotification {
+  optional .cig.Protocols.Public.PlayerClient.ClientInfo client_info = 1;
+}
+

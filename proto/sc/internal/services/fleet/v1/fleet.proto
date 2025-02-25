@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/types.proto";
+import "sc/internal/services/fleet/v1/unit.proto";
+
+message FleetDetail {
+  string id = 1;
+  repeated .sc.internal.services.fleet.v1.UnitDetail units = 2;
+}
+
+message GetFleetsRequest {
+  repeated string fleet_ids = 1;
+  .sc.internal.services.fleet.v1.UnitFilter filter = 2;
+}
+
+message GetFleetsResponse {
+  repeated .sc.internal.services.fleet.v1.FleetDetail fleets = 1;
+}
+

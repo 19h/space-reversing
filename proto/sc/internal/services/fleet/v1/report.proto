@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message ProcessInfo {
+  string hardware_id = 1;
+  string pod = 2;
+  uint32 pid = 3;
+}
+
+message NetworkInfo {
+  string host = 1;
+  uint32 port = 2;
+  repeated string external_routes = 3;
+  string metrics_host = 4;
+  uint32 metrics_port = 5;
+  repeated string internal_routes = 6;
+}
+
+message UnitReport {
+  message LabelsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string id = 1;
+  .sc.internal.services.fleet.v1.Phase phase = 2;
+  string product = 3;
+  repeated .sc.internal.services.fleet.v1.UnitReport.LabelsEntry labels = 4;
+  repeated string fleets = 5;
+  .sc.internal.services.fleet.v1.NetworkInfo network = 6;
+  .sc.internal.services.fleet.v1.ProcessInfo process = 7;
+}
+
+message ReportRequest {
+  repeated .sc.internal.services.fleet.v1.UnitReport reports = 1;
+}
+
+message ReportResponse {
+}
+
+enum Phase {
+  PHASE_UNSPECIFIED = 0;
+  PHASE_ACTIVE = 1;
+  PHASE_BOOTSTRAP = 2;
+  PHASE_RESTART = 3;
+  PHASE_TERMINATE = 4;
+  PHASE_UNSTABLE = 5;
+  PHASE_CRASHED = 7;
+  PHASE_RECOVERY = 8;
+}
+

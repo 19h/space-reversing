@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/metric.proto";
+import "sc/internal/services/fleet/v1/report.proto";
+import "sc/internal/services/fleet/v1/fleet.proto";
+import "sc/internal/services/fleet/v1/unit.proto";
+import "sc/internal/services/fleet/v1/signal.proto";
+import "sc/internal/services/fleet/v1/claim.proto";
+import "sc/internal/services/fleet/v1/unhealthy.proto";
+import "google/api/annotations/annotations.proto";
+
+service FleetService {
+  rpc Report (stream .sc.internal.services.fleet.v1.ReportRequest) returns (.sc.internal.services.fleet.v1.ReportResponse) {}
+  rpc MarkUnhealthy (.sc.internal.services.fleet.v1.MarkUnhealthyRequest) returns (.sc.internal.services.fleet.v1.MarkUnhealthyResponse) {}
+  rpc MetricsTargets (.sc.internal.services.fleet.v1.MetricsTargetsRequest) returns (.sc.internal.services.fleet.v1.MetricsTargetsResponse) {}
+  rpc GetFleets (.sc.internal.services.fleet.v1.GetFleetsRequest) returns (.sc.internal.services.fleet.v1.GetFleetsResponse) {}
+  rpc GetUnits (.sc.internal.services.fleet.v1.GetUnitsRequest) returns (.sc.internal.services.fleet.v1.GetUnitsResponse) {}
+  rpc SendSignal (.sc.internal.services.fleet.v1.SendSignalRequest) returns (.sc.internal.services.fleet.v1.SendSignalResponse) {}
+  rpc ClaimUnit (.sc.internal.services.fleet.v1.ClaimUnitRequest) returns (.sc.internal.services.fleet.v1.ClaimUnitResponse) {}
+}
+

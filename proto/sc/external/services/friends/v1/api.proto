@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package sc.external.services.friends.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/friends/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+service FriendService {
+  rpc GetFriendList (.sc.external.services.friends.v1.GetFriendListRequest) returns (.sc.external.services.friends.v1.GetFriendListResponse) {}
+  rpc SearchAccount (.sc.external.services.friends.v1.SearchAccountRequest) returns (.sc.external.services.friends.v1.SearchAccountResponse) {}
+  rpc RemoveFriend (.sc.external.services.friends.v1.RemoveFriendRequest) returns (.sc.external.services.friends.v1.RemoveFriendResponse) {}
+  rpc GetShardInfo (.sc.external.services.friends.v1.GetShardInfoRequest) returns (.sc.external.services.friends.v1.GetShardInfoResponse) {}
+  rpc SendFriendRequest (.sc.external.services.friends.v1.SendFriendRequestRequest) returns (.sc.external.services.friends.v1.SendFriendRequestResponse) {}
+  rpc CancelFriendRequest (.sc.external.services.friends.v1.CancelFriendRequestRequest) returns (.sc.external.services.friends.v1.CancelFriendRequestResponse) {}
+  rpc GetPendingFriendRequest (.sc.external.services.friends.v1.GetPendingFriendRequestRequest) returns (.sc.external.services.friends.v1.GetPendingFriendRequestResponse) {}
+  rpc AcceptFriendRequest (.sc.external.services.friends.v1.AcceptFriendRequestRequest) returns (.sc.external.services.friends.v1.AcceptFriendRequestResponse) {}
+  rpc DeclineFriendRequest (.sc.external.services.friends.v1.DeclineFriendRequestRequest) returns (.sc.external.services.friends.v1.DeclineFriendRequestResponse) {}
+  rpc GetBlockedAccount (.sc.external.services.friends.v1.GetBlockedAccountRequest) returns (.sc.external.services.friends.v1.GetBlockedAccountResponse) {}
+  rpc BlockAccount (.sc.external.services.friends.v1.BlockAccountRequest) returns (.sc.external.services.friends.v1.BlockAccountResponse) {}
+  rpc UnblockAccount (.sc.external.services.friends.v1.UnblockAccountRequest) returns (.sc.external.services.friends.v1.UnblockAccountResponse) {}
+}
+
+message GetFriendListRequest {
+  .sc.external.common.api.v1.Query query = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetFriendListResponse {
+  repeated .sc.external.services.friends.v1.Friend friends = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message SearchAccountRequest {
+  string name = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message SearchAccountResponse {
+  repeated .sc.external.services.friends.v1.FriendInfo accounts = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message RemoveFriendRequest {
+  uint32 account_id = 1;
+}
+
+message RemoveFriendResponse {
+}
+
+message GetShardInfoRequest {
+  uint32 account_id = 1;
+}
+
+message GetShardInfoResponse {
+  .sc.external.common.shard.v1.ShardInfo shard_info = 1;
+}
+
+message SendFriendRequestRequest {
+  oneof identifier {
+    uint32 account_id = 1;
+    uint64 player_id = 2;
+  }
+}
+
+message SendFriendRequestResponse {
+  string request_id = 1;
+}
+
+message CancelFriendRequestRequest {
+  string request_id = 1;
+}
+
+message CancelFriendRequestResponse {
+}
+
+message GetPendingFriendRequestRequest {
+  .sc.external.common.api.v1.Query query = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetPendingFriendRequestResponse {
+  repeated .sc.external.services.friends.v1.FriendRequest pending_friend_requests = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message AcceptFriendRequestRequest {
+  string request_id = 1;
+}
+
+message AcceptFriendRequestResponse {
+}
+
+message DeclineFriendRequestRequest {
+  string request_id = 1;
+}
+
+message DeclineFriendRequestResponse {
+}
+
+message GetBlockedAccountRequest {
+  .sc.external.common.api.v1.Query query = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetBlockedAccountResponse {
+  repeated .sc.external.services.friends.v1.FriendInfo blocked_accounts = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message BlockAccountRequest {
+  oneof identifier {
+    uint32 account_id = 1;
+    uint64 player_id = 2;
+  }
+}
+
+message BlockAccountResponse {
+}
+
+message UnblockAccountRequest {
+  uint32 account_id = 1;
+}
+
+message UnblockAccountResponse {
+}
+

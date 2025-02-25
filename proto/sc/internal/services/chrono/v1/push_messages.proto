@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sc.internal.services.chrono.v1;
+
+import "google/protobuf/any.proto";
+
+message JobTriggered {
+  string id = 1;
+  .google.protobuf.Any body = 2;
+}
+
+message KafkaJobTriggered {
+  string name = 1;
+  .sc.internal.services.chrono.v1.JobTriggered body = 2;
+}
+
+message ExampleJobBody {
+  string id = 1;
+  string some_data = 2;
+  uint64 some_value = 3;
+}
+

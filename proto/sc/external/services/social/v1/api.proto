@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+package sc.external.services.social.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/social/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service SocialService {
+  rpc CreateDMGroup (.sc.external.services.social.v1.CreateDMGroupRequest) returns (.sc.external.services.social.v1.CreateDMGroupResponse) {}
+  rpc CreateGroup (.sc.external.services.social.v1.CreateGroupRequest) returns (.sc.external.services.social.v1.CreateGroupResponse) {}
+  rpc TransferGroupLeadership (.sc.external.services.social.v1.TransferGroupLeadershipRequest) returns (.sc.external.services.social.v1.TransferGroupLeadershipResponse) {}
+  rpc RenameGroup (.sc.external.services.social.v1.RenameGroupRequest) returns (.sc.external.services.social.v1.RenameGroupResponse) {}
+  rpc DestroyGroup (.sc.external.services.social.v1.DestroyGroupRequest) returns (.sc.external.services.social.v1.DestroyGroupResponse) {}
+  rpc GetGroupsById (.sc.external.services.social.v1.GetGroupsByIdRequest) returns (.sc.external.services.social.v1.GetGroupsByIdResponse) {}
+  rpc ListGroups (.sc.external.services.social.v1.ListGroupsRequest) returns (.sc.external.services.social.v1.ListGroupsResponse) {}
+  rpc SetGroupPreferences (.sc.external.services.social.v1.SetGroupPreferencesRequest) returns (.sc.external.services.social.v1.SetGroupPreferencesResponse) {}
+  rpc LeaveGroup (.sc.external.services.social.v1.LeaveGroupRequest) returns (.sc.external.services.social.v1.LeaveGroupResponse) {}
+  rpc KickGroupMember (.sc.external.services.social.v1.KickGroupMemberRequest) returns (.sc.external.services.social.v1.KickGroupMemberResponse) {}
+  rpc SendGroupInvitation (.sc.external.services.social.v1.SendGroupInvitationRequest) returns (.sc.external.services.social.v1.SendGroupInvitationResponse) {}
+  rpc InviteToParty (.sc.external.services.social.v1.InviteToPartyRequest) returns (.sc.external.services.social.v1.InviteToPartyResponse) {}
+  rpc AcceptInvitation (.sc.external.services.social.v1.AcceptInvitationRequest) returns (.sc.external.services.social.v1.AcceptInvitationResponse) {}
+  rpc DeclineInvitation (.sc.external.services.social.v1.DeclineInvitationRequest) returns (.sc.external.services.social.v1.DeclineInvitationResponse) {}
+  rpc RevokeInvitation (.sc.external.services.social.v1.RevokeInvitationRequest) returns (.sc.external.services.social.v1.RevokeInvitationResponse) {}
+  rpc ListPendingInvitations (.sc.external.services.social.v1.ListPendingInvitationsRequest) returns (.sc.external.services.social.v1.ListPendingInvitationsResponse) {}
+  rpc GetInstanceInfo (.sc.external.services.social.v1.GetInstanceInfoRequest) returns (.sc.external.services.social.v1.GetInstanceInfoResponse) {}
+  rpc GetSubscriptionKey (.sc.external.services.social.v1.GetSubscriptionKeyRequest) returns (.sc.external.services.social.v1.GetSubscriptionKeyResponse) {}
+  rpc AddGroupModerator (.sc.external.services.social.v1.AddGroupModeratorRequest) returns (.sc.external.services.social.v1.AddGroupModeratorResponse) {}
+  rpc RemoveGroupModerator (.sc.external.services.social.v1.RemoveGroupModeratorRequest) returns (.sc.external.services.social.v1.RemoveGroupModeratorResponse) {}
+  rpc SetMemberReadyStatus (.sc.external.services.social.v1.SetMemberReadyStatusRequest) returns (.sc.external.services.social.v1.SetMemberReadyStatusResponse) {}
+}
+
+message CreateDMGroupRequest {
+  string member_urn = 1;
+}
+
+message CreateDMGroupResponse {
+  .sc.external.services.social.v1.Group group = 1;
+}
+
+message CreateGroupRequest {
+  string name = 1;
+}
+
+message CreateGroupResponse {
+  .sc.external.services.social.v1.Group group = 1;
+}
+
+message RenameGroupRequest {
+  string group_id = 1;
+  string name = 2;
+}
+
+message RenameGroupResponse {
+}
+
+message DestroyGroupRequest {
+  string group_id = 1;
+}
+
+message DestroyGroupResponse {
+}
+
+message GetGroupsByIdRequest {
+  repeated string group_ids = 1;
+}
+
+message GetGroupsByIdResponse {
+  repeated .sc.external.services.social.v1.Group groups = 1;
+  repeated .sc.external.services.social.v1.GroupMemberPreferences preferences = 2;
+}
+
+message ListGroupsRequest {
+  .sc.external.services.social.v1.GroupFilters filters = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListGroupsResponse {
+  repeated .sc.external.services.social.v1.Group groups = 1;
+  repeated .sc.external.services.social.v1.GroupMemberPreferences preferences = 2;
+  .sc.external.common.api.v1.PaginationInfo page_info = 3;
+}
+
+message SetGroupPreferencesRequest {
+  message PreferencesEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string group_id = 1;
+  repeated .sc.external.services.social.v1.SetGroupPreferencesRequest.PreferencesEntry preferences = 2;
+}
+
+message SetGroupPreferencesResponse {
+}
+
+message SendGroupInvitationRequest {
+  string group_id = 1;
+  repeated string member_urns = 2;
+}
+
+message SendGroupInvitationResponse {
+  repeated .sc.external.services.social.v1.Invitation invitations = 1;
+}
+
+message InviteToPartyRequest {
+  string member_urn = 1;
+  string name = 2;
+}
+
+message InviteToPartyResponse {
+  .sc.external.services.social.v1.Invitation invitation = 1;
+}
+
+message AcceptInvitationRequest {
+  string invitation_id = 1;
+}
+
+message AcceptInvitationResponse {
+}
+
+message DeclineInvitationRequest {
+  string invitation_id = 1;
+}
+
+message DeclineInvitationResponse {
+}
+
+message RevokeInvitationRequest {
+  string invitation_id = 1;
+}
+
+message RevokeInvitationResponse {
+}
+
+message LeaveGroupRequest {
+  string group_id = 1;
+}
+
+message LeaveGroupResponse {
+}
+
+message GetSubscriptionKeyRequest {
+}
+
+message GetSubscriptionKeyResponse {
+  string subscription_key = 1;
+}
+
+message ListPendingInvitationsRequest {
+  .sc.external.services.social.v1.GroupType group_type = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListPendingInvitationsResponse {
+  repeated .sc.external.services.social.v1.Invitation invitations = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message KickGroupMemberRequest {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+message KickGroupMemberResponse {
+}
+
+message TransferGroupLeadershipRequest {
+  string group_id = 1;
+  string player_urn = 2;
+}
+
+message TransferGroupLeadershipResponse {
+}
+
+message GetInstanceInfoRequest {
+  string player_urn = 1;
+}
+
+message GetInstanceInfoResponse {
+  .sc.external.common.shard.v1.ShardInfo shard_info = 1;
+}
+
+message AddGroupModeratorRequest {
+  string group_id = 1;
+  string moderator_urn = 2;
+}
+
+message AddGroupModeratorResponse {
+}
+
+message RemoveGroupModeratorRequest {
+  string group_id = 1;
+  string moderator_urn = 2;
+}
+
+message RemoveGroupModeratorResponse {
+}
+
+message SetMemberReadyStatusRequest {
+  string group_id = 1;
+  bool ready = 2;
+}
+
+message SetMemberReadyStatusResponse {
+}
+

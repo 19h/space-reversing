@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package protocol.common;
+
+message service_id {
+  required uint64 lo = 1;
+  required uint64 hi = 2;
+}
+

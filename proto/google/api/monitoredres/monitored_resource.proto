@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package google.api;
+
+option java_package = "com.google.api";
+option java_outer_classname = "MonitoredResourceProto";
+option java_multiple_files = true;
+option go_package = "google/api/monitoredres;monitoredres";
+option cc_enable_arenas = true;
+option objc_class_prefix = "GAPI";
+
+import "google/api/label/label.proto";
+import "google/protobuf/struct.proto";
+
+message MonitoredResourceDescriptor {
+  string name = 5;
+  string type = 1;
+  string display_name = 2;
+  string description = 3;
+  repeated .google.api.LabelDescriptor labels = 4;
+}
+
+message MonitoredResource {
+  message LabelsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string type = 1;
+  repeated .google.api.MonitoredResource.LabelsEntry labels = 2;
+}
+
+message MonitoredResourceMetadata {
+  message UserLabelsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  .google.protobuf.Struct system_labels = 1;
+  repeated .google.api.MonitoredResourceMetadata.UserLabelsEntry user_labels = 2;
+}
+

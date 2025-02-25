@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sc.internal.services.push.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+service PushTransmitService {
+  rpc Transmit (.sc.internal.services.push.v1.TransmitRequest) returns (.sc.internal.services.push.v1.TransmitResponse) {}
+  rpc TransmitBroadcast (.sc.internal.services.push.v1.TransmitBroadcastRequest) returns (.sc.internal.services.push.v1.TransmitBroadcastResponse) {}
+}
+
+message TransmitRequest {
+  repeated .sc.external.services.push.v1.PushEnvelope envelopes = 1;
+}
+
+message TransmitResponse {
+}
+
+message TransmitBroadcastRequest {
+  .sc.external.services.push.v1.PushEnvelope envelope = 1;
+}
+
+message TransmitBroadcastResponse {
+}
+

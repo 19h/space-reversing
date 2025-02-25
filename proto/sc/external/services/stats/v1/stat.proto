@@ -1,0 +1,47 @@
+
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+message RollingAverageValue {
+  uint32 timestamp = 1;
+  uint32 value = 2;
+}
+
+message RollingAverage {
+  uint32 type = 1;
+  repeated .sc.external.services.stats.v1.RollingAverageValue values = 2;
+}
+
+message Stat {
+  string id = 1;
+  string subject = 2;
+  string stat_def_id = 3;
+  string season = 4;
+  uint32 value = 5;
+  string type = 6;
+  string unit = 7;
+  string game_mode = 8;
+  string category = 9;
+  uint32 best = 10;
+  float rolling_avg = 11;
+  uint32 version = 12;
+  bool rankable = 13;
+}
+
+message StatTableValues {
+  string id = 1;
+  string stat_def_id = 2;
+  string subject = 3;
+  uint32 value = 4;
+  uint32 best = 5;
+  string type = 6;
+  string unit = 7;
+  uint32 version = 8;
+}
+
+message StatTable {
+  string subject = 1;
+  repeated .sc.external.services.stats.v1.StatTableValues stats = 2;
+}
+

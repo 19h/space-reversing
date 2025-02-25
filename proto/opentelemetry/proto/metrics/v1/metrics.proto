@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package opentelemetry.proto.metrics.v1;
+
+option java_package = "io.opentelemetry.proto.metrics.v1";
+option java_outer_classname = "MetricsProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/metrics/v1";
+
+import "opentelemetry/proto/common/v1/common.proto";
+import "opentelemetry/proto/resource/v1/resource.proto";
+
+message MetricsData {
+  repeated .opentelemetry.proto.metrics.v1.ResourceMetrics resource_metrics = 1;
+}
+
+message ResourceMetrics {
+  .opentelemetry.proto.resource.v1.Resource resource = 1;
+  repeated .opentelemetry.proto.metrics.v1.InstrumentationLibraryMetrics instrumentation_library_metrics = 2;
+  string schema_url = 3;
+}
+
+message InstrumentationLibraryMetrics {
+  .opentelemetry.proto.common.v1.InstrumentationLibrary instrumentation_library = 1;
+  repeated .opentelemetry.proto.metrics.v1.Metric metrics = 2;
+  string schema_url = 3;
+}
+
+message Metric {
+  reserved 4;
+  reserved 6;
+  reserved 8;
+  string name = 1;
+  string description = 2;
+  string unit = 3;
+  oneof data {
+    .opentelemetry.proto.metrics.v1.Gauge gauge = 5;
+    .opentelemetry.proto.metrics.v1.Sum sum = 7;
+    .opentelemetry.proto.metrics.v1.Histogram histogram = 9;
+    .opentelemetry.proto.metrics.v1.ExponentialHistogram exponential_histogram = 10;
+    .opentelemetry.proto.metrics.v1.Summary summary = 11;
+  }
+}
+
+message Gauge {
+  repeated .opentelemetry.proto.metrics.v1.NumberDataPoint data_points = 1;
+}
+
+message Sum {
+  repeated .opentelemetry.proto.metrics.v1.NumberDataPoint data_points = 1;
+  .opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2;
+  bool is_monotonic = 3;
+}
+
+message Histogram {
+  repeated .opentelemetry.proto.metrics.v1.HistogramDataPoint data_points = 1;
+  .opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2;
+}
+
+message ExponentialHistogram {
+  repeated .opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint data_points = 1;
+  .opentelemetry.proto.metrics.v1.AggregationTemporality aggregation_temporality = 2;
+}
+
+message Summary {
+  repeated .opentelemetry.proto.metrics.v1.SummaryDataPoint data_points = 1;
+}
+
+message NumberDataPoint {
+  reserved 1;
+  repeated .opentelemetry.proto.common.v1.KeyValue attributes = 7;
+  fixed64 start_time_unix_nano = 2;
+  fixed64 time_unix_nano = 3;
+  repeated .opentelemetry.proto.metrics.v1.Exemplar exemplars = 5;
+  uint32 flags = 8;
+  oneof value {
+    double as_double = 4;
+    sfixed64 as_int = 6;
+  }
+}
+
+message HistogramDataPoint {
+  reserved 1;
+  repeated .opentelemetry.proto.common.v1.KeyValue attributes = 9;
+  fixed64 start_time_unix_nano = 2;
+  fixed64 time_unix_nano = 3;
+  fixed64 count = 4;
+  double sum = 5;
+  repeated fixed64 bucket_counts = 6;
+  repeated double explicit_bounds = 7;
+  repeated .opentelemetry.proto.metrics.v1.Exemplar exemplars = 8;
+  uint32 flags = 10;
+}
+
+message ExponentialHistogramDataPoint {
+  message Buckets {
+    sint32 offset = 1;
+    repeated uint64 bucket_counts = 2;
+  }
+
+  repeated .opentelemetry.proto.common.v1.KeyValue attributes = 1;
+  fixed64 start_time_unix_nano = 2;
+  fixed64 time_unix_nano = 3;
+  fixed64 count = 4;
+  double sum = 5;
+  sint32 scale = 6;
+  fixed64 zero_count = 7;
+  .opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets positive = 8;
+  .opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets negative = 9;
+  uint32 flags = 10;
+  repeated .opentelemetry.proto.metrics.v1.Exemplar exemplars = 11;
+}
+
+message SummaryDataPoint {
+  reserved 1;
+  message ValueAtQuantile {
+    double quantile = 1;
+    double value = 2;
+  }
+
+  repeated .opentelemetry.proto.common.v1.KeyValue attributes = 7;
+  fixed64 start_time_unix_nano = 2;
+  fixed64 time_unix_nano = 3;
+  fixed64 count = 4;
+  double sum = 5;
+  repeated .opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile quantile_values = 6;
+  uint32 flags = 8;
+}
+
+message Exemplar {
+  reserved 1;
+  repeated .opentelemetry.proto.common.v1.KeyValue filtered_attributes = 7;
+  fixed64 time_unix_nano = 2;
+  bytes span_id = 4;
+  bytes trace_id = 5;
+  oneof value {
+    double as_double = 3;
+    sfixed64 as_int = 6;
+  }
+}
+
+enum AggregationTemporality {
+  AGGREGATION_TEMPORALITY_UNSPECIFIED = 0;
+  AGGREGATION_TEMPORALITY_DELTA = 1;
+  AGGREGATION_TEMPORALITY_CUMULATIVE = 2;
+}
+
+enum DataPointFlags {
+  FLAG_NONE = 0;
+  FLAG_NO_RECORDED_VALUE = 1;
+}
+

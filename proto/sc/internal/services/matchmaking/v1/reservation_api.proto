@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sc.internal.services.matchmaking.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service ReservationService {
+  rpc CancelReservation (.sc.internal.services.matchmaking.v1.CancelReservationRequest) returns (.sc.internal.services.matchmaking.v1.CancelReservationResponse) {}
+}
+
+message SetReservationResponse {
+}
+
+message GetReservationRequest {
+  string id = 1;
+}
+
+message CancelReservationRequest {
+  string id = 1;
+}
+
+message CancelReservationResponse {
+}
+

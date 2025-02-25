@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package sc.external.services.eatransaction.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/external/services/eatransaction/v1/types.proto";
+
+service ExternalEATransactionService {
+  rpc EARent (.sc.external.services.eatransaction.v1.EARentRequest) returns (.sc.external.services.eatransaction.v1.EARentResponse) {}
+  rpc RenewEARental (.sc.external.services.eatransaction.v1.RenewEARentalRequest) returns (.sc.external.services.eatransaction.v1.RenewEARentalResponse) {}
+}
+
+message EARentRequest {
+  message Body {
+    string entity_class_guid = 1;
+    float price = 2;
+    uint32 duration = 3;
+    .sc.external.services.entitlement.v1.EntitlementSource source = 4;
+    .sc.external.services.eatransaction.v1.TransactionLogContext log_context = 5;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  .sc.external.services.eatransaction.v1.EARentRequest.Body body = 2;
+}
+
+message EARentResponse {
+  string rental_id = 1;
+}
+
+message RenewEARentalRequest {
+  message Body {
+    string rental_id = 1;
+    float price = 2;
+    uint32 duration = 3;
+    .sc.external.services.eatransaction.v1.TransactionLogContext log_context = 4;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  .sc.external.services.eatransaction.v1.RenewEARentalRequest.Body body = 2;
+}
+
+message RenewEARentalResponse {
+  string rental_id = 1;
+}
+

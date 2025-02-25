@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sc.internal.services.longterm.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/longterm/v1/types.proto";
+
+service LongTermService {
+  rpc QueryOwnershipRecords (.sc.internal.services.longterm.v1.QueryOwnershipRecordsRequest) returns (.sc.internal.services.longterm.v1.QueryOwnershipRecordsResponse) {}
+}
+
+message QueryOwnershipRecordsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryOwnershipRecordsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.longterm.v1.OwnershipRecord results = 2;
+}
+

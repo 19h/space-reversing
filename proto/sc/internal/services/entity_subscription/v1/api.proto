@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_subscription.v1;
+
+import "sc/external/common/command/v1/types.proto";
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/entity_subscription/v1/types.proto";
+
+service EntitySubscriptionService {
+  rpc QuerySubscriberEntities (.sc.internal.services.entity_subscription.v1.QuerySubscriberEntitiesRequest) returns (stream .sc.internal.services.entity_subscription.v1.QuerySubscriberEntitiesResponse) {}
+  rpc Subscribe (.sc.internal.services.entity_subscription.v1.SubscribeRequest) returns (.sc.internal.services.entity_subscription.v1.SubscribeResponse) {}
+  rpc Unsubscribe (.sc.internal.services.entity_subscription.v1.UnsubscribeRequest) returns (.sc.internal.services.entity_subscription.v1.UnsubscribeResponse) {}
+  rpc TagEntities (.sc.internal.services.entity_subscription.v1.TagEntitiesRequest) returns (.sc.internal.services.entity_subscription.v1.TagEntitiesResponse) {}
+  rpc UntagEntities (.sc.internal.services.entity_subscription.v1.UntagEntitiesRequest) returns (.sc.internal.services.entity_subscription.v1.UntagEntitiesResponse) {}
+  rpc DeleteTags (.sc.internal.services.entity_subscription.v1.DeleteTagsRequest) returns (.sc.internal.services.entity_subscription.v1.DeleteTagsResponse) {}
+  rpc RemoveEntitiesByTags (.sc.internal.services.entity_subscription.v1.RemoveEntitiesByTagsRequest) returns (.sc.internal.services.entity_subscription.v1.RemoveEntitiesByTagsResponse) {}
+  rpc RemoveSubscribersByTags (.sc.internal.services.entity_subscription.v1.RemoveSubscribersByTagsRequest) returns (.sc.internal.services.entity_subscription.v1.RemoveSubscribersByTagsResponse) {}
+  rpc RemoveEntities (.sc.internal.services.entity_subscription.v1.RemoveEntitiesRequest) returns (.sc.internal.services.entity_subscription.v1.RemoveEntitiesResponse) {}
+  rpc RemoveSubscribers (.sc.internal.services.entity_subscription.v1.RemoveSubscribersRequest) returns (.sc.internal.services.entity_subscription.v1.RemoveSubscribersResponse) {}
+}
+
+message QuerySubscriberEntitiesRequest {
+  repeated uint64 subscribers = 1;
+  repeated uint64 entities = 2;
+  repeated string tags = 3;
+}
+
+message QuerySubscriberEntitiesResponse {
+  repeated .sc.internal.services.entity_subscription.v1.SubscriberEntities results = 1;
+}
+
+message SubscribeRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  repeated uint64 subscribers = 3;
+}
+
+message SubscribeResponse {
+}
+
+message UnsubscribeRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  repeated uint64 subscribers = 3;
+}
+
+message UnsubscribeResponse {
+}
+
+message TagEntitiesRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  repeated uint64 entities = 3;
+}
+
+message TagEntitiesResponse {
+}
+
+message UntagEntitiesRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  repeated uint64 entities = 3;
+}
+
+message UntagEntitiesResponse {
+}
+
+message DeleteTagsRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+}
+
+message DeleteTagsResponse {
+}
+
+message RemoveEntitiesByTagsRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  bool from_all_tags = 3;
+}
+
+message RemoveEntitiesByTagsResponse {
+}
+
+message RemoveSubscribersByTagsRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated string tags = 2;
+  bool from_all_tags = 3;
+}
+
+message RemoveSubscribersByTagsResponse {
+}
+
+message RemoveEntitiesRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated uint64 entities = 2;
+}
+
+message RemoveEntitiesResponse {
+}
+
+message RemoveSubscribersRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated uint64 subscribers = 2;
+}
+
+message RemoveSubscribersResponse {
+}
+

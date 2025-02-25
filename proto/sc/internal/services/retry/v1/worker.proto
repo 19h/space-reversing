@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sc.internal.services.retry.v1;
+
+import "sc/internal/services/retry/v1/types.proto";
+
+message EnqueuedRequest {
+  string name = 1;
+  .sc.internal.services.retry.v1.EnqueuedRequestBody body = 2;
+}
+
+message EnqueuedRequestBody {
+  string requester_id = 1;
+  .sc.internal.services.retry.v1.RetryEnvelope body = 2;
+}
+
+message EnqueuedEnvelope {
+  message Body {
+    .sc.internal.services.retry.v1.RetryEnvelope retry_envelope = 1;
+  }
+
+  string name = 1;
+  .sc.internal.services.retry.v1.EnqueuedEnvelope.Body body = 2;
+}
+

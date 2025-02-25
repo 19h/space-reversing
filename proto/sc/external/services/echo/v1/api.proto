@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package sc.external.services.echo.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service EchoService {
+  rpc Echo (.sc.external.services.echo.v1.EchoRequest) returns (.sc.external.services.echo.v1.EchoResponse) {}
+  rpc EchoClientStream (stream .sc.external.services.echo.v1.EchoClientStreamRequest) returns (.sc.external.services.echo.v1.EchoClientStreamResponse) {}
+  rpc EchoServerStream (.sc.external.services.echo.v1.EchoServerStreamRequest) returns (stream .sc.external.services.echo.v1.EchoServerStreamResponse) {}
+  rpc EchoDuplexStream (stream .sc.external.services.echo.v1.EchoDuplexStreamRequest) returns (stream .sc.external.services.echo.v1.EchoDuplexStreamResponse) {}
+  rpc EchoSimpleDuplexStream (stream .sc.external.services.echo.v1.EchoSimpleDuplexStreamRequest) returns (stream .sc.external.services.echo.v1.EchoSimpleDuplexStreamResponse) {}
+  rpc CloseAllStreams (.sc.external.services.echo.v1.CloseAllStreamsRequest) returns (.sc.external.services.echo.v1.CloseAllStreamsResponse) {}
+  rpc EchoError (.sc.external.services.echo.v1.EchoErrorRequest) returns (.sc.external.services.echo.v1.EchoErrorResponse) {}
+}
+
+message EchoRequest {
+  string msg = 1;
+  uint32 delay = 2;
+}
+
+message EchoResponse {
+  string msg = 1;
+}
+
+message EchoClientStreamRequest {
+  string msg = 1;
+}
+
+message EchoClientStreamResponse {
+  repeated string msgs = 1;
+}
+
+message EchoServerStreamRequest {
+  string msg = 1;
+  uint32 period = 2;
+  uint32 max = 3;
+}
+
+message EchoServerStreamResponse {
+  string msg = 1;
+  uint32 count = 2;
+}
+
+message RandomMessagesStreamSettings {
+  bool enabled = 1;
+  uint32 period_min = 2;
+  uint32 period_max = 3;
+  uint32 max = 4;
+}
+
+message EchoDuplexStreamRequest {
+  string msg = 1;
+  .sc.external.services.echo.v1.RandomMessagesStreamSettings random_message_settings = 2;
+}
+
+message EchoDuplexStreamResponse {
+  string msg = 1;
+  uint32 count = 2;
+}
+
+message EchoSimpleDuplexStreamRequest {
+  string msg = 1;
+  uint32 delay = 2;
+}
+
+message EchoSimpleDuplexStreamResponse {
+  string msg = 1;
+}
+
+message CloseAllStreamsRequest {
+  bool cancel = 1;
+  uint32 delay = 2;
+}
+
+message CloseAllStreamsResponse {
+}
+
+message EchoErrorRequest {
+  string msg = 1;
+  uint32 code = 2;
+  string retry_pushback_ms = 3;
+}
+
+message EchoErrorResponse {
+}
+

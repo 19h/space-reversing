@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sc.external.common.shard.v1;
+
+message SeatTag {
+  string name = 1;
+  string value = 2;
+}
+
+message SeatCriterias {
+  repeated .sc.external.common.shard.v1.SeatTag tags = 1;
+}
+
+message ShardInfo {
+  string dgs_id = 1;
+  uint64 location_id = 2;
+  string location = 3;
+  int32 player_count = 4;
+  int32 total_players = 5;
+  string id = 6;
+}
+

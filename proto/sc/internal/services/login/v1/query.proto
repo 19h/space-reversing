@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package sc.internal.services.login.v1;
+
+import "sc/external/services/login/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+message LoginLogs {
+  string session_id = 1;
+  uint64 account_id = 2;
+  string player_id = 3;
+  .sc.external.services.login.v1.LoginRequestState state = 4;
+  .sc.external.services.login.v1.LoginRequestPhase phase = 5;
+  uint64 created_at = 6;
+  string log_message = 7;
+}
+
+message LoginLogsFilter {
+  oneof filter_type {
+    .sc.external.common.api.v1.CompositeFilter composite_filter = 1;
+    .sc.external.common.api.v1.PropertyFilter property_filter = 2;
+  }
+}
+
+message LoginLogsQuery {
+  .sc.internal.services.login.v1.LoginLogsFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+

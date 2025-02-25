@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package google.type;
+
+option java_package = "com.google.type";
+option java_outer_classname = "PostalAddressProto";
+option java_multiple_files = true;
+option go_package = "google/type/postaladdress;postaladdress";
+option cc_enable_arenas = true;
+option objc_class_prefix = "GTP";
+
+message PostalAddress {
+  int32 revision = 1;
+  string region_code = 2;
+  string language_code = 3;
+  string postal_code = 4;
+  string sorting_code = 5;
+  string administrative_area = 6;
+  string locality = 7;
+  string sublocality = 8;
+  repeated string address_lines = 9;
+  repeated string recipients = 10;
+  string organization = 11;
+}
+

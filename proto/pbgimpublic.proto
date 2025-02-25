@@ -1,0 +1,62 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.gim;
+
+message PlayerLeaveInstanceRequest {
+  required string hangar_token = 1;
+}
+
+message PlayerLeaveInstanceResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+
+message GeneralInstanceManagerNotification {
+  enum NotificationType {
+    ENTER_HANGAR_FAILED = -4;
+    NO_OPEN_HANGAR_PLAYER_POSITIONS_AVAILABLE = -3;
+    NO_OPEN_HANGAR_SLOTS_AVAILABLE = -2;
+    FAILED = -1;
+    NONE = 0;
+    HANGAR_CHECK = 1;
+    CONSTRUCTING_HANGAR = 2;
+    HANGAR_FOUND = 3;
+    AUTHORIZING_JOINER = 4;
+    JOINER_AUTHORIZED = 5;
+    ENTER_HANGAR_READY_FLAG = 6;
+    NOTIFY_OWNER_HANGAR_READY_FLAG = 7;
+  }
+
+  required .cig.Protocols.Public.gim.GeneralInstanceManagerNotification.NotificationType notification_type = 1;
+  required int32 status = 2;
+  required int32 errcode = 3;
+  required int32 hangar_state = 4;
+  optional string hangar_token = 5;
+  optional string crynetwork_ip = 6;
+  optional int32 crynetwork_port = 7;
+  optional string nickname_joiner = 8;
+  optional string nickname_owner = 9;
+}
+
+message GotoRequest {
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+  required int32 web_account_id = 4;
+}
+
+message GotoPlayerRequest {
+  required int32 web_account_id = 1;
+  required int32 target_account_id = 2;
+}
+
+message UpdateCurrencyRequest {
+  required int32 web_account_id = 1;
+  required int32 amount = 2;
+  required bool do_add = 3;
+}
+
+message KillPlayerRequest {
+  required int32 target_account_id = 1;
+}
+

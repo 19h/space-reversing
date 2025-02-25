@@ -1,0 +1,272 @@
+syntax = "proto3";
+
+package sc.internal.services.reputation.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/reputation/v1/types.proto";
+
+service ReputationService {
+  rpc Vary (.sc.internal.services.reputation.v1.VaryRequest) returns (.sc.internal.services.reputation.v1.VaryResponse) {}
+  rpc Set (.sc.internal.services.reputation.v1.SetRequest) returns (.sc.internal.services.reputation.v1.SetResponse) {}
+  rpc Reset (.sc.internal.services.reputation.v1.ResetRequest) returns (.sc.internal.services.reputation.v1.ResetResponse) {}
+  rpc Copy (.sc.internal.services.reputation.v1.CopyRequest) returns (.sc.internal.services.reputation.v1.CopyResponse) {}
+  rpc MGet (.sc.internal.services.reputation.v1.MGetRequest) returns (.sc.internal.services.reputation.v1.MGetResponse) {}
+  rpc GetByIds (.sc.internal.services.reputation.v1.GetByIdsRequest) returns (.sc.internal.services.reputation.v1.GetByIdsResponse) {}
+  rpc Query (.sc.internal.services.reputation.v1.QueryRequest) returns (.sc.internal.services.reputation.v1.QueryResponse) {}
+  rpc QueryHistory (.sc.internal.services.reputation.v1.QueryHistoryRequest) returns (.sc.internal.services.reputation.v1.QueryHistoryResponse) {}
+  rpc GetScoreHistory (.sc.internal.services.reputation.v1.GetScoreHistoryRequest) returns (.sc.internal.services.reputation.v1.GetScoreHistoryResponse) {}
+  rpc Lock (.sc.internal.services.reputation.v1.LockRequest) returns (.sc.internal.services.reputation.v1.LockResponse) {}
+  rpc Unlock (.sc.internal.services.reputation.v1.UnlockRequest) returns (.sc.internal.services.reputation.v1.UnlockResponse) {}
+  rpc CreateStandings (.sc.internal.services.reputation.v1.CreateStandingsRequest) returns (.sc.internal.services.reputation.v1.CreateStandingsResponse) {}
+  rpc ChangeStandings (.sc.internal.services.reputation.v1.ChangeStandingsRequest) returns (.sc.internal.services.reputation.v1.ChangeStandingsResponse) {}
+  rpc DeleteStandings (.sc.internal.services.reputation.v1.DeleteStandingsRequest) returns (.sc.internal.services.reputation.v1.DeleteStandingsResponse) {}
+  rpc ListStandings (.sc.internal.services.reputation.v1.ListStandingsRequest) returns (.sc.internal.services.reputation.v1.ListStandingsResponse) {}
+  rpc GetStandings (.sc.internal.services.reputation.v1.GetStandingsRequest) returns (.sc.internal.services.reputation.v1.GetStandingsResponse) {}
+  rpc GetStandingsByName (.sc.internal.services.reputation.v1.GetStandingsByNameRequest) returns (.sc.internal.services.reputation.v1.GetStandingsByNameResponse) {}
+  rpc GetState (.sc.internal.services.reputation.v1.GetStateRequest) returns (.sc.internal.services.reputation.v1.GetStateResponse) {}
+  rpc SetState (.sc.internal.services.reputation.v1.SetStateRequest) returns (.sc.internal.services.reputation.v1.SetStateResponse) {}
+}
+
+message VaryRequest {
+  message VaryReputation {
+    enum VaryAction {
+      VARY_ACTION_INVALID_UNSPECIFIED = 0;
+      VARY_ACTION_INCREASED = 1;
+      VARY_ACTION_DECREASED = 2;
+    }
+
+    string subject = 1;
+    string entity = 2;
+    string scope = 3;
+    string standings_id = 4;
+    uint32 amount = 5;
+    .sc.internal.services.reputation.v1.VaryRequest.VaryReputation.VaryAction action = 6;
+    .sc.external.services.reputation.v1.LogContext log_context = 7;
+  }
+
+  repeated .sc.internal.services.reputation.v1.VaryRequest.VaryReputation reputations = 1;
+}
+
+message VaryResponse {
+  repeated .sc.external.services.reputation.v1.ReputationInitialized reputations = 1;
+}
+
+message SetRequest {
+  message SetReputation {
+    string subject = 1;
+    string entity = 2;
+    string scope = 3;
+    string standings_id = 4;
+    uint32 amount = 5;
+    .sc.external.services.reputation.v1.LogContext log_context = 6;
+    .sc.external.services.reputation.v1.ReputationLock lock = 7;
+  }
+
+  repeated .sc.internal.services.reputation.v1.SetRequest.SetReputation reputations = 1;
+}
+
+message SetResponse {
+  repeated .sc.external.services.reputation.v1.ReputationInitialized reputations = 1;
+}
+
+message ResetRequest {
+  message ResetReputation {
+    string subject = 1;
+    string entity = 2;
+    string scope = 3;
+    string standings_id = 4;
+    .sc.external.services.reputation.v1.ReputationLock lock = 5;
+    .sc.external.services.reputation.v1.LogContext log_context = 6;
+  }
+
+  repeated .sc.internal.services.reputation.v1.ResetRequest.ResetReputation reputations = 1;
+}
+
+message ResetResponse {
+}
+
+message CopyRequest {
+  string from_subject = 1;
+  string to_subject = 2;
+}
+
+message CopyResponse {
+}
+
+message MGetRequest {
+  message ReputationMGet {
+    string subject = 1;
+    string entity = 2;
+    string scope = 3;
+  }
+
+  repeated .sc.internal.services.reputation.v1.MGetRequest.ReputationMGet reputations = 1;
+}
+
+message MGetResponse {
+  repeated .sc.external.services.reputation.v1.VersionedReputation reputations = 1;
+}
+
+message GetByIdsRequest {
+  repeated string reputation_ids = 1;
+}
+
+message GetByIdsResponse {
+  repeated .sc.external.services.reputation.v1.VersionedReputation reputations = 1;
+}
+
+message QueryRequest {
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  .sc.external.common.api.v1.Query query = 4;
+}
+
+message QueryResponse {
+  repeated .sc.external.services.reputation.v1.Reputation results = 1;
+  repeated .sc.external.services.reputation.v1.VersionedReputation versioned_results = 3;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message LockRequest {
+  string id = 1;
+  uint32 min = 2;
+  uint32 max = 3;
+}
+
+message LockResponse {
+}
+
+message UnlockRequest {
+  string id = 1;
+}
+
+message UnlockResponse {
+}
+
+message QueryHistoryRequest {
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  .sc.external.common.api.v1.Query query = 4;
+}
+
+message QueryHistoryResponse {
+  repeated .sc.external.services.reputation.v1.ReputationHistory results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message CreateStandingsRequest {
+  string name = 1;
+  int32 initial = 2;
+  int32 ceiling = 3;
+  repeated .sc.external.services.reputation.v1.Standing standings = 4;
+}
+
+message CreateStandingsResponse {
+  .sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message ChangeStandingsRequest {
+  string id = 1;
+  string name = 2;
+  int32 initial = 3;
+  int32 ceiling = 4;
+  repeated .sc.external.services.reputation.v1.Standing standings = 5;
+}
+
+message ChangeStandingsResponse {
+  .sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message DeleteStandingsRequest {
+  string id = 1;
+}
+
+message DeleteStandingsResponse {
+}
+
+message ListStandingsRequest {
+}
+
+message ListStandingsResponse {
+  repeated .sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message GetStandingsRequest {
+  string id = 1;
+}
+
+message GetStandingsResponse {
+  .sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message GetStandingsByNameRequest {
+  string name = 1;
+}
+
+message GetStandingsByNameResponse {
+  repeated .sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message GetStateRequest {
+  message SubjectEntity {
+    string subject = 1;
+    string entity = 2;
+  }
+
+  repeated .sc.internal.services.reputation.v1.GetStateRequest.SubjectEntity subjects_entities = 1;
+}
+
+message GetStateResponse {
+  repeated .sc.external.services.reputation.v1.State states = 1;
+}
+
+message SetStateRequest {
+  message SubjectEntityState {
+    message StateValuePairs {
+      message KeyValueEntry {
+        string key = 1;
+        string value = 2;
+      }
+
+      repeated .sc.internal.services.reputation.v1.SetStateRequest.SubjectEntityState.StateValuePairs.KeyValueEntry key_value = 1;
+    }
+
+    string subject = 1;
+    string entity = 2;
+    .sc.internal.services.reputation.v1.SetStateRequest.SubjectEntityState.StateValuePairs pairs = 3;
+    string message = 4;
+  }
+
+  repeated .sc.internal.services.reputation.v1.SetStateRequest.SubjectEntityState subjects = 1;
+}
+
+message SetStateResponse {
+}
+
+message GetScoreHistoryRequest {
+  message ScoreHistory {
+    string reputation_id = 1;
+    uint32 days = 2;
+  }
+
+  repeated .sc.internal.services.reputation.v1.GetScoreHistoryRequest.ScoreHistory reputation_scores = 1;
+}
+
+message GetScoreHistoryResponse {
+  message ScoresHistory {
+    message Score {
+      uint64 score = 1;
+      uint32 timestamp = 2;
+    }
+
+    string reputation_id = 1;
+    repeated .sc.internal.services.reputation.v1.GetScoreHistoryResponse.ScoresHistory.Score scores = 2;
+  }
+
+  repeated .sc.internal.services.reputation.v1.GetScoreHistoryResponse.ScoresHistory reputation_scores = 1;
+}
+

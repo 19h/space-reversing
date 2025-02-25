@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package sc.external.services.notifications.v1;
+
+import "sc/external/services/notifications/v1/ui_components.proto";
+
+message Recipient {
+  message ArgsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  message MetadataEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string account_urn = 1;
+  string player_urn = 2;
+  string service_id = 3;
+  repeated .sc.external.services.notifications.v1.Recipient.ArgsEntry args = 4;
+  repeated .sc.external.services.notifications.v1.Recipient.MetadataEntry metadata = 5;
+}
+
+message Behaviors {
+  uint32 time_on_screen = 1;
+  bool persists = 2;
+  uint32 expire_at = 3;
+  bool require_interaction = 4;
+  .sc.external.services.notifications.v1.NotifyMode renotify = 5;
+  .sc.external.services.notifications.v1.NotifyMode notify = 6;
+  bool silent = 7;
+}
+
+message Body {
+  repeated .sc.external.services.notifications.v1.Block blocks = 1;
+}
+
+message NotificationRequest {
+  .sc.external.services.notifications.v1.Facility facility = 1;
+  string type = 2;
+  string category = 3;
+  string title = 4;
+  .sc.external.services.notifications.v1.NotificationMessage message = 5;
+  string icon = 7;
+  uint32 priority = 8;
+  repeated .sc.external.services.notifications.v1.Recipient recipients = 9;
+  string group_id = 10;
+  string tag = 11;
+  .sc.external.services.notifications.v1.Behaviors behaviors = 12;
+}
+
+message NotificationMessage {
+  oneof message {
+    string text = 1;
+    .sc.external.services.notifications.v1.Body body = 2;
+  }
+}
+
+message Notification {
+  string id = 1;
+  string player_urn = 2;
+  .sc.external.services.notifications.v1.Facility facility = 3;
+  string type = 4;
+  string category = 5;
+  string title = 6;
+  .sc.external.services.notifications.v1.NotificationMessage message = 7;
+  string icon = 8;
+  uint32 priority = 9;
+  .sc.external.services.notifications.v1.Recipient recipient = 10;
+  string group_id = 11;
+  string tag = 12;
+  bool read = 13;
+  .sc.external.services.notifications.v1.Behaviors behaviors = 14;
+  uint32 created_at = 15;
+  uint32 updated_at = 16;
+}
+
+message NotificationRead {
+  string id = 1;
+}
+
+message NotificationUnread {
+  string id = 1;
+}
+
+enum NotifyMode {
+  NOTIFY_MODE_UNSPECIFIED = 0;
+  NOTIFY_MODE_ALWAYS = 1;
+  NOTIFY_MODE_IFNONE = 2;
+  NOTIFY_MODE_NEVER = 3;
+}
+
+enum Facility {
+  FACILITY_UNSPECIFIED = 0;
+  FACILITY_PERSONAL = 1;
+  FACILITY_SYSTEM = 2;
+  FACILITY_HINT = 3;
+}
+

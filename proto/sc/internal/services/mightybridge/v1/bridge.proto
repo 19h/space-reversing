@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sc.internal.services.mightybridge.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service MightyBridgeService {
+  rpc MightyStream (stream .sc.internal.services.mightybridge.v1.MightyStreamRequest) returns (stream .sc.internal.services.mightybridge.v1.MightyStreamResponse) {}
+}
+
+message RemoteCommand {
+  string method = 1;
+  string ticket = 2;
+  bytes json = 3;
+}
+
+message RemoteCommandResponse {
+  string ticket = 1;
+  bytes json = 2;
+}
+
+message Packet {
+  oneof data {
+    .sc.internal.services.mightybridge.v1.RemoteCommand command = 1;
+    .sc.internal.services.mightybridge.v1.RemoteCommandResponse response = 2;
+  }
+}
+
+message MightyStreamRequest {
+  repeated .sc.internal.services.mightybridge.v1.Packet packets = 1;
+}
+
+message MightyStreamResponse {
+  repeated .sc.internal.services.mightybridge.v1.Packet packets = 1;
+}
+

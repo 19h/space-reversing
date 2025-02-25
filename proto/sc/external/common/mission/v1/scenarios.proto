@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/time/v1/schedule.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+message ScenarioCurrentCommand {
+  string message_id = 1;
+  .sc.external.common.mission.v1.ScenarioCommandWord word = 2;
+  uint32 acks = 3;
+}
+
+message CycleState {
+  string current_phase_id = 1;
+  .google.protobuf.Timestamp start_ts = 2;
+  optional string revolution_id = 3;
+}
+
+message ScenarioState {
+  message CycleStatesEntry {
+    string key = 1;
+    .sc.external.common.mission.v1.CycleState value = 2;
+  }
+
+  .sc.external.common.mission.v1.ScenarioStatus status = 1;
+  repeated .sc.external.common.mission.v1.ScenarioState.CycleStatesEntry cycle_states = 3;
+  optional uint64 next_run = 2;
+  optional .sc.external.common.mission.v1.ScenarioCurrentCommand current_command = 5;
+}
+
+message ScenarioTemplate {
+  reserved "auto_enable";
+  reserved 7;
+  string id = 1;
+  repeated .sc.external.common.mission.v1.Cycle cycles = 6;
+  optional string name = 2;
+  optional string description = 3;
+  optional .sc.external.common.mission.v1.MissionVariables variables = 4;
+  optional .sc.external.common.time.v1.Schedule schedule = 5;
+  optional bool auto_create = 8;
+}
+
+message Scenario {
+  reserved "enabled";
+  reserved 7;
+  string id = 1;
+  .sc.external.common.mission.v1.ScenarioTemplate template = 2;
+  .sc.external.common.mission.v1.ScenarioState state = 8;
+  repeated .sc.external.common.mission.v1.Cycle cycles = 10;
+  optional string name = 4;
+  optional string description = 5;
+  optional .sc.external.common.mission.v1.MissionVariables variables = 6;
+  optional .sc.external.common.time.v1.Schedule schedule = 9;
+  optional string summary = 11;
+}
+
+message Cycle {
+  string id = 1;
+  string name = 2;
+  repeated .sc.external.common.mission.v1.CyclePhase phases = 3;
+  optional string description = 4;
+}
+
+message CyclePhase {
+  string id = 1;
+  string name = 2;
+  uint32 duration_seconds = 3;
+  optional string description = 4;
+}
+
+enum ScenarioStatus {
+  SCENARIO_STATUS_UNSPECIFIED = 0;
+  SCENARIO_STATUS_DISABLED = 1;
+  SCENARIO_STATUS_SCHEDULED = 2;
+  SCENARIO_STATUS_STARTING = 3;
+  SCENARIO_STATUS_RUNNING = 4;
+  SCENARIO_STATUS_STOPPING = 5;
+  SCENARIO_STATUS_STOPPED = 6;
+  SCENARIO_STATUS_DEPRECATED = 7;
+  SCENARIO_STATUS_ERROR = 8;
+}
+
+enum ScenarioCommandWord {
+  SCENARIO_COMMAND_WORD_UNSPECIFIED = 0;
+  SCENARIO_COMMAND_WORD_START = 1;
+  SCENARIO_COMMAND_WORD_STOP = 2;
+  SCENARIO_COMMAND_WORD_CONFIGURED = 3;
+  SCENARIO_COMMAND_WORD_SCHEDULED = 4;
+}
+

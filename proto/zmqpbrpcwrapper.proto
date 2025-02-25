@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package rpc_wrapper;
+
+message ZmqPBRPCWrapperRequest {
+  required int32 web_account_id = 1;
+  required int32 request_number = 2;
+  required string method = 3;
+  required bytes protobuf = 4;
+}
+
+message ZmqPBRPCWrapperResponse {
+  required int32 web_account_id = 1;
+  required int32 response_number = 2;
+  required string method = 3;
+  required bytes protobuf = 4;
+}
+

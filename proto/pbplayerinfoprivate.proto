@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+package cig.Protocols.Private.PI;
+
+import "pbcommon.proto";
+
+message PlayerInfo {
+  required int32 account_id = 1;
+  required string nickname = 2;
+  required string display_name = 3;
+  required string tracking_metrics_id = 4;
+  required string avatar = 5;
+  required int32 player_presence_state = 6;
+}
+
+message AddPlayerInfoRequest {
+  required .cig.Protocols.Common.Uuid player_session_id = 1;
+  required .cig.Protocols.Private.PI.PlayerInfo player_info = 2;
+}
+
+message AddPlayerInfoResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+
+message GetPlayerInfoRequest {
+  required int32 my_account_id = 1;
+  required int32 to_account_id = 2;
+}
+
+message GetPlayerInfoResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+  optional .cig.Protocols.Private.PI.PlayerInfo player_info = 3;
+}
+

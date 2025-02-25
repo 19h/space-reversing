@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package sc.external.services.notifications.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/notifications/v1/types.proto";
+
+service NotificationsService {
+  rpc Remove (.sc.external.services.notifications.v1.RemoveRequest) returns (.sc.external.services.notifications.v1.RemoveResponse) {}
+  rpc Find (.sc.external.services.notifications.v1.FindRequest) returns (.sc.external.services.notifications.v1.FindResponse) {}
+  rpc Read (.sc.external.services.notifications.v1.ReadRequest) returns (.sc.external.services.notifications.v1.ReadResponse) {}
+  rpc Unread (.sc.external.services.notifications.v1.UnreadRequest) returns (.sc.external.services.notifications.v1.UnreadResponse) {}
+  rpc ReadAll (.sc.external.services.notifications.v1.ReadAllRequest) returns (.sc.external.services.notifications.v1.ReadAllResponse) {}
+  rpc RemoveAll (.sc.external.services.notifications.v1.RemoveAllRequest) returns (.sc.external.services.notifications.v1.RemoveAllResponse) {}
+}
+
+message RemoveRequest {
+  repeated string ids = 1;
+}
+
+message RemoveResponse {
+}
+
+message FindRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message FindResponse {
+  repeated .sc.external.services.notifications.v1.Notification results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ReadRequest {
+  repeated string ids = 1;
+}
+
+message ReadResponse {
+}
+
+message UnreadRequest {
+  repeated string ids = 1;
+}
+
+message UnreadResponse {
+}
+
+message ReadAllRequest {
+}
+
+message ReadAllResponse {
+}
+
+message RemoveAllRequest {
+}
+
+message RemoveAllResponse {
+}
+

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package opentelemetry.proto.collector.metrics.v1;
+
+option java_package = "io.opentelemetry.proto.collector.metrics.v1";
+option java_outer_classname = "MetricsServiceProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/collector/metrics/v1";
+
+import "opentelemetry/proto/metrics/v1/metrics.proto";
+
+service MetricsService {
+  rpc Export (.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest) returns (.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse) {}
+}
+
+message ExportMetricsServiceRequest {
+  repeated .opentelemetry.proto.metrics.v1.ResourceMetrics resource_metrics = 1;
+}
+
+message ExportMetricsServiceResponse {
+}
+

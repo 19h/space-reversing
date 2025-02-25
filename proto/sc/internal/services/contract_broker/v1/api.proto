@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package sc.internal.services.contract_broker.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+service ContractBrokerService {
+  rpc CreateContracts (.sc.internal.services.contract_broker.v1.CreateContractsRequest) returns (.sc.internal.services.contract_broker.v1.CreateContractsResponse) {}
+  rpc DestroyContracts (.sc.internal.services.contract_broker.v1.DestroyContractsRequest) returns (.sc.internal.services.contract_broker.v1.DestroyContractsResponse) {}
+  rpc DestroyAllContracts (.sc.internal.services.contract_broker.v1.DestroyAllContractsRequest) returns (.sc.internal.services.contract_broker.v1.DestroyAllContractsResponse) {}
+  rpc AcceptContract (.sc.internal.services.contract_broker.v1.AcceptContractRequest) returns (.sc.internal.services.contract_broker.v1.AcceptContractResponse) {}
+  rpc QueryAllAvailableContracts (.sc.internal.services.contract_broker.v1.QueryAllAvailableContractsRequest) returns (stream .sc.internal.services.contract_broker.v1.QueryAllAvailableContractsResponse) {}
+  rpc QueryContracts (.sc.internal.services.contract_broker.v1.QueryContractsRequest) returns (.sc.internal.services.contract_broker.v1.QueryContractsResponse) {}
+  rpc ActivateReconciliation (.sc.internal.services.contract_broker.v1.ActivateReconciliationRequest) returns (.sc.internal.services.contract_broker.v1.ActivateReconciliationResponse) {}
+  rpc CancelContractsAtLocation (.sc.internal.services.contract_broker.v1.CancelContractsAtLocationRequest) returns (.sc.internal.services.contract_broker.v1.CancelContractsAtLocationResponse) {}
+}
+
+message CreateContractsRequest {
+  message Body {
+    .sc.external.common.mission.v1.MissionTemplate mission_template = 1;
+    .sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+    .sc.external.common.mission.v1.ContractPrerequisites prerequisites_sharing = 3;
+    .google.protobuf.Timestamp expiration_time = 4;
+    repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 5;
+    uint32 count = 6;
+    bool suspendable = 7;
+  }
+
+  repeated .sc.internal.services.contract_broker.v1.CreateContractsRequest.Body contracts = 1;
+}
+
+message CreateContractsResponse {
+  repeated string ids = 1;
+}
+
+message DestroyContractsRequest {
+  repeated string contract_ids = 1;
+}
+
+message DestroyContractsResponse {
+}
+
+message DestroyAllContractsRequest {
+  string shard_id = 1;
+}
+
+message DestroyAllContractsResponse {
+}
+
+message AcceptContractRequest {
+  string id = 1;
+  string shard_id = 2;
+  repeated uint32 location_ids = 3;
+  uint64 player_id = 4;
+  .sc.external.common.command.v1.CommandArguments arguments = 5;
+}
+
+message AcceptContractResponse {
+  string active_mission_id = 1;
+}
+
+message QueryAllAvailableContractsRequest {
+  string shard_id = 1;
+  repeated uint32 physical_location_ids = 2;
+}
+
+message QueryAllAvailableContractsResponse {
+  repeated .sc.external.common.mission.v1.MissionContract contracts = 1;
+}
+
+message QueryContractsRequest {
+  message EligibilityOptions {
+    uint64 player_id = 1;
+    repeated uint32 location_ids = 2;
+    string shard_id = 3;
+  }
+
+  .sc.external.common.api.v1.Query query = 1;
+  .sc.internal.services.contract_broker.v1.QueryContractsRequest.EligibilityOptions eligibility = 3;
+}
+
+message QueryContractsResponse {
+  message EligibilityInfo {
+    bool eligible = 1;
+    .sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+  }
+
+  message ContractsWithEligibility {
+    .sc.external.common.mission.v1.MissionContract contract = 1;
+    .sc.internal.services.contract_broker.v1.QueryContractsResponse.EligibilityInfo eligibility_info = 2;
+  }
+
+  message Body {
+    oneof contracts {
+      .sc.external.common.mission.v1.MissionContract contract = 1;
+      .sc.internal.services.contract_broker.v1.QueryContractsResponse.ContractsWithEligibility contract_with_eligibility = 2;
+    }
+  }
+
+  repeated .sc.internal.services.contract_broker.v1.QueryContractsResponse.Body body = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ActivateReconciliationRequest {
+  string shard_id = 1;
+}
+
+message ActivateReconciliationResponse {
+}
+
+message CancelContractsAtLocationRequest {
+  message Location {
+    uint64 location_entity_id = 1;
+    repeated string ignored_contract_slot_types = 3;
+    optional string contract_slot_type = 2;
+  }
+
+  string shard_id = 1;
+  repeated string contract_ids = 2;
+  repeated .sc.internal.services.contract_broker.v1.CancelContractsAtLocationRequest.Location locations = 3;
+}
+
+message CancelContractsAtLocationResponse {
+}
+

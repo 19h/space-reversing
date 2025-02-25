@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package google.iam.v1;
+
+option java_package = "com.google.iam.v1";
+option java_outer_classname = "OptionsProto";
+option java_multiple_files = true;
+option go_package = "google/iam/v1;iam";
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Iam.V1";
+
+import "google/api/annotations/annotations.proto";
+
+message GetPolicyOptions {
+  int32 requested_policy_version = 1;
+}
+

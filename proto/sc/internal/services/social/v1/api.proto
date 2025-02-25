@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+package sc.internal.services.social.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/social/v1/types.proto";
+
+service SocialService {
+  rpc CreateGroup (.sc.internal.services.social.v1.CreateGroupRequest) returns (.sc.internal.services.social.v1.CreateGroupResponse) {}
+  rpc InviteToNewGroup (.sc.internal.services.social.v1.InviteToNewGroupRequest) returns (.sc.internal.services.social.v1.InviteToNewGroupResponse) {}
+  rpc RenameGroup (.sc.internal.services.social.v1.RenameGroupRequest) returns (.sc.internal.services.social.v1.RenameGroupResponse) {}
+  rpc DestroyGroup (.sc.internal.services.social.v1.DestroyGroupRequest) returns (.sc.internal.services.social.v1.DestroyGroupResponse) {}
+  rpc GetGroupsById (.sc.internal.services.social.v1.GetGroupsByIdRequest) returns (.sc.internal.services.social.v1.GetGroupsByIdResponse) {}
+  rpc ListMemberGroups (.sc.internal.services.social.v1.ListMemberGroupsRequest) returns (.sc.internal.services.social.v1.ListMemberGroupsResponse) {}
+  rpc AddGroupMembers (.sc.internal.services.social.v1.AddGroupMembersRequest) returns (.sc.internal.services.social.v1.AddGroupMembersResponse) {}
+  rpc RemoveGroupMember (.sc.internal.services.social.v1.RemoveGroupMemberRequest) returns (.sc.internal.services.social.v1.RemoveGroupMemberResponse) {}
+  rpc TransferGroupLeadership (.sc.internal.services.social.v1.TransferGroupLeadershipRequest) returns (.sc.internal.services.social.v1.TransferGroupLeadershipResponse) {}
+  rpc GetMemberPreferences (.sc.internal.services.social.v1.GetMemberPreferencesRequest) returns (.sc.internal.services.social.v1.GetMemberPreferencesResponse) {}
+  rpc SetMemberPreferences (.sc.internal.services.social.v1.SetMemberPreferencesRequest) returns (.sc.internal.services.social.v1.SetMemberPreferencesResponse) {}
+  rpc SendGroupInvitation (.sc.internal.services.social.v1.SendGroupInvitationRequest) returns (.sc.internal.services.social.v1.SendGroupInvitationResponse) {}
+  rpc RevokeInvitationsFromMember (.sc.internal.services.social.v1.RevokeInvitationsFromMemberRequest) returns (.sc.internal.services.social.v1.RevokeInvitationsFromMemberResponse) {}
+  rpc ListGroupsByType (.sc.internal.services.social.v1.ListGroupsByTypeRequest) returns (.sc.internal.services.social.v1.ListGroupsByTypeResponse) {}
+  rpc ListPendingInvitations (.sc.internal.services.social.v1.ListPendingInvitationsRequest) returns (.sc.internal.services.social.v1.ListPendingInvitationsResponse) {}
+  rpc MuteMember (.sc.internal.services.social.v1.MuteMemberRequest) returns (.sc.internal.services.social.v1.MuteMemberResponse) {}
+  rpc UnmuteMember (.sc.internal.services.social.v1.UnmuteMemberRequest) returns (.sc.internal.services.social.v1.UnmuteMemberResponse) {}
+  rpc ListMutes (.sc.internal.services.social.v1.ListMutesRequest) returns (.sc.internal.services.social.v1.ListMutesResponse) {}
+  rpc AddGroupModerator (.sc.internal.services.social.v1.AddGroupModeratorRequest) returns (.sc.internal.services.social.v1.AddGroupModeratorResponse) {}
+  rpc RemoveGroupModerator (.sc.internal.services.social.v1.RemoveGroupModeratorRequest) returns (.sc.internal.services.social.v1.RemoveGroupModeratorResponse) {}
+}
+
+message CreateGroupRequest {
+  string id = 1;
+  .sc.external.services.social.v1.GroupType type = 2;
+  string name = 3;
+  string leader_urn = 4;
+  .sc.external.services.social.v1.GroupSettings settings = 5;
+  repeated .sc.external.services.social.v1.GroupMember members = 6;
+  string parent_urn = 7;
+  repeated string moderators = 8;
+}
+
+message CreateGroupResponse {
+  .sc.external.services.social.v1.Group group = 1;
+}
+
+message InviteToNewGroupRequest {
+  string group_id = 1;
+  .sc.external.services.social.v1.GroupType group_type = 2;
+  string group_name = 3;
+  .sc.external.services.social.v1.GroupSettings group_settings = 5;
+  string member_urn = 6;
+}
+
+message InviteToNewGroupResponse {
+  .sc.external.services.social.v1.Invitation invitation = 1;
+}
+
+message RenameGroupRequest {
+  string group_id = 1;
+  string name = 2;
+}
+
+message RenameGroupResponse {
+}
+
+message DestroyGroupRequest {
+  string group_id = 1;
+}
+
+message DestroyGroupResponse {
+}
+
+message GetGroupsByIdRequest {
+  repeated string group_ids = 1;
+}
+
+message GetGroupsByIdResponse {
+  repeated .sc.external.services.social.v1.Group groups = 1;
+}
+
+message AddGroupMembersRequest {
+  string group_id = 1;
+  repeated .sc.external.services.social.v1.GroupMember members = 2;
+  bool allow_partial_existing = 3;
+}
+
+message AddGroupMembersResponse {
+}
+
+message RemoveGroupMemberRequest {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+message RemoveGroupMemberResponse {
+}
+
+message TransferGroupLeadershipRequest {
+  string group_id = 1;
+  string player_urn = 2;
+}
+
+message TransferGroupLeadershipResponse {
+}
+
+message ListMemberGroupsRequest {
+  string member_urn = 1;
+  .sc.external.services.social.v1.GroupFilters filters = 2;
+  .sc.external.common.api.v1.PaginationArguments pagination = 3;
+}
+
+message ListMemberGroupsResponse {
+  repeated .sc.external.services.social.v1.Group groups = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message GetMemberPreferencesRequest {
+  string member_urn = 1;
+  string group_id = 2;
+}
+
+message GetMemberPreferencesResponse {
+  .sc.external.services.social.v1.GroupMemberPreferences preferences = 1;
+}
+
+message SetMemberPreferencesRequest {
+  .sc.external.services.social.v1.GroupMemberPreferences preferences = 1;
+}
+
+message SetMemberPreferencesResponse {
+}
+
+message SendGroupInvitationRequest {
+  message MetadataEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string group_id = 1;
+  repeated string member_urn = 2;
+  string from_urn = 4;
+  repeated .sc.internal.services.social.v1.SendGroupInvitationRequest.MetadataEntry metadata = 5;
+}
+
+message SendGroupInvitationResponse {
+  repeated .sc.external.services.social.v1.Invitation invitations = 1;
+}
+
+message RevokeInvitationsFromMemberRequest {
+  string member_urn = 1;
+}
+
+message RevokeInvitationsFromMemberResponse {
+}
+
+message ListGroupsByTypeRequest {
+  .sc.external.services.social.v1.GroupType type = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListGroupsByTypeResponse {
+  repeated .sc.external.services.social.v1.Group groups = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ListPendingInvitationsRequest {
+  string member_urn = 1;
+  .sc.external.services.social.v1.GroupType group_type = 2;
+  .sc.external.common.api.v1.PaginationArguments pagination = 3;
+}
+
+message ListPendingInvitationsResponse {
+  repeated .sc.external.services.social.v1.Invitation invitations = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message MuteMemberRequest {
+  .sc.external.services.social.v1.Mute mute = 1;
+}
+
+message MuteMemberResponse {
+}
+
+message UnmuteMemberRequest {
+  .sc.external.services.social.v1.Mute unmute = 1;
+}
+
+message UnmuteMemberResponse {
+}
+
+message ListMutesRequest {
+  string member_urn = 1;
+}
+
+message ListMutesResponse {
+  repeated .sc.external.services.social.v1.Mute mutes = 1;
+}
+
+message AddGroupModeratorRequest {
+  string group_id = 1;
+  string moderator_urn = 2;
+}
+
+message AddGroupModeratorResponse {
+}
+
+message RemoveGroupModeratorRequest {
+  string group_id = 1;
+  string moderator_urn = 2;
+}
+
+message RemoveGroupModeratorResponse {
+}
+

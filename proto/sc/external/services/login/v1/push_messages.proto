@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package sc.external.services.login.v1;
+
+import "sc/external/services/identity/v1/player.proto";
+import "sc/external/services/login/v1/types.proto";
+
+message SessionCollision {
+  string session_id = 1;
+}
+
+message LoginCompleted {
+}
+
+message EntitlementStarted {
+}
+
+message ProcessingQueueJoined {
+}
+
+message AccountLoginQueueStatus {
+  string queue_name = 1;
+  uint32 position = 2;
+  uint32 eta_seconds = 3;
+}
+
+message ProcessingQueueHeartbeat {
+}
+
+message LoginQueueError {
+  .sc.external.services.login.v1.LoginRequestState state = 1;
+  .sc.external.services.login.v1.LoginRequestPhase phase = 2;
+  string error = 3;
+  string session_id = 4;
+}
+
+message AccountLoginCharacterStatus {
+  repeated .sc.external.services.identity.v1.Player players = 1;
+}
+

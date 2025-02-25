@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_creator.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/internal/services/entity_creator/v1/types.proto";
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/types/v1/customization.proto";
+
+service EntityCreatorService {
+  rpc CreateEntity (.sc.internal.services.entity_creator.v1.CreateEntityRequest) returns (.sc.internal.services.entity_creator.v1.CreateEntityResponse) {}
+  rpc CheckMissingEntityClass (.sc.internal.services.entity_creator.v1.CheckMissingEntityClassRequest) returns (.sc.internal.services.entity_creator.v1.CheckMissingEntityClassResponse) {}
+  rpc CreatePlayer (.sc.internal.services.entity_creator.v1.CreatePlayerRequest) returns (.sc.internal.services.entity_creator.v1.CreatePlayerResponse) {}
+  rpc DeletePlayer (.sc.internal.services.entity_creator.v1.DeletePlayerRequest) returns (.sc.internal.services.entity_creator.v1.DeletePlayerResponse) {}
+  rpc CreateFromEntitlements (.sc.internal.services.entity_creator.v1.CreateFromEntitlementsRequest) returns (.sc.internal.services.entity_creator.v1.CreateFromEntitlementsResponse) {}
+  rpc RepairPlayer (.sc.internal.services.entity_creator.v1.RepairPlayerRequest) returns (.sc.internal.services.entity_creator.v1.RepairPlayerResponse) {}
+  rpc GetCurrentGeneration (.sc.internal.services.entity_creator.v1.GetCurrentGenerationRequest) returns (.sc.internal.services.entity_creator.v1.GetCurrentGenerationResponse) {}
+}
+
+message CreatePlayerRequest {
+  message Body {
+    reserved "dna";
+    reserved "sex";
+    reserved "race";
+    reserved 4;
+    reserved 5;
+    reserved 6;
+    uint64 player_id = 1;
+    uint32 account_id = 2;
+    string name = 3;
+    .sc.external.common.types.v1.CharacterCustomization character_customizations = 7;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated .sc.internal.services.entity_creator.v1.CreatePlayerRequest.Body creates = 2;
+}
+
+message CreatePlayerResponse {
+}
+
+message DeletePlayerRequest {
+  message Body {
+    uint64 player_id = 1;
+    bool all_owned_entities = 2;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated .sc.internal.services.entity_creator.v1.DeletePlayerRequest.Body deletes = 2;
+}
+
+message DeletePlayerResponse {
+}
+
+message CreateEntityRequest {
+  message Body {
+    reserved "config";
+    reserved 4;
+    string entity_class_guid = 1;
+    uint64 owner_id = 2;
+    uint32 stack_size = 3;
+    string parent_urn = 5;
+    .sc.external.common.game.v1.Game game = 6;
+    .sc.internal.services.entity_creator.v1.NewEntityOwnershipType ownership_type = 7;
+    string target_inventory = 8;
+    .sc.external.services.entitlement.v1.NewEntityConfiguration entity_config = 9;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated .sc.internal.services.entity_creator.v1.CreateEntityRequest.Body creates = 2;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 3;
+}
+
+message CreateEntityResponse {
+  reserved "ignored_entity_class_guid";
+  reserved 1;
+}
+
+message CreateFromEntitlementsRequest {
+  message Body {
+    .sc.external.services.entitlement.v1.Entitlement entitlement = 1;
+    string target_inventory = 2;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated .sc.internal.services.entity_creator.v1.CreateFromEntitlementsRequest.Body fulfills = 2;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 3;
+}
+
+message CreateFromEntitlementsResponse {
+  reserved "ignored_entity_class_guid";
+  reserved 1;
+}
+
+message CheckMissingEntityClassRequest {
+  repeated string entity_class_guid = 1;
+}
+
+message CheckMissingEntityClassResponse {
+  repeated string invalid_entity_class_guid = 1;
+}
+
+message RepairPlayerRequest {
+  enum Strategy {
+    STRATEGY_UNSPECIFIED = 0;
+    STRATEGY_FORCE_STOW = 1;
+    STRATEGY_REPAIR = 2;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  uint64 player_id = 2;
+  .sc.internal.services.entity_creator.v1.RepairPlayerRequest.Strategy strategy = 3;
+}
+
+message RepairPlayerResponse {
+}
+
+message GetCurrentGenerationRequest {
+}
+
+message GetCurrentGenerationResponse {
+  string generation = 1;
+}
+

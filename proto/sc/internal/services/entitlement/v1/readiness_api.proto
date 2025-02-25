@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/entitlement/v1/commands.proto";
+import "sc/external/common/command/v1/types.proto";
+
+service AccountReadinessService {
+  rpc ReconcileAccount (.sc.internal.services.entitlement.v1.ReconcileAccountRequest) returns (.sc.internal.services.entitlement.v1.ReconcileAccountResponse) {}
+}
+
+message ReconcileAccountRequest {
+  .sc.internal.services.entitlement.v1.ReconcileAccountCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message ReconcileAccountResponse {
+}
+

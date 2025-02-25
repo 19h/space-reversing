@@ -1,0 +1,341 @@
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/discipline/v1/types.proto";
+import "sc/internal/services/discipline/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+
+message CreateSanctionRequest {
+  message Body {
+    reserved "status";
+    reserved 3;
+    string target_urn = 2;
+    repeated .sc.external.services.discipline.v1.Measure measures = 6;
+    .sc.external.services.discipline.v1.InputNotes notes = 7;
+    repeated .sc.external.services.discipline.v1.Action actions = 8;
+    string watchlist_id = 9;
+    oneof lifetime {
+      bool permanent = 4;
+      uint64 until = 5;
+    }
+  }
+
+  repeated .sc.internal.services.discipline.v1.CreateSanctionRequest.Body sanctions = 1;
+}
+
+message CreateSanctionResponse {
+  repeated string sanction_ids = 1;
+}
+
+message ChangeSanctionRequest {
+  message Body {
+    string sanction_id = 1;
+    string target_urn = 2;
+    .sc.external.services.discipline.v1.SanctionStatus status = 3;
+    repeated .sc.external.services.discipline.v1.Measure measures = 6;
+    .sc.external.services.discipline.v1.InputNotes notes = 7;
+    repeated .sc.external.services.discipline.v1.Action actions = 8;
+    string watchlist_id = 9;
+    oneof lifetime {
+      bool permanent = 4;
+      uint64 until = 5;
+    }
+  }
+
+  repeated .sc.internal.services.discipline.v1.ChangeSanctionRequest.Body changes = 1;
+}
+
+message ChangeSanctionResponse {
+}
+
+message ActivateSanctionRequest {
+  message Body {
+    string sanction_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.ActivateSanctionRequest.Body activations = 1;
+}
+
+message ActivateSanctionResponse {
+}
+
+message LiftSanctionRequest {
+  message Body {
+    string sanction_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.LiftSanctionRequest.Body lifts = 1;
+}
+
+message LiftSanctionResponse {
+}
+
+message GetSanctionRequest {
+  string sanction_id = 1;
+}
+
+message GetSanctionResponse {
+  .sc.external.services.discipline.v1.Sanction sanction = 1;
+}
+
+message QuerySanctionsRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QuerySanctionsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.discipline.v1.Sanction results = 2;
+}
+
+message CreateWatchListRequest {
+  message Body {
+    string name = 1;
+    string description = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.CreateWatchListRequest.Body creates = 1;
+}
+
+message CreateWatchListResponse {
+  repeated string watchlist_ids = 1;
+}
+
+message ChangeWatchListRequest {
+  message Body {
+    string watchlist_id = 1;
+    string name = 2;
+    string description = 3;
+  }
+
+  repeated .sc.internal.services.discipline.v1.ChangeWatchListRequest.Body changes = 1;
+}
+
+message ChangeWatchListResponse {
+}
+
+message EraseWatchListRequest {
+  message Body {
+    string watchlist_id = 1;
+  }
+
+  repeated .sc.internal.services.discipline.v1.EraseWatchListRequest.Body erasures = 1;
+}
+
+message EraseWatchListResponse {
+}
+
+message AddToWatchListRequest {
+  message Body {
+    string watchlist_id = 1;
+    repeated string targets = 2;
+    .sc.external.services.discipline.v1.InputNotes notes = 3;
+    .sc.internal.services.discipline.v1.WatchListReasonType reason = 4;
+    string details = 5;
+  }
+
+  repeated .sc.internal.services.discipline.v1.AddToWatchListRequest.Body adds = 1;
+}
+
+message AddToWatchListResponse {
+}
+
+message RemoveFromWatchListRequest {
+  message Body {
+    string watchlist_id = 1;
+    repeated string targets = 2;
+    .sc.external.services.discipline.v1.InputNotes notes = 3;
+  }
+
+  repeated .sc.internal.services.discipline.v1.RemoveFromWatchListRequest.Body removes = 1;
+}
+
+message RemoveFromWatchListResponse {
+}
+
+message SanctionWatchlistRequest {
+  message Body {
+    string watchlist_id = 1;
+    repeated .sc.external.services.discipline.v1.Measure measures = 6;
+    .sc.external.services.discipline.v1.InputNotes notes = 7;
+    repeated .sc.external.services.discipline.v1.Action actions = 8;
+    oneof lifetime {
+      bool permanent = 4;
+      uint64 until = 5;
+    }
+  }
+
+  repeated .sc.internal.services.discipline.v1.SanctionWatchlistRequest.Body sanctions = 1;
+}
+
+message SanctionWatchlistResponse {
+}
+
+message LiftSanctionWatchlistRequest {
+  message Body {
+    string watchlist_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.LiftSanctionWatchlistRequest.Body lifts = 1;
+}
+
+message LiftSanctionWatchlistResponse {
+}
+
+message QueryWatchlistEntriesRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryWatchlistEntriesResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.discipline.v1.WatchListEntry results = 2;
+}
+
+message QueryWatchlistsRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryWatchlistsResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.discipline.v1.WatchList results = 2;
+}
+
+message CreateInfractionRequest {
+  message Body {
+    string target_urn = 1;
+    .sc.internal.services.discipline.v1.InfractionScope scope = 2;
+    .sc.internal.services.discipline.v1.InfractionType type = 3;
+    .sc.internal.services.discipline.v1.InfractionSeverity severity = 4;
+    .sc.external.services.discipline.v1.InputNotes notes = 5;
+  }
+
+  repeated .sc.internal.services.discipline.v1.CreateInfractionRequest.Body creates = 1;
+}
+
+message CreateInfractionResponse {
+  repeated string infraction_ids = 1;
+}
+
+message EraseInfractionRequest {
+  message Body {
+    string infraction_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.EraseInfractionRequest.Body erasures = 1;
+}
+
+message EraseInfractionResponse {
+}
+
+message ChangeInfractionRequest {
+  message Body {
+    string infraction_id = 1;
+    .sc.internal.services.discipline.v1.InfractionScope scope = 2;
+    .sc.internal.services.discipline.v1.InfractionType type = 3;
+    .sc.internal.services.discipline.v1.InfractionSeverity severity = 4;
+    .sc.external.services.discipline.v1.InputNotes notes = 5;
+    string target_urn = 6;
+  }
+
+  repeated .sc.internal.services.discipline.v1.ChangeInfractionRequest.Body changes = 1;
+}
+
+message ChangeInfractionResponse {
+}
+
+message QueryInfractionRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QueryInfractionResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.discipline.v1.Infraction results = 2;
+}
+
+message CreateNoteRequest {
+  message Body {
+    string target_urn = 1;
+    string subject_urn = 2;
+    .sc.external.services.discipline.v1.InputNotes notes = 3;
+  }
+
+  repeated .sc.internal.services.discipline.v1.CreateNoteRequest.Body creates = 1;
+}
+
+message CreateNoteResponse {
+}
+
+message ReplyNoteRequest {
+  message Body {
+    string parent_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.ReplyNoteRequest.Body replies = 1;
+}
+
+message ReplyNoteResponse {
+}
+
+message ChangeNoteRequest {
+  message Body {
+    string note_id = 1;
+    .sc.external.services.discipline.v1.InputNotes notes = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.ChangeNoteRequest.Body changes = 1;
+}
+
+message ChangeNoteResponse {
+}
+
+message EraseNoteRequest {
+  message Body {
+    string note_id = 1;
+  }
+
+  repeated .sc.internal.services.discipline.v1.EraseNoteRequest.Body erasures = 1;
+}
+
+message EraseNoteResponse {
+}
+
+message QueryNoteRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QueryNoteResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.internal.services.discipline.v1.Note results = 2;
+}
+
+message VerifyEnforcementRequest {
+  message Query {
+    string target_urn = 1;
+    .sc.external.services.discipline.v1.GameMode game_mode = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.VerifyEnforcementRequest.Query queries = 1;
+}
+
+message VerifyEnforcementResponse {
+  message Result {
+    reserved "has_active_anticheat_session";
+    reserved "active_sanctions";
+    reserved 3;
+    reserved 4;
+    string target_urn = 1;
+    bool is_allowed = 2;
+  }
+
+  repeated .sc.internal.services.discipline.v1.VerifyEnforcementResponse.Result results = 1;
+}
+

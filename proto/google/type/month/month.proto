@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package google.type;
+
+option java_package = "com.google.type";
+option java_outer_classname = "MonthProto";
+option java_multiple_files = true;
+option go_package = "google/type/month;month";
+option objc_class_prefix = "GTP";
+
+enum Month {
+  MONTH_UNSPECIFIED = 0;
+  JANUARY = 1;
+  FEBRUARY = 2;
+  MARCH = 3;
+  APRIL = 4;
+  MAY = 5;
+  JUNE = 6;
+  JULY = 7;
+  AUGUST = 8;
+  SEPTEMBER = 9;
+  OCTOBER = 10;
+  NOVEMBER = 11;
+  DECEMBER = 12;
+}
+

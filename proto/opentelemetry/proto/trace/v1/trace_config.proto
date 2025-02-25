@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package opentelemetry.proto.trace.v1;
+
+option java_package = "io.opentelemetry.proto.trace.v1";
+option java_outer_classname = "TraceConfigProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/collector/trace/v1";
+
+message TraceConfig {
+  int64 max_number_of_attributes = 4;
+  int64 max_number_of_timed_events = 5;
+  int64 max_number_of_attributes_per_timed_event = 6;
+  int64 max_number_of_links = 7;
+  int64 max_number_of_attributes_per_link = 8;
+  oneof sampler {
+    .opentelemetry.proto.trace.v1.ConstantSampler constant_sampler = 1;
+    .opentelemetry.proto.trace.v1.TraceIdRatioBased trace_id_ratio_based = 2;
+    .opentelemetry.proto.trace.v1.RateLimitingSampler rate_limiting_sampler = 3;
+  }
+}
+
+message ConstantSampler {
+  enum ConstantDecision {
+    ALWAYS_OFF = 0;
+    ALWAYS_ON = 1;
+    ALWAYS_PARENT = 2;
+  }
+
+  .opentelemetry.proto.trace.v1.ConstantSampler.ConstantDecision decision = 1;
+}
+
+message TraceIdRatioBased {
+  double samplingRatio = 1;
+}
+
+message RateLimitingSampler {
+  int64 qps = 1;
+}
+

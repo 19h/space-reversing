@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package sc.internal.services.entitygraph.v1;
+
+import "google/protobuf/any.proto";
+import "google/rpc/status/status.proto";
+
+message EnqueuedRequest {
+  string name = 1;
+  .sc.internal.services.entitygraph.v1.EnqueuedRequestBody body = 2;
+}
+
+message EnqueuedRequestBody {
+  reserved "log_context";
+  reserved 5;
+  string requester_id = 1;
+  .google.protobuf.Any body = 2;
+  string command_id = 3;
+  string front_end_id = 4;
+}
+
+message CommandResult {
+  reserved "request";
+  reserved 5;
+  string command_id = 1;
+  bool success = 2;
+  .google.protobuf.Any response = 3;
+  .google.rpc.Status error = 4;
+}
+
+message ActivationNotification {
+  repeated uint64 geids = 1;
+  string shard_id = 2;
+  .google.protobuf.Any context = 3;
+}
+
+message WorkerResponseBody {
+  string command_id = 1;
+  bool success = 2;
+  .google.protobuf.Any response = 3;
+  .google.rpc.Status error = 4;
+}
+
+message DeactivationNotification {
+  repeated uint64 geids = 1;
+  .google.protobuf.Any context = 2;
+}
+

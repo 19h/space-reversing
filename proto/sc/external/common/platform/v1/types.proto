@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package sc.external.common.platform.v1;
+
+message PlatformRole {
+  string name = 1;
+}
+
+message PlatformBadge {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message LoadoutKitConfiguration {
+  string code = 1;
+  string name = 2;
+}
+
+message PortConfig {
+  string ref = 1;
+  repeated .sc.external.common.platform.v1.PortConfig ports = 2;
+}
+
+message ShipSerial {
+  string value = 1;
+  string label = 2;
+}
+
+message PlatformShip {
+  string ship_code = 1;
+  string ship_entity_class_guid = 2;
+  string insurance_code = 3;
+  string insurance_entity_class_guid = 4;
+  .sc.external.common.platform.v1.ShipSerial serial = 5;
+  string ship_custom_name = 6;
+  string uuid = 7;
+  repeated .sc.external.common.platform.v1.PortConfig customizations = 8;
+  .sc.external.common.platform.v1.LoadoutKitConfiguration loadout_kit = 9;
+}
+
+message PlatformHangarLevel {
+  string code = 1;
+  string entity_class_guid = 2;
+  string uuid = 3;
+}
+
+message PlatformHangarDecoration {
+  string code = 1;
+  string entity_class_guid = 2;
+  string uuid = 3;
+}
+
+message PlatformOtherItem {
+  string code = 1;
+  string entity_class_guid = 2;
+  string uuid = 3;
+}
+
+message PlatformHangars {
+  repeated .sc.external.common.platform.v1.PlatformHangarLevel levels = 1;
+  repeated .sc.external.common.platform.v1.PlatformHangarDecoration decorations = 2;
+}
+
+message PlatformGameInventoryData {
+  int32 account_id = 1;
+  repeated .sc.external.common.platform.v1.PlatformShip ships = 2;
+  .sc.external.common.platform.v1.PlatformHangars hangars = 3;
+  repeated .sc.external.common.platform.v1.PlatformOtherItem other_items = 4;
+}
+

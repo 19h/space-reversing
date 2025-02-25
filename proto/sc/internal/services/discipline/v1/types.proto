@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+
+import "sc/external/services/discipline/v1/types.proto";
+
+message WatchList {
+  string id = 1;
+  uint64 time_created = 2;
+  uint64 time_modified = 3;
+  string lastwriter = 4;
+  string name = 5;
+  string description = 6;
+}
+
+message WatchListEntry {
+  string watchlist_id = 1;
+  string target_urn = 2;
+  string author_id = 3;
+  .sc.internal.services.discipline.v1.WatchListReasonType reason = 4;
+  string details = 5;
+  .sc.external.services.discipline.v1.InputNotes notes = 6;
+}
+
+message Note {
+  string id = 1;
+  uint64 time_created = 2;
+  uint64 time_modified = 3;
+  string author_id = 4;
+  string parent_id = 5;
+  string target_urn = 6;
+  string subject_urn = 7;
+  .sc.external.services.discipline.v1.InputNotes note = 8;
+  repeated .sc.internal.services.discipline.v1.Note replies = 9;
+}
+
+message PlayerReport {
+  string from_urn = 1;
+  string target_urn = 2;
+  uint64 time_created = 3;
+  uint64 time_modified = 4;
+  .sc.internal.services.discipline.v1.InfractionScope scope = 5;
+  .sc.internal.services.discipline.v1.InfractionType type = 6;
+  .sc.internal.services.discipline.v1.InfractionSeverity severity = 7;
+  string description = 8;
+}
+
+message Infraction {
+  string id = 1;
+  string target_urn = 2;
+  uint64 time_created = 3;
+  uint64 time_modified = 4;
+  string author_id = 5;
+  .sc.internal.services.discipline.v1.InfractionScope scope = 6;
+  .sc.internal.services.discipline.v1.InfractionType type = 7;
+  .sc.internal.services.discipline.v1.InfractionSeverity severity = 8;
+  .sc.external.services.discipline.v1.InputNotes notes = 9;
+}
+
+enum WatchListReasonType {
+  WATCH_LIST_REASON_TYPE_UNSPECIFIED = 0;
+  WATCH_LIST_REASON_TYPE_OPERATOR = 1;
+  WATCH_LIST_REASON_TYPE_ANTICHEAT = 2;
+}
+
+enum InfractionType {
+  INFRACTION_TYPE_UNSPECIFIED = 0;
+  INFRACTION_TYPE_CHEATING = 1;
+  INFRACTION_TYPE_STREAM_SNIPING = 2;
+  INFRACTION_TYPE_PROFANITY = 3;
+  INFRACTION_TYPE_EXPLOITING = 4;
+  INFRACTION_TYPE_CDC_VIOLATION = 5;
+  INFRACTION_TYPE_ADVERTISEMENT = 6;
+  INFRACTION_TYPE_GREY_MARKET = 7;
+}
+
+enum InfractionSeverity {
+  INFRACTION_SEVERITY_UNSPECIFIED = 0;
+  INFRACTION_SEVERITY_NUISANCE = 1;
+  INFRACTION_SEVERITY_ANNOYING = 2;
+  INFRACTION_SEVERITY_DISRUPTIVE = 3;
+  INFRACTION_SEVERITY_EXTREME = 4;
+}
+
+enum InfractionScope {
+  INFRACTION_SCOPE_UNSPECIFIED = 0;
+  INFRACTION_SCOPE_GAME_PU = 1;
+  INFRACTION_SCOPE_GAME_AC = 2;
+  INFRACTION_SCOPE_PLATFORM_ECOM = 3;
+  INFRACTION_SCOPE_PLATFORM_SPECTRUM = 4;
+}
+

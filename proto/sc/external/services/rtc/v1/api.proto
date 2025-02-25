@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package sc.external.services.rtc.v1;
+
+import "sc/external/services/rtc/v1/types.proto";
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service RTCService {
+  rpc GetChannels (.sc.external.services.rtc.v1.GetChannelsRequest) returns (.sc.external.services.rtc.v1.GetChannelsResponse) {}
+  rpc Call (.sc.external.services.rtc.v1.CallRequest) returns (.sc.external.services.rtc.v1.CallResponse) {}
+  rpc AcceptCall (.sc.external.services.rtc.v1.AcceptCallRequest) returns (.sc.external.services.rtc.v1.AcceptCallResponse) {}
+  rpc DeclineCall (.sc.external.services.rtc.v1.DeclineCallRequest) returns (.sc.external.services.rtc.v1.DeclineCallResponse) {}
+  rpc HangupCall (.sc.external.services.rtc.v1.HangupCallRequest) returns (.sc.external.services.rtc.v1.HangupCallResponse) {}
+  rpc GetPendingCalls (.sc.external.services.rtc.v1.GetPendingCallsRequest) returns (.sc.external.services.rtc.v1.GetPendingCallsResponse) {}
+}
+
+message GetChannelsRequest {
+  repeated string group_ids = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetChannelsResponse {
+  repeated .sc.external.services.rtc.v1.Channel channels = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message CallRequest {
+  string group_id = 1;
+}
+
+message CallResponse {
+  .sc.external.services.rtc.v1.Call call = 1;
+}
+
+message AcceptCallRequest {
+  string group_id = 1;
+}
+
+message AcceptCallResponse {
+  .sc.external.services.rtc.v1.Channel channel = 1;
+}
+
+message DeclineCallRequest {
+  string group_id = 1;
+}
+
+message DeclineCallResponse {
+}
+
+message HangupCallRequest {
+  string group_id = 1;
+}
+
+message HangupCallResponse {
+}
+
+message GetPendingCallsRequest {
+  reserved "group_id";
+  reserved 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetPendingCallsResponse {
+  repeated .sc.external.services.rtc.v1.Call calls = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+

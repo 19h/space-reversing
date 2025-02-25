@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sc.external.common.api.v1;
+
+message PaginationSort {
+  .sc.external.common.api.v1.PaginationOrder order = 1;
+  string by = 2;
+}
+
+message PaginationArguments {
+  uint32 first = 1;
+  string after = 2;
+}
+
+message BackwardPaginationArguments {
+  uint32 last = 1;
+  string before = 2;
+}
+
+message PaginationInfo {
+  bool has_next_page = 1;
+  bool has_previous_page = 2;
+  string start_cursor = 3;
+  string end_cursor = 4;
+}
+
+enum PaginationOrder {
+  PAGINATION_ORDER_UNSPECIFIED = 0;
+  PAGINATION_ORDER_ASCENDING = 1;
+  PAGINATION_ORDER_DESCENDING = 2;
+}
+

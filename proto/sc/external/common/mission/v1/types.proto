@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+message MissionVariableValue {
+  oneof value {
+    bool bool_val = 1;
+    int64 integer_val = 2;
+    double double_val = 3;
+    string string_val = 4;
+    uint64 geid_val = 5;
+  }
+}
+
+message MissionVariables {
+  message VariablesEntry {
+    string key = 1;
+    .sc.external.common.mission.v1.MissionVariableValue value = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.MissionVariables.VariablesEntry variables = 1;
+}
+
+message MissionToken {
+  string id = 1;
+  .google.protobuf.Timestamp expiry = 2;
+  uint64 created_at = 3;
+  string reason = 4;
+  string owner_urn = 5;
+  int32 count = 6;
+}
+
+message MissionTokenLog {
+  string id = 1;
+  string owner_urn = 2;
+  uint64 created_at = 3;
+  .sc.external.common.mission.v1.TokenLogAction action = 4;
+  string reason = 5;
+  uint32 count = 6;
+}
+
+message MissionTemplate {
+  string contract_definition_id = 1;
+  .sc.external.common.mission.v1.MissionVariables variables = 2;
+  uint32 seed = 3;
+}
+
+message MissionReward {
+  repeated .google.protobuf.Any rewards = 1;
+}
+
+message MissionParticipant {
+  string player_urn = 1;
+  repeated float share = 2;
+}
+
+message FilterOptions {
+  bool disable_location_prerequisites = 1;
+  bool disable_token_prerequisites = 2;
+  bool disable_reputation_prerequisites = 3;
+  repeated string filter_by_contract_definition_ids = 4;
+}
+
+enum TokenLogAction {
+  TOKEN_LOG_ACTION_UNSPECIFIED = 0;
+  TOKEN_LOG_ACTION_CREATED = 1;
+  TOKEN_LOG_ACTION_DELETED = 2;
+}
+

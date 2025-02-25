@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package opentelemetry.proto.collector.logs.v1;
+
+option java_package = "io.opentelemetry.proto.collector.logs.v1";
+option java_outer_classname = "LogsServiceProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/collector/logs/v1";
+
+import "opentelemetry/proto/logs/v1/logs.proto";
+
+service LogsService {
+  rpc Export (.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest) returns (.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse) {}
+}
+
+message ExportLogsServiceRequest {
+  repeated .opentelemetry.proto.logs.v1.ResourceLogs resource_logs = 1;
+}
+
+message ExportLogsServiceResponse {
+}
+

@@ -1,0 +1,115 @@
+// File: socket_hook.c
+
+#include <winsock2.h>
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dbghelp.h>
+#include <psapi.h>
+#include <ws2tcpip.h>
+#include <direct.h>      // For _mkdir
+#include "hook.c"        // MinHook header
+
+#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "Ws2_32.lib")
+
+// Original function typedefs.
+typedef int (WINAPI *recv_t)(SOCKET s, char* buf, int len, int flags);
+typedef int (WINAPI *recvfrom_t)(SOCKET s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen);
+
+// Global pointers to the original functions.
+static recv_t      orig_recv     = NULL;
+static recvfrom_t  orig_recvfrom = NULL;
+
+// Dumps intercepted message data to a file named with the current microtimestamp
+// in the directory "$HOME/sc_dumps".
+void dump_message(const char *buf, int len)
+{
+    const char *home = getenv("HOME");
+    if (!home)
+        home = getenv("USERPROFILE");
+    if (!home)
+        home = ".";
+
+    char dumpDir[512];
+    sprintf(dumpDir, "%s\\sc_dumps", home);
+    _mkdir(dumpDir); // Create directory if it doesn't exist
+
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    ULARGE_INTEGER uli;
+    uli.LowPart  = ft.dwLowDateTime;
+    uli.HighPart = ft.dwHighDateTime;
+    // Convert FILETIME (100-ns intervals since Jan 1, 1601) to microseconds since Unix epoch.
+    const unsigned long long EPOCH_DIFF = 116444736000000000ULL;
+    unsigned long long microtimestamp = (uli.QuadPart - EPOCH_DIFF) / 10;
+
+    char filePath[1024];
+    sprintf(filePath, "%s\\%llu.bin", dumpDir, microtimestamp);
+
+    FILE *f = fopen(filePath, "wb");
+    if (f)
+    {
+        fwrite(buf, 1, len, f);
+        fclose(f);
+    }
+}
+
+// Hook for ws2_32.dll's recv.
+int WINAPI my_recv(SOCKET s, char *buf, int len, int flags)
+{
+    int ret = orig_recv(s, buf, len, flags);
+    if (ret >= 32)
+        dump_message(buf, ret);
+    return ret;
+}
+
+// Hook for ws2_32.dll's recvfrom.
+int WINAPI my_recvfrom(SOCKET s, char *buf, int len, int flags, struct sockaddr *from, int *fromlen)
+{
+    int ret = orig_recvfrom(s, buf, len, flags, from, fromlen);
+    if (ret >= 32)
+        dump_message(buf, ret);
+    return ret;
+}
+
+// DllMain: Initializes hooks when the DLL is loaded.
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hModule);
+
+        // Initialize symbol handler.
+        SymInitialize(GetCurrentProcess(), NULL, TRUE);
+
+        // Initialize MinHook.
+        if (MH_Initialize() != MH_OK)
+            return FALSE;
+
+        // Create hook for recv.
+        if (MH_CreateHookApi(L"ws2_32.dll", "recv", &my_recv, (LPVOID *)&orig_recv) != MH_OK)
+        {
+            /* Handle error if necessary */
+        }
+
+        // Create hook for recvfrom.
+        if (MH_CreateHookApi(L"ws2_32.dll", "recvfrom", &my_recvfrom, (LPVOID *)&orig_recvfrom) != MH_OK)
+        {
+            /* Handle error if necessary */
+        }
+
+        // Enable all hooks.
+        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
+        {
+            /* Handle error if necessary */
+        }
+    }
+    else if (ul_reason_for_call == DLL_PROCESS_DETACH)
+    {
+        MH_Uninitialize();
+        SymCleanup(GetCurrentProcess());
+    }
+    return TRUE;
+}

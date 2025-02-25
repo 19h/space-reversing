@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message Target {
+  string host = 1;
+  uint32 port = 2;
+}
+
+message MetricsTargetsRequest {
+}
+
+message MetricsTargetsResponse {
+  repeated .sc.internal.services.fleet.v1.Target targets = 1;
+}
+

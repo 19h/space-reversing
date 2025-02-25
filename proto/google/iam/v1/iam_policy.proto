@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package google.iam.v1;
+
+option java_package = "com.google.iam.v1";
+option java_outer_classname = "IamPolicyProto";
+option java_multiple_files = true;
+option go_package = "google/iam/v1;iam";
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Iam.V1";
+
+import "google/iam/v1/options.proto";
+import "google/iam/v1/policy.proto";
+import "google/api/annotations/annotations.proto";
+import "google/api/annotations/client.proto";
+import "google/api/annotations/field_behavior.proto";
+import "google/api/annotations/resource.proto";
+
+service IAMPolicy {
+  rpc SetIamPolicy (.google.iam.v1.SetIamPolicyRequest) returns (.google.iam.v1.Policy) {}
+  rpc GetIamPolicy (.google.iam.v1.GetIamPolicyRequest) returns (.google.iam.v1.Policy) {}
+  rpc TestIamPermissions (.google.iam.v1.TestIamPermissionsRequest) returns (.google.iam.v1.TestIamPermissionsResponse) {}
+}
+
+message SetIamPolicyRequest {
+  string resource = 1;
+  .google.iam.v1.Policy policy = 2;
+}
+
+message GetIamPolicyRequest {
+  string resource = 1;
+  .google.iam.v1.GetPolicyOptions options = 2;
+}
+
+message TestIamPermissionsRequest {
+  string resource = 1;
+  repeated string permissions = 2;
+}
+
+message TestIamPermissionsResponse {
+  repeated string permissions = 1;
+}
+

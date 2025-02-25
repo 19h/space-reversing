@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package google.iam.v1.logging;
+
+option java_package = "com.google.iam.v1.logging";
+option java_outer_classname = "AuditDataProto";
+option java_multiple_files = true;
+option go_package = "google/iam/v1/logging;logging";
+option csharp_namespace = "Google.Cloud.Iam.V1.Logging";
+
+import "google/api/annotations/annotations.proto";
+import "google/iam/v1/policy.proto";
+
+message AuditData {
+  .google.iam.v1.PolicyDelta policy_delta = 2;
+}
+

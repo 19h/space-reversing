@@ -1,0 +1,93 @@
+syntax = "proto2";
+
+package protocol.core;
+
+import "service_common.proto";
+
+message service_packet {
+  required string packet_method = 1;
+  required bytes packet_data = 2;
+  required uint64 receipt = 3;
+}
+
+message service_registration {
+  required string service_name = 1;
+  required string service_prefix = 2;
+  required .protocol.common.service_id service_id = 3;
+}
+
+message service_unregistration {
+  required .protocol.common.service_id service_id = 1;
+}
+
+message service_event_sub {
+  required string event_name = 1;
+  required .protocol.common.service_id service_id = 2;
+}
+
+message service_rpc_reg {
+  required string rpc_name = 1;
+  required .protocol.common.service_id service_id = 2;
+}
+
+message service_event {
+  required string event_name = 1;
+  required string event_data = 2;
+  required .protocol.common.service_id source_id = 3;
+  optional .protocol.common.service_id dest_id = 4;
+}
+
+message service_event_from_router {
+  required string name = 1;
+  required string data = 2;
+  required .protocol.common.service_id source_id = 3;
+  required .protocol.common.service_id dest_id = 4;
+}
+
+message service_rpc {
+  required string rpc_name = 1;
+  required string rpc_data = 2;
+  optional int64 meta_data = 3;
+  optional uint64 meta_data2 = 4;
+  required uint64 call_id = 5;
+  required .protocol.common.service_id source_id = 6;
+  optional .protocol.common.service_id dest_id = 7;
+}
+
+message service_rpc_from_router {
+  required string rpc_name = 1;
+  required string rpc_data = 2;
+  required uint64 meta_data = 3;
+  required uint64 meta_data2 = 4;
+  required uint64 call_id = 5;
+  required .protocol.common.service_id source_id = 6;
+  required .protocol.common.service_id dest_id = 7;
+}
+
+message service_rpc_resp {
+  required string rpc_data = 1;
+  required uint64 call_id = 2;
+  required int32 result_code = 3;
+  required string error_msg = 4;
+  required .protocol.common.service_id service = 5;
+}
+
+message service_action {
+  required string action_name = 1;
+  required bytes action_data = 2;
+  required .protocol.common.service_id source_id = 3;
+  repeated .protocol.common.service_id recipients = 4;
+}
+
+message service_action_from_router {
+  required string action_name = 1;
+  required bytes action_data = 2;
+  required .protocol.common.service_id source_id = 3;
+  required .protocol.common.service_id recipient = 4;
+}
+
+message service_isolate {
+  required bool isolate = 1;
+  required .protocol.common.service_id service_id = 2;
+}
+

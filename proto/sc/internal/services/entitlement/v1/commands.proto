@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+message ReconcileAccountCommand {
+  string account_urn = 1;
+  string player_urn = 2;
+  string log_message = 3;
+  bool force_reconcile_ltp = 4;
+}
+
+message ReconcileAccountResult {
+  uint32 new_entitlements_count = 1;
+}
+
+message GrantCommand {
+  message Grant {
+    reserved "config";
+    reserved 11;
+    string urn = 1;
+    string account_urn = 2;
+    string player_urn = 3;
+    .sc.external.services.entitlement.v1.EntitlementType type = 4;
+    .sc.external.services.entitlement.v1.EntitlementSource source = 5;
+    bool real_money = 6;
+    string source_sku = 7;
+    string name = 8;
+    string entity_class_guid = 9;
+    uint32 stack_size = 10;
+    .sc.external.services.entitlement.v1.EntitlementFulfillment fulfillment = 12;
+    string log_message = 13;
+    string target_inventory = 14;
+    .sc.external.services.entitlement.v1.Insurance insurance = 15;
+    .sc.external.services.entitlement.v1.NewEntityConfiguration entity_config = 16;
+    .sc.external.services.entitlement.v1.EntitlementItemType item_type = 17;
+  }
+
+  repeated .sc.internal.services.entitlement.v1.GrantCommand.Grant grants = 1;
+}
+
+message MeltByPlayer {
+  string player_urn = 1;
+  bool enabled = 2;
+}
+
+message RevokeCommand {
+  message Revoke {
+    string urn = 1;
+    bool melt = 2;
+    string log_message = 3;
+    .sc.internal.services.entitlement.v1.MeltByPlayer melt_by_player = 4;
+  }
+
+  repeated .sc.internal.services.entitlement.v1.RevokeCommand.Revoke revokes = 1;
+}
+
+message RevokeResult {
+}
+
+message ClaimCommand {
+  message Claim {
+    reserved "config";
+    reserved 2;
+    string urn = 1;
+    string log_message = 3;
+    string target_inventory = 4;
+    .sc.external.services.entitlement.v1.NewEntityConfiguration entity_config = 5;
+  }
+
+  repeated .sc.internal.services.entitlement.v1.ClaimCommand.Claim claims = 1;
+  bool fulfill = 2;
+  .sc.external.services.entitygraph.v1.Purpose purpose = 3;
+}
+
+message ClaimResult {
+}
+
+message UrnIdentifier {
+  oneof urn {
+    string player_urn = 1;
+    string account_urn = 2;
+  }
+}
+
+message RevokeAllCommand {
+  .sc.internal.services.entitlement.v1.UrnIdentifier identifier = 1;
+  bool melt = 2;
+  string log_message = 3;
+}
+
+message UpdateInsuredLoadoutsCommand {
+  message LoadoutUpdates {
+    string urn = 1;
+    string player_urn = 2;
+    .sc.external.services.entitlement.v1.InsuranceItemPortLoadout insurance_item_port_loadouts = 3;
+  }
+
+  repeated .sc.internal.services.entitlement.v1.UpdateInsuredLoadoutsCommand.LoadoutUpdates loadout_updates = 1;
+}
+

@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package sc.external.services.discipline.v1;
+
+message Measure {
+  .sc.external.services.discipline.v1.MeasureType type = 1;
+  repeated .sc.external.services.discipline.v1.MeasureScope scope = 2;
+}
+
+message KickAction {
+}
+
+message MessageAction {
+  string message = 1;
+}
+
+message Action {
+  oneof action {
+    .sc.external.services.discipline.v1.KickAction kick = 1;
+    .sc.external.services.discipline.v1.MessageAction message = 2;
+  }
+}
+
+message Sanction {
+  string id = 1;
+  string target_urn = 2;
+  .sc.external.services.discipline.v1.SanctionStatus status = 3;
+  string author_id = 4;
+  repeated .sc.external.services.discipline.v1.Measure measures = 7;
+  repeated .sc.external.services.discipline.v1.Action actions = 8;
+  .sc.external.services.discipline.v1.InputNotes notes = 9;
+  string watchlist_id = 10;
+  oneof lifetime {
+    bool permanent = 5;
+    uint64 until = 6;
+  }
+}
+
+message SanctionJob {
+  string id = 1;
+  .sc.external.services.discipline.v1.SanctionStatus status = 2;
+}
+
+message InputNotes {
+  string note = 1;
+  string public_note = 2;
+  string log = 3;
+}
+
+enum GameMode {
+  GAME_MODE_UNSPECIFIED = 0;
+  GAME_MODE_SC_PU = 1;
+  GAME_MODE_SC_AC = 2;
+}
+
+enum SanctionStatus {
+  SANCTION_STATUS_UNSPECIFIED = 0;
+  SANCTION_STATUS_PENDING = 1;
+  SANCTION_STATUS_ACTIVE = 2;
+  SANCTION_STATUS_LIFTED = 3;
+}
+
+enum MeasureScope {
+  MEASURE_SCOPE_UNSPECIFIED = 0;
+  MEASURE_SCOPE_SC_PU = 1;
+  MEASURE_SCOPE_SC_AC = 2;
+  MEASURE_SCOPE_PLATFORM = 3;
+}
+
+enum MeasureType {
+  MEASURE_TYPE_UNSPECIFIED = 0;
+  MEASURE_TYPE_GAMEACCESS = 1;
+  MEASURE_TYPE_CHAT = 2;
+  MEASURE_TYPE_VOICE = 3;
+  MEASURE_TYPE_SOCIAL = 4;
+  MEASURE_TYPE_ECONOMY = 5;
+  MEASURE_TYPE_VEHICLES = 6;
+  MEASURE_TYPE_REPUTATION = 7;
+  MEASURE_TYPE_QUARTERDECK = 8;
+  MEASURE_TYPE_CRIMINAL = 9;
+}
+

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+message Player {
+  reserved "creation_attributes";
+  reserved 7;
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    STATE_CURRENT = 1;
+    STATE_ARCHIVED = 2;
+    STATE_CREATING = 3;
+    STATE_REPAIRING = 4;
+    STATE_ARCHIVING = 5;
+    STATE_ABORTED = 6;
+    STATE_RESETTING = 7;
+  }
+
+  uint64 created_at = 1;
+  uint64 updated_at = 2;
+  uint64 geid = 3;
+  uint32 account_id = 4;
+  string name = 5;
+  .sc.external.services.identity.v1.Player.State state = 6;
+  bool is_fulfilled = 8;
+}
+
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  GENDER_MALE = 1;
+  GENDER_FEMALE = 2;
+}
+
+enum Race {
+  RACE_UNSPECIFIED = 0;
+  RACE_HUMAN = 1;
+}
+

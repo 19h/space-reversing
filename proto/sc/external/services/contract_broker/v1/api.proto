@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package sc.external.services.contract_broker.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service ContractBrokerService {
+  rpc QueryAvailableContracts (.sc.external.services.contract_broker.v1.QueryAvailableContractsRequest) returns (stream .sc.external.services.contract_broker.v1.QueryAvailableContractsResponse) {}
+  rpc QueryContracts (.sc.external.services.contract_broker.v1.QueryContractsRequest) returns (.sc.external.services.contract_broker.v1.QueryContractsResponse) {}
+}
+
+message QueryAvailableContractsRequest {
+  string shard_id = 1;
+  repeated uint32 location_ids = 2;
+  uint64 player_id = 3;
+  .sc.external.common.mission.v1.FilterOptions options = 4;
+}
+
+message QueryAvailableContractsResponse {
+  repeated .sc.external.common.mission.v1.MissionContract contracts = 1;
+}
+
+message QueryContractsRequest {
+  message EligibilityOptions {
+    uint64 player_id = 1;
+    repeated uint32 location_ids = 2;
+    string shard_id = 3;
+  }
+
+  .sc.external.common.api.v1.Query query = 1;
+  .sc.external.services.contract_broker.v1.QueryContractsRequest.EligibilityOptions eligibility = 3;
+}
+
+message QueryContractsResponse {
+  message EligibilityInfo {
+    bool eligible = 1;
+    .sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+  }
+
+  message ContractsWithEligibility {
+    .sc.external.common.mission.v1.MissionContract contract = 1;
+    .sc.external.services.contract_broker.v1.QueryContractsResponse.EligibilityInfo eligibility_info = 2;
+  }
+
+  message Body {
+    oneof contracts {
+      .sc.external.common.mission.v1.MissionContract contract = 1;
+      .sc.external.services.contract_broker.v1.QueryContractsResponse.ContractsWithEligibility contract_with_eligibility = 2;
+    }
+  }
+
+  repeated .sc.external.services.contract_broker.v1.QueryContractsResponse.Body body = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+

@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package service_statistics;
+
+message RewardRequest {
+  required string reward_code = 1;
+}
+

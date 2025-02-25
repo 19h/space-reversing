@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message UnitDetail {
+  message LabelsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string id = 1;
+  string product = 2;
+  repeated .sc.internal.services.fleet.v1.UnitDetail.LabelsEntry labels = 3;
+  .sc.internal.services.fleet.v1.UnitHealth health_status = 4;
+}
+
+message GetUnitsRequest {
+  repeated string ids = 1;
+}
+
+message GetUnitsResponse {
+  repeated .sc.internal.services.fleet.v1.UnitDetail units = 1;
+}
+
+enum UnitHealth {
+  UNIT_HEALTH_UNSPECIFIED = 0;
+  UNIT_HEALTH_HEALTHY = 1;
+  UNIT_HEALTH_UNHEALTHY = 2;
+  UNIT_HEALTH_RETIRED = 3;
+  UNIT_HEALTH_PENDING = 4;
+}
+

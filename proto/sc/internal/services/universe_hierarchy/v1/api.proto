@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package sc.internal.services.universe_hierarchy.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service UniverseHierarchyService {
+  rpc ResolveSuperGUIDs (.sc.internal.services.universe_hierarchy.v1.ResolveSuperGUIDsRequest) returns (.sc.internal.services.universe_hierarchy.v1.ResolveSuperGUIDsResponse) {}
+  rpc ResolveLocationIds (.sc.internal.services.universe_hierarchy.v1.ResolveLocationIdsRequest) returns (.sc.internal.services.universe_hierarchy.v1.ResolveLocationIdsResponse) {}
+}
+
+message ResolveSuperGUIDsRequest {
+  message Body {
+    uint64 entity_id = 1;
+    repeated string guids = 2;
+  }
+
+  string shard_id = 1;
+  repeated .sc.internal.services.universe_hierarchy.v1.ResolveSuperGUIDsRequest.Body resolves = 2;
+}
+
+message ResolveSuperGUIDsResponse {
+  message Body {
+    uint64 entity_id = 1;
+    repeated string guids = 2;
+  }
+
+  repeated .sc.internal.services.universe_hierarchy.v1.ResolveSuperGUIDsResponse.Body results = 1;
+}
+
+message ResolveLocationIdsRequest {
+  string shard_id = 1;
+  repeated uint32 location_ids = 2;
+}
+
+message ResolveLocationIdsResponse {
+  repeated uint64 entity_ids = 1;
+}
+

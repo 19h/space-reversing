@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v1;
+
+import "sc/external/services/entitlement/v1/types.proto";
+
+message ReconcileAccountUpdateNotification {
+  string command_id = 1;
+  .sc.external.services.entitlement.v1.ReconcileAccountPhase phase = 2;
+  string details = 3;
+  string account_urn = 4;
+  string player_urn = 5;
+  .sc.external.services.entitlement.v1.ReconcileAccountStatus status = 6;
+}
+

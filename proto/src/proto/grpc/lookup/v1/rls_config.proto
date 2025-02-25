@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package grpc.lookup.v1;
+
+option java_package = "io.grpc.lookup.v1";
+option java_outer_classname = "RlsConfigProto";
+option java_multiple_files = true;
+option go_package = "google.golang.org/grpc/lookup/grpc_lookup_v1";
+
+import "google/protobuf/duration.proto";
+
+message NameMatcher {
+  string key = 1;
+  repeated string names = 2;
+  bool required_match = 3;
+}
+
+message GrpcKeyBuilder {
+  message Name {
+    string service = 1;
+    string method = 2;
+  }
+
+  message ExtraKeys {
+    string host = 1;
+    string service = 2;
+    string method = 3;
+  }
+
+  message ConstantKeysEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  repeated .grpc.lookup.v1.GrpcKeyBuilder.Name names = 1;
+  .grpc.lookup.v1.GrpcKeyBuilder.ExtraKeys extra_keys = 3;
+  repeated .grpc.lookup.v1.NameMatcher headers = 2;
+  repeated .grpc.lookup.v1.GrpcKeyBuilder.ConstantKeysEntry constant_keys = 4;
+}
+
+message HttpKeyBuilder {
+  message ConstantKeysEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  repeated string host_patterns = 1;
+  repeated string path_patterns = 2;
+  repeated .grpc.lookup.v1.NameMatcher query_parameters = 3;
+  repeated .grpc.lookup.v1.NameMatcher headers = 4;
+  repeated .grpc.lookup.v1.HttpKeyBuilder.ConstantKeysEntry constant_keys = 5;
+}
+
+message RouteLookupConfig {
+  reserved "request_processing_strategy";
+  reserved 10;
+  repeated .grpc.lookup.v1.HttpKeyBuilder http_keybuilders = 1;
+  repeated .grpc.lookup.v1.GrpcKeyBuilder grpc_keybuilders = 2;
+  string lookup_service = 3;
+  .google.protobuf.Duration lookup_service_timeout = 4;
+  .google.protobuf.Duration max_age = 5;
+  .google.protobuf.Duration stale_age = 6;
+  int64 cache_size_bytes = 7;
+  repeated string valid_targets = 8;
+  string default_target = 9;
+}
+
+message RouteLookupClusterSpecifier {
+  .grpc.lookup.v1.RouteLookupConfig route_lookup_config = 1;
+}
+

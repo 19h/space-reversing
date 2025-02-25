@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.Analytics;
+
+message AnalyticsEvent {
+  required string json = 1;
+}
+
+message SMsgAnalyticsResponse {
+  required int32 status = 1;
+}
+

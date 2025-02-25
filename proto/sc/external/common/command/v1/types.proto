@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sc.external.common.command.v1;
+
+import "sc/external/services/push/v1/messages.proto";
+import "google/rpc/status/status.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message KafkaDestination {
+  string topic = 1;
+}
+
+message NotifyDestination {
+  oneof destination {
+    .sc.external.services.push.v1.PushDestination push = 1;
+    .sc.external.common.command.v1.KafkaDestination kafka = 2;
+  }
+}
+
+message CommandArguments {
+  string id = 1;
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 2;
+  string partitioning_key = 3;
+  .google.protobuf.Timestamp expiry = 4;
+}
+
+message KafkaCommandResponse {
+  string name = 1;
+  .sc.external.common.command.v1.CommandResponseBody body = 2;
+}
+
+message CommandResponseBody {
+  string id = 1;
+  .google.rpc.Status status = 2;
+  .google.protobuf.Any context = 3;
+}
+

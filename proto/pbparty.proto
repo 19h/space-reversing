@@ -1,0 +1,236 @@
+syntax = "proto2";
+
+package service_party;
+
+import "pbcommon.proto";
+import "pbgimcommon.proto";
+
+message PartyServiceMember {
+  required string nickname = 1;
+  required uint32 player_id = 2;
+  required uint64 location_id = 3;
+  required bool online = 4;
+}
+
+message PartyServiceMessage {
+  optional int32 action = 1;
+  optional string player_handle = 2;
+  optional int32 response = 3;
+  repeated .service_party.PartyServiceMember member_list = 4;
+  optional string party_id = 5;
+}
+
+message XMsgGameSettings {
+  required string group_id = 1;
+  required string map = 2;
+  required int32 level_variant = 3;
+  required int32 type = 4;
+  required int32 time_limit = 5;
+  required int32 target_score = 6;
+  required bool friendly_fire = 7;
+  required bool server_public = 8;
+  required int32 max_players = 9;
+  required bool no_dynamic_join = 10;
+  required int32 game_rules_team_count = 11;
+  required int32 max_squad_size = 12;
+}
+
+message CMsgSetPlayerRegionId {
+  required int32 player_region_id = 1;
+  optional int32 hub_region_id = 2;
+  optional int32 account_id = 3;
+}
+
+message CMsgGroupCreate {
+  required int32 type = 1;
+  required bool is_public = 2;
+  required string leader_handle = 3;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 4;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 5;
+  repeated int32 badges = 6;
+  repeated .cig.Protocols.Common.RSIPlayerStatsInfo player_game_stats = 7;
+  optional .cig.Protocols.Common.Uuid player_session_id = 8;
+  optional string web_login_name = 9;
+  optional string web_session_token = 10;
+  optional string display_name = 11;
+  required int32 hub_region_id = 12;
+}
+
+message CMsgChangeTeam {
+  required int32 team = 1;
+}
+
+message CMsgSetSpectating {
+  required bool spectating = 1;
+}
+
+message CMsgGroupDisband {
+  required string id = 1;
+}
+
+message CMsgGroupJoin {
+  required string id = 1;
+  required string token = 2;
+  optional string handle = 3;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 4;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 5;
+  repeated int32 badges = 6;
+  repeated .cig.Protocols.Common.RSIPlayerStatsInfo player_game_stats = 7;
+  optional .cig.Protocols.Common.Uuid player_session_id = 8;
+  optional string web_login_name = 9;
+  optional string web_session_token = 10;
+  optional string display_name = 11;
+  required int32 team = 12;
+  required int32 hub_region_id = 13;
+}
+
+message CMsgGroupInvitePlayer {
+  required string to = 1;
+  required string from = 2;
+  required string group = 3;
+  required string token = 4;
+  required string message = 5;
+  optional int32 game_type = 6;
+  required string custom_data = 7;
+  required int32 team = 8;
+}
+
+message CMsgRefuseGroupInvite {
+  required string to = 1;
+  required string from = 2;
+  required string group = 3;
+}
+
+message CMsgGroupKickPlayer {
+  required string player = 1;
+}
+
+message CMsgEmpty {
+}
+
+message CMsgGroupLookForMatch {
+  required bool any_map_flag = 1;
+  required bool auto_requeue_to_match_maker = 2;
+}
+
+message CMsgGroupCancelMatch {
+}
+
+message CMsgGroupChat {
+  required string message = 1;
+}
+
+message CMsgPlayerStatus {
+  required int32 status = 1;
+}
+
+message CMsgPlayerSetting {
+  required int32 status = 1;
+  required .cig.Protocols.Common.gim.ShipData ship_data = 2;
+}
+
+message SMsgErrorCode {
+  required int32 code = 1;
+}
+
+message SMsgPlayerValidateError {
+  required int32 code = 1;
+  repeated string player_handles = 2;
+}
+
+message SMsgGroupCreate {
+  required bool group_is_public = 1;
+  required string group_id = 2;
+  required string group_token = 3;
+}
+
+message SMsgGroupJoin {
+  required string group_id = 1;
+  required string group_token = 2;
+  required int32 group_type = 3;
+  required bool group_is_public = 4;
+  required int32 group_team_count = 5;
+  required string group_leader = 6;
+  required string game_map = 7;
+  required int32 game_level_variant = 8;
+  required int32 game_type = 9;
+  required int32 game_time_limit = 10;
+  required int32 game_target_score = 11;
+  required bool game_friendly_fire = 12;
+  required bool game_server_public = 13;
+  required int32 game_max_players = 14;
+  required bool game_no_dynamic_join = 15;
+  required int32 game_rules_team_count = 16;
+  required int32 game_max_squad_size = 17;
+}
+
+message SMsgPlayerJoinedGroup {
+  required string player_handle = 1;
+  required string player_name = 2;
+  required int32 team = 3;
+  required int32 status = 4;
+  repeated int32 rsi_badge = 5;
+  required .cig.Protocols.Common.gim.ShipData ship_data = 6;
+}
+
+message SMsgPlayerAlreadyInGroup {
+  required string player_handle = 1;
+}
+
+message SMsgPlayerLeftGroup {
+  required string handle = 1;
+}
+
+message SMsgPlayerKicked {
+  required string handle = 1;
+}
+
+message SMsgDisbandGroup {
+  required string group_id = 1;
+}
+
+message SMsgPlayerUpdate {
+  required string handle = 1;
+  required string name = 2;
+  required int32 team = 3;
+  required int32 status = 4;
+  required int32 rsi_badge = 5;
+  required .cig.Protocols.Common.gim.ShipData ship_data = 6;
+  required bool is_spectating = 7;
+}
+
+message SMsgMemberList {
+  repeated .service_party.SMsgPlayerUpdate members = 1;
+}
+
+message SMsgPlayerChangedTeam {
+  required .service_party.SMsgPlayerUpdate player = 1;
+}
+
+message SMsgPlayerSetSpectating {
+  required .service_party.SMsgPlayerUpdate player = 1;
+}
+
+message SMsgNewLeader {
+  required string handle = 1;
+}
+
+message SMsgChat {
+  required string message = 1;
+  required string from = 2;
+}
+
+message SServerPortInfo {
+  required int32 port = 1;
+  required int32 usage = 2;
+}
+
+message SMsgMatchMakerUpdate {
+  required string group_id = 1;
+  required int32 status = 2;
+  required string game_ip = 3;
+  required int32 game_port = 4;
+  optional uint64 game_location = 5;
+  repeated .service_party.SServerPortInfo server_ports = 6;
+}
+

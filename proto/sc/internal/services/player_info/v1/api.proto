@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sc.internal.services.player_info.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/player_info/v1/types.proto";
+
+service PlayerInfoService {
+  rpc GetByCharacterGeids (.sc.internal.services.player_info.v1.GetByCharacterGeidsRequest) returns (.sc.internal.services.player_info.v1.GetByCharacterGeidsResponse) {}
+}
+
+message GetByCharacterGeidsRequest {
+  repeated uint64 character_geids = 1;
+}
+
+message GetByCharacterGeidsResponse {
+  int32 code = 1;
+  int32 num_character_geids = 2;
+  repeated .sc.internal.services.player_info.v1.PlayerInfo players = 3;
+}
+

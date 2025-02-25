@@ -1,0 +1,266 @@
+syntax = "proto3";
+
+package google.iam.admin.v1;
+
+option java_package = "com.google.iam.admin.v1";
+option java_outer_classname = "IamProto";
+option java_multiple_files = true;
+option go_package = "google/iam/admin/v1;admin";
+option cc_enable_arenas = true;
+
+import "google/api/annotations/annotations.proto";
+import "google/api/annotations/client.proto";
+import "google/api/annotations/field_behavior.proto";
+import "google/api/annotations/resource.proto";
+import "google/iam/v1/iam_policy.proto";
+import "google/iam/v1/policy.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+service IAM {
+  rpc ListServiceAccounts (.google.iam.admin.v1.ListServiceAccountsRequest) returns (.google.iam.admin.v1.ListServiceAccountsResponse) {}
+  rpc GetServiceAccount (.google.iam.admin.v1.GetServiceAccountRequest) returns (.google.iam.admin.v1.ServiceAccount) {}
+  rpc CreateServiceAccount (.google.iam.admin.v1.CreateServiceAccountRequest) returns (.google.iam.admin.v1.ServiceAccount) {}
+  rpc UpdateServiceAccount (.google.iam.admin.v1.ServiceAccount) returns (.google.iam.admin.v1.ServiceAccount) {}
+  rpc DeleteServiceAccount (.google.iam.admin.v1.DeleteServiceAccountRequest) returns (.google.protobuf.Empty) {}
+  rpc ListServiceAccountKeys (.google.iam.admin.v1.ListServiceAccountKeysRequest) returns (.google.iam.admin.v1.ListServiceAccountKeysResponse) {}
+  rpc GetServiceAccountKey (.google.iam.admin.v1.GetServiceAccountKeyRequest) returns (.google.iam.admin.v1.ServiceAccountKey) {}
+  rpc CreateServiceAccountKey (.google.iam.admin.v1.CreateServiceAccountKeyRequest) returns (.google.iam.admin.v1.ServiceAccountKey) {}
+  rpc DeleteServiceAccountKey (.google.iam.admin.v1.DeleteServiceAccountKeyRequest) returns (.google.protobuf.Empty) {}
+  rpc SignBlob (.google.iam.admin.v1.SignBlobRequest) returns (.google.iam.admin.v1.SignBlobResponse) {}
+  rpc SignJwt (.google.iam.admin.v1.SignJwtRequest) returns (.google.iam.admin.v1.SignJwtResponse) {}
+  rpc GetIamPolicy (.google.iam.v1.GetIamPolicyRequest) returns (.google.iam.v1.Policy) {}
+  rpc SetIamPolicy (.google.iam.v1.SetIamPolicyRequest) returns (.google.iam.v1.Policy) {}
+  rpc TestIamPermissions (.google.iam.v1.TestIamPermissionsRequest) returns (.google.iam.v1.TestIamPermissionsResponse) {}
+  rpc QueryGrantableRoles (.google.iam.admin.v1.QueryGrantableRolesRequest) returns (.google.iam.admin.v1.QueryGrantableRolesResponse) {}
+  rpc ListRoles (.google.iam.admin.v1.ListRolesRequest) returns (.google.iam.admin.v1.ListRolesResponse) {}
+  rpc GetRole (.google.iam.admin.v1.GetRoleRequest) returns (.google.iam.admin.v1.Role) {}
+  rpc CreateRole (.google.iam.admin.v1.CreateRoleRequest) returns (.google.iam.admin.v1.Role) {}
+  rpc UpdateRole (.google.iam.admin.v1.UpdateRoleRequest) returns (.google.iam.admin.v1.Role) {}
+  rpc DeleteRole (.google.iam.admin.v1.DeleteRoleRequest) returns (.google.iam.admin.v1.Role) {}
+  rpc UndeleteRole (.google.iam.admin.v1.UndeleteRoleRequest) returns (.google.iam.admin.v1.Role) {}
+  rpc QueryTestablePermissions (.google.iam.admin.v1.QueryTestablePermissionsRequest) returns (.google.iam.admin.v1.QueryTestablePermissionsResponse) {}
+}
+
+message ServiceAccount {
+  string name = 1;
+  string project_id = 2;
+  string unique_id = 4;
+  string email = 5;
+  string display_name = 6;
+  bytes etag = 7;
+  string oauth2_client_id = 9;
+}
+
+message CreateServiceAccountRequest {
+  string name = 1;
+  string account_id = 2;
+  .google.iam.admin.v1.ServiceAccount service_account = 3;
+}
+
+message ListServiceAccountsRequest {
+  string name = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListServiceAccountsResponse {
+  repeated .google.iam.admin.v1.ServiceAccount accounts = 1;
+  string next_page_token = 2;
+}
+
+message GetServiceAccountRequest {
+  string name = 1;
+}
+
+message DeleteServiceAccountRequest {
+  string name = 1;
+}
+
+message ListServiceAccountKeysRequest {
+  enum KeyType {
+    KEY_TYPE_UNSPECIFIED = 0;
+    USER_MANAGED = 1;
+    SYSTEM_MANAGED = 2;
+  }
+
+  string name = 1;
+  repeated .google.iam.admin.v1.ListServiceAccountKeysRequest.KeyType key_types = 2;
+}
+
+message ListServiceAccountKeysResponse {
+  repeated .google.iam.admin.v1.ServiceAccountKey keys = 1;
+}
+
+message GetServiceAccountKeyRequest {
+  string name = 1;
+  .google.iam.admin.v1.ServiceAccountPublicKeyType public_key_type = 2;
+}
+
+message ServiceAccountKey {
+  string name = 1;
+  .google.iam.admin.v1.ServiceAccountPrivateKeyType private_key_type = 2;
+  .google.iam.admin.v1.ServiceAccountKeyAlgorithm key_algorithm = 8;
+  bytes private_key_data = 3;
+  bytes public_key_data = 7;
+  .google.protobuf.Timestamp valid_after_time = 4;
+  .google.protobuf.Timestamp valid_before_time = 5;
+}
+
+message CreateServiceAccountKeyRequest {
+  string name = 1;
+  .google.iam.admin.v1.ServiceAccountPrivateKeyType private_key_type = 2;
+  .google.iam.admin.v1.ServiceAccountKeyAlgorithm key_algorithm = 3;
+}
+
+message DeleteServiceAccountKeyRequest {
+  string name = 1;
+}
+
+message SignBlobRequest {
+  string name = 1;
+  bytes bytes_to_sign = 2;
+}
+
+message SignBlobResponse {
+  string key_id = 1;
+  bytes signature = 2;
+}
+
+message SignJwtRequest {
+  string name = 1;
+  string payload = 2;
+}
+
+message SignJwtResponse {
+  string key_id = 1;
+  string signed_jwt = 2;
+}
+
+message Role {
+  enum RoleLaunchStage {
+    ALPHA = 0;
+    BETA = 1;
+    GA = 2;
+    DEPRECATED = 4;
+    DISABLED = 5;
+    EAP = 6;
+  }
+
+  string name = 1;
+  string title = 2;
+  string description = 3;
+  repeated string included_permissions = 7;
+  .google.iam.admin.v1.Role.RoleLaunchStage stage = 8;
+  bytes etag = 9;
+  bool deleted = 11;
+}
+
+message QueryGrantableRolesRequest {
+  string full_resource_name = 1;
+  .google.iam.admin.v1.RoleView view = 2;
+  int32 page_size = 3;
+  string page_token = 4;
+}
+
+message QueryGrantableRolesResponse {
+  repeated .google.iam.admin.v1.Role roles = 1;
+  string next_page_token = 2;
+}
+
+message ListRolesRequest {
+  string parent = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+  .google.iam.admin.v1.RoleView view = 4;
+  bool show_deleted = 6;
+}
+
+message ListRolesResponse {
+  repeated .google.iam.admin.v1.Role roles = 1;
+  string next_page_token = 2;
+}
+
+message GetRoleRequest {
+  string name = 1;
+}
+
+message CreateRoleRequest {
+  string parent = 1;
+  string role_id = 2;
+  .google.iam.admin.v1.Role role = 3;
+}
+
+message UpdateRoleRequest {
+  string name = 1;
+  .google.iam.admin.v1.Role role = 2;
+  .google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteRoleRequest {
+  string name = 1;
+  bytes etag = 2;
+}
+
+message UndeleteRoleRequest {
+  string name = 1;
+  bytes etag = 2;
+}
+
+message Permission {
+  enum PermissionLaunchStage {
+    ALPHA = 0;
+    BETA = 1;
+    GA = 2;
+    DEPRECATED = 3;
+  }
+
+  enum CustomRolesSupportLevel {
+    SUPPORTED = 0;
+    TESTING = 1;
+    NOT_SUPPORTED = 2;
+  }
+
+  string name = 1;
+  string title = 2;
+  string description = 3;
+  bool only_in_predefined_roles = 4;
+  .google.iam.admin.v1.Permission.PermissionLaunchStage stage = 5;
+  .google.iam.admin.v1.Permission.CustomRolesSupportLevel custom_roles_support_level = 6;
+}
+
+message QueryTestablePermissionsRequest {
+  string full_resource_name = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message QueryTestablePermissionsResponse {
+  repeated .google.iam.admin.v1.Permission permissions = 1;
+  string next_page_token = 2;
+}
+
+enum ServiceAccountKeyAlgorithm {
+  KEY_ALG_UNSPECIFIED = 0;
+  KEY_ALG_RSA_1024 = 1;
+  KEY_ALG_RSA_2048 = 2;
+}
+
+enum ServiceAccountPrivateKeyType {
+  TYPE_UNSPECIFIED = 0;
+  TYPE_PKCS12_FILE = 1;
+  TYPE_GOOGLE_CREDENTIALS_FILE = 2;
+}
+
+enum ServiceAccountPublicKeyType {
+  TYPE_NONE = 0;
+  TYPE_X509_PEM_FILE = 1;
+  TYPE_RAW_PUBLIC_KEY = 2;
+}
+
+enum RoleView {
+  BASIC = 0;
+  FULL = 1;
+}
+

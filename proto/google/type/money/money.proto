@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package google.type;
+
+option java_package = "com.google.type";
+option java_outer_classname = "MoneyProto";
+option java_multiple_files = true;
+option go_package = "google/type/money;money";
+option cc_enable_arenas = true;
+option objc_class_prefix = "GTP";
+
+message Money {
+  string currency_code = 1;
+  int64 units = 2;
+  int32 nanos = 3;
+}
+

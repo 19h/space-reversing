@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package sc.external.services.matchmaking.v1;
+
+import "sc/external/services/matchmaking/v1/assignment.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/any.proto";
+
+service FrontendService {
+  rpc Match (.sc.external.services.matchmaking.v1.MatchRequest) returns (.sc.external.services.matchmaking.v1.MatchResponse) {}
+  rpc Cancel (.sc.external.services.matchmaking.v1.CancelRequest) returns (.sc.external.services.matchmaking.v1.CancelResponse) {}
+  rpc GetLastAssignment (.sc.external.services.matchmaking.v1.GetLastAssignmentRequest) returns (.sc.external.services.matchmaking.v1.GetLastAssignmentResponse) {}
+  rpc Accept (.sc.external.services.matchmaking.v1.AcceptRequest) returns (.sc.external.services.matchmaking.v1.AcceptResponse) {}
+}
+
+message PrivateSettings {
+  uint32 duration = 1;
+}
+
+message GamePersistentUniverseMatchRequest {
+  message MatchOptionsEntry {
+    string key = 1;
+    .google.protobuf.Any value = 2;
+  }
+
+  string shard_id = 1;
+  string party_id = 2;
+  repeated .sc.external.services.matchmaking.v1.GamePersistentUniverseMatchRequest.MatchOptionsEntry match_options = 3;
+}
+
+message GameArenaCommanderMatchRequest {
+  .sc.external.common.game.v1.ArenaCommanderMode mode = 1;
+  string squad_id = 2;
+  repeated string maps = 3;
+  .sc.external.services.matchmaking.v1.PrivateSettings private_settings = 4;
+  .sc.external.common.shard.v1.SeatCriterias seat_criteria = 5;
+}
+
+message GameStarMarineMatchRequest {
+  .sc.external.common.game.v1.StarMarineMode mode = 1;
+  string squad_id = 2;
+  repeated string maps = 3;
+  .sc.external.services.matchmaking.v1.PrivateSettings private_settings = 4;
+  .sc.external.common.shard.v1.SeatCriterias seat_criteria = 5;
+}
+
+message MatchRequest {
+  .sc.external.common.network.v1.Region region = 5;
+  oneof game {
+    string rematch_ticket_id = 1;
+    .sc.external.services.matchmaking.v1.GamePersistentUniverseMatchRequest persistent_universe = 2;
+    .sc.external.services.matchmaking.v1.GameArenaCommanderMatchRequest arena_commander = 3;
+    .sc.external.services.matchmaking.v1.GameStarMarineMatchRequest star_marine = 4;
+  }
+}
+
+message MatchResponse {
+  string ticket_id = 1;
+}
+
+message CancelRequest {
+  string ticket_id = 1;
+}
+
+message CancelResponse {
+}
+
+message GetLastAssignmentRequest {
+}
+
+message GetLastAssignmentResponse {
+  .sc.external.services.matchmaking.v1.Assignment assignment = 1;
+}
+
+message AcceptRequest {
+  string proposal_id = 1;
+}
+
+message AcceptResponse {
+}
+

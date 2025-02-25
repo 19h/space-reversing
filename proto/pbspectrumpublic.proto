@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.Spectrum;
+
+message SetAccountPresenceRequest {
+  required int32 account_id = 1;
+  required int32 online = 2;
+  required string location = 3;
+}
+
+message SetAccountPresenceResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+

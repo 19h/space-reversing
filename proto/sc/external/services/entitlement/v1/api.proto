@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/external/common/command/v1/types.proto";
+
+service ExternalEntitlementService {
+  rpc Query (.sc.external.services.entitlement.v1.QueryRequest) returns (.sc.external.services.entitlement.v1.QueryResponse) {}
+  rpc Claim (.sc.external.services.entitlement.v1.ClaimRequest) returns (.sc.external.services.entitlement.v1.ClaimResponse) {}
+  rpc UpdateArenaCommanderLoadout (.sc.external.services.entitlement.v1.UpdateArenaCommanderLoadoutRequest) returns (.sc.external.services.entitlement.v1.UpdateArenaCommanderLoadoutResponse) {}
+}
+
+message QueryRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QueryResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitlement.v1.Entitlement results = 2;
+}
+
+message ClaimRequest {
+  reserved "fulfill";
+  reserved 3;
+  message Claim {
+    string urn = 1;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  repeated .sc.external.services.entitlement.v1.ClaimRequest.Claim claims = 2;
+}
+
+message ClaimResponse {
+}
+
+message UpdateArenaCommanderLoadoutRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  string urn = 2;
+  .sc.external.services.entitlement.v1.InsuranceItemPortLoadout loadout = 3;
+}
+
+message UpdateArenaCommanderLoadoutResponse {
+}
+

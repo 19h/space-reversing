@@ -1,0 +1,253 @@
+syntax = "proto2";
+
+package cig.Protocols.Private.gim;
+
+import "pbcommon.proto";
+import "pbgimcommon.proto";
+
+message service_uuid {
+  required uint64 lo = 1;
+  required uint64 hi = 2;
+}
+
+message UpdatePlayerInfo {
+  required int32 web_account_id = 1;
+  required uint64 character_id = 2;
+  required .cig.Protocols.Common.Uuid player_session_id = 3;
+  required .cig.Protocols.Common.Uuid player_service_id = 4;
+  required string web_login_name = 5;
+  required string web_session_token = 6;
+  required string nickname = 7;
+  required string display_name = 8;
+  required string tracking_metrics_id = 9;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 10;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 11;
+  repeated int32 badges = 12;
+  required int32 hub_region_id = 13;
+  repeated .cig.Protocols.Common.RSIPlayerStatsInfo player_game_stats = 14;
+}
+
+message AddGameServerRequest {
+  required int32 server_type = 1;
+  required string server_version = 2;
+  required string server_name = 3;
+  required string crynetwork_ip = 4;
+  required int32 crynetwork_port = 5;
+  required int32 http_port = 6;
+  required int32 instance_type = 7;
+  required int32 num_players = 8;
+  required int32 process_id = 9;
+  required uint64 location_id = 10;
+  required .cig.Protocols.Common.Uuid instance_id = 11;
+  repeated .cig.Protocols.Common.gim.PlayerSessionInfo players = 12;
+  required uint64 previous_gim_id = 13;
+  required int32 region_id = 14;
+  required float default_match_score_scalar = 15;
+  required int32 vm_class = 16;
+  required int32 dedicated_entitlement_processor = 17;
+  required string host_name = 18;
+  required int32 optick_port = 19;
+}
+
+message AddGameServerResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+  required uint64 instance_id = 3;
+}
+
+message PlayerInfoReport {
+  required int32 account_id = 1;
+  required uint64 player_geid = 2;
+  optional float ping = 3;
+  optional double pos_x = 4;
+  optional double pos_y = 5;
+  optional double pos_z = 6;
+  optional int32 vehicle_type = 7;
+  optional uint64 vehicle_geid = 8;
+  optional string vehicle_class_name = 9;
+  optional uint64 vehicle_driver_player_geid = 10;
+  optional bool is_driver = 11;
+}
+
+message ServerPortInfo {
+  required int32 port = 1;
+  required int32 usage = 2;
+}
+
+message UpdateGameServerRequest {
+  required uint64 instance_id = 1;
+  required string map_name = 2;
+  required string game_mode = 3;
+  required int32 game_type = 4;
+  required int32 game_lobby_state = 5;
+  required bool server_public = 6;
+  required bool is_ready_to_accept_players = 7;
+  required int32 session_token_count = 8;
+  required int32 max_connections = 9;
+  required int32 num_current_connections = 10;
+  required int32 num_fully_connected_players = 11;
+  repeated .cig.Protocols.Private.gim.PlayerInfoReport player_info_report = 12;
+  required string match_id = 13;
+  required int32 prematch_state = 14;
+  required bool restrict_join_to_prematch = 15;
+  required int32 level_variant = 16;
+  required int32 gim_no_new_players = 17;
+  optional float remaining_game_time = 18;
+  optional float total_game_time = 19;
+  optional float frames_per_second = 20;
+  optional int32 main_frame_id = 21;
+  required int32 region_id = 22;
+  required .cig.Protocols.Private.gim.service_uuid service_id = 23;
+  required string shard_id = 24;
+  required string shard_name = 25;
+  repeated string mesh_dgs_service_ids = 26;
+  required bool is_seeded = 27;
+  required bool is_shard_persisted = 28;
+  repeated string belonging_fleets = 29;
+  optional bool is_shard_ready = 30;
+  optional float shard_health_score = 31;
+  optional int32 num_servers_current = 32;
+  optional int32 num_servers_expected = 33;
+  optional int32 num_server_crashes = 34;
+  optional float server_crash_frequency = 35;
+  optional string shard_status_string = 36;
+  repeated .cig.Protocols.Private.gim.ServerPortInfo server_ports = 37;
+}
+
+message UpdateGameServerResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+
+message RemoveGameServerRequest {
+  required uint64 instance_id = 1;
+}
+
+message RemoveGameServerResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+
+message GameServerInstanceEvent {
+  required uint64 instance_id = 1;
+  required int32 status = 2;
+  required int32 errcode = 3;
+}
+
+message GameServerConstructInstanceRequest {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  required int32 max_connections = 3;
+  required string map_name = 4;
+  required int32 game_type = 5;
+  optional int32 level_variant = 6;
+  optional int32 time_limit = 7;
+  optional int32 target_score = 8;
+  optional int32 starting_tickets = 9;
+  optional bool cockpit_view = 10;
+  optional bool friendly_fire = 11;
+  optional bool server_public = 12;
+  optional bool restrict_connections_to_prematch = 13;
+  optional int32 instance_type = 14;
+  required uint64 location_id = 15;
+  required .cig.Protocols.Common.Uuid instance_uuid = 16;
+  required string match_id = 17;
+}
+
+message GameServerConstructInstanceResponse {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  required int32 status = 3;
+  required int32 errcode = 4;
+}
+
+message GameServerDestructInstanceRequest {
+  required uint64 instance_id = 1;
+  required string reason = 2;
+}
+
+message GameServerDestructInstanceResponse {
+  required uint64 instance_id = 1;
+  required int32 status = 2;
+  required int32 errcode = 3;
+}
+
+message GameServerServerForceRestart {
+  required uint64 instance_id = 1;
+  required string reason = 2;
+}
+
+message GameServerAuthorizePlayerRequest {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  repeated .cig.Protocols.Common.gim.PlayerSessionInfo player_info = 3;
+}
+
+message GameServerAuthorizePlayerResponse {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  required int32 status = 3;
+  required int32 errcode = 4;
+}
+
+message GameServerDeauthorizePlayerRequest {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  required int32 player_account_id = 3;
+  required string player_nickname = 4;
+  required .cig.Protocols.Common.Uuid player_session_token = 5;
+  required int32 dup_login = 6;
+  required uint64 player_geid = 7;
+}
+
+message GameServerDeauthorizePlayerResponse {
+  required int32 job_id = 1;
+  required uint64 instance_id = 2;
+  required int32 status = 3;
+  required int32 errcode = 4;
+}
+
+message PlayerLeaveInstanceRequest {
+  required int32 account_id = 1;
+  required string session_token = 2;
+}
+
+message PlayerLeaveInstanceResponse {
+  required int32 status = 1;
+  required int32 errcode = 2;
+}
+
+message PlayerInstanceConnectNotification {
+  required uint64 instance_id = 1;
+  required string session_token = 2;
+  required string ip = 3;
+  required int32 account_id = 4;
+  required int32 status = 5;
+  required int32 errcode = 6;
+}
+
+message PlayerInstanceDisconnectNotification {
+  required uint64 instance_id = 1;
+  required string session_token = 2;
+  required int32 disconnection_cause = 3;
+  required int32 account_id = 4;
+  required string nickname = 5;
+  required uint64 player_geid = 6;
+  required bool keep_recovery_session = 7;
+}
+
+message PlayerDisconnectRecoveryInfo {
+  required string session_token = 1;
+  required int32 account_id = 2;
+  required string nickname = 3;
+  required uint64 player_geid = 4;
+  required int32 status = 5;
+}
+
+message P2PLocationRequest {
+  required int32 target_account_id = 1;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 2;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 3;
+  repeated int32 badges = 4;
+}
+

@@ -1,0 +1,45 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.PI;
+
+import "pbcommon.proto";
+
+message PlayerInfoRegistration {
+  required uint64 mask = 1;
+}
+
+message PlayerInfo {
+  required string nickname = 1;
+  required string display_name = 2;
+  required string avatar = 3;
+  required int32 player_presence_state = 4;
+}
+
+message TriggerPlayerInfoCacheUpdate {
+  required int32 web_account_id = 1;
+  required uint64 player_geid = 2;
+}
+
+message PlayerInfoNotification {
+  optional uint64 mask = 1;
+  optional string nickname = 2;
+  optional string display_name = 3;
+  optional int32 web_account_id = 4;
+  optional int32 player_presence_state = 5;
+  optional .cig.Protocols.Common.Uuid party_id = 6;
+  optional bool party_leader = 7;
+}
+
+message PlayerInfoLogoffRequest {
+  required int32 logout_type = 1;
+}
+
+message PlayerInfoLogoffResponse {
+  required bool can_logoff = 1;
+  required int32 timeout = 2;
+}
+
+message PlayerLogoutTimerElasped {
+  optional int32 account_id = 1;
+}
+

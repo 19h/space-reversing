@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sc.external.services.presence.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/presence/v1/types.proto";
+
+service PresenceService {
+  rpc PresenceStream (stream .sc.external.services.presence.v1.PresenceStreamRequest) returns (.sc.external.services.presence.v1.PresenceStreamResponse) {}
+}
+
+message PresenceStreamRequest {
+  .sc.external.services.presence.v1.PresenceCommand command = 1;
+}
+
+message PresenceStreamResponse {
+}
+
+message SetPresenceCommand {
+  .sc.external.services.presence.v1.Presence presence = 1;
+  string environment = 2;
+}
+
+message PresenceCommand {
+  oneof command {
+    .sc.external.services.presence.v1.SetPresenceCommand set_presence = 1;
+  }
+}
+

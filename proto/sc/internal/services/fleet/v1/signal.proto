@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/claim.proto";
+
+message Signal {
+  .sc.internal.services.fleet.v1.SignalType type = 1;
+  oneof payload {
+    .sc.internal.services.fleet.v1.JoinParameters join_parameters = 2;
+  }
+}
+
+message SendSignalRequest {
+  repeated string unit_ids = 1;
+  repeated string fleet_ids = 2;
+  .sc.internal.services.fleet.v1.Signal signal = 3;
+}
+
+message SendSignalResponse {
+}
+
+enum SignalType {
+  SIGNAL_TYPE_UNSPECIFIED = 0;
+  SIGNAL_TYPE_REPORT = 1;
+  SIGNAL_TYPE_TERMINATE = 2;
+  SIGNAL_TYPE_JOIN = 3;
+  SIGNAL_TYPE_RESTART = 4;
+}
+

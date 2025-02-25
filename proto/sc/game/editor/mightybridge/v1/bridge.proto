@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package sc.game.editor.mightybridge.v1;
+
+import "google/protobuf/any.proto";
+import "google/api/annotations/annotations.proto";
+
+service MightyBridgeService {
+  rpc MightyStream (stream .sc.game.editor.mightybridge.v1.MightyStreamRequest) returns (stream .sc.game.editor.mightybridge.v1.MightyStreamResponse) {}
+}
+
+message BridgeFreeFormCommand {
+  string method = 1;
+  bytes json = 2;
+}
+
+message BridgeFreeFormResult {
+  bytes json = 1;
+}
+
+message BridgeMessageCommand {
+}
+
+message BridgeMessageResult {
+  bool error = 1;
+  string additional_info = 2;
+}
+
+message BridgeMessage {
+  string ticket = 3;
+  .google.protobuf.Any payload = 4;
+  oneof message {
+    .sc.game.editor.mightybridge.v1.BridgeMessageCommand message_command = 1;
+    .sc.game.editor.mightybridge.v1.BridgeMessageResult message_result = 2;
+  }
+}
+
+message MightyStreamRequest {
+  repeated .sc.game.editor.mightybridge.v1.BridgeMessage messages = 1;
+}
+
+message MightyStreamResponse {
+  repeated .sc.game.editor.mightybridge.v1.BridgeMessage messages = 1;
+}
+

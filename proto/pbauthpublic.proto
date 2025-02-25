@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package cig.Protocols.Public.Auth;
+
+import "pbcommon.proto";
+
+message AuthenticateLoginRequest {
+  required string web_session_token = 1;
+  required string service_id = 2;
+}
+
+message AuthenticateLoginResponse {
+  required int32 status = 1;
+  optional .cig.Protocols.Common.PlayerSessionInfo sessionInfo = 2;
+  repeated .cig.Protocols.Common.RSIPlayerStatsInfo stats = 3;
+  optional int32 hub_region_id = 4;
+  required int32 login_queue = 5;
+  required int32 login_queue_id = 6;
+}
+
+message AuthenticateKicked {
+  required .cig.Protocols.Public.Auth.AuthKickedReason reason = 1;
+}
+
+message AuthLoginQueueStatus {
+  required int32 status = 1;
+  required int32 queue_num = 2;
+  required int32 queue_size = 3;
+  required int32 go_get_player_data = 4;
+  required int32 login_queue_id = 5;
+}
+
+enum AuthKickedReason {
+  AuthKicked_Unknown = 1;
+  AuthKicked_MultiLogin = 2;
+  AuthKicked_CS = 3;
+}
+

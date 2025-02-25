@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sc.external.services.entity_subscription.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service EntitySubscriptionService {
+  rpc QueryEntities (.sc.external.services.entity_subscription.v1.QueryEntitiesRequest) returns (stream .sc.external.services.entity_subscription.v1.QueryEntitiesResponse) {}
+}
+
+message SubscriberEntities {
+  uint64 subscriber = 1;
+  repeated uint64 entities = 2;
+}
+
+message QueryEntitiesRequest {
+  repeated uint64 entities = 1;
+  repeated string tags = 2;
+}
+
+message QueryEntitiesResponse {
+  repeated .sc.external.services.entity_subscription.v1.SubscriberEntities results = 1;
+}
+

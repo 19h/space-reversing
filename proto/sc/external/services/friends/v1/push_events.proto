@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sc.external.services.friends.v1;
+
+import "sc/external/services/friends/v1/types.proto";
+
+message FriendAdded {
+  .sc.external.services.friends.v1.Friend friend = 1;
+}
+
+message FriendRemoved {
+  uint32 account_id = 1;
+  uint64 player_id = 2;
+}
+
+message FriendRequestReceived {
+  string request_id = 1;
+}
+
+message FriendRequestCanceled {
+  string request_id = 1;
+}
+
+message FriendRequestDeclined {
+  string request_id = 1;
+}
+

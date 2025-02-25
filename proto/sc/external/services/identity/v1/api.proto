@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/identity/v1/player.proto";
+
+service IdentityService {
+  rpc GetCurrentPlayer (.sc.external.services.identity.v1.GetCurrentPlayerRequest) returns (.sc.external.services.identity.v1.GetCurrentPlayerResponse) {}
+  rpc GetPlayersNames (.sc.external.services.identity.v1.GetPlayersNamesRequest) returns (.sc.external.services.identity.v1.GetPlayersNamesResponse) {}
+}
+
+message GetCurrentPlayerRequest {
+}
+
+message GetCurrentPlayerResponse {
+  .sc.external.services.identity.v1.Player player = 1;
+  string jwt = 2;
+}
+
+message GetPlayersNamesRequest {
+  repeated uint64 player_geids = 1;
+}
+
+message GetPlayersNamesResponse {
+  message PlayerName {
+    uint64 geid = 1;
+    string name = 2;
+  }
+
+  repeated .sc.external.services.identity.v1.GetPlayersNamesResponse.PlayerName names = 1;
+}
+

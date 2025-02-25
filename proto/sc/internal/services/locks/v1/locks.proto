@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package sc.internal.services.locks.v1;
+
+import "google/api/annotations/annotations.proto";
+
+service LockService {
+  rpc Lock (.sc.internal.services.locks.v1.LockRequest) returns (.sc.internal.services.locks.v1.LockResponse) {}
+  rpc Release (.sc.internal.services.locks.v1.ReleaseRequest) returns (.sc.internal.services.locks.v1.ReleaseResponse) {}
+  rpc Check (.sc.internal.services.locks.v1.CheckRequest) returns (.sc.internal.services.locks.v1.CheckResponse) {}
+}
+
+message LockRequest {
+  string holder = 1;
+  int32 timeout = 2;
+  repeated string keys = 3;
+}
+
+message VersionedLock {
+  string key = 1;
+  uint64 version = 2;
+  int32 timeout = 3;
+  string holder = 4;
+}
+
+message LockResponse {
+  repeated .sc.internal.services.locks.v1.VersionedLock versioned_locks = 1;
+}
+
+message ReleaseRequest {
+  string holder = 1;
+  repeated string keys = 2;
+}
+
+message LockRelease {
+  string key = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message ReleaseResponse {
+  repeated .sc.internal.services.locks.v1.LockRelease released_locks = 1;
+}
+
+message CheckRequest {
+  repeated string keys = 1;
+}
+
+message CheckResponse {
+  repeated .sc.internal.services.locks.v1.VersionedLock versioned_locks = 1;
+}
+

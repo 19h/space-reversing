@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+message LoginAllowedPushEvent {
+  uint64 player_id = 1;
+}
+

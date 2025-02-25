@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package sc.internal.services.contract_broker.v1;
+
+message ReplenishContracts {
+  string shard_id = 1;
+}
+

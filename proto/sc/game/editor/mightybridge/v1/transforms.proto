@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package sc.game.editor.mightybridge.v1;
+
+message Vec2f {
+  float x = 1;
+  float y = 2;
+}
+
+message Vec3f {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Vec4f {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
+}
+
+message Vec3i {
+  int32 x = 1;
+  int32 y = 2;
+  int32 z = 3;
+}
+
+message Quatf {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
+}
+
+message Transformf {
+  .sc.game.editor.mightybridge.v1.Vec3f position = 1;
+  .sc.game.editor.mightybridge.v1.Quatf rotation = 2;
+  float scale = 3;
+}
+
+message Vec3w {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message Transformw {
+  .sc.game.editor.mightybridge.v1.Vec3w position = 1;
+  .sc.game.editor.mightybridge.v1.Quatf rotation = 2;
+  float scale = 3;
+}
+

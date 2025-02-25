@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package sc.external.services.notifications.v1;
+
+message DividerComponent {
+}
+
+message TextComponent {
+  .sc.external.services.notifications.v1.TextFormat format = 1;
+}
+
+message ImageComponent {
+  .sc.external.services.notifications.v1.ImageSource source_type = 1;
+  string source = 2;
+}
+
+message SelectComponentOption {
+  string text = 1;
+  string value = 2;
+  string description = 3;
+}
+
+message SelectComponent {
+  string id = 1;
+  string label = 2;
+  .sc.external.services.notifications.v1.SelectStyle style = 3;
+  string placeholder = 4;
+  repeated .sc.external.services.notifications.v1.SelectComponentOption options = 5;
+}
+
+message CheckboxComponent {
+  string id = 1;
+  string label = 2;
+  .sc.external.services.notifications.v1.CheckboxStyle style = 3;
+  bool checked = 4;
+  string value = 5;
+}
+
+message Action {
+  message ArgsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string id = 1;
+  .sc.external.services.notifications.v1.ActionType type = 2;
+  string url = 3;
+  repeated .sc.external.services.notifications.v1.Action.ArgsEntry args = 4;
+}
+
+message ButtonComponent {
+  string id = 1;
+  string label = 2;
+  .sc.external.services.notifications.v1.ButtonStyle style = 3;
+  string value = 4;
+  .sc.external.services.notifications.v1.Action action = 5;
+}
+
+message Component {
+  oneof type {
+    .sc.external.services.notifications.v1.DividerComponent divider = 1;
+    .sc.external.services.notifications.v1.TextComponent text = 2;
+    .sc.external.services.notifications.v1.ImageComponent image = 3;
+    .sc.external.services.notifications.v1.SelectComponent select = 4;
+    .sc.external.services.notifications.v1.CheckboxComponent checkbox = 5;
+    .sc.external.services.notifications.v1.ButtonComponent button = 6;
+  }
+}
+
+message Block {
+  .sc.external.services.notifications.v1.BlockKind type = 1;
+  repeated .sc.external.services.notifications.v1.Component components = 2;
+}
+
+enum TextFormat {
+  TEXT_FORMAT_UNSPECIFIED = 0;
+  TEXT_FORMAT_FLASHTML = 1;
+}
+
+enum ImageSource {
+  IMAGE_SOURCE_UNSPECIFIED = 0;
+  IMAGE_SOURCE_URL = 1;
+  IMAGE_SOURCE_RESOURCE = 2;
+}
+
+enum ImageProtocolKind {
+  IMAGE_PROTOCOL_KIND_UNSPECIFIED = 0;
+  IMAGE_PROTOCOL_KIND_SCCLIENT = 1;
+  IMAGE_PROTOCOL_KIND_SCRESOURCE = 2;
+}
+
+enum SelectStyle {
+  SELECT_STYLE_UNSPECIFIED = 0;
+  SELECT_STYLE_NONE = 1;
+  SELECT_STYLE_PRIMARY = 2;
+  SELECT_STYLE_DANGER = 3;
+}
+
+enum CheckboxStyle {
+  CHECKBOX_STYLE_UNSPECIFIED = 0;
+  CHECKBOX_STYLE_NONE = 1;
+  CHECKBOX_STYLE_PRIMARY = 2;
+  CHECKBOX_STYLE_DANGER = 3;
+}
+
+enum ActionType {
+  ACTION_TYPE_UNSPECIFIED = 0;
+  ACTION_TYPE_GRPC = 1;
+  ACTION_TYPE_WEBHOOK = 2;
+  ACTION_TYPE_RPC = 3;
+}
+
+enum ActionProtocolKind {
+  ACTION_PROTOCOL_KIND_UNSPECIFIED = 0;
+  ACTION_PROTOCOL_KIND_HTTP = 1;
+  ACTION_PROTOCOL_KIND_HTTPS = 2;
+  ACTION_PROTOCOL_KIND_DIFFUSION = 3;
+}
+
+enum ButtonStyle {
+  BUTTON_STYLE_UNSPECIFIED = 0;
+  BUTTON_STYLE_NONE = 1;
+  BUTTON_STYLE_PRIMARY = 2;
+  BUTTON_STYLE_DANGER = 3;
+}
+
+enum BlockKind {
+  BLOCK_KIND_UNSPECIFIED = 0;
+  BLOCK_KIND_ROW = 1;
+}
+

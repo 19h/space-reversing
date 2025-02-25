@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package sc.external.services.configuration.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/configuration/v1/matchers.proto";
+
+service ConfigService {
+  rpc QueryConfig (.sc.external.services.configuration.v1.QueryConfigRequest) returns (.sc.external.services.configuration.v1.QueryConfigResponse) {}
+  rpc WatchConfig (.sc.external.services.configuration.v1.WatchConfigRequest) returns (stream .sc.external.services.configuration.v1.WatchConfigResponse) {}
+  rpc WatchMultiConfigurations (.sc.external.services.configuration.v1.WatchMultiConfigurationsRequest) returns (stream .sc.external.services.configuration.v1.WatchMultiConfigurationsResponse) {}
+}
+
+message ConfigQuery {
+  string config_group = 1;
+  string config_key = 2;
+  string curr_node = 3;
+  int64 curr_version = 4;
+  .sc.external.services.configuration.v1.ConfigMatchers matchers = 5;
+}
+
+message ConfigResponse {
+  enum Result {
+    RESULT_UNSPECIFIED = 0;
+    RESULT_FOUND = 1;
+    RESULT_FOUND_NO_UPDATE = 2;
+    RESULT_NOT_FOUND = 3;
+  }
+
+  .sc.external.services.configuration.v1.ConfigResponse.Result result = 1;
+  string curr_node = 2;
+  string config_group = 3;
+  string config_key = 4;
+  string value = 5;
+  uint64 version = 6;
+}
+
+message QueryConfigRequest {
+  .sc.external.services.configuration.v1.ConfigQuery query = 1;
+}
+
+message QueryConfigResponse {
+  .sc.external.services.configuration.v1.ConfigResponse response = 1;
+}
+
+message WatchConfigRequest {
+  .sc.external.services.configuration.v1.ConfigQuery request = 1;
+}
+
+message WatchConfigResponse {
+  .sc.external.services.configuration.v1.ConfigResponse response = 1;
+}
+
+message WatchMultiGroupKeyPair {
+  string config_group = 1;
+  string config_key = 2;
+}
+
+message WatchMultiConfigurationsRequestBody {
+  repeated .sc.external.services.configuration.v1.WatchMultiGroupKeyPair group_key_pairs = 1;
+  .sc.external.services.configuration.v1.ConfigMatchers matchers = 2;
+}
+
+message WatchMultiConfigurationsRequest {
+  .sc.external.services.configuration.v1.WatchMultiConfigurationsRequestBody request = 1;
+}
+
+message WatchMultiConfigurationsResponse {
+  .sc.external.services.configuration.v1.ConfigResponse response = 1;
+}
+

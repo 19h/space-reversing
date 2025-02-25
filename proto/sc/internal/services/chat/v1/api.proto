@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package sc.internal.services.chat.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/chat/v1/types.proto";
+import "sc/external/services/social/v1/types.proto";
+import "google/api/annotations/annotations.proto";
+
+service ChatService {
+  rpc SendSystemMessage (.sc.internal.services.chat.v1.SendSystemMessageRequest) returns (.sc.internal.services.chat.v1.SendSystemMessageResponse) {}
+  rpc SendMessage (.sc.internal.services.chat.v1.SendMessageRequest) returns (.sc.internal.services.chat.v1.SendMessageResponse) {}
+  rpc EditMessage (.sc.internal.services.chat.v1.EditMessageRequest) returns (.sc.internal.services.chat.v1.EditMessageResponse) {}
+  rpc EraseMessage (.sc.internal.services.chat.v1.EraseMessageRequest) returns (.sc.internal.services.chat.v1.EraseMessageResponse) {}
+  rpc ListMessages (.sc.internal.services.chat.v1.ListMessagesRequest) returns (.sc.internal.services.chat.v1.ListMessagesResponse) {}
+}
+
+message SendSystemMessageRequest {
+  string content = 1;
+  string group_id = 2;
+}
+
+message SendSystemMessageResponse {
+  .sc.external.services.chat.v1.SystemMessage message = 1;
+}
+
+message EditMessageRequest {
+  string message_id = 1;
+  string content = 2;
+}
+
+message EditMessageResponse {
+  .sc.external.services.chat.v1.Message message = 1;
+}
+
+message EraseMessageRequest {
+  string message_id = 1;
+}
+
+message EraseMessageResponse {
+}
+
+message ListMessagesRequest {
+  message Filters {
+    string group_id = 1;
+    string sender_urn = 2;
+    int64 from_time = 3;
+    int64 to_time = 4;
+  }
+
+  .sc.internal.services.chat.v1.ListMessagesRequest.Filters filters = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListMessagesResponse {
+  message MessageEdit {
+    int64 edited_at = 1;
+    string previous_content = 2;
+  }
+
+  message MessageWithEdit {
+    .sc.external.services.chat.v1.Message message = 1;
+    repeated .sc.internal.services.chat.v1.ListMessagesResponse.MessageEdit edits = 2;
+  }
+
+  repeated .sc.internal.services.chat.v1.ListMessagesResponse.MessageWithEdit messages = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message SendMessageRequest {
+  string group_id = 1;
+  string content = 2;
+  .sc.external.services.social.v1.GroupMember sender = 3;
+}
+
+message SendMessageResponse {
+  .sc.external.services.chat.v1.Message message = 1;
+}
+

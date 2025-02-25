@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package google.api;
+
+option java_package = "com.google.api";
+option java_outer_classname = "DistributionProto";
+option java_multiple_files = true;
+option go_package = "google/api/distribution;distribution";
+option objc_class_prefix = "GAPI";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message Distribution {
+  message Range {
+    double min = 1;
+    double max = 2;
+  }
+
+  message BucketOptions {
+    message Linear {
+      int32 num_finite_buckets = 1;
+      double width = 2;
+      double offset = 3;
+    }
+
+    message Exponential {
+      int32 num_finite_buckets = 1;
+      double growth_factor = 2;
+      double scale = 3;
+    }
+
+    message Explicit {
+      repeated double bounds = 1;
+    }
+
+    oneof options {
+      .google.api.Distribution.BucketOptions.Linear linear_buckets = 1;
+      .google.api.Distribution.BucketOptions.Exponential exponential_buckets = 2;
+      .google.api.Distribution.BucketOptions.Explicit explicit_buckets = 3;
+    }
+  }
+
+  message Exemplar {
+    double value = 1;
+    .google.protobuf.Timestamp timestamp = 2;
+    repeated .google.protobuf.Any attachments = 3;
+  }
+
+  int64 count = 1;
+  double mean = 2;
+  double sum_of_squared_deviation = 3;
+  .google.api.Distribution.Range range = 4;
+  .google.api.Distribution.BucketOptions bucket_options = 6;
+  repeated int64 bucket_counts = 7;
+  repeated .google.api.Distribution.Exemplar exemplars = 10;
+}
+

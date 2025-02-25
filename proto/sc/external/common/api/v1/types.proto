@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sc.external.common.api.v1;
+
+message TopicOverloadControl {
+  message PartitionLag {
+    int32 partition = 1;
+    int32 lag = 2;
+  }
+
+  string topic = 1;
+  int32 partitions = 2;
+  int32 aggregated_lag = 3;
+  repeated .sc.external.common.api.v1.TopicOverloadControl.PartitionLag lags = 4;
+}
+
+message ServiceOverloadControlMetrics {
+  repeated .sc.external.common.api.v1.TopicOverloadControl topics = 1;
+}
+

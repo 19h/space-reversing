@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sc.external.common.network.v1;
+
+message Endpoint {
+  string host = 1;
+  uint32 port = 2;
+}
+
+message CryptographicKeys {
+  bytes key1 = 1;
+  bytes key2 = 2;
+  bytes iv = 3;
+  bytes nonce1 = 4;
+  bytes nonce2 = 5;
+}
+
+enum Region {
+  REGION_UNSPECIFIED = 0;
+  REGION_US = 1;
+  REGION_EUROPE = 2;
+  REGION_OCEANIA = 3;
+  REGION_ASIA = 4;
+  REGION_EXPANSION = 5;
+}
+

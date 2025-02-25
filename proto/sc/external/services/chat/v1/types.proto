@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sc.external.services.chat.v1;
+
+message Message {
+  string id = 1;
+  string group_id = 2;
+  string sender_urn = 3;
+  string sender_nickname = 4;
+  string content = 5;
+  int64 created_at = 6;
+  int64 erased_at = 7;
+  int64 edited_at = 8;
+  string sender_display_name = 9;
+}
+
+message SystemMessage {
+  string id = 1;
+  string content = 2;
+  string group_id = 3;
+  int64 created_at = 4;
+}
+

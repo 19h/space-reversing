@@ -1,0 +1,188 @@
+syntax = "proto2";
+
+package cig.Protocols.Common;
+
+message Ping {
+  required uint64 time_stamp = 1;
+}
+
+message Pong {
+  required uint64 time_stamp = 1;
+}
+
+message Uuid {
+  required fixed64 low_64 = 1;
+  required fixed64 high_64 = 2;
+}
+
+message ErrorMessage {
+  required int32 error_code = 1;
+  optional string explanation = 2;
+}
+
+message RSIItemCustomizations {
+  required string ref = 1;
+  repeated .cig.Protocols.Common.RSIItemCustomizations ports = 3;
+}
+
+message RSIItemLoadoutKit {
+  required string code = 1;
+  required string name = 2;
+}
+
+message RSIItemInfo {
+  required .cig.Protocols.Common.Uuid uuid = 1;
+  required .cig.Protocols.Common.Uuid config_uuid = 2;
+  required int32 id = 3;
+  required string code = 4;
+  required string class_guid = 5;
+  optional string name = 6;
+  optional string serial = 7;
+  optional string kind = 8;
+  optional string legal_owner = 9;
+  optional string physical_owner = 10;
+  optional string item_geid = 11;
+  optional int32 gamemodes = 12;
+  optional int32 ownership = 13;
+  optional int32 item_source = 14;
+  optional uint32 duration = 15;
+  optional int32 rate = 16;
+  optional .cig.Protocols.Common.RSIItemLoadoutKit loadout = 17;
+  repeated .cig.Protocols.Common.RSIItemCustomizations customizations = 18;
+}
+
+message RSIBadgeInfo {
+  required int32 id = 1;
+}
+
+message RSIPlayerStatsInfo {
+  required string game_mode = 1;
+  required string map = 2;
+  required int32 rank = 3;
+  required int32 total = 4;
+}
+
+message ItemInfo {
+  required int32 item_instance_id = 1;
+  required int32 id = 2;
+}
+
+message BayInfo {
+  required string label = 1;
+  required string rule = 2;
+  required string bay = 3;
+  required uint32 num_items = 4;
+  repeated .cig.Protocols.Common.ItemInfo item_info = 5;
+}
+
+message AccountHangarLayout {
+  required string hangar = 1;
+  repeated .cig.Protocols.Common.BayInfo bay_info = 2;
+}
+
+message DatastoreXmlCompressed {
+  required bytes data_compressed = 1;
+  required uint32 data_uncompressed_size = 2;
+}
+
+message PlayerSessionInfo {
+  optional .cig.Protocols.Common.Uuid session_id = 1;
+  optional string web_session_token = 2;
+  optional int32 web_account_id = 3;
+  optional string web_login_id = 4;
+  optional string web_handle = 5;
+  optional string web_moniker = 6;
+  optional string tracking_metrics_id = 7;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 8;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 9;
+  repeated .cig.Protocols.Common.RSIBadgeInfo badges = 10;
+  optional .cig.Protocols.Common.AccountHangarLayout account_hangar_layout = 11;
+  optional .cig.Protocols.Common.DatastoreXmlCompressed datastore_xml_compressed = 12;
+  optional uint64 character_geid = 13;
+}
+
+message ServiceNotification {
+  required int32 service = 1;
+  required int32 notification = 2;
+  optional string message = 3;
+  optional string string_param = 4;
+  optional int32 int_param = 5;
+  optional uint64 location_param = 6;
+  optional string hostname = 7;
+}
+
+message InstanceEntry {
+  required string instance_id = 1;
+  required int32 max_players = 2;
+  required int32 num_players = 3;
+  repeated string party_members = 4;
+  optional string owner_name = 5;
+}
+
+message EntitlementPackage {
+  required int32 result_code = 1;
+  required bool process_player = 2;
+  required int32 web_account_id = 3;
+  required uint64 player_geid = 4;
+  required uint64 ticket_id = 5;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_items = 6;
+}
+
+message EntitlementsRequest {
+  required int32 web_account_id = 1;
+  required uint64 ticket_id = 2;
+}
+
+message LocationServicesDestination {
+  required uint64 location_id = 1;
+  required string location_name = 2;
+  repeated .cig.Protocols.Common.InstanceEntry instance_list = 3;
+  optional int32 instance_owner = 4;
+}
+
+message PlayerShardHistory {
+  required string shard_id = 1;
+  required string shard_name = 2;
+  required uint64 timestamp = 3;
+  required bool is_available = 4;
+  repeated .cig.Protocols.Common.InstanceEntry instance_list = 5;
+}
+
+message LocationServicesDestinationList {
+  repeated .cig.Protocols.Common.LocationServicesDestination list = 1;
+  repeated .cig.Protocols.Common.PlayerShardHistory player_shard_history_list = 2;
+}
+
+message LocationServiceRequest {
+  optional uint64 location_id = 1;
+  optional string instance_id = 2;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 3;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 4;
+  repeated int32 badges = 5;
+  repeated uint64 friend_geids = 6;
+}
+
+message SMsgGotoLastInstance {
+  required int32 recovery = 1;
+  required int32 instance_found = 2;
+}
+
+message CMsgSendCheckForRecoveryInformationRequest {
+  required int32 client_state = 1;
+  optional string session_id = 2;
+  optional int32 account_id = 3;
+  optional string ip = 4;
+}
+
+message CMsgSendGotoLastInstanceResponse {
+  required int32 accepted = 1;
+  optional string session_id = 2;
+  optional int32 account_id = 3;
+  optional string ip = 4;
+}
+
+enum ePlayerType {
+  ACCOUNT = 0;
+  CHARACTER = 1;
+}
+

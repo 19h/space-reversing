@@ -1,0 +1,356 @@
+syntax = "proto3";
+
+package sc.internal.services.entitygraph.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/entitygraph/v1/rpc_messages.proto";
+
+service EntityGraphService {
+  rpc MutateEntities (.sc.internal.services.entitygraph.v1.MutateEntitiesRequest) returns (.sc.internal.services.entitygraph.v1.MutateEntitiesResponse) {}
+  rpc EntityMutationStream (stream .sc.internal.services.entitygraph.v1.EntityMutationStreamRequest) returns (stream .sc.internal.services.entitygraph.v1.EntityMutationStreamResponse) {}
+  rpc Stow (.sc.internal.services.entitygraph.v1.StowRequest) returns (.sc.internal.services.entitygraph.v1.StowResponse) {}
+  rpc Unstow (.sc.internal.services.entitygraph.v1.UnstowRequest) returns (.sc.internal.services.entitygraph.v1.UnstowResponse) {}
+  rpc Bury (.sc.internal.services.entitygraph.v1.BuryRequest) returns (.sc.internal.services.entitygraph.v1.BuryResponse) {}
+  rpc EntityQuery (.sc.internal.services.entitygraph.v1.EntityQueryRequest) returns (.sc.internal.services.entitygraph.v1.EntityQueryResponse) {}
+  rpc LoadAll (.sc.internal.services.entitygraph.v1.LoadAllRequest) returns (.sc.internal.services.entitygraph.v1.LoadAllResponse) {}
+  rpc SnapshotQuery (.sc.internal.services.entitygraph.v1.SnapshotQueryRequest) returns (.sc.internal.services.entitygraph.v1.SnapshotQueryResponse) {}
+  rpc MutateContainerGraph (.sc.internal.services.entitygraph.v1.MutateContainerGraphRequest) returns (.sc.internal.services.entitygraph.v1.MutateContainerGraphResponse) {}
+  rpc ContainerMutationStream (stream .sc.internal.services.entitygraph.v1.ContainerMutationStreamRequest) returns (stream .sc.internal.services.entitygraph.v1.ContainerMutationStreamResponse) {}
+  rpc ContainerQuery (.sc.internal.services.entitygraph.v1.ContainerQueryRequest) returns (.sc.internal.services.entitygraph.v1.ContainerQueryResponse) {}
+  rpc CreateMetaRecords (.sc.internal.services.entitygraph.v1.CreateMetaRecordsRequest) returns (.sc.internal.services.entitygraph.v1.CreateMetaRecordsResponse) {}
+  rpc EraseMetaRecords (.sc.internal.services.entitygraph.v1.EraseMetaRecordsRequest) returns (.sc.internal.services.entitygraph.v1.EraseMetaRecordsResponse) {}
+  rpc QueryMetaRecords (.sc.internal.services.entitygraph.v1.QueryMetaRecordsRequest) returns (.sc.internal.services.entitygraph.v1.QueryMetaRecordsResponse) {}
+  rpc GetEntitiesOwners (.sc.internal.services.entitygraph.v1.GetEntitiesOwnersRequest) returns (.sc.internal.services.entitygraph.v1.GetEntitiesOwnersResponse) {}
+  rpc CreateEntityClasses (.sc.internal.services.entitygraph.v1.CreateEntityClassesRequest) returns (.sc.internal.services.entitygraph.v1.CreateEntityClassesResponse) {}
+  rpc EraseEntityClasses (.sc.internal.services.entitygraph.v1.EraseEntityClassesRequest) returns (.sc.internal.services.entitygraph.v1.EraseEntityClassesResponse) {}
+  rpc QueryEntityClasses (.sc.internal.services.entitygraph.v1.QueryEntityClassesRequest) returns (.sc.internal.services.entitygraph.v1.QueryEntityClassesResponse) {}
+  rpc CreateShard (.sc.internal.services.entitygraph.v1.CreateShardRequest) returns (.sc.internal.services.entitygraph.v1.CreateShardResponse) {}
+  rpc DestroyShard (.sc.internal.services.entitygraph.v1.DestroyShardRequest) returns (.sc.internal.services.entitygraph.v1.DestroyShardResponse) {}
+  rpc QueryShards (.sc.internal.services.entitygraph.v1.QueryShardsRequest) returns (.sc.internal.services.entitygraph.v1.QueryShardsResponse) {}
+  rpc GetShard (.sc.internal.services.entitygraph.v1.GetShardRequest) returns (.sc.internal.services.entitygraph.v1.GetShardResponse) {}
+  rpc AcquireShard (.sc.internal.services.entitygraph.v1.AcquireShardRequest) returns (.sc.internal.services.entitygraph.v1.AcquireShardResponse) {}
+  rpc ChangeShardStatus (.sc.internal.services.entitygraph.v1.ChangeShardStatusRequest) returns (.sc.internal.services.entitygraph.v1.ChangeShardStatusResponse) {}
+  rpc StowShard (.sc.internal.services.entitygraph.v1.StowShardRequest) returns (.sc.internal.services.entitygraph.v1.StowShardResponse) {}
+  rpc RepairShard (.sc.internal.services.entitygraph.v1.RepairShardRequest) returns (.sc.internal.services.entitygraph.v1.RepairShardResponse) {}
+  rpc RepairShardSchema (.sc.internal.services.entitygraph.v1.RepairShardSchemaRequest) returns (.sc.internal.services.entitygraph.v1.RepairShardSchemaResponse) {}
+  rpc GetShardHostsMap (.sc.internal.services.entitygraph.v1.GetShardHostsMapRequest) returns (.sc.internal.services.entitygraph.v1.GetShardHostsMapResponse) {}
+  rpc MutateInventories (.sc.internal.services.entitygraph.v1.MutateInventoriesRequest) returns (.sc.internal.services.entitygraph.v1.MutateInventoriesResponse) {}
+  rpc InventoryQuery (.sc.internal.services.entitygraph.v1.InventoryQueryRequest) returns (.sc.internal.services.entitygraph.v1.InventoryQueryResponse) {}
+  rpc ChangeInventoryConfiguration (.sc.internal.services.entitygraph.v1.ChangeInventoryConfigurationRequest) returns (.sc.internal.services.entitygraph.v1.ChangeInventoryConfigurationResponse) {}
+  rpc Melt (.sc.internal.services.entitygraph.v1.MeltRequest) returns (.sc.internal.services.entitygraph.v1.MeltResponse) {}
+  rpc EntityQueryStream (.sc.internal.services.entitygraph.v1.EntityQueryStreamRequest) returns (stream .sc.internal.services.entitygraph.v1.EntityQueryStreamResponse) {}
+  rpc GetOverloadControlMetrics (.sc.internal.services.entitygraph.v1.GetOverloadControlMetricsRequest) returns (.sc.internal.services.entitygraph.v1.GetOverloadControlMetricsResponse) {}
+  rpc ContainerQueryStream (.sc.internal.services.entitygraph.v1.ContainerQueryStreamRequest) returns (stream .sc.internal.services.entitygraph.v1.ContainerQueryStreamResponse) {}
+  rpc GetEntitiesRoots (.sc.internal.services.entitygraph.v1.GetEntitiesRootsRequest) returns (.sc.internal.services.entitygraph.v1.GetEntitiesRootsResponse) {}
+  rpc GetEntityStowContexts (.sc.internal.services.entitygraph.v1.GetEntityStowContextsRequest) returns (.sc.internal.services.entitygraph.v1.GetEntityStowContextsResponse) {}
+  rpc MoveAll (.sc.internal.services.entitygraph.v1.MoveAllRequest) returns (.sc.internal.services.entitygraph.v1.MoveAllResponse) {}
+}
+
+message ContainerQueryRequest {
+  .sc.external.services.entitygraph.v1.ContainerQueryRequestBody body = 1;
+}
+
+message ContainerQueryResponse {
+  .sc.external.services.entitygraph.v1.ContainerQueryResponseBody body = 1;
+}
+
+message EntityQueryRequest {
+  .sc.external.services.entitygraph.v1.EntityQueryRequestBody body = 1;
+}
+
+message EntityQueryResponse {
+  .sc.external.services.entitygraph.v1.EntityQueryResponseBody body = 1;
+}
+
+message MutateEntitiesRequest {
+  .sc.external.services.entitygraph.v1.MutateEntitiesRequestBody body = 1;
+}
+
+message MutateEntitiesResponse {
+  .sc.external.services.entitygraph.v1.MutateEntitiesResponseBody body = 1;
+}
+
+message EntityMutationStreamRequest {
+  .sc.external.services.entitygraph.v1.EntityMutationStreamRequestBody body = 1;
+}
+
+message EntityMutationStreamResponse {
+  .sc.external.services.entitygraph.v1.EntityMutationStreamResponseBody body = 1;
+}
+
+message StowRequest {
+  .sc.external.services.entitygraph.v1.StowRequestBody body = 1;
+}
+
+message StowResponse {
+  .sc.external.services.entitygraph.v1.StowResponseBody body = 1;
+}
+
+message UnstowRequest {
+  .sc.external.services.entitygraph.v1.UnstowRequestBody body = 1;
+}
+
+message UnstowResponse {
+  .sc.external.services.entitygraph.v1.UnstowResponseBody body = 1;
+}
+
+message BuryRequest {
+  .sc.external.services.entitygraph.v1.BuryRequestBody body = 1;
+}
+
+message BuryResponse {
+  .sc.external.services.entitygraph.v1.BuryResponseBody body = 1;
+}
+
+message ChangeInventoryConfigurationRequest {
+  .sc.external.services.entitygraph.v1.ChangeInventoryConfigurationRequestBody body = 1;
+}
+
+message ChangeInventoryConfigurationResponse {
+  .sc.external.services.entitygraph.v1.ChangeInventoryConfigurationResponseBody body = 1;
+}
+
+message LoadAllRequest {
+  .sc.external.services.entitygraph.v1.LoadAllRequestBody body = 1;
+}
+
+message LoadAllResponse {
+  .sc.external.services.entitygraph.v1.LoadAllResponseBody body = 1;
+}
+
+message SnapshotQueryRequest {
+  .sc.external.services.entitygraph.v1.SnapshotQueryRequestBody body = 1;
+}
+
+message SnapshotQueryResponse {
+  .sc.external.services.entitygraph.v1.SnapshotQueryResponseBody body = 1;
+}
+
+message MutateContainerGraphRequest {
+  .sc.external.services.entitygraph.v1.MutateContainerGraphRequestBody body = 1;
+}
+
+message MutateContainerGraphResponse {
+  .sc.external.services.entitygraph.v1.MutateContainerGraphResponseBody body = 1;
+}
+
+message ContainerMutationStreamRequest {
+  .sc.external.services.entitygraph.v1.ContainerMutationStreamRequestBody body = 1;
+}
+
+message ContainerMutationStreamResponse {
+  .sc.external.services.entitygraph.v1.ContainerMutationStreamResponseBody body = 1;
+}
+
+message CreateMetaRecordsRequest {
+  .sc.external.services.entitygraph.v1.CreateMetaRecordsRequestBody body = 1;
+}
+
+message CreateMetaRecordsResponse {
+  .sc.external.services.entitygraph.v1.CreateMetaRecordsResponseBody body = 1;
+}
+
+message EraseMetaRecordsRequest {
+  .sc.external.services.entitygraph.v1.EraseMetaRecordsRequestBody body = 1;
+}
+
+message EraseMetaRecordsResponse {
+  .sc.external.services.entitygraph.v1.EraseMetaRecordsResponseBody body = 1;
+}
+
+message QueryMetaRecordsRequest {
+  .sc.external.services.entitygraph.v1.QueryMetaRecordsRequestBody body = 1;
+}
+
+message QueryMetaRecordsResponse {
+  .sc.external.services.entitygraph.v1.QueryMetaRecordsResponseBody body = 1;
+}
+
+message GetEntitiesOwnersRequest {
+  .sc.external.services.entitygraph.v1.GetEntitiesOwnersRequestBody body = 1;
+}
+
+message GetEntitiesOwnersResponse {
+  .sc.external.services.entitygraph.v1.GetEntitiesOwnersResponseBody body = 1;
+}
+
+message CreateEntityClassesRequest {
+  .sc.external.services.entitygraph.v1.CreateEntityClassesRequestBody body = 1;
+}
+
+message CreateEntityClassesResponse {
+  .sc.external.services.entitygraph.v1.CreateEntityClassesResponseBody body = 1;
+}
+
+message EraseEntityClassesRequest {
+  .sc.external.services.entitygraph.v1.EraseEntityClassesRequestBody body = 1;
+}
+
+message EraseEntityClassesResponse {
+  .sc.external.services.entitygraph.v1.EraseEntityClassesResponseBody body = 1;
+}
+
+message QueryEntityClassesRequest {
+  .sc.external.services.entitygraph.v1.QueryEntityClassesRequestBody body = 1;
+}
+
+message QueryEntityClassesResponse {
+  .sc.external.services.entitygraph.v1.QueryEntityClassesResponseBody body = 1;
+}
+
+message CreateShardRequest {
+  .sc.external.services.entitygraph.v1.CreateShardRequestBody body = 1;
+}
+
+message CreateShardResponse {
+  .sc.external.services.entitygraph.v1.CreateShardResponseBody body = 1;
+}
+
+message DestroyShardRequest {
+  .sc.external.services.entitygraph.v1.DestroyShardRequestBody body = 1;
+}
+
+message DestroyShardResponse {
+  .sc.external.services.entitygraph.v1.DestroyShardResponseBody body = 1;
+}
+
+message QueryShardsRequest {
+  .sc.external.services.entitygraph.v1.QueryShardsRequestBody body = 1;
+}
+
+message QueryShardsResponse {
+  .sc.external.services.entitygraph.v1.QueryShardsResponseBody body = 1;
+}
+
+message GetShardRequest {
+  .sc.external.services.entitygraph.v1.GetShardRequestBody body = 1;
+}
+
+message GetShardResponse {
+  .sc.external.services.entitygraph.v1.GetShardResponseBody body = 1;
+}
+
+message AcquireShardRequest {
+  .sc.external.services.entitygraph.v1.AcquireShardRequestBody body = 1;
+}
+
+message AcquireShardResponse {
+  .sc.external.services.entitygraph.v1.AcquireShardResponseBody body = 1;
+}
+
+message ChangeShardStatusRequest {
+  .sc.external.services.entitygraph.v1.ChangeShardStatusRequestBody body = 1;
+}
+
+message ChangeShardStatusResponse {
+  .sc.external.services.entitygraph.v1.ChangeShardStatusResponseBody body = 1;
+}
+
+message StowShardRequest {
+  .sc.external.services.entitygraph.v1.StowShardRequestBody body = 1;
+}
+
+message StowShardResponse {
+  .sc.external.services.entitygraph.v1.StowShardResponseBody body = 1;
+}
+
+message RepairShardRequest {
+  .sc.external.services.entitygraph.v1.RepairShardRequestBody body = 1;
+}
+
+message RepairShardResponse {
+  .sc.external.services.entitygraph.v1.RepairShardResponseBody body = 1;
+}
+
+message RepairShardSchemaRequest {
+  .sc.external.services.entitygraph.v1.RepairShardSchemaRequestBody body = 1;
+}
+
+message RepairShardSchemaResponse {
+  .sc.external.services.entitygraph.v1.RepairShardSchemaResponseBody body = 1;
+}
+
+message GetShardHostsMapRequest {
+}
+
+message GetShardHostsMapResponse {
+  message Host {
+    string host = 1;
+    repeated string shards = 2;
+  }
+
+  repeated .sc.internal.services.entitygraph.v1.GetShardHostsMapResponse.Host hosts = 1;
+}
+
+message MutateInventoriesRequest {
+  .sc.external.services.entitygraph.v1.MutateInventoriesRequestBody body = 1;
+}
+
+message MutateInventoriesResponse {
+  .sc.external.services.entitygraph.v1.MutateInventoriesResponseBody body = 1;
+}
+
+message InventoryQueryRequest {
+  .sc.external.services.entitygraph.v1.InventoryQueryRequestBody body = 1;
+}
+
+message InventoryQueryResponse {
+  .sc.external.services.entitygraph.v1.InventoryQueryResponseBody body = 1;
+}
+
+message MeltRequest {
+  .sc.external.services.entitygraph.v1.MeltRequestBody body = 1;
+}
+
+message MeltResponse {
+  .sc.external.services.entitygraph.v1.MeltResponseBody body = 1;
+}
+
+message EntityQueryStreamRequest {
+  .sc.external.services.entitygraph.v1.EntityQueryStreamRequestBody body = 1;
+}
+
+message EntityQueryStreamResponse {
+  .sc.external.services.entitygraph.v1.EntityQueryStreamResponseBody body = 1;
+}
+
+message GetOverloadControlMetricsRequest {
+  .sc.external.services.entitygraph.v1.GetOverloadControlMetricsRequestBody body = 1;
+}
+
+message GetOverloadControlMetricsResponse {
+  .sc.external.services.entitygraph.v1.GetOverloadControlMetricsResponseBody body = 1;
+}
+
+message ContainerQueryStreamRequest {
+  .sc.external.services.entitygraph.v1.ContainerQueryStreamRequestBody body = 1;
+}
+
+message ContainerQueryStreamResponse {
+  .sc.external.services.entitygraph.v1.ContainerQueryStreamResponseBody body = 1;
+}
+
+message GetEntitiesRootsRequest {
+  .sc.external.services.entitygraph.v1.GetEntitiesRootsRequestBody body = 1;
+}
+
+message GetEntitiesRootsResponse {
+  .sc.external.services.entitygraph.v1.GetEntitiesRootsResponseBody body = 1;
+}
+
+message GetEntityStowContextsRequest {
+  .sc.external.services.entitygraph.v1.GetEntityStowContextsRequestBody body = 1;
+}
+
+message GetEntityStowContextsResponse {
+  .sc.external.services.entitygraph.v1.GetEntityStowContextsResponseBody body = 1;
+}
+
+message MoveAllRequest {
+  .sc.external.services.entitygraph.v1.MoveAllRequestBody body = 1;
+}
+
+message MoveAllResponse {
+  .sc.external.services.entitygraph.v1.MoveAllResponseBody body = 1;
+}
+

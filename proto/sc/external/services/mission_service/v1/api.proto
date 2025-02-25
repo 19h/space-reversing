@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package sc.external.services.mission_service.v1;
+
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/command/v1/types.proto";
+import "google/api/annotations/annotations.proto";
+import "google/protobuf/any.proto";
+
+service MissionService {
+  rpc QueryActiveMissions (.sc.external.services.mission_service.v1.QueryActiveMissionsRequest) returns (.sc.external.services.mission_service.v1.QueryActiveMissionsResponse) {}
+  rpc QueryMissions (.sc.external.services.mission_service.v1.QueryMissionsRequest) returns (.sc.external.services.mission_service.v1.QueryMissionsResponse) {}
+  rpc JoinMission (.sc.external.services.mission_service.v1.JoinMissionRequest) returns (.sc.external.services.mission_service.v1.JoinMissionResponse) {}
+  rpc LeaveMission (.sc.external.services.mission_service.v1.LeaveMissionRequest) returns (.sc.external.services.mission_service.v1.LeaveMissionResponse) {}
+  rpc ShareMission (.sc.external.services.mission_service.v1.ShareMissionRequest) returns (.sc.external.services.mission_service.v1.ShareMissionResponse) {}
+  rpc QueryMissionObjectives (.sc.external.services.mission_service.v1.QueryMissionObjectivesRequest) returns (.sc.external.services.mission_service.v1.QueryMissionObjectivesResponse) {}
+  rpc QueryMissionPhases (.sc.external.services.mission_service.v1.QueryMissionPhasesRequest) returns (.sc.external.services.mission_service.v1.QueryMissionPhasesResponse) {}
+  rpc CheckMissionSharingEligibility (.sc.external.services.mission_service.v1.CheckMissionSharingEligibilityRequest) returns (.sc.external.services.mission_service.v1.CheckMissionSharingEligibilityResponse) {}
+}
+
+message QueryActiveMissionsRequest {
+  message Body {
+    string urn = 1;
+  }
+
+  repeated .sc.external.services.mission_service.v1.QueryActiveMissionsRequest.Body queries = 1;
+}
+
+message QueryActiveMissionsResponse {
+  message Body {
+    string mission_id = 1;
+  }
+
+  repeated .sc.external.services.mission_service.v1.QueryActiveMissionsResponse.Body mission_ids = 1;
+}
+
+message QueryMissionsRequest {
+  message Body {
+    string mission_id = 1;
+  }
+
+  repeated .sc.external.services.mission_service.v1.QueryMissionsRequest.Body queries = 1;
+}
+
+message QueryMissionsResponse {
+  repeated .sc.external.common.mission.v1.ActiveMissionInfo missions = 1;
+}
+
+message JoinMissionRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  string mission_id = 2;
+  string owner_urn = 3;
+  repeated string player_urns = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message JoinMissionResponse {
+}
+
+message LeaveMissionRequest {
+  message Body {
+    string player_urn = 1;
+    string reason = 2;
+    .sc.external.common.mission.v1.MissionState end_state = 3;
+    uint32 end_reason = 4;
+    string analytics_reason = 5;
+  }
+
+  string mission_id = 1;
+  repeated .sc.external.services.mission_service.v1.LeaveMissionRequest.Body missions = 2;
+  .sc.external.common.command.v1.CommandArguments arguments = 3;
+  .google.protobuf.Any context = 4;
+}
+
+message LeaveMissionResponse {
+}
+
+message ShareMissionRequest {
+  .sc.external.common.command.v1.CommandArguments arguments = 1;
+  string mission_id = 2;
+  string owner_urn = 3;
+  repeated string player_urns = 4;
+  .google.protobuf.Any context = 5;
+}
+
+message ShareMissionResponse {
+}
+
+message QueryMissionObjectivesRequest {
+  message Body {
+    string mission_id = 1;
+    repeated string mission_objective_ids = 2;
+  }
+
+  repeated .sc.external.services.mission_service.v1.QueryMissionObjectivesRequest.Body queries = 1;
+}
+
+message QueryMissionObjectivesResponse {
+  repeated .sc.external.common.mission.v1.MissionObjective objectives = 1;
+}
+
+message QueryMissionPhasesRequest {
+  message Body {
+    string mission_id = 1;
+    repeated string mission_phase_ids = 2;
+  }
+
+  repeated .sc.external.services.mission_service.v1.QueryMissionPhasesRequest.Body queries = 1;
+}
+
+message QueryMissionPhasesResponse {
+  repeated .sc.external.common.mission.v1.MissionPhase phases = 1;
+}
+
+message CheckMissionSharingEligibilityRequest {
+  string mission_id = 1;
+  repeated string player_urns = 2;
+  .sc.external.common.mission.v1.FilterOptions options = 3;
+}
+
+message CheckMissionSharingEligibilityResponse {
+  message NotEligiblePlayer {
+    string player_urn = 1;
+    string reason = 2;
+  }
+
+  repeated .sc.external.services.mission_service.v1.CheckMissionSharingEligibilityResponse.NotEligiblePlayer not_eligible_players = 1;
+  repeated string eligible_player_urns = 2;
+}
+

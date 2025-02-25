@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sc.external.services.rtc.v1;
+
+import "sc/external/services/rtc/v1/types.proto";
+
+message CallReceived {
+  .sc.external.services.rtc.v1.Call call = 1;
+}
+
+message CallAccepted {
+  .sc.external.services.rtc.v1.Call call = 1;
+  .sc.external.services.rtc.v1.Channel channel = 2;
+}
+
+message CallDeclined {
+  .sc.external.services.rtc.v1.Call call = 1;
+}
+
+message CallHungup {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+message ChannelResharded {
+  .sc.external.services.rtc.v1.Channel channel = 1;
+}
+

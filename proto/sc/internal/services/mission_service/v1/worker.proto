@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_service.v1;
+
+import "google/protobuf/any.proto";
+
+message EnqueuedRequest {
+  string name = 1;
+  .sc.internal.services.mission_service.v1.EnqueuedRequestBody body = 2;
+}
+
+message EnqueuedRequestBody {
+  string requester_id = 1;
+  .google.protobuf.Any body = 2;
+  string command_id = 3;
+  string front_end_id = 4;
+  string create_mission_id = 5;
+  string create_active_mission_key = 6;
+}
+

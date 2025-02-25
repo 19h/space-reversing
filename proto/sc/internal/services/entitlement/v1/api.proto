@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/internal/services/entitlement/v1/commands.proto";
+import "sc/external/common/command/v1/types.proto";
+
+service EntitlementService {
+  rpc Grant (.sc.internal.services.entitlement.v1.GrantRequest) returns (.sc.internal.services.entitlement.v1.GrantResponse) {}
+  rpc Revoke (.sc.internal.services.entitlement.v1.RevokeRequest) returns (.sc.internal.services.entitlement.v1.RevokeResponse) {}
+  rpc Claim (.sc.internal.services.entitlement.v1.ClaimRequest) returns (.sc.internal.services.entitlement.v1.ClaimResponse) {}
+  rpc Query (.sc.internal.services.entitlement.v1.QueryRequest) returns (.sc.internal.services.entitlement.v1.QueryResponse) {}
+  rpc QueryHistory (.sc.internal.services.entitlement.v1.QueryHistoryRequest) returns (.sc.internal.services.entitlement.v1.QueryHistoryResponse) {}
+  rpc RevokeAll (.sc.internal.services.entitlement.v1.RevokeAllRequest) returns (.sc.internal.services.entitlement.v1.RevokeAllResponse) {}
+  rpc UpdateInsuredLoadouts (.sc.internal.services.entitlement.v1.UpdateInsuredLoadoutsRequest) returns (.sc.internal.services.entitlement.v1.UpdateInsuredLoadoutsResponse) {}
+}
+
+message GrantRequest {
+  .sc.internal.services.entitlement.v1.GrantCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message GrantResponse {
+}
+
+message RevokeRequest {
+  .sc.internal.services.entitlement.v1.RevokeCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message RevokeResponse {
+}
+
+message ClaimRequest {
+  .sc.internal.services.entitlement.v1.ClaimCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message ClaimResponse {
+}
+
+message QueryRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QueryResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitlement.v1.Entitlement results = 2;
+}
+
+message QueryHistoryRequest {
+  reserved 1;
+  .sc.external.common.api.v1.Query query = 2;
+}
+
+message QueryHistoryResponse {
+  .sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated .sc.external.services.entitlement.v1.EntitlementHistory results = 2;
+}
+
+message RevokeAllRequest {
+  .sc.internal.services.entitlement.v1.RevokeAllCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message RevokeAllResponse {
+}
+
+message UpdateInsuredLoadoutsRequest {
+  .sc.internal.services.entitlement.v1.UpdateInsuredLoadoutsCommand command = 1;
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message UpdateInsuredLoadoutsResponse {
+}
+

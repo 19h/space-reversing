@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sc.external.services.matchmaking.v1;
+
+import "google/protobuf/any.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+
+message MatchmakingInProgress {
+  string ticket_id = 3;
+  string creator_name = 4;
+  .sc.external.common.game.v1.Game game = 5;
+  .sc.external.common.game.v1.Mode mode = 6;
+  oneof group {
+    string party_id = 1;
+    string squad_id = 2;
+  }
+}
+
+message MatchmakingCancelled {
+  string ticket_id = 1;
+}
+
+message Assignment {
+  .sc.external.common.network.v1.Endpoint endpoint = 1;
+  .google.protobuf.Any credentials = 2;
+  string ticket_id = 3;
+  string instance_id = 4;
+}
+
+message Proposal {
+  string id = 1;
+  .sc.external.common.network.v1.Region region = 2;
+  .sc.external.common.game.v1.Game game = 3;
+  .sc.external.common.game.v1.Mode mode = 4;
+  string match_description = 5;
+  uint32 current_players = 6;
+  uint32 max_players = 7;
+  uint32 current_friends = 8;
+  string map = 9;
+  uint32 time_elapsed = 10;
+  uint32 total_duration = 11;
+}
+

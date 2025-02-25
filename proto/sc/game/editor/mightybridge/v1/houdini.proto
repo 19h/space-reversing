@@ -1,0 +1,321 @@
+syntax = "proto3";
+
+package sc.game.editor.mightybridge.v1;
+
+import "sc/game/editor/mightybridge/v1/transforms.proto";
+
+message HoudiniGetInfoCommand {
+}
+
+message HoudiniGetInfoResult {
+  string client_name = 1;
+  string client_version = 2;
+  string axis_up = 3;
+}
+
+message HoudiniFloatParameterTemplate {
+  double min = 1;
+  double max = 2;
+  bool min_locked = 3;
+  bool max_locked = 4;
+  bool show_slider = 5;
+  bool show_spinner = 6;
+  double precision = 7;
+  bool force_precision = 8;
+}
+
+message HoudiniIntParameterTemplate {
+  int64 min = 1;
+  int64 max = 2;
+  bool min_locked = 3;
+  bool max_locked = 4;
+  bool show_slider = 5;
+  bool show_spinner = 6;
+}
+
+message HoudiniFileParameterTemplate {
+  string file_pattern = 1;
+  string file_pattern_name = 2;
+}
+
+message HoudiniDropdownParameterTemplate {
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParameterComboItem combo_items = 1;
+}
+
+message HoudiniObjectListParameterTemplate {
+  bool start_open = 1;
+}
+
+message HoudiniParameterTag {
+  string key = 1;
+  string value = 2;
+}
+
+message HoudiniParmTemplate {
+  string name = 1;
+  string label = 2;
+  repeated string value_names = 3;
+  .sc.game.editor.mightybridge.v1.HoudiniParameterType type = 4;
+  bool horizontally_join_with_next_parameter = 5;
+  string help = 6;
+  oneof template_additionnal_info {
+    .sc.game.editor.mightybridge.v1.HoudiniFloatParameterTemplate float_param = 7;
+    .sc.game.editor.mightybridge.v1.HoudiniIntParameterTemplate int_param = 8;
+    .sc.game.editor.mightybridge.v1.HoudiniFileParameterTemplate file_param = 9;
+    .sc.game.editor.mightybridge.v1.HoudiniDropdownParameterTemplate dropdown_param = 10;
+    .sc.game.editor.mightybridge.v1.HoudiniObjectListParameterTemplate object_list_param = 11;
+  }
+}
+
+message HoudiniParmValue {
+  bool is_visible = 1;
+  bool is_disabled = 2;
+  string name = 3;
+  string template_name = 4;
+  bool outdated = 5;
+  oneof value {
+    string string_value = 6;
+    float float_value = 7;
+    int64 int_value = 8;
+  }
+}
+
+message HoudiniParameters {
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParmTemplate parameter_templates = 1;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParmValue parameter_values = 2;
+  string template_identifier = 3;
+}
+
+message HoudiniFloatParameter {
+  double value = 1;
+  double default_value = 2;
+}
+
+message HoudiniIntegerParameter {
+  int64 value = 1;
+  int64 default_value = 2;
+}
+
+message HoudiniStringParameter {
+  string value = 1;
+  string default_value = 2;
+}
+
+message HoudiniParameterValue {
+  string name = 1;
+  oneof params {
+    .sc.game.editor.mightybridge.v1.HoudiniFloatParameter float = 2;
+    .sc.game.editor.mightybridge.v1.HoudiniIntegerParameter integer = 3;
+    .sc.game.editor.mightybridge.v1.HoudiniStringParameter string = 4;
+  }
+}
+
+message HoudiniParameterComboItem {
+  string value = 1;
+  string label = 2;
+}
+
+message HoudiniFloatParameterRange {
+  double min = 1;
+  double max = 2;
+  bool min_locked = 3;
+  bool max_locked = 4;
+}
+
+message HoudiniIntParameterRange {
+  int64 min = 1;
+  int64 max = 2;
+  bool min_locked = 3;
+  bool max_locked = 4;
+}
+
+message HoudiniParameter {
+  string name = 1;
+  string label = 2;
+  .sc.game.editor.mightybridge.v1.HoudiniParameterType type = 3;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParameterValue values = 4;
+  bool is_disabled = 5;
+  bool is_locked = 7;
+  bool is_visible = 8;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParameterTag tags = 9;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParameterComboItem combo_items = 10;
+  bool horizontally_join_with_next_parameter = 11;
+  bool is_dirty = 14;
+  string help = 15;
+  oneof range {
+    .sc.game.editor.mightybridge.v1.HoudiniFloatParameterRange float_range = 12;
+    .sc.game.editor.mightybridge.v1.HoudiniIntParameterRange int_range = 13;
+  }
+}
+
+message HoudiniStringResult {
+  string value = 1;
+}
+
+message HoudiniGetNodeParamsCommand {
+  string node_path = 1;
+}
+
+message HoudiniGetNodeParamsResult {
+  .sc.game.editor.mightybridge.v1.HoudiniParameters new_parameters = 2;
+}
+
+message HoudiniSetNodeParamsCommand {
+  string node_path = 1;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParmValue parameters = 2;
+  bool cook = 3;
+  string template_identifier = 4;
+}
+
+message HoudiniSetNodeParamsResult {
+  .sc.game.editor.mightybridge.v1.HoudiniParameters new_parameters = 2;
+}
+
+message HoudiniCleanProjectCommand {
+}
+
+message HoudiniSetUpdateModeCommand {
+  .sc.game.editor.mightybridge.v1.HoudiniUpdateMode mode = 1;
+}
+
+message HoudiniSaveHipFileCommand {
+  string file_path = 1;
+  bool create_folders = 2;
+}
+
+message HdaDefinition {
+  string label = 1;
+  string identifier = 2;
+  string hda_version = 4;
+  optional string item_path = 3;
+}
+
+message HoudiniGetHdaListCommand {
+}
+
+message HoudiniGetHdaListResult {
+  repeated .sc.game.editor.mightybridge.v1.HdaDefinition hda_definitions = 2;
+}
+
+message HoudiniCreateNodeCommand {
+  string node_type = 1;
+  string hto_guid = 2;
+  string node_name = 3;
+  string parent_node_path = 4;
+  bool cook_on_create = 5;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniParmValue parameters = 6;
+  string node_version = 7;
+}
+
+message HoudiniDeleteNodeCommand {
+  string node_path = 1;
+}
+
+message HoudiniSetObjNodeTransformCommand {
+  string node_path = 1;
+  .sc.game.editor.mightybridge.v1.Transformf transform = 2;
+}
+
+message HoudiniSetSplinePointsCommand {
+  repeated .sc.game.editor.mightybridge.v1.Vec3f spline_points = 1;
+}
+
+message HoudiniSetCameraTransformCommand {
+  .sc.game.editor.mightybridge.v1.Vec3f position = 1;
+  .sc.game.editor.mightybridge.v1.Quatf look_at = 2;
+}
+
+message HoudiniGetSessionInfoCommand {
+}
+
+message HoudiniGetSessionInfoResult {
+  bool is_ui_available = 1;
+  bool is_techart_workflow_on = 2;
+  string houdini_mightybridge_version = 3;
+}
+
+message HoudiniGetNodeOpenCommand {
+  string node_path = 1;
+}
+
+message HoudiniGetNodeOpenResult {
+  bool is_open = 1;
+}
+
+message HoudiniPressNodeButtonCommand {
+  string node_path = 1;
+  string parm_name = 2;
+}
+
+message HoudiniMeshVertices {
+  repeated float alphas = 1;
+  repeated float colors = 2;
+  repeated float uvs = 4;
+  repeated float tangent = 5;
+  repeated float tangent_w = 6;
+  repeated float binormal = 7;
+  repeated float binormal_w = 8;
+  repeated float debug_normals = 9;
+}
+
+message HoudiniMeshMaterialID {
+  int32 material_id = 10;
+  int32 flat_indices_index = 11;
+}
+
+message HoudiniMeshSubObject {
+  int32 number = 2;
+  string name = 3;
+  int32 flat_indices_index = 4;
+  int32 flat_points_index = 5;
+}
+
+message HoudiniMeshPrimitives {
+  string guid = 1;
+  string name = 2;
+  string material = 3;
+  int32 flags = 13;
+  int32 lod_level = 5;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniMeshSubObject sub_objects = 7;
+  repeated .sc.game.editor.mightybridge.v1.HoudiniMeshMaterialID material_ids = 8;
+  repeated int32 indices = 9;
+  repeated int32 deleted_sub_object_numbers = 10;
+  repeated string extra_node_infos = 11;
+  bool local_transforms_applied_to_vertex = 12;
+  float minimum_face_area_threshold = 14;
+}
+
+message HoudiniMeshPoints {
+  repeated float points = 1;
+}
+
+enum HoudiniParameterType {
+  HOUDINI_PARAMETER_TYPE_UNSPECIFIED = 0;
+  HOUDINI_PARAMETER_TYPE_UNSUPPORTED = 1;
+  HOUDINI_PARAMETER_TYPE_FLOAT = 2;
+  HOUDINI_PARAMETER_TYPE_INTEGER = 3;
+  HOUDINI_PARAMETER_TYPE_STRING = 4;
+  HOUDINI_PARAMETER_TYPE_BOOLEAN = 5;
+  HOUDINI_PARAMETER_TYPE_COLOR = 6;
+  HOUDINI_PARAMETER_TYPE_SEPARATOR = 7;
+  HOUDINI_PARAMETER_TYPE_LABEL = 8;
+  HOUDINI_PARAMETER_TYPE_FILE = 9;
+  HOUDINI_PARAMETER_TYPE_BUTTON = 10;
+  HOUDINI_PARAMETER_TYPE_DROPDOWN = 11;
+  HOUDINI_PARAMETER_TYPE_OBJECT_LIST = 12;
+  HOUDINI_PARAMETER_TYPE_TAG_LIST = 13;
+}
+
+enum HoudiniUpdateMode {
+  HOUDINI_UPDATE_MODE_UNSPECIFIED = 0;
+  HOUDINI_UPDATE_MODE_AUTO_UPDATE = 1;
+  HOUDINI_UPDATE_MODE_MOUSE_UP = 2;
+  HOUDINI_UPDATE_MODE_MANUAL = 3;
+}
+
+enum HoudiniNodeHelperType {
+  HOUDINI_NODE_HELPER_TYPE_NONE = 0;
+  HOUDINI_NODE_HELPER_TYPE_POINT = 1;
+  HOUDINI_NODE_HELPER_TYPE_DUMMY = 2;
+}
+

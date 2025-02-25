@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package sc.external.services.login.v1;
+
+import "sc/external/services/identity/v1/player.proto";
+import "google/rpc/error_details/error_details.proto";
+
+message LoginQueue {
+  string name = 1;
+}
+
+message LoginQueueStats {
+  uint32 players_in_processing_queue = 2;
+  uint32 players_in_login_queue = 3;
+  float average_wait_time_seconds = 4;
+  float max_wait_time_seconds = 5;
+  float average_login_rate_per_second = 6;
+  uint32 max_players_in_login_queue = 7;
+  uint32 max_players_in_processing_queue = 8;
+}
+
+message QueueStatus {
+  string queue_name = 1;
+  uint32 position = 2;
+  uint32 eta_seconds = 3;
+}
+
+message CharacterStatus {
+  repeated .sc.external.services.identity.v1.Player players = 1;
+}
+
+message LoginRequestStatus {
+  string login_request_id = 1;
+  .sc.external.services.login.v1.LoginRequestState state = 2;
+  .sc.external.services.login.v1.LoginRequestPhase phase = 3;
+  oneof status {
+    .google.rpc.ErrorInfo error = 4;
+    .sc.external.services.login.v1.QueueStatus queue = 5;
+    .sc.external.services.login.v1.CharacterStatus characters = 6;
+  }
+}
+
+enum LoginRequestState {
+  LOGIN_REQUEST_STATE_UNSPECIFIED = 0;
+  LOGIN_REQUEST_STATE_ONGOING = 1;
+  LOGIN_REQUEST_STATE_ERROR = 2;
+  LOGIN_REQUEST_STATE_COMPLETE = 3;
+}
+
+enum LoginRequestPhase {
+  LOGIN_REQUEST_PHASE_UNSPECIFIED = 0;
+  LOGIN_REQUEST_PHASE_IN_QUEUE = 1;
+  LOGIN_REQUEST_PHASE_AUTHENTICATING = 2;
+  LOGIN_REQUEST_PHASE_CHARACTERS = 3;
+  LOGIN_REQUEST_PHASE_ENTITLEMENT = 4;
+  LOGIN_REQUEST_PHASE_DONE = 5;
+}
+

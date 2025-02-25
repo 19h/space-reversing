@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package sc.internal.services.configuration.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/configuration/v1/matchers.proto";
+
+service ConfigAdminService {
+  rpc WriteConfig (.sc.internal.services.configuration.v1.WriteConfigRequest) returns (.sc.internal.services.configuration.v1.WriteConfigResponse) {}
+  rpc UpdateConfig (.sc.internal.services.configuration.v1.UpdateConfigRequest) returns (.sc.internal.services.configuration.v1.UpdateConfigResponse) {}
+  rpc DeleteConfig (.sc.internal.services.configuration.v1.DeleteConfigRequest) returns (.sc.internal.services.configuration.v1.DeleteConfigResponse) {}
+  rpc QueryAllConfigurations (.sc.internal.services.configuration.v1.QueryAllConfigurationsRequest) returns (.sc.internal.services.configuration.v1.QueryAllConfigurationsResponse) {}
+  rpc QueryConfigurationNodeHistory (.sc.internal.services.configuration.v1.QueryConfigurationNodeHistoryRequest) returns (.sc.internal.services.configuration.v1.QueryConfigurationNodeHistoryResponse) {}
+  rpc QueryAllConfigurationsByGroup (.sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupRequest) returns (.sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupResponse) {}
+}
+
+message WriteConfigMatchers {
+  string environment = 1;
+  string session_uuid = 2;
+  string host_uuid = 3;
+  string product = 4;
+  string branch = 5;
+  string build_cl = 6;
+  float probability = 7;
+}
+
+message WriteRequest {
+  string config_group = 1;
+  string config_key = 2;
+  string value = 3;
+  .sc.internal.services.configuration.v1.WriteConfigMatchers matchers = 4;
+}
+
+message WriteResponse {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+}
+
+message WriteConfigRequest {
+  .sc.internal.services.configuration.v1.WriteRequest request = 1;
+}
+
+message WriteConfigResponse {
+  .sc.internal.services.configuration.v1.WriteResponse response = 1;
+}
+
+message UpdateRequest {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+  string value = 3;
+}
+
+message UpdateResponse {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+}
+
+message UpdateConfigRequest {
+  .sc.internal.services.configuration.v1.UpdateRequest request = 1;
+}
+
+message UpdateConfigResponse {
+  .sc.internal.services.configuration.v1.UpdateResponse response = 1;
+}
+
+message DeleteRequest {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+}
+
+message DeleteResponse {
+}
+
+message DeleteConfigRequest {
+  .sc.internal.services.configuration.v1.DeleteRequest request = 1;
+}
+
+message DeleteConfigResponse {
+  .sc.internal.services.configuration.v1.DeleteResponse response = 1;
+}
+
+message QueryAllConfigurationsRequestBody {
+  string config_group = 1;
+  string config_key = 2;
+  .sc.external.services.configuration.v1.ConfigMatchers matchers = 5;
+}
+
+message QueryAllConfigurationMatch {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+  string value = 3;
+}
+
+message QueryAllConfigurationsResponseBody {
+  repeated .sc.internal.services.configuration.v1.QueryAllConfigurationMatch matches = 1;
+}
+
+message QueryAllConfigurationsRequest {
+  .sc.internal.services.configuration.v1.QueryAllConfigurationsRequestBody query = 1;
+}
+
+message QueryAllConfigurationsResponse {
+  .sc.internal.services.configuration.v1.QueryAllConfigurationsResponseBody response = 1;
+}
+
+message QueryConfigurationNodeHistoryRequestBody {
+  string node = 1;
+}
+
+message QueryConfigurationNodeHistoryVersion {
+  string value = 1;
+  uint64 version = 2;
+}
+
+message QueryConfigurationNodeHistoryResponseBody {
+  repeated .sc.internal.services.configuration.v1.QueryConfigurationNodeHistoryVersion versions = 1;
+}
+
+message QueryConfigurationNodeHistoryRequest {
+  .sc.internal.services.configuration.v1.QueryConfigurationNodeHistoryRequestBody query = 1;
+}
+
+message QueryConfigurationNodeHistoryResponse {
+  .sc.internal.services.configuration.v1.QueryConfigurationNodeHistoryResponseBody response = 1;
+}
+
+message QueryAllConfigurationsByGroupRequestBody {
+  repeated string config_groups = 1;
+}
+
+message QueryAllConfigurationsByGroupMatch {
+  string curr_node = 1;
+  uint64 curr_version = 2;
+  string value = 3;
+  .sc.external.services.configuration.v1.ConfigMatchers matchers = 4;
+}
+
+message QueryAllConfigurationsByGroupRequest {
+  .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupRequestBody query = 1;
+}
+
+message QueryAllConfigurationsByGroupResponse {
+  message QueryAllConfigurationsByGroupResponseBody {
+    message QueryAllConfigurationsByGroupResponseBodyGroup {
+      repeated .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupMatch matches = 1;
+    }
+
+    message VariablesEntry {
+      string key = 1;
+      .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupResponse.QueryAllConfigurationsByGroupResponseBody.QueryAllConfigurationsByGroupResponseBodyGroup value = 2;
+    }
+
+    repeated .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupResponse.QueryAllConfigurationsByGroupResponseBody.VariablesEntry variables = 1;
+  }
+
+  message ResponseEntry {
+    string key = 1;
+    .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupResponse.QueryAllConfigurationsByGroupResponseBody value = 2;
+  }
+
+  repeated .sc.internal.services.configuration.v1.QueryAllConfigurationsByGroupResponse.ResponseEntry response = 1;
+}
+

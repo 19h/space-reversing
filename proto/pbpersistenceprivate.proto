@@ -1,0 +1,37 @@
+syntax = "proto2";
+
+package cig.Protocols.Private.Persistence;
+
+import "pbcommon.proto";
+
+message CMsgPlayerLoginEvent {
+  required int32 account_id = 1;
+  required uint64 character_id = 2;
+  required string account_name = 3;
+  required string display_name = 4;
+  required string nickname = 5;
+  required string tracking_metrics_id = 6;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_item_info = 7;
+  repeated .cig.Protocols.Common.RSIItemInfo rsi_rented_item_info = 8;
+  repeated int32 badges = 9;
+}
+
+message SMsgPlayerLoginEventResp {
+  required int32 result_code = 1;
+  required int32 account_id = 2;
+  required string nickname = 3;
+  optional string timestamp_last_login = 4;
+}
+
+message CMsgAdminDeleteAccount {
+  required int32 account_id = 1;
+  required uint64 player_geid = 2;
+  required string admin_password = 3;
+}
+
+message SMsgAdminDeleteAccountResp {
+  required int32 result_code = 1;
+  required int32 account_id = 2;
+  required uint64 player_geid = 3;
+}
+

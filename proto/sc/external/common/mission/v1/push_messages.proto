@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/scenarios.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+message MissionActivated {
+  message Body {
+    string mission_id = 1;
+    string shard_id = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.MissionActivated.Body missions = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message MissionEnded {
+  message Body {
+    string mission_id = 1;
+    .sc.external.common.mission.v1.MissionState mission_state = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.MissionEnded.Body missions = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message PlayerJoined {
+  message Body {
+    string mission_id = 1;
+    string player_urn = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.PlayerJoined.Body players = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message PlayerLeft {
+  message Body {
+    string mission_id = 1;
+    string player_urn = 2;
+    .sc.external.common.mission.v1.MissionState end_state = 3;
+    uint32 end_reason = 4;
+    string analytics_reason = 5;
+  }
+
+  repeated .sc.external.common.mission.v1.PlayerLeft.Body players = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ObjectiveUpserted {
+  message Body {
+    .sc.external.common.mission.v1.MissionObjective objective = 1;
+    bool created = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.ObjectiveUpserted.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ObjectiveUpdate {
+  message Body {
+    string objective_id = 1;
+    int64 progress = 2;
+    uint32 flags = 3;
+  }
+
+  repeated .sc.external.common.mission.v1.ObjectiveUpdate.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ObjectiveComplete {
+  message Body {
+    string objective_id = 1;
+    .sc.external.common.mission.v1.MissionObjectiveState state = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.ObjectiveComplete.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message MissionPhaseStateChange {
+  message Body {
+    string active_phase_key = 1;
+    .sc.external.common.mission.v1.MissionPhaseState state = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.MissionPhaseStateChange.Body phases = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message MissionShared {
+  message Body {
+    string mission_id = 1;
+    string owner_urn = 2;
+    .sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+  }
+
+  repeated .sc.external.common.mission.v1.MissionShared.Body shares = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message PlayerObjectiveUpdate {
+  message Body {
+    string objective_id = 1;
+    int64 progress = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.PlayerObjectiveUpdate.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ContributorAddedToObjective {
+  message Body {
+    string objective_id = 1;
+    string player_urn = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.ContributorAddedToObjective.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ContributorRemovedFromObjective {
+  message Body {
+    string objective_id = 1;
+    string player_urn = 2;
+  }
+
+  repeated .sc.external.common.mission.v1.ContributorRemovedFromObjective.Body objectives = 1;
+  .google.protobuf.Any context = 2;
+}
+
+message ScenarioCommand {
+  string message_id = 1;
+  .sc.external.common.mission.v1.ScenarioCommandWord word = 2;
+  .sc.external.common.mission.v1.Scenario scenario = 3;
+}
+
+message ScenarioCyclePhaseChange {
+  reserved "phase";
+  reserved 5;
+  string message_id = 1;
+  .sc.external.common.mission.v1.Scenario scenario = 3;
+  string cycle_id = 4;
+  .sc.external.common.mission.v1.CycleState cycle_state = 6;
+  optional .google.protobuf.Timestamp timestamp = 2;
+}
+

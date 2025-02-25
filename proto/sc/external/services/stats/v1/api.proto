@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/stats/v1/stat.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+service StatsService {
+  rpc FindStats (.sc.external.services.stats.v1.FindStatsRequest) returns (.sc.external.services.stats.v1.FindStatsResponse) {}
+}
+
+message FindStatsRequest {
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  .sc.external.common.api.v1.Query query = 4;
+}
+
+message FindStatsResponse {
+  repeated .sc.external.services.stats.v1.Stat results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+

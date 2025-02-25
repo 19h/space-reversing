@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_scenario.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/time/v1/schedule.proto";
+import "sc/external/common/mission/v1/scenarios.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+service ScenarioService {
+  rpc CreateScenarioTemplate (.sc.internal.services.mission_scenario.v1.CreateScenarioTemplateRequest) returns (.sc.internal.services.mission_scenario.v1.CreateScenarioTemplateResponse) {}
+  rpc DestroyScenarioTemplate (.sc.internal.services.mission_scenario.v1.DestroyScenarioTemplateRequest) returns (.sc.internal.services.mission_scenario.v1.DestroyScenarioTemplateResponse) {}
+  rpc QueryScenarioTemplates (.sc.internal.services.mission_scenario.v1.QueryScenarioTemplatesRequest) returns (.sc.internal.services.mission_scenario.v1.QueryScenarioTemplatesResponse) {}
+  rpc CreateScenario (.sc.internal.services.mission_scenario.v1.CreateScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.CreateScenarioResponse) {}
+  rpc DestroyScenario (.sc.internal.services.mission_scenario.v1.DestroyScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.DestroyScenarioResponse) {}
+  rpc QueryScenarios (.sc.internal.services.mission_scenario.v1.QueryScenariosRequest) returns (.sc.internal.services.mission_scenario.v1.QueryScenariosResponse) {}
+  rpc ScheduleScenario (.sc.internal.services.mission_scenario.v1.ScheduleScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.ScheduleScenarioResponse) {}
+  rpc ConfigureScenario (.sc.internal.services.mission_scenario.v1.ConfigureScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.ConfigureScenarioResponse) {}
+  rpc StartScenario (.sc.internal.services.mission_scenario.v1.StartScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.StartScenarioResponse) {}
+  rpc StopScenario (.sc.internal.services.mission_scenario.v1.StopScenarioRequest) returns (.sc.internal.services.mission_scenario.v1.StopScenarioResponse) {}
+  rpc AckScenarioCommand (.sc.internal.services.mission_scenario.v1.AckScenarioCommandRequest) returns (.sc.internal.services.mission_scenario.v1.AckScenarioCommandResponse) {}
+  rpc ResolveScheduleExpressions (.sc.internal.services.mission_scenario.v1.ResolveScheduleExpressionsRequest) returns (.sc.internal.services.mission_scenario.v1.ResolveScheduleExpressionsResponse) {}
+}
+
+message CreateScenarioTemplateRequest {
+  repeated .sc.external.common.mission.v1.ScenarioTemplate templates = 1;
+}
+
+message CreateScenarioTemplateResponse {
+  repeated string ids = 1;
+}
+
+message DestroyScenarioTemplateRequest {
+  repeated string template_ids = 1;
+}
+
+message DestroyScenarioTemplateResponse {
+}
+
+message QueryScenarioTemplatesRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryScenarioTemplatesResponse {
+  repeated .sc.external.common.mission.v1.ScenarioTemplate results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message CreateScenarioRequest {
+  string template_id = 2;
+  string name = 3;
+  string description = 4;
+  optional string id = 1;
+}
+
+message CreateScenarioResponse {
+  string id = 1;
+}
+
+message DestroyScenarioRequest {
+  repeated string ids = 1;
+}
+
+message DestroyScenarioResponse {
+}
+
+message QueryScenariosRequest {
+  .sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryScenariosResponse {
+  repeated .sc.external.common.mission.v1.Scenario results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ScheduleScenarioRequest {
+  string id = 1;
+  optional .sc.external.common.time.v1.Schedule schedule = 2;
+}
+
+message ScheduleScenarioResponse {
+}
+
+message StartScenarioRequest {
+  string id = 1;
+  optional int32 delay_ms = 2;
+}
+
+message StartScenarioResponse {
+  string message_id = 1;
+}
+
+message StopScenarioRequest {
+  string id = 1;
+  optional int32 delay_ms = 2;
+}
+
+message StopScenarioResponse {
+  string message_id = 1;
+}
+
+message ConfigureScenarioRequest {
+  reserved "enabled";
+  reserved 2;
+  string id = 1;
+  repeated .sc.external.common.mission.v1.Cycle cycles = 3;
+  optional .sc.external.common.mission.v1.MissionVariables variables = 4;
+}
+
+message ConfigureScenarioResponse {
+  string message_id = 1;
+}
+
+message AckScenarioCommandRequest {
+  string scenario_id = 1;
+  string message_id = 2;
+}
+
+message AckScenarioCommandResponse {
+}
+
+message ResolveScheduleExpressionsRequest {
+  optional string cron_expression = 1;
+  optional .sc.external.common.time.v1.Schedule schedule = 2;
+}
+
+message ResolveScheduleExpressionsResponse {
+  optional string cron_expression = 1;
+  optional string schedule = 2;
+}
+

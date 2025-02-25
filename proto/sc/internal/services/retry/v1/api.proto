@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sc.internal.services.retry.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/internal/services/retry/v1/types.proto";
+
+service RetryService {
+  rpc Retry (.sc.internal.services.retry.v1.RetryRequest) returns (.sc.internal.services.retry.v1.RetryResponse) {}
+}
+
+message RetryRequest {
+  repeated .sc.internal.services.retry.v1.RetryEnvelope envelopes = 1;
+}
+
+message RetryResponse {
+}
+

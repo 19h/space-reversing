@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package sc.internal.services.chrono.v1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/command/v1/types.proto";
+
+message JobSchedule {
+  .google.protobuf.Timestamp start_time = 1;
+  .google.protobuf.Timestamp end_time = 2;
+  string cron_spec = 3;
+}
+
+message Job {
+  string id = 1;
+  string name = 2;
+  .sc.internal.services.chrono.v1.JobSchedule schedule = 3;
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 4;
+  repeated string tags = 5;
+  .google.protobuf.Any body = 6;
+}
+
+message ScheduledJob {
+  string id = 1;
+  string name = 2;
+  .sc.internal.services.chrono.v1.JobSchedule schedule = 3;
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 4;
+  repeated string tags = 5;
+  .google.protobuf.Any body = 6;
+  .google.protobuf.Timestamp created_time = 7;
+  .google.protobuf.Timestamp last_modified_time = 8;
+  .google.protobuf.Timestamp last_ran_time = 9;
+  .sc.internal.services.chrono.v1.JobStatus status = 10;
+}
+
+message JobLogs {
+  string id = 1;
+  .sc.internal.services.chrono.v1.JobLogAction job_action = 2;
+  uint64 created_at = 3;
+}
+
+enum JobStatus {
+  JOB_STATUS_UNSPECIFIED = 0;
+  JOB_STATUS_ACTIVE = 1;
+  JOB_STATUS_EXPIRED = 2;
+  JOB_STATUS_CANCELLED = 3;
+  JOB_STATUS_FINISHED = 4;
+}
+
+enum JobLogAction {
+  JOB_LOG_ACTION_UNSPECIFIED = 0;
+  JOB_LOG_ACTION_CREATED = 1;
+  JOB_LOG_ACTION_RESCHEDULED = 2;
+  JOB_LOG_ACTION_CANCELLED = 3;
+  JOB_LOG_ACTION_RUN = 4;
+  JOB_LOG_ACTION_EXPIRED = 5;
+}
+

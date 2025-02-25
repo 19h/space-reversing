@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package sc.internal.services.chrono.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+message Filter {
+  oneof filter_type {
+    .sc.external.common.api.v1.CompositeFilter composite_filter = 1;
+    .sc.external.common.api.v1.PropertyFilter property_filter = 2;
+  }
+}
+
+message JobQuery {
+  .sc.internal.services.chrono.v1.Filter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message JobLogsQuery {
+  .sc.internal.services.chrono.v1.Filter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+

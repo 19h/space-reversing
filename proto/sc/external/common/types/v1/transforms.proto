@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package sc.external.common.types.v1;
+
+message Vec2f {
+  float x = 1;
+  float y = 2;
+}
+
+message Vec3f {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Vec4f {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
+}
+
+message Quatf {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
+}
+
+message Mat2f {
+  float m11 = 1;
+  float m12 = 2;
+  float m21 = 3;
+  float m22 = 4;
+}
+
+message Mat3f {
+  float m11 = 1;
+  float m12 = 2;
+  float m13 = 3;
+  float m21 = 4;
+  float m22 = 5;
+  float m23 = 6;
+  float m31 = 7;
+  float m32 = 8;
+  float m33 = 9;
+}
+
+message Mat4f {
+  double m11 = 1;
+  double m12 = 2;
+  double m13 = 3;
+  double m14 = 4;
+  double m21 = 5;
+  double m22 = 6;
+  double m23 = 7;
+  double m24 = 8;
+  double m31 = 9;
+  double m32 = 10;
+  double m33 = 11;
+  double m34 = 12;
+  double m41 = 13;
+  double m42 = 14;
+  double m43 = 15;
+  double m44 = 16;
+}
+
+message Vec2d {
+  double x = 1;
+  double y = 2;
+}
+
+message Vec3d {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message Vec4d {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}
+
+message Quatd {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}
+
+message Mat2d {
+  double m11 = 1;
+  double m12 = 2;
+  double m21 = 3;
+  double m22 = 4;
+}
+
+message Mat3d {
+  double m11 = 1;
+  double m12 = 2;
+  double m13 = 3;
+  double m21 = 4;
+  double m22 = 5;
+  double m23 = 6;
+  double m31 = 7;
+  double m32 = 8;
+  double m33 = 9;
+}
+
+message Mat4d {
+  double m11 = 1;
+  double m12 = 2;
+  double m13 = 3;
+  double m14 = 4;
+  double m21 = 5;
+  double m22 = 6;
+  double m23 = 7;
+  double m24 = 8;
+  double m31 = 9;
+  double m32 = 10;
+  double m33 = 11;
+  double m34 = 12;
+  double m41 = 13;
+  double m42 = 14;
+  double m43 = 15;
+  double m44 = 16;
+}
+

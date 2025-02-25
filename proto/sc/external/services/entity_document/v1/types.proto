@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package sc.external.services.entity_document.v1;
+
+import "google/protobuf/field_mask.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+message Notify {
+  repeated .sc.external.services.push.v1.PushDestination destinations = 1;
+}
+
+message DocumentHeader {
+  uint64 entity_id = 1;
+  uint32 generation = 2;
+  string revision = 3;
+}
+
+message CreateCommand {
+  uint64 entity_id = 1;
+  uint32 generation = 2;
+  .sc.external.services.entity_document.v1.Notify notify = 3;
+}
+
+message UpsertCommand {
+  uint64 entity_id = 1;
+  uint32 generation = 2;
+  .sc.external.services.entity_document.v1.Notify notify = 3;
+}
+
+message UpdateCommand {
+  uint64 entity_id = 1;
+  uint32 generation = 2;
+  .google.protobuf.FieldMask update_mask = 3;
+  .sc.external.services.entity_document.v1.Notify notify = 4;
+}
+
+message PrepareCommand {
+  uint64 entity_id = 1;
+  uint32 generation = 2;
+  .sc.external.services.entity_document.v1.Notify notify = 3;
+}
+
+message CommitCommand {
+  uint64 entity_id = 1;
+  string class = 2;
+  uint32 generation = 3;
+  .sc.external.services.entity_document.v1.Notify notify = 4;
+}
+
+message EraseCommand {
+  uint64 entity_id = 1;
+  string class = 2;
+  uint32 generation = 3;
+  .sc.external.services.entity_document.v1.Notify notify = 4;
+}
+
+message DocumentQuery {
+  uint64 entity_id = 1;
+  string class = 2;
+  uint32 generation = 3;
+  .google.protobuf.FieldMask read_mask = 4;
+}
+

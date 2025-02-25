@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sc.internal.services.completion.v1;
+
+import "sc/external/common/command/v1/types.proto";
+
+message CompletionRequest {
+  .sc.external.common.command.v1.CommandResponseBody response = 1;
+  repeated .sc.external.common.command.v1.NotifyDestination destinations = 2;
+}
+

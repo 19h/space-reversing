@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package google.api;
+
+option java_package = "com.google.api";
+option java_outer_classname = "ResourceProto";
+option java_multiple_files = true;
+option go_package = "google/api/annotations;annotations";
+option cc_enable_arenas = true;
+option objc_class_prefix = "GAPI";
+
+import "google/protobuf/descriptor.proto";
+
+message ResourceDescriptor {
+  enum History {
+    HISTORY_UNSPECIFIED = 0;
+    ORIGINALLY_SINGLE_PATTERN = 1;
+    FUTURE_MULTI_PATTERN = 2;
+  }
+
+  string type = 1;
+  repeated string pattern = 2;
+  string name_field = 3;
+  .google.api.ResourceDescriptor.History history = 4;
+  string plural = 5;
+  string singular = 6;
+}
+
+message ResourceReference {
+  string type = 1;
+  string child_type = 2;
+}
+

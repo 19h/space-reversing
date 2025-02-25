@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message UnitFilter {
+  message LabelsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  repeated string products = 1;
+  repeated .sc.internal.services.fleet.v1.UnitFilter.LabelsEntry labels = 2;
+}
+

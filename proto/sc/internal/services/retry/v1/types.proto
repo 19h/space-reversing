@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sc.internal.services.retry.v1;
+
+import "google/protobuf/any.proto";
+import "sc/external/common/trace/v1/types.proto";
+
+message RetryConfiguration {
+  string topic = 1;
+  uint64 until = 2;
+  uint32 max = 3;
+}
+
+message RetryState {
+  uint64 at = 1;
+  uint32 count = 2;
+}
+
+message RetryEnvelope {
+  .sc.internal.services.retry.v1.RetryConfiguration configuration = 1;
+  .sc.internal.services.retry.v1.RetryState state = 2;
+  .google.protobuf.Any payload = 3;
+  .sc.external.common.trace.v1.TraceContext trace_context = 4;
+}
+

@@ -1,0 +1,361 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+message EntityGraphQuery {
+  .sc.external.services.entitygraph.v1.EntityFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.services.entitygraph.v1.EntityProjection projection = 3;
+  .sc.external.services.entitygraph.v1.EntityClassFilter entity_class_filter = 4;
+  .sc.external.services.entitygraph.v1.EntitySortingArguments sort = 5;
+  string language = 6;
+}
+
+message EntityGraphStreamQuery {
+  uint64 entity_id = 1;
+  .sc.external.services.entitygraph.v1.EntityPruneConstraint prune = 2;
+  .sc.external.services.entitygraph.v1.EntityFilter filter = 3;
+  bool snapshots = 4;
+}
+
+message EntitySortingByProperty {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.SortComparator sort_comparator = 2;
+}
+
+message EntitySortingByClassProperty {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.SortComparator sort_comparator = 2;
+}
+
+message EntitySortingByEdgeProperty {
+  string property = 1;
+  string edge_type = 2;
+  .sc.external.services.entitygraph.v1.SortComparator sort_comparator = 3;
+}
+
+message EntitySortingArguments {
+  .sc.external.common.api.v1.PaginationOrder order = 1;
+  oneof property {
+    .sc.external.services.entitygraph.v1.EntitySortingByProperty entity_property = 2;
+    .sc.external.services.entitygraph.v1.EntitySortingByClassProperty class_property = 3;
+    .sc.external.services.entitygraph.v1.EntitySortingByEdgeProperty edge_property = 4;
+  }
+}
+
+message PruneEdgePropertyFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+  string edge_type = 4;
+}
+
+message PruneEdgeCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.PruneEdgePropertyFilter filters = 2;
+}
+
+message PruneEdgeFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.PruneEdgeCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.PruneEdgePropertyFilter property_filter = 2;
+  }
+}
+
+message EntityPruneConstraint {
+  bool from_root_node = 1;
+  .sc.external.services.entitygraph.v1.EntityFilter from = 2;
+  .sc.external.services.entitygraph.v1.PruneEdgeFilter edge_filter = 3;
+  .sc.external.services.entitygraph.v1.InventoryFilter inventory_filter = 4;
+}
+
+message EntityTreeProjection {
+  bool enabled = 1;
+  .sc.external.services.entitygraph.v1.EntityPruneConstraint prune = 2;
+  .sc.external.services.entitygraph.v1.EntityFilter filter = 3;
+  bool path_mode = 4;
+  bool include_inventory_nodes = 5;
+  .sc.external.services.entitygraph.v1.InventoryFilter inventory_filter = 6;
+}
+
+message EntityProjection {
+  .sc.external.services.entitygraph.v1.EntityTreeProjection tree = 1;
+  bool snapshots = 2;
+  bool entity_classes = 3;
+  bool outgoing_edges = 4;
+}
+
+message EntityFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.EntityCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.NodeLabelFilter label_filter = 2;
+    .sc.external.services.entitygraph.v1.PropertyFilter property_filter = 3;
+    .sc.external.services.entitygraph.v1.EdgeFilter edge_filter = 4;
+    .sc.external.services.entitygraph.v1.BitFilter bit_filter = 5;
+    .sc.external.services.entitygraph.v1.EntityClassFilter entity_classes_filter = 6;
+  }
+}
+
+message NodeLabelFilter {
+  .sc.external.services.entitygraph.v1.LabelOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityNodeLabel labels = 2;
+}
+
+message EntityCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityFilter filters = 2;
+}
+
+message ContainerGraphQuery {
+  .sc.external.services.entitygraph.v1.ContainerFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.services.entitygraph.v1.ContainerProjection projection = 3;
+  .sc.external.common.api.v1.PaginationSort sort = 4;
+}
+
+message ContainerPruneConstraint {
+  bool from_root_node = 1;
+  .sc.external.services.entitygraph.v1.ContainerFilter from = 2;
+}
+
+message ContainerTreeProjection {
+  bool enabled = 1;
+  .sc.external.services.entitygraph.v1.ContainerPruneConstraint prune = 2;
+  .sc.external.services.entitygraph.v1.ContainerFilter filter = 3;
+}
+
+message ContainerProjection {
+  .sc.external.services.entitygraph.v1.ContainerTreeProjection tree = 1;
+  bool snapshots = 2;
+  bool entity_classes = 3;
+}
+
+message ContainerFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.ContainerCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.ContainerLabelFilter label_filter = 2;
+    .sc.external.services.entitygraph.v1.PropertyFilter property_filter = 3;
+    .sc.external.services.entitygraph.v1.EdgeFilter edge_filter = 4;
+  }
+}
+
+message ContainerLabelFilter {
+  .sc.external.services.entitygraph.v1.LabelOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.ContainerNodeLabel labels = 2;
+}
+
+message ContainerCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.ContainerFilter filters = 2;
+}
+
+message ContainerGraphStreamQuery {
+  uint64 geid = 1;
+  .sc.external.services.entitygraph.v1.ContainerPruneConstraint prune = 2;
+  .sc.external.services.entitygraph.v1.ContainerFilter filter = 3;
+}
+
+message PropertyFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+}
+
+message BitFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.BitOperator operator = 2;
+  int32 value = 3;
+}
+
+message EdgeFilter {
+  string edge_type = 1;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 2;
+}
+
+message SnapshotQuery {
+  message DocumentQuery {
+    uint64 entity_id = 1;
+    repeated .sc.external.services.entitygraph.v1.SnapshotVariableFilter filter = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SnapshotQuery.DocumentQuery queries = 1;
+}
+
+message SnapshotVariableFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.SnapshotVariableNameFilter name_filter = 1;
+    .sc.external.services.entitygraph.v1.SnapshotVariableTypeFilter type_filter = 2;
+  }
+}
+
+message SnapshotVariableNameFilter {
+  uint32 name = 1;
+}
+
+message SnapshotVariableTypeFilter {
+  uint32 type = 2;
+}
+
+message MetaRecordsQuery {
+  .sc.external.services.entitygraph.v1.MetaRecordsFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message MetaRecordCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.MetaRecordsFilter filters = 2;
+}
+
+message MetaRecordPropertyFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+}
+
+message MetaRecordsFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.MetaRecordCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.MetaRecordPropertyFilter property_filter = 3;
+  }
+}
+
+message EntityClassesQuery {
+  .sc.external.services.entitygraph.v1.EntityClassFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message EntityClassNameFilter {
+  string language = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+}
+
+message EntityClassPropertyFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+}
+
+message EntityClassFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.EntityClassCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.EntityClassPropertyFilter property_filter = 2;
+    .sc.external.services.entitygraph.v1.EntityClassNameFilter name_filter = 3;
+  }
+}
+
+message EntityClassCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityClassFilter filters = 2;
+}
+
+message ShardQuery {
+  .sc.external.services.entitygraph.v1.ShardFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message ShardPropertyFilter {
+  string property = 1;
+  .sc.external.services.entitygraph.v1.ComparisonOperator operator = 2;
+  repeated .sc.external.services.entitygraph.v1.ScalarValue values = 3;
+}
+
+message ShardFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.ShardCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.ShardPropertyFilter property_filter = 2;
+  }
+}
+
+message ShardCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.ShardFilter filters = 2;
+}
+
+message InventoryFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.InventoryCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.PropertyFilter property_filter = 2;
+    .sc.external.services.entitygraph.v1.EdgeFilter edge_filter = 3;
+  }
+}
+
+message InventoryCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.InventoryFilter filters = 2;
+}
+
+message InventoryPruneConstraint {
+  .sc.external.services.entitygraph.v1.InventoryFilter from = 1;
+  .sc.external.services.entitygraph.v1.PruneEdgeFilter edge_filter = 2;
+  .sc.external.services.entitygraph.v1.EntityFilter entity_filter = 3;
+}
+
+message InventoryTreeFilter {
+  .sc.external.services.entitygraph.v1.InventoryPruneConstraint prune = 3;
+  .sc.external.services.entitygraph.v1.InventoryFilter filter = 4;
+  oneof root {
+    uint64 entity_geid = 1;
+    string inventory_id = 2;
+  }
+}
+
+message InventoryQuery {
+  .sc.external.common.api.v1.PaginationArguments pagination = 3;
+  .sc.external.common.api.v1.PaginationSort sort = 4;
+  oneof find_by {
+    .sc.external.services.entitygraph.v1.InventoryFilter filter = 1;
+    .sc.external.services.entitygraph.v1.InventoryTreeFilter tree = 2;
+  }
+}
+
+message EntityStowContextFilter {
+  oneof filter_type {
+    .sc.external.services.entitygraph.v1.EntityStowContextCompositeFilter composite_filter = 1;
+    .sc.external.services.entitygraph.v1.PropertyFilter property_filter = 2;
+  }
+}
+
+message EntityStowContextCompositeFilter {
+  .sc.external.services.entitygraph.v1.LogicalOperator operator = 1;
+  repeated .sc.external.services.entitygraph.v1.EntityStowContextFilter filters = 2;
+}
+
+message EntityStowContextQuery {
+  .sc.external.services.entitygraph.v1.EntityStowContextFilter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+enum ComparisonOperator {
+  COMPARISON_OPERATOR_UNSPECIFIED = 0;
+  COMPARISON_OPERATOR_LESS_THAN = 1;
+  COMPARISON_OPERATOR_LESS_THAN_OR_EQUAL = 2;
+  COMPARISON_OPERATOR_GREATER_THAN = 3;
+  COMPARISON_OPERATOR_GREATER_THAN_OR_EQUAL = 4;
+  COMPARISON_OPERATOR_EQUAL = 5;
+  COMPARISON_OPERATOR_NOT_EQUAL = 6;
+  COMPARISON_OPERATOR_MATCH = 7;
+  COMPARISON_OPERATOR_NOT_MATCH = 8;
+  COMPARISON_OPERATOR_IN = 9;
+  COMPARISON_OPERATOR_NOT_IN = 10;
+}
+
+enum LogicalOperator {
+  LOGICAL_OPERATOR_UNSPECIFIED = 0;
+  LOGICAL_OPERATOR_AND = 1;
+  LOGICAL_OPERATOR_OR = 2;
+}
+
+enum SortComparator {
+  SORT_COMPARATOR_UNSPECIFIED = 0;
+  SORT_COMPARATOR_LEXICOGRAPHIC = 1;
+  SORT_COMPARATOR_NUMERICAL = 2;
+}
+

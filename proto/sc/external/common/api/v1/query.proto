@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package sc.external.common.api.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+
+message PropertyFilterValues {
+  repeated string data = 1;
+}
+
+message PropertyFilter {
+  enum ComparisonOperator {
+    COMPARISON_OPERATOR_UNSPECIFIED = 0;
+    COMPARISON_OPERATOR_EQUALS = 1;
+    COMPARISON_OPERATOR_LESS_THAN = 2;
+    COMPARISON_OPERATOR_GREATER_THAN = 3;
+    COMPARISON_OPERATOR_LIKE = 4;
+    COMPARISON_OPERATOR_IN = 5;
+  }
+
+  string property = 1;
+  .sc.external.common.api.v1.PropertyFilter.ComparisonOperator operator = 2;
+  oneof value_field {
+    string value = 3;
+    .sc.external.common.api.v1.PropertyFilterValues values = 4;
+  }
+}
+
+message CompositeFilter {
+  enum LogicalOperator {
+    LOGICAL_OPERATOR_UNSPECIFIED = 0;
+    LOGICAL_OPERATOR_AND = 1;
+    LOGICAL_OPERATOR_OR = 2;
+    LOGICAL_OPERATOR_NOT = 3;
+  }
+
+  .sc.external.common.api.v1.CompositeFilter.LogicalOperator operator = 1;
+  repeated .sc.external.common.api.v1.Filter filters = 2;
+}
+
+message Filter {
+  oneof filter_type {
+    .sc.external.common.api.v1.CompositeFilter composite_filter = 1;
+    .sc.external.common.api.v1.PropertyFilter property_filter = 2;
+  }
+}
+
+message Query {
+  .sc.external.common.api.v1.Filter filter = 1;
+  .sc.external.common.api.v1.PaginationArguments pagination = 2;
+  .sc.external.common.api.v1.PaginationSort sort = 3;
+}
+

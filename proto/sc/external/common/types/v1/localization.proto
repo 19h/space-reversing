@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sc.external.common.types.v1;
+
+message LocalizedString {
+  string token = 1;
+  string en = 2;
+  string fr = 3;
+  string it = 4;
+  string de = 5;
+  string es = 6;
+}
+

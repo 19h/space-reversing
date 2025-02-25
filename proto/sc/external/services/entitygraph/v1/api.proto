@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/entitygraph/v1/rpc_messages.proto";
+
+service EntityGraphService {
+  rpc ContainerQuery (.sc.external.services.entitygraph.v1.ContainerQueryRequest) returns (.sc.external.services.entitygraph.v1.ContainerQueryResponse) {}
+  rpc Move (.sc.external.services.entitygraph.v1.MoveRequest) returns (.sc.external.services.entitygraph.v1.MoveResponse) {}
+  rpc GetInventories (.sc.external.services.entitygraph.v1.GetInventoriesRequest) returns (.sc.external.services.entitygraph.v1.GetInventoriesResponse) {}
+  rpc EntityQuery (.sc.external.services.entitygraph.v1.EntityQueryRequest) returns (.sc.external.services.entitygraph.v1.EntityQueryResponse) {}
+  rpc MutateEntities (.sc.external.services.entitygraph.v1.MutateEntitiesRequest) returns (.sc.external.services.entitygraph.v1.MutateEntitiesResponse) {}
+  rpc InventoryQuery (.sc.external.services.entitygraph.v1.InventoryQueryRequest) returns (.sc.external.services.entitygraph.v1.InventoryQueryResponse) {}
+  rpc ContainerQueryStream (.sc.external.services.entitygraph.v1.ContainerQueryStreamRequest) returns (stream .sc.external.services.entitygraph.v1.ContainerQueryStreamResponse) {}
+  rpc GetEntityStowContexts (.sc.external.services.entitygraph.v1.GetEntityStowContextsRequest) returns (.sc.external.services.entitygraph.v1.GetEntityStowContextsResponse) {}
+}
+
+message ContainerQueryRequest {
+  .sc.external.services.entitygraph.v1.ContainerQueryRequestBody body = 1;
+}
+
+message ContainerQueryResponse {
+  .sc.external.services.entitygraph.v1.ContainerQueryResponseBody body = 1;
+}
+
+message MoveRequest {
+  .sc.external.services.entitygraph.v1.MoveRequestBody body = 1;
+}
+
+message MoveResponse {
+  .sc.external.services.entitygraph.v1.MoveResponseBody body = 1;
+}
+
+message GetInventoriesRequest {
+  .sc.external.services.entitygraph.v1.GetInventoriesRequestBody body = 1;
+}
+
+message GetInventoriesResponse {
+  .sc.external.services.entitygraph.v1.GetInventoriesResponseBody body = 1;
+}
+
+message EntityQueryRequest {
+  .sc.external.services.entitygraph.v1.EntityQueryRequestBody body = 1;
+}
+
+message EntityQueryResponse {
+  .sc.external.services.entitygraph.v1.EntityQueryResponseBody body = 1;
+}
+
+message MutateEntitiesRequest {
+  .sc.external.services.entitygraph.v1.MutateEntitiesRequestBody body = 1;
+}
+
+message MutateEntitiesResponse {
+  .sc.external.services.entitygraph.v1.MutateEntitiesResponseBody body = 1;
+}
+
+message InventoryQueryRequest {
+  .sc.external.services.entitygraph.v1.InventoryQueryRequestBody body = 1;
+}
+
+message InventoryQueryResponse {
+  .sc.external.services.entitygraph.v1.InventoryQueryResponseBody body = 1;
+}
+
+message ContainerQueryStreamRequest {
+  .sc.external.services.entitygraph.v1.ContainerQueryStreamRequestBody body = 1;
+}
+
+message ContainerQueryStreamResponse {
+  .sc.external.services.entitygraph.v1.ContainerQueryStreamResponseBody body = 1;
+}
+
+message GetEntityStowContextsRequest {
+  .sc.external.services.entitygraph.v1.GetEntityStowContextsRequestBody body = 1;
+}
+
+message GetEntityStowContextsResponse {
+  .sc.external.services.entitygraph.v1.GetEntityStowContextsResponseBody body = 1;
+}
+

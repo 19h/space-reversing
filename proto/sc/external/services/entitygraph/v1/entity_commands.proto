@@ -1,0 +1,398 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/services/entitygraph/v1/inventory_commands.proto";
+import "sc/external/services/longterm/v1/types.proto";
+
+message EntityGraphCommand {
+  reserved "set_node_status";
+  reserved 27;
+  oneof params {
+    .sc.external.services.entitygraph.v1.CreateCommand create = 1;
+    .sc.external.services.entitygraph.v1.EraseCommand erase = 2;
+    .sc.external.services.entitygraph.v1.AttachCommand attach = 3;
+    .sc.external.services.entitygraph.v1.DetachCommand detach = 4;
+    .sc.external.services.entitygraph.v1.TransferCommand transfer = 5;
+    .sc.external.services.entitygraph.v1.MoveCommand move = 6;
+    .sc.external.services.entitygraph.v1.AddLabelsCommand add_labels = 7;
+    .sc.external.services.entitygraph.v1.RemoveLabelsCommand remove_labels = 8;
+    .sc.external.services.entitygraph.v1.ChangeFlagsCommand change_flags = 9;
+    .sc.external.services.entitygraph.v1.ChangeLocationCommand change_location = 10;
+    .sc.external.services.entitygraph.v1.SetSnapshotCommand set_snapshot = 11;
+    .sc.external.services.entitygraph.v1.ChangeSnapshotCommand change_snapshot = 12;
+    .sc.external.services.entitygraph.v1.RemoveSnapshotCommand remove_snapshot = 13;
+    .sc.external.services.entitygraph.v1.StackCommand stack = 14;
+    .sc.external.services.entitygraph.v1.UnstackCommand unstack = 15;
+    .sc.external.services.entitygraph.v1.SetStackCommand setstack = 16;
+    .sc.external.services.entitygraph.v1.ChangeRankCommand change_rank = 17;
+    .sc.external.services.entitygraph.v1.ActivateCommand activate = 18;
+    .sc.external.services.entitygraph.v1.AddTagsCommand add_tags = 19;
+    .sc.external.services.entitygraph.v1.RemoveTagsCommand remove_tags = 20;
+    .sc.external.services.entitygraph.v1.SetTagsCommand set_tags = 21;
+    .sc.external.services.entitygraph.v1.CreateInventoryCommand create_inventory = 22;
+    .sc.external.services.entitygraph.v1.EraseInventoryCommand erase_inventory = 23;
+    .sc.external.services.entitygraph.v1.ChangeInventoryConfigurationCommand change_inventory_config = 24;
+    .sc.external.services.entitygraph.v1.DeactivateCommand deactivate = 25;
+    .sc.external.services.entitygraph.v1.SyncCommand sync = 26;
+    .sc.external.services.entitygraph.v1.CreateLTRecordCommand create_lt_record = 28;
+    .sc.external.services.entitygraph.v1.MoveAllCommand move_all = 29;
+    .sc.external.services.entitygraph.v1.CreateStowContextsCommand create_stow_context = 30;
+    .sc.external.services.entitygraph.v1.UpdateParentUrnsCommand update_parent_urn = 31;
+  }
+}
+
+message CreateCommand {
+  message Body {
+    .sc.external.services.entitygraph.v1.EntityGraph graphs = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.CreateCommand.Body creates = 1;
+}
+
+message EraseCommand {
+  message Body {
+    uint64 entity_id = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.EraseCommand.Body erasures = 1;
+}
+
+message BuryCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated .sc.external.services.entitygraph.v1.EntityGraphCommand post_commands = 2;
+    .sc.external.services.entitygraph.v1.SyncCommand sync = 3;
+    repeated uint64 geids = 4;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.BuryCommand.Body erasures = 1;
+}
+
+message StowCommand {
+  message Body {
+    message DeactivationContextEntry {
+      string key = 1;
+      .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+    }
+
+    uint64 entity_id = 1;
+    string to_inventory_id = 2;
+    bool transfer_to_inventory_owner = 3;
+    repeated .sc.external.services.entitygraph.v1.EntityGraphCommand post_commands = 4;
+    string rank = 5;
+    repeated .sc.external.services.entitygraph.v1.StowCommand.Body.DeactivationContextEntry deactivation_context = 7;
+    repeated uint64 geids = 8;
+    .sc.external.services.entitygraph.v1.SyncCommand sync = 9;
+    oneof stow_config {
+      .sc.external.services.entitygraph.v1.PhysicalInventoryEdgeConfiguration physical = 6;
+    }
+  }
+
+  repeated .sc.external.services.entitygraph.v1.StowCommand.Body stow = 1;
+}
+
+message UnstowCommand {
+  message Body {
+    message ActivationContextEntry {
+      string key = 1;
+      .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+    }
+
+    uint64 entity_id = 1;
+    string from_inventory_id = 2;
+    repeated .sc.external.services.entitygraph.v1.EntityGraphCommand post_commands = 3;
+    repeated .sc.external.services.entitygraph.v1.UnstowCommand.Body.ActivationContextEntry activation_context = 4;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.UnstowCommand.Body unstow = 1;
+}
+
+message AttachCommand {
+  message Body {
+    uint64 entity_id = 1;
+    uint64 parent_id = 2;
+    .sc.external.services.entitygraph.v1.AttachmentType attachment_type = 3;
+    uint64 attachment_port = 4;
+    uint64 attachment_geid = 5;
+    .sc.external.services.entitygraph.v1.AttachmentOwnershipBehavior ownership = 6;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.AttachCommand.Body attachments = 1;
+}
+
+message DetachCommand {
+  message Body {
+    uint64 entity_id = 1;
+    .sc.external.services.entitygraph.v1.AttachmentOwnershipBehavior ownership = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.DetachCommand.Body detaches = 1;
+}
+
+message TransferCommand {
+  message Body {
+    bool clear = 1;
+    uint64 entity_id = 2;
+    bool include_children = 5;
+    oneof owner {
+      uint64 player_id = 3;
+      uint64 organization_id = 4;
+    }
+  }
+
+  repeated .sc.external.services.entitygraph.v1.TransferCommand.Body transfers = 1;
+}
+
+message MoveCommand {
+  message Body {
+    uint64 entity_id = 1;
+    string from_inventory_id = 2;
+    string to_inventory_id = 3;
+    string rank = 4;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.MoveCommand.Body moves = 1;
+}
+
+message AddLabelsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated .sc.external.services.entitygraph.v1.EntityNodeLabel labels = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.AddLabelsCommand.Body updates = 1;
+}
+
+message RemoveLabelsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated .sc.external.services.entitygraph.v1.EntityNodeLabel labels = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.RemoveLabelsCommand.Body updates = 1;
+}
+
+message ChangeFlagsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    uint64 flags = 2;
+    uint64 game_flags = 3;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ChangeFlagsCommand.Body changes = 1;
+}
+
+message ChangeLocationCommand {
+  message Body {
+    reserved "star_hash";
+    reserved 4;
+    uint64 entity_id = 1;
+    .sc.external.common.types.v1.Quatd orientation = 2;
+    .sc.external.common.types.v1.Vec3d position = 3;
+    uint32 location_id = 5;
+    float radius = 6;
+    double scale = 7;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ChangeLocationCommand.Body changes = 1;
+}
+
+message SetSnapshotCommand {
+  message Body {
+    .sc.external.services.entitygraph.v1.EntitySnapshot snapshot = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SetSnapshotCommand.Body snapshots = 1;
+}
+
+message ChangeSnapshotCommand {
+  message Body {
+    .sc.external.services.entitygraph.v1.EntitySnapshot snapshot = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ChangeSnapshotCommand.Body updates = 1;
+}
+
+message RemoveSnapshotCommand {
+  message Body {
+    uint64 entity_id = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.RemoveSnapshotCommand.Body removals = 1;
+}
+
+message StackCommand {
+  message Body {
+    uint64 entity_id = 1;
+    int32 amount = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.StackCommand.Body stacks = 1;
+}
+
+message UnstackCommand {
+  message Body {
+    uint64 entity_id = 1;
+    int32 amount = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.UnstackCommand.Body unstacks = 1;
+}
+
+message SetStackCommand {
+  message Body {
+    uint64 entity_id = 1;
+    int32 amount = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SetStackCommand.Body changes = 1;
+}
+
+message ChangeRankCommand {
+  message Body {
+    uint64 entity_id = 1;
+    string inventory_id = 2;
+    string rank = 3;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ChangeRankCommand.Body changes = 1;
+}
+
+message ActivateCommand {
+  message Body {
+    message ActivationContextEntry {
+      string key = 1;
+      .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+    }
+
+    repeated uint64 geids = 1;
+    repeated .sc.external.services.entitygraph.v1.ActivateCommand.Body.ActivationContextEntry activation_context = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.ActivateCommand.Body activations = 1;
+}
+
+message AddTagsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated uint32 tags = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.AddTagsCommand.Body updates = 1;
+}
+
+message RemoveTagsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated uint32 tags = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.RemoveTagsCommand.Body updates = 1;
+}
+
+message SetTagsCommand {
+  message Body {
+    uint64 entity_id = 1;
+    repeated uint32 tags = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SetTagsCommand.Body updates = 1;
+}
+
+message MeltByOwner {
+  uint64 owner_id = 1;
+  bool enabled = 2;
+}
+
+message MeltCommand {
+  message Body {
+    repeated string parent_urns = 1;
+    .sc.external.services.entitygraph.v1.MeltByOwner melt_by_owner = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.MeltCommand.Body melts = 1;
+}
+
+message DeactivateCommand {
+  message Body {
+    message DeactivationContextEntry {
+      string key = 1;
+      .sc.external.services.entitygraph.v1.ScalarValue value = 2;
+    }
+
+    repeated uint64 geids = 1;
+    repeated .sc.external.services.entitygraph.v1.DeactivateCommand.Body.DeactivationContextEntry deactivation_context = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.DeactivateCommand.Body deactivations = 1;
+}
+
+message SyncCommandEntityProperties {
+  uint64 entity_flags = 1;
+  .sc.external.common.types.v1.Quatd orientation = 2;
+  .sc.external.common.types.v1.Vec3d position = 3;
+  double scale = 4;
+  double radius = 5;
+  repeated uint32 tags = 6;
+  bool is_streaming_group = 7;
+  string parent_urn = 8;
+}
+
+message SyncCommand {
+  message Body {
+    reserved 3;
+    uint32 version = 1;
+    uint64 entity_id = 2;
+    .sc.external.services.entitygraph.v1.EntitySnapshot snapshot = 4;
+    .sc.external.services.entitygraph.v1.EntityEdge attachment_edge = 5;
+    uint32 dirty_flags = 6;
+    .sc.external.services.entitygraph.v1.SyncCommandEntityProperties entity_properties = 7;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.SyncCommand.Body sync_tasks = 1;
+}
+
+message CreateLTRecordCommand {
+  message Body {
+    .sc.external.services.longterm.v1.OwnershipRecord record = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.CreateLTRecordCommand.Body creates = 2;
+}
+
+message MoveAllCommand {
+  message Body {
+    string from_inventory_id = 1;
+    string to_inventory_id = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.MoveAllCommand.Body moves = 1;
+}
+
+message CreateStowContextsCommand {
+  message Body {
+    .sc.external.services.entitygraph.v1.EntityStowContext context = 1;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.CreateStowContextsCommand.Body creates = 2;
+}
+
+message UpdateParentUrnsCommand {
+  message Body {
+    uint64 entity_geid = 1;
+    string new_parent_urn = 2;
+  }
+
+  repeated .sc.external.services.entitygraph.v1.UpdateParentUrnsCommand.Body updates = 2;
+}
+
+enum AttachmentOwnershipBehavior {
+  ATTACHMENT_OWNERSHIP_BEHAVIOR_UNSPECIFIED = 0;
+  ATTACHMENT_OWNERSHIP_BEHAVIOR_NONE = 1;
+  ATTACHMENT_OWNERSHIP_BEHAVIOR_INHERIT = 2;
+  ATTACHMENT_OWNERSHIP_BEHAVIOR_ADOPT = 3;
+}
+

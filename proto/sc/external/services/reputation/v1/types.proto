@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package sc.external.services.reputation.v1;
+
+message ReputationLock {
+  int32 min = 1;
+  int32 max = 2;
+}
+
+message Reputation {
+  string id = 1;
+  string standings_id = 2;
+  uint64 updated_at = 3;
+  string subject = 4;
+  string entity = 5;
+  string scope = 6;
+  int32 score = 7;
+  uint64 last_drifted_at = 8;
+  .sc.external.services.reputation.v1.ReputationLock lock = 9;
+}
+
+message Drift {
+  uint32 time = 1;
+  int32 amount = 2;
+}
+
+message ReputationHistory {
+  string id = 1;
+  uint32 change_in_score = 2;
+  uint64 created_at = 3;
+  .sc.external.services.reputation.v1.LogContext log_context = 4;
+  uint32 current_score = 5;
+}
+
+message Standing {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 min = 4;
+  .sc.external.services.reputation.v1.Drift drift = 5;
+  bool gated = 6;
+}
+
+message Standings {
+  enum Status {
+    STATUS_INVALID_UNSPECIFIED = 0;
+    STATUS_ACTIVE = 1;
+    STATUS_DELETE = 2;
+  }
+
+  string id = 1;
+  .sc.external.services.reputation.v1.Standings.Status state = 2;
+  uint64 updated_at = 3;
+  string name = 4;
+  uint32 initial = 5;
+  uint32 ceiling = 6;
+  uint32 floor = 7;
+  repeated .sc.external.services.reputation.v1.Standing standings = 8;
+  .sc.external.services.reputation.v1.Standing default_standing = 9;
+}
+
+message ReputationInitialized {
+  string subject = 1;
+  string entity = 2;
+  string scope = 3;
+  bool initialized = 4;
+  .sc.external.services.reputation.v1.ReputationLock lock = 5;
+}
+
+message VersionedReputation {
+  .sc.external.services.reputation.v1.Reputation reputation = 1;
+  .sc.external.services.reputation.v1.Standing standing = 2;
+  uint32 version = 3;
+}
+
+message ReputationPushEvent {
+  .sc.external.services.reputation.v1.PushEventType event_type = 1;
+  .sc.external.services.reputation.v1.VersionedReputation versioned_reputation = 2;
+  repeated string standings_achieved = 3;
+}
+
+message State {
+  message PairsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string id = 1;
+  string entity_status = 2;
+  uint32 updated_at = 3;
+  string subject = 4;
+  string entity = 5;
+  repeated .sc.external.services.reputation.v1.State.PairsEntry pairs = 6;
+}
+
+message LogContext {
+  message TagsEntry {
+    string key = 1;
+    string value = 2;
+  }
+
+  string message = 1;
+  repeated .sc.external.services.reputation.v1.LogContext.TagsEntry tags = 2;
+}
+
+message Favorites {
+  repeated string reputations = 1;
+  repeated string entities = 2;
+}
+
+message RankedReputation {
+  .sc.external.services.reputation.v1.Reputation reputation = 1;
+  .sc.external.services.reputation.v1.Standing standing = 2;
+}
+
+enum PushEventType {
+  PUSH_EVENT_TYPE_INVALID_UNSPECIFIED = 0;
+  PUSH_EVENT_TYPE_INITIALIZED = 1;
+  PUSH_EVENT_TYPE_INCREASED = 2;
+  PUSH_EVENT_TYPE_DECREASED = 3;
+  PUSH_EVENT_TYPE_SET = 4;
+  PUSH_EVENT_TYPE_RESET = 5;
+  PUSH_EVENT_TYPE_STATE_CHANGED = 6;
+  PUSH_EVENT_TYPE_STANDING_CHANGED = 7;
+}
+

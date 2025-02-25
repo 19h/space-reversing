@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sc.external.services.presence.v1;
+
+message Activity {
+  string state = 1;
+  string details = 2;
+  uint64 player_id = 3;
+}
+
+message Presence {
+  .sc.external.services.presence.v1.Status status = 1;
+  .sc.external.services.presence.v1.Activity activity = 2;
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_OFFLINE = 1;
+  STATUS_ONLINE = 2;
+  STATUS_AWAY = 3;
+  STATUS_DND = 4;
+  STATUS_ACTIVITY = 5;
+  STATUS_INVISIBLE = 6;
+}
+

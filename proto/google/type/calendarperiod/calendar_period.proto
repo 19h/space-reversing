@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package google.type;
+
+option java_package = "com.google.type";
+option java_outer_classname = "CalendarPeriodProto";
+option java_multiple_files = true;
+option go_package = "google/type/calendarperiod;calendarperiod";
+option objc_class_prefix = "GTP";
+
+enum CalendarPeriod {
+  CALENDAR_PERIOD_UNSPECIFIED = 0;
+  DAY = 1;
+  WEEK = 2;
+  FORTNIGHT = 3;
+  MONTH = 4;
+  QUARTER = 5;
+  HALF = 6;
+  YEAR = 7;
+}
+

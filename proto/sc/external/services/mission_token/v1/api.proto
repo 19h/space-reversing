@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sc.external.services.mission_token.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+service MissionTokenService {
+  rpc QueryTokens (.sc.external.services.mission_token.v1.QueryTokensRequest) returns (.sc.external.services.mission_token.v1.QueryTokensResponse) {}
+}
+
+message QueryTokensRequest {
+}
+
+message QueryTokensResponse {
+  repeated .sc.external.common.mission.v1.MissionToken tokens = 2;
+}
+

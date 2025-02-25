@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package protocol.router;
+
+import "service_common.proto";
+
+message router_announcement {
+  required .protocol.common.service_id router_id = 1;
+}
+
+message router_welcome {
+  required .protocol.common.service_id router_id = 1;
+  repeated .protocol.common.service_id connected_routers = 2;
+}
+

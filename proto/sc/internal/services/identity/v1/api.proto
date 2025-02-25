@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package sc.internal.services.identity.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/identity/v1/player.proto";
+import "sc/internal/services/identity/v1/query.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/platform/v1/types.proto";
+import "sc/external/common/types/v1/customization.proto";
+
+service IdentityService {
+  rpc FulfillPlayers (.sc.internal.services.identity.v1.FulfillPlayersRequest) returns (.sc.internal.services.identity.v1.FulfillPlayersResponse) {}
+  rpc RenamePlayers (.sc.internal.services.identity.v1.RenamePlayersRequest) returns (.sc.internal.services.identity.v1.RenamePlayersResponse) {}
+  rpc RepairPlayers (.sc.internal.services.identity.v1.RepairPlayersRequest) returns (.sc.internal.services.identity.v1.RepairPlayersResponse) {}
+  rpc ResetPlayers (.sc.internal.services.identity.v1.ResetPlayersRequest) returns (.sc.internal.services.identity.v1.ResetPlayersResponse) {}
+  rpc ArchivePlayers (.sc.internal.services.identity.v1.ArchivePlayersRequest) returns (.sc.internal.services.identity.v1.ArchivePlayersResponse) {}
+  rpc QueryPlayers (.sc.internal.services.identity.v1.QueryPlayersRequest) returns (.sc.internal.services.identity.v1.QueryPlayersResponse) {}
+  rpc GetAccountBadges (.sc.internal.services.identity.v1.GetAccountBadgesRequest) returns (.sc.internal.services.identity.v1.GetAccountBadgesResponse) {}
+  rpc GetGameInventory (.sc.internal.services.identity.v1.GetGameInventoryRequest) returns (.sc.internal.services.identity.v1.GetGameInventoryResponse) {}
+  rpc GetEntitledKey (.sc.internal.services.identity.v1.GetEntitledKeyRequest) returns (.sc.internal.services.identity.v1.GetEntitledKeyResponse) {}
+  rpc SetEntitledKey (.sc.internal.services.identity.v1.SetEntitledKeyRequest) returns (.sc.internal.services.identity.v1.SetEntitledKeyResponse) {}
+  rpc RemoveEntitledKeys (.sc.internal.services.identity.v1.RemoveEntitledKeysRequest) returns (.sc.internal.services.identity.v1.RemoveEntitledKeysResponse) {}
+  rpc GetRepairLockedKey (.sc.internal.services.identity.v1.GetRepairLockedKeyRequest) returns (.sc.internal.services.identity.v1.GetRepairLockedKeyResponse) {}
+  rpc SetRepairLockedKey (.sc.internal.services.identity.v1.SetRepairLockedKeyRequest) returns (.sc.internal.services.identity.v1.SetRepairLockedKeyResponse) {}
+  rpc SaveCharacterCustomizations (.sc.internal.services.identity.v1.SaveCharacterCustomizationsRequest) returns (.sc.internal.services.identity.v1.SaveCharacterCustomizationsResponse) {}
+  rpc GetCharacterCustomizations (.sc.internal.services.identity.v1.GetCharacterCustomizationsRequest) returns (.sc.internal.services.identity.v1.GetCharacterCustomizationsResponse) {}
+}
+
+message FulfillPlayersRequest {
+  reserved 1;
+  message FulfillPlayerCommand {
+    reserved "creation_attributes";
+    reserved 2;
+    string name = 1;
+    uint32 account_id = 3;
+  }
+
+  .sc.external.common.command.v1.CommandArguments arguments = 2;
+  repeated .sc.internal.services.identity.v1.FulfillPlayersRequest.FulfillPlayerCommand commands = 3;
+}
+
+message FulfillPlayersResponse {
+  repeated .sc.external.services.identity.v1.Player players = 1;
+}
+
+message RenamePlayersRequest {
+  message RenamePlayerCommand {
+    string urn = 1;
+    string name = 2;
+  }
+
+  repeated .sc.internal.services.identity.v1.RenamePlayersRequest.RenamePlayerCommand commands = 1;
+}
+
+message RenamePlayersResponse {
+}
+
+message RepairPlayersRequest {
+  message RepairPlayerCommand {
+    oneof identifier {
+      string urn = 1;
+    }
+  }
+
+  repeated .sc.internal.services.identity.v1.RepairPlayersRequest.RepairPlayerCommand commands = 1;
+}
+
+message RepairPlayersResponse {
+}
+
+message ResetPlayersRequest {
+  message ResetPlayerCommand {
+    oneof identifier {
+      string urn = 1;
+    }
+  }
+
+  repeated .sc.internal.services.identity.v1.ResetPlayersRequest.ResetPlayerCommand commands = 1;
+}
+
+message ResetPlayersResponse {
+}
+
+message ArchivePlayersRequest {
+  message ArchivePlayerCommand {
+    oneof identifier {
+      string urn = 1;
+    }
+  }
+
+  repeated .sc.internal.services.identity.v1.ArchivePlayersRequest.ArchivePlayerCommand commands = 1;
+}
+
+message ArchivePlayersResponse {
+}
+
+message QueryPlayersRequest {
+  reserved 1;
+  reserved 2;
+  reserved 3;
+  message Query {
+    .sc.internal.services.identity.v1.PlayerFilter filter = 1;
+    .sc.external.common.api.v1.PaginationArguments pagination = 2;
+    .sc.external.common.api.v1.PaginationSort sort = 3;
+  }
+
+  .sc.internal.services.identity.v1.QueryPlayersRequest.Query query = 4;
+}
+
+message QueryPlayersResponse {
+  repeated .sc.external.services.identity.v1.Player results = 1;
+  .sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message GetGameInventoryRequest {
+  int32 account_id = 1;
+}
+
+message GetGameInventoryResponse {
+  .sc.external.common.platform.v1.PlatformGameInventoryData data = 1;
+}
+
+message GetAccountBadgesRequest {
+  uint32 account_id = 1;
+}
+
+message GetAccountBadgesResponse {
+  uint32 account_id = 1;
+  repeated .sc.external.common.platform.v1.PlatformBadge badges = 2;
+}
+
+message GetEntitledKeyRequest {
+  uint32 account_id = 1;
+}
+
+message GetEntitledKeyResponse {
+  bool is_entitled = 1;
+}
+
+message SetEntitledKeyRequest {
+  uint32 account_id = 1;
+  bool is_entitled = 2;
+  uint32 duration = 3;
+}
+
+message SetEntitledKeyResponse {
+}
+
+message RemoveEntitledKeysRequest {
+  repeated uint32 account_ids = 1;
+}
+
+message RemoveEntitledKeysResponse {
+}
+
+message GetRepairLockedKeyRequest {
+  uint32 account_id = 1;
+}
+
+message GetRepairLockedKeyResponse {
+  bool is_locked = 1;
+}
+
+message SetRepairLockedKeyRequest {
+  uint32 account_id = 1;
+  bool is_locked = 2;
+  uint32 duration = 3;
+}
+
+message SetRepairLockedKeyResponse {
+}
+
+message SaveCharacterCustomizationsRequest {
+  uint64 player_id = 1;
+  .sc.external.common.types.v1.CharacterCustomization character_customizations = 2;
+}
+
+message SaveCharacterCustomizationsResponse {
+}
+
+message GetCharacterCustomizationsRequest {
+  uint64 player_id = 1;
+}
+
+message GetCharacterCustomizationsResponse {
+  .sc.external.common.types.v1.CharacterCustomization character_customizations = 1;
+}
+

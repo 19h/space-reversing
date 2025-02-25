@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_document.v1;
+
+import "google/api/annotations/annotations.proto";
+import "sc/external/services/entity_document/v1/types.proto";
+import "sc/internal/services/entity_document/v1/documents.proto";
+
+service EntityDocumentService {
+  rpc Create (.sc.internal.services.entity_document.v1.CreateRequest) returns (.sc.internal.services.entity_document.v1.CreateResponse) {}
+  rpc Upsert (.sc.internal.services.entity_document.v1.UpsertRequest) returns (.sc.internal.services.entity_document.v1.UpsertResponse) {}
+  rpc Update (.sc.internal.services.entity_document.v1.UpdateRequest) returns (.sc.internal.services.entity_document.v1.UpdateResponse) {}
+  rpc Prepare (.sc.internal.services.entity_document.v1.PrepareRequest) returns (.sc.internal.services.entity_document.v1.PrepareResponse) {}
+  rpc Commit (.sc.internal.services.entity_document.v1.CommitRequest) returns (.sc.internal.services.entity_document.v1.CommitResponse) {}
+  rpc Erase (.sc.internal.services.entity_document.v1.EraseRequest) returns (.sc.internal.services.entity_document.v1.EraseResponse) {}
+  rpc Fetch (.sc.internal.services.entity_document.v1.FetchRequest) returns (.sc.internal.services.entity_document.v1.FetchResponse) {}
+}
+
+message CreateRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.CreateCommand command = 1;
+    .sc.internal.services.entity_document.v1.EntityDocumentBody body = 2;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.CreateRequest.Body creates = 1;
+}
+
+message CreateResponse {
+}
+
+message UpsertRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.UpsertCommand command = 1;
+    .sc.internal.services.entity_document.v1.EntityDocumentBody body = 2;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.UpsertRequest.Body upserts = 1;
+}
+
+message UpsertResponse {
+}
+
+message PrepareRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.PrepareCommand command = 1;
+    .sc.internal.services.entity_document.v1.EntityDocumentBody body = 2;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.PrepareRequest.Body prepares = 1;
+}
+
+message PrepareResponse {
+}
+
+message CommitRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.CommitCommand command = 1;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.CommitRequest.Body commits = 1;
+}
+
+message CommitResponse {
+}
+
+message UpdateRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.UpdateCommand command = 1;
+    .sc.internal.services.entity_document.v1.EntityDocumentBody partial = 2;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.UpdateRequest.Body updates = 1;
+}
+
+message UpdateResponse {
+}
+
+message EraseRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.EraseCommand command = 1;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.EraseRequest.Body erasures = 1;
+}
+
+message EraseResponse {
+}
+
+message FetchRequest {
+  message Body {
+    .sc.external.services.entity_document.v1.DocumentQuery query = 1;
+  }
+
+  repeated .sc.internal.services.entity_document.v1.FetchRequest.Body queries = 1;
+}
+
+message FetchResponse {
+  repeated .sc.internal.services.entity_document.v1.EntityDocument documents = 1;
+}
+

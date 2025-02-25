@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sc.external.services.presence.v1;
+
+import "sc/external/services/presence/v1/types.proto";
+
+message PresenceUpdated {
+  .sc.external.services.presence.v1.Presence presence = 1;
+  uint32 account_id = 2;
+}
+

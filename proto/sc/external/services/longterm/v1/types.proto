@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sc.external.services.longterm.v1;
+
+message OwnershipRecord {
+  reserved "owner_urn";
+  reserved 2;
+  string urn = 1;
+  uint32 class_guid_crc = 3;
+  uint32 stack_size = 4;
+  string inventory_id = 5;
+  .sc.external.services.longterm.v1.OwnershipRecordStatus status = 6;
+  uint64 owner_id = 7;
+}
+
+enum OwnershipRecordStatus {
+  OWNERSHIP_RECORD_STATUS_UNSPECIFIED = 0;
+  OWNERSHIP_RECORD_STATUS_STOWED = 1;
+  OWNERSHIP_RECORD_STATUS_UNSTOWED = 2;
+}
+

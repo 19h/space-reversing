@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package opentelemetry.proto.trace.v1;
+
+option java_package = "io.opentelemetry.proto.trace.v1";
+option java_outer_classname = "TraceProto";
+option java_multiple_files = true;
+option go_package = "go.opentelemetry.io/proto/otlp/trace/v1";
+
+import "opentelemetry/proto/common/v1/common.proto";
+import "opentelemetry/proto/resource/v1/resource.proto";
+
+message TracesData {
+  repeated .opentelemetry.proto.trace.v1.ResourceSpans resource_spans = 1;
+}
+
+message ResourceSpans {
+  .opentelemetry.proto.resource.v1.Resource resource = 1;
+  repeated .opentelemetry.proto.trace.v1.InstrumentationLibrarySpans instrumentation_library_spans = 2;
+  string schema_url = 3;
+}
+
+message InstrumentationLibrarySpans {
+  .opentelemetry.proto.common.v1.InstrumentationLibrary instrumentation_library = 1;
+  repeated .opentelemetry.proto.trace.v1.Span spans = 2;
+  string schema_url = 3;
+}
+
+message Span {
+  message Event {
+    fixed64 time_unix_nano = 1;
+    string name = 2;
+    repeated .opentelemetry.proto.common.v1.KeyValue attributes = 3;
+    uint32 dropped_attributes_count = 4;
+  }
+
+  message Link {
+    bytes trace_id = 1;
+    bytes span_id = 2;
+    string trace_state = 3;
+    repeated .opentelemetry.proto.common.v1.KeyValue attributes = 4;
+    uint32 dropped_attributes_count = 5;
+  }
+
+  enum SpanKind {
+    SPAN_KIND_UNSPECIFIED = 0;
+    SPAN_KIND_INTERNAL = 1;
+    SPAN_KIND_SERVER = 2;
+    SPAN_KIND_CLIENT = 3;
+    SPAN_KIND_PRODUCER = 4;
+    SPAN_KIND_CONSUMER = 5;
+  }
+
+  bytes trace_id = 1;
+  bytes span_id = 2;
+  string trace_state = 3;
+  bytes parent_span_id = 4;
+  string name = 5;
+  .opentelemetry.proto.trace.v1.Span.SpanKind kind = 6;
+  fixed64 start_time_unix_nano = 7;
+  fixed64 end_time_unix_nano = 8;
+  repeated .opentelemetry.proto.common.v1.KeyValue attributes = 9;
+  uint32 dropped_attributes_count = 10;
+  repeated .opentelemetry.proto.trace.v1.Span.Event events = 11;
+  uint32 dropped_events_count = 12;
+  repeated .opentelemetry.proto.trace.v1.Span.Link links = 13;
+  uint32 dropped_links_count = 14;
+  .opentelemetry.proto.trace.v1.Status status = 15;
+}
+
+message Status {
+  reserved 1;
+  enum StatusCode {
+    STATUS_CODE_UNSET = 0;
+    STATUS_CODE_OK = 1;
+    STATUS_CODE_ERROR = 2;
+  }
+
+  string message = 2;
+  .opentelemetry.proto.trace.v1.Status.StatusCode code = 3;
+}
+

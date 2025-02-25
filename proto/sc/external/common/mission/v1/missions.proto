@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+message ActiveMission {
+  string mission_id = 1;
+  string contract_id = 2;
+  .sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+  repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 4;
+  string mission_owner_urn = 5;
+  repeated .sc.external.common.mission.v1.MissionParticipant participants = 6;
+  .google.protobuf.Timestamp creation = 7;
+  .google.protobuf.Timestamp expiry = 8;
+  .sc.external.common.mission.v1.MissionState mission_state = 9;
+  string active_mission_key = 10;
+  repeated .sc.external.common.mission.v1.MissionPhase mission_phases = 11;
+  repeated .sc.external.common.mission.v1.MissionObjective mission_objectives = 12;
+  .sc.external.common.mission.v1.MissionReward reward = 13;
+  string active_shard_id = 14;
+  bool ignore_objective_contributors = 15;
+  bool suspendable = 16;
+}
+
+message ActiveMissionInfo {
+  string mission_id = 1;
+  string contract_id = 2;
+  .sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+  string mission_owner_urn = 4;
+  repeated .sc.external.common.mission.v1.MissionParticipant participants = 5;
+  .google.protobuf.Timestamp creation = 6;
+  .google.protobuf.Timestamp expiry = 7;
+  .sc.external.common.mission.v1.MissionState mission_state = 8;
+  repeated .sc.external.common.mission.v1.MissionObjective mission_objectives = 9;
+  .sc.external.common.mission.v1.MissionReward reward = 10;
+}
+
+message MissionObjectiveContributor {
+  string player_urn = 1;
+  int64 contribution_counter = 2;
+  bool active = 3;
+}
+
+message MissionObjective {
+  string objective_id = 1;
+  string parent_objective_id = 2;
+  string mission_id = 3;
+  .google.protobuf.Timestamp timer_start = 4;
+  .google.protobuf.Timestamp expiry = 5;
+  .sc.external.common.mission.v1.MissionObjectiveState state = 6;
+  uint32 short_desc_id = 7;
+  uint32 long_desc_id = 8;
+  repeated uint64 marker_ids = 9;
+  int64 progress_counter_current = 10;
+  int64 progress_counter_max = 11;
+  .sc.external.common.mission.v1.MissionReward reward = 12;
+  uint32 flags = 13;
+  int32 ui_display_priority = 14;
+  uint32 ui_display_text_id = 15;
+  repeated .sc.external.common.mission.v1.MissionObjectiveContributor contributors = 16;
+  bool ignore_objective_contributors = 17;
+}
+
+message MissionPhaseData {
+  oneof data {
+    .sc.external.common.mission.v1.MissionPhaseMissionEntity mission_entity = 1;
+    .sc.external.common.mission.v1.MissionPhaseHauling hauling = 2;
+  }
+}
+
+message MissionPhase {
+  string mission_phase_guid = 1;
+  string mission_id = 2;
+  .sc.external.common.mission.v1.MissionPhaseState state = 3;
+  string active_phase_key = 4;
+  string active_shard_id = 5;
+  .google.protobuf.Timestamp timer_start = 6;
+  .google.protobuf.Timestamp expiry = 7;
+  string autocomplete_objective_id = 8;
+  .sc.external.common.mission.v1.MissionPhaseData data = 9;
+  string mission_phase_id = 10;
+}
+
+message MissionPhaseMissionEntity {
+  uint32 seed = 1;
+  .sc.external.common.mission.v1.MissionVariables variables = 2;
+}
+
+message MissionPhaseHauling {
+  uint32 seed = 1;
+  .sc.external.common.mission.v1.MissionVariables variables = 2;
+}
+
+message MissionLog {
+  string mission_id = 1;
+  repeated .sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 2;
+  string mission_owner_urn = 3;
+  .sc.external.common.mission.v1.MissionState mission_state = 4;
+  string active_mission_key = 5;
+  string reason = 6;
+}
+
+enum MissionState {
+  MISSION_STATE_UNSPECIFIED = 0;
+  MISSION_STATE_PENDING = 1;
+  MISSION_STATE_ACTIVE = 2;
+  MISSION_STATE_SUSPENDED = 3;
+  MISSION_STATE_COMPLETED = 4;
+  MISSION_STATE_FAILED = 5;
+  MISSION_STATE_EXPIRED = 6;
+  MISSION_STATE_ABANDONED = 7;
+}
+
+enum MissionObjectiveState {
+  MISSION_OBJECTIVE_STATE_UNSPECIFIED = 0;
+  MISSION_OBJECTIVE_STATE_INPROGRESS = 1;
+  MISSION_OBJECTIVE_STATE_COMPLETED = 2;
+  MISSION_OBJECTIVE_STATE_FAILED = 3;
+  MISSION_OBJECTIVE_STATE_EXPIRED = 4;
+}
+
+enum MissionPhaseState {
+  MISSION_PHASE_STATE_UNSPECIFIED = 0;
+  MISSION_PHASE_STATE_PENDING = 1;
+  MISSION_PHASE_STATE_ACTIVE = 2;
+  MISSION_PHASE_STATE_SUSPENDED = 3;
+  MISSION_PHASE_STATE_COMPLETED = 4;
+  MISSION_PHASE_STATE_EXPIRED = 5;
+  MISSION_PHASE_STATE_ABANDONED = 6;
+}
+

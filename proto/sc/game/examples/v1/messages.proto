@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package sc.game.examples.v1;
+
+message SimpleMessage {
+  int32 number_val = 1;
+  string str_val = 2;
+}
+
+message StringListMessage {
+  repeated string str_list = 1;
+}
+
+message NestedMessage {
+  repeated .sc.game.examples.v1.SimpleMessage msgs = 1;
+}
+
