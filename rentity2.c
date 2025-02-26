@@ -188,6 +188,7 @@ static int g_selectedEntityIndex = 0;
 static CRITICAL_SECTION g_entityDataCS;
 static EntityData* g_entityDataList = NULL;
 static FILE* g_logFile = NULL;
+static FILE* g_tableLogFile = NULL;
 static HANDLE g_displayThread = NULL;
 static volatile BOOL g_keepRunning = TRUE;
 
@@ -201,6 +202,7 @@ ATOM RegisterEntityTrackerClass(HINSTANCE hInstance);
 void RenderEntityTable(HDC hdc, RECT* clientRect);
 void RenderDetailedEntityInfo(HDC hdc, RECT* clientRect, EntityData* entity);
 char* FlagAnalysisToString(EntityData* data);
+void LogEntityTable();
 
 // ==== Memory Safety Implementation ====
 // Signal handler for SIGSEGV (segmentation fault)
@@ -299,6 +301,98 @@ void LogToFile(const char* format, ...) {
     vfprintf(g_logFile, format, args);
     va_end(args);
     fflush(g_logFile);
+}
+
+// Function to log entity table data to actor.log
+void LogEntityTable() {
+    if (!g_tableLogFile) return;
+    
+    fprintf(g_tableLogFile, "\n=== ENTITY TABLE (%d entities) ===\n", g_totalEntities);
+    fprintf(g_tableLogFile, "%-20s %-15s %-15s %-15s %-15s %-15s\n", 
+            "Entity Ptr", "X", "Y", "Z", "Distance", "Angle(deg)");
+    fprintf(g_tableLogFile, "--------------------------------------------------------------------------------\n");
+    
+    EnterCriticalSection(&g_windowDataCS);
+    EntityData* selectedEntity = NULL;
+    int rowIndex = 0;
+    for (EntityData* current = g_renderEntityList; current != NULL; current = current->next) {
+        double entityX = current->spatial.position.x;
+        double entityY = current->spatial.position.y;
+        double entityZ = current->spatial.position.z;
+        double distance = sqrt(entityX*entityX + entityY*entityY + entityZ*entityZ);
+        double azimuthRad = atan2(entityY, entityX);
+        double azimuthDeg = azimuthRad * (180.0 / 3.14159265358979323846);
+        if (azimuthDeg < 0) azimuthDeg += 360.0;
+        
+        fprintf(g_tableLogFile, "%-20p %-15.2f %-15.2f %-15.2f %-15.2f %-15.2f\n", 
+                current->_debug.memAddresses.actorEntity, 
+                entityX, entityY, entityZ, distance, azimuthDeg);
+        
+        if (rowIndex == g_selectedEntityIndex) {
+            selectedEntity = current;
+        }
+        rowIndex++;
+    }
+    
+    // Log detailed entity info if we have a selected entity
+    if (selectedEntity) {
+        fprintf(g_tableLogFile, "\n=== DETAILED ENTITY INFO ===\n");
+        fprintf(g_tableLogFile, "Entity Pointer: %p\n", selectedEntity->_debug.memAddresses.actorEntity);
+        
+        // Flags
+        fprintf(g_tableLogFile, "Flags: %s\n", FlagAnalysisToString(selectedEntity));
+        
+        // Spatial info
+        double entityX = selectedEntity->spatial.position.x;
+        double entityY = selectedEntity->spatial.position.y;
+        double entityZ = selectedEntity->spatial.position.z;
+        double distance = sqrt(entityX*entityX + entityY*entityY + entityZ*entityZ);
+        double horizontalDist = sqrt(entityX*entityX + entityY*entityY);
+        double azimuthRad = atan2(entityY, entityX);
+        double azimuthDeg = azimuthRad * (180.0 / 3.14159265358979323846);
+        if (azimuthDeg < 0) azimuthDeg += 360.0;
+        double elevationRad = atan2(entityZ, horizontalDist);
+        double elevationDeg = elevationRad * (180.0 / 3.14159265358979323846);
+        
+        fprintf(g_tableLogFile, "Spatial: Distance=%.2f | Azimuth=%.2f° | Elevation=%.2f°\n", 
+                distance, azimuthDeg, elevationDeg);
+        
+        // Velocity
+        double speed = sqrt(pow(selectedEntity->kinematic.linearVelocity.x, 2) + 
+                           pow(selectedEntity->kinematic.linearVelocity.y, 2) + 
+                           pow(selectedEntity->kinematic.linearVelocity.z, 2));
+        
+        fprintf(g_tableLogFile, "Velocity: [%.2f, %.2f, %.2f] | Speed: %.2f\n",
+                selectedEntity->kinematic.linearVelocity.x,
+                selectedEntity->kinematic.linearVelocity.y,
+                selectedEntity->kinematic.linearVelocity.z,
+                speed);
+        
+        // Orientation
+        float qx = selectedEntity->spatial.orientation.x;
+        float qy = selectedEntity->spatial.orientation.y;
+        float qz = selectedEntity->spatial.orientation.z;
+        float qw = selectedEntity->spatial.orientation.w;
+        float yaw = atan2(2.0f * (qw * qz + qx * qy), 1.0f - 2.0f * (qy * qy + qz * qz));
+        float pitch = asin(2.0f * (qw * qy - qz * qx));
+        float roll = atan2(2.0f * (qw * qx + qy * qz), 1.0f - 2.0f * (qx * qx + qy * qy));
+        float yawDeg = yaw * (180.0f / 3.14159265358979323846f);
+        float pitchDeg = pitch * (180.0f / 3.14159265358979323846f);
+        float rollDeg = roll * (180.0f / 3.14159265358979323846f);
+        
+        fprintf(g_tableLogFile, "Orientation: Yaw=%.2f° | Pitch=%.2f° | Roll=%.2f° | Scale=%.2f\n",
+                yawDeg, pitchDeg, rollDeg, selectedEntity->spatial.scale);
+        
+        // Entity info
+        fprintf(g_tableLogFile, "Entity Info: EntityID: %llu | Mass: %.2f | PhysType: %u\n",
+                selectedEntity->core.entityId, 
+                selectedEntity->physical.mass, 
+                selectedEntity->collision.physicalEntityType);
+    }
+    
+    fprintf(g_tableLogFile, "--------------------------------------------------------------------------------\n");
+    fflush(g_tableLogFile);
+    LeaveCriticalSection(&g_windowDataCS);
 }
 
 // ==== Entity Data Extraction ====
@@ -587,6 +681,10 @@ LRESULT CALLBACK EntityTrackerWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
             }
             LeaveCriticalSection(&g_windowDataCS);
             LeaveCriticalSection(&g_entityDataCS);
+            
+            // Log the entity table data to file
+            LogEntityTable();
+            
             return 0;
             
         case WM_KEYDOWN:
@@ -937,71 +1035,16 @@ DWORD WINAPI HookInstallerThread(LPVOID lpParameter) {
     return 0;
 }
 
-static HANDLE g_consoleThread = NULL;
-
-DWORD WINAPI DeferredConsoleThreadProc(LPVOID lpParameter)
-{
-    // More robust wait pattern for loader lock
-    Sleep(2000);
-    
-    BOOL consoleResult = AllocConsole();
-    if (!consoleResult) {
-        DWORD errorCode = GetLastError();
-        // Write to error log since we can't use console
-        FILE* errorLog = fopen(".\\console_error.log", "w");
-        if (errorLog) {
-            fprintf(errorLog, "AllocConsole failed with error 0x%08X\n", errorCode);
-            fclose(errorLog);
-        }
-        
-        // Attempt console attachment as fallback
-        if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-            consoleResult = TRUE;
-        }
-    }
-    
-    if (consoleResult) {
-        FILE* fpstdout = freopen("CONOUT$", "w", stdout);
-        FILE* fpstderr = freopen("CONOUT$", "w", stderr);
-        
-        if (!fpstdout || !fpstderr) {
-            // Handle redirection failure
-            LogToFile("[!] Console buffer redirection failed\n");
-        }
-        
-        SetConsoleTitle("EntityTracker Console");
-        
-        // Force console window to be visible
-        HWND consoleWnd = GetConsoleWindow();
-        if (consoleWnd) {
-            ShowWindow(consoleWnd, SW_SHOW);
-            SetForegroundWindow(consoleWnd);
-        }
-        
-        // Verify console functionality
-        printf("EntityTracker console initialized at 0x%p\n", GetConsoleWindow());
-    }
-    
-    return 0;
-}
-
 // ==== DLL Entry Point ====
-// Modified to allocate a console window on DLL load.
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(hModule);
             
-            HANDLE consoleThread = CreateThread(NULL, 0, DeferredConsoleThreadProc, NULL, 0, NULL);
-            if (consoleThread) {
-                // Store handle in global for later synchronization
-                g_consoleThread = consoleThread;
-                LogToFile("[+] Console initialization thread created: 0x%p\n", consoleThread);
-            } else {
-                LogToFile("[!] Failed to create console initialization thread: 0x%08X\n", GetLastError());
-            }
+            // Open both log files: one for general logs, one for table visualization
+            g_logFile = fopen(".\\actor.log", "a");
+            g_tableLogFile = fopen(".\\actor.log", "a");
             
-            g_logFile = fopen(".\\entity_tracker.log", "a");
             if (g_logFile) {
                 time_t t = time(NULL);
                 LogToFile("\n\n[%s] === EntityTracker DLL Loaded ===\n", ctime(&t));
@@ -1060,6 +1103,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
                 LogToFile("[*] EntityTracker DLL Unloaded\n");
                 fclose(g_logFile);
                 g_logFile = NULL;
+            }
+            
+            if (g_tableLogFile) {
+                fclose(g_tableLogFile);
+                g_tableLogFile = NULL;
             }
             
             break;
