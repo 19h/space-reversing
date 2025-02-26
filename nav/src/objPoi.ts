@@ -1,4 +1,4 @@
-import { PointOfInterest, PoiType, System } from "./types";
+import { PointOfInterest, PoiType } from "./types";
 
 export const pointsOfInterest: PointOfInterest[] = [
     {

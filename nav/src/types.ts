@@ -121,13 +121,13 @@ export interface NavigationResult {
         yaw: number;             // Horizontal angle in degrees
     };
     eta: number;               // Estimated time of arrival in seconds
-    angularDeviation?: number; // Angle between current trajectory and destination
+    angularDeviation?: number | undefined; // Angle between current trajectory and destination
     closestOrbitalMarker?: {   // Nearest orbital marker if POI is on a planetary body
         name: string;
         distance: number;
-    };
+    } | undefined;
     closestQTBeacon?: {        // Nearest quantum travel beacon
         name: string;
         distance: number;
-    };
+    } | undefined;
 }
