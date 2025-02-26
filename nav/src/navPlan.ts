@@ -1,4 +1,5 @@
 import { SCNavigationCore } from "./navCore";
+import { CoordinateTransformer } from "./navPlanUtils";
 import { ContainerType, getCoordinates, ObjectContainer, PointOfInterest, Vector3 } from "./types";
 
 /**
@@ -84,6 +85,7 @@ export interface NavigationPlan {
     obstructionDetected: boolean;
     obstructions: string[]; // Names of all obstructing bodies
     pathComplexity: 'direct' | 'simple' | 'complex'; // Indicates path complexity
+    originContainer: ObjectContainer | null; // Origin reference frame
 }
 
 /**
@@ -119,11 +121,11 @@ export class SCNavigationPlanner extends SCNavigationCore {
     private visibilityGraph: Map<string, VisibilityEdge[]> = new Map();
     
     // Maximum iterations for pathfinding (increased from original 100)
-    private readonly MAX_ITERATIONS = 500;
+    private readonly MAX_ITERATIONS = 1000;
     
-    // Coordinate transformation cache to optimize repeat calculations
-    private coordTransformCache: Map<string, Vector3> = new Map();
-
+    // Current position reference frame
+    private originContainer: ObjectContainer | null = null;
+    
     constructor(poiData: PointOfInterest[], containerData: ObjectContainer[]) {
         super(poiData, containerData);
         this.initializeNavigationPoints();
@@ -167,6 +169,10 @@ export class SCNavigationPlanner extends SCNavigationCore {
                 this.allNavigationNodes.push(navNode);
             }
         });
+        
+        console.log(`Initialized ${this.allNavigationNodes.length} navigation nodes`);
+        console.log(`- ${this.qtMarkers.length} QT markers`);
+        console.log(`- ${this.orbitalMarkers.size} celestial bodies with orbital markers`);
     }
 
     /**
@@ -245,119 +251,53 @@ export class SCNavigationPlanner extends SCNavigationCore {
      * This significantly improves pathfinding performance by avoiding redundant LOS checks
      */
     private precomputeVisibilityGraph(): void {
-        // Initialize visibility graph
+        // Initialize visibility graph with non-null assertion
         for (const node of this.allNavigationNodes) {
             this.visibilityGraph.set(this.getNodeKey(node), []);
         }
-
-        // Compute visibility between all node pairs
-        // This is O(n²) but only done once at initialization
+    
+        // Compute visibility with explicit null checks
         for (let i = 0; i < this.allNavigationNodes.length; i++) {
             const fromNode = this.allNavigationNodes[i];
-            const fromKey = this.getNodeKey(fromNode);
-
+            // Type assertion to guarantee non-nullability - justified by array bounds check
+            const fromKey = this.getNodeKey(fromNode!);
+    
             for (let j = i + 1; j < this.allNavigationNodes.length; j++) {
                 const toNode = this.allNavigationNodes[j];
-                const toKey = this.getNodeKey(toNode);
-
-                // Skip if nodes are from the same celestial body's orbital markers
-                // (Optimization: orbital markers of the same body don't always have direct LOS)
-                if (fromNode.type === 'om' && toNode.type === 'om' && 
-                    fromNode.containerRef && toNode.containerRef && 
-                    fromNode.containerRef.name === toNode.containerRef.name) {
+                // Type assertion to guarantee non-nullability - justified by array bounds check
+                const toKey = this.getNodeKey(toNode!);
+                
+                // Non-null assertions for property access
+                if (fromNode!.type === 'om' && toNode!.type === 'om' && 
+                    fromNode!.containerRef && toNode!.containerRef && 
+                    fromNode!.containerRef.name === toNode!.containerRef.name) {
                     continue;
                 }
-
-                // Check line of sight
-                const losResult = this.hasLineOfSight(fromNode.position, toNode.position);
-                const distance = this.calcDistance3d(fromNode.position, toNode.position);
-
-                // Create bidirectional edges
+                
+                // Create bidirectional edges with type assertions
                 const forwardEdge: VisibilityEdge = {
-                    fromNode,
-                    toNode,
-                    distance,
-                    hasLOS: losResult.hasLos,
-                    obstruction: losResult.obstruction
+                    fromNode: fromNode!, // Non-null assertion
+                    toNode: toNode!,     // Non-null assertion
+                    distance: this.calcDistance3d(fromNode!.position, toNode!.position),
+                    hasLOS: this.hasLineOfSight(fromNode!.position, toNode!.position).hasLos,
+                    obstruction: this.hasLineOfSight(fromNode!.position, toNode!.position).obstruction
                 };
-
+    
                 const backwardEdge: VisibilityEdge = {
-                    fromNode: toNode,
-                    toNode: fromNode,
-                    distance,
-                    hasLOS: losResult.hasLos,
-                    obstruction: losResult.obstruction
+                    fromNode: toNode!,   // Now safely typed
+                    toNode: fromNode!,   // Now safely typed
+                    distance: this.calcDistance3d(toNode!.position, fromNode!.position),
+                    hasLOS: this.hasLineOfSight(toNode!.position, fromNode!.position).hasLos,
+                    obstruction: this.hasLineOfSight(toNode!.position, fromNode!.position).obstruction
                 };
-
+    
                 // Add edges to the graph
                 this.visibilityGraph.get(fromKey)?.push(forwardEdge);
                 this.visibilityGraph.get(toKey)?.push(backwardEdge);
             }
         }
-    }
-
-    /**
-     * Generate a unique key for a navigation node
-     */
-    private getNodeKey(node: NavNode): string {
-        return `${node.position.x},${node.position.y},${node.position.z}`;
-    }
-
-    /**
-     * Enhanced line of sight check with improved ray casting and obstruction detection
-     */
-    private hasLineOfSight(from: Vector3, to: Vector3): { hasLos: boolean, obstruction: ObjectContainer | null } {
-        const direction: Vector3 = {
-            x: to.x - from.x,
-            y: to.y - from.y,
-            z: to.z - from.z
-        };
         
-        const distance = this.calcDistance3d(from, to);
-        
-        // Check each celestial body for potential obstruction
-        for (const container of this.containers) {
-            // Skip non-physical containers or very small objects
-            if (container.bodyRadius <= 0 || 
-                container.cont_type === ContainerType.Lagrange || 
-                container.cont_type === ContainerType.JumpPoint) {
-                continue;
-            }
-            
-            const containerPos: Vector3 = {
-                x: container.posX,
-                y: container.posY,
-                z: container.posZ
-            };
-            
-            // Calculate the closest point on the line to the container center using vector projection
-            const t = (
-                (containerPos.x - from.x) * direction.x +
-                (containerPos.y - from.y) * direction.y +
-                (containerPos.z - from.z) * direction.z
-            ) / (distance * distance);
-            
-            // Clamp t to [0, 1] to keep it on the line segment
-            const clampedT = Math.max(0, Math.min(1, t));
-            
-            // Calculate the closest point on the line
-            const closestPoint: Vector3 = {
-                x: from.x + clampedT * direction.x,
-                y: from.y + clampedT * direction.y,
-                z: from.z + clampedT * direction.z
-            };
-            
-            // Calculate distance from closest point to container center
-            const distToContainer = this.calcDistance3d(closestPoint, containerPos);
-            
-            // If this distance is less than the body radius, the line is obstructed
-            // Using a slightly larger safety margin (1.05x) to account for atmosphere
-            if (distToContainer < container.bodyRadius * 1.05) {
-                return { hasLos: false, obstruction: container };
-            }
-        }
-        
-        return { hasLos: true, obstruction: null };
+        console.log(`Precomputed visibility graph with ${this.visibilityGraph.size} nodes`);
     }
 
     /**
@@ -392,75 +332,17 @@ export class SCNavigationPlanner extends SCNavigationCore {
     }
 
     /**
-     * Unified coordinate transformation method that handles both global-to-local and local-to-global
-     * transformations, with caching for performance optimization
-     */
-    private transformCoordinates(
-        coords: Vector3,
-        container: ObjectContainer,
-        direction: 'toGlobal' | 'toLocal'
-    ): Vector3 {
-        // Generate cache key
-        const cacheKey = `${coords.x},${coords.y},${coords.z},${container.name},${direction}`;
-        
-        // Check if we have this transformation cached
-        const cachedResult = this.coordTransformCache.get(cacheKey);
-        if (cachedResult) {
-            return cachedResult;
-        }
-        
-        // Get elapsed time and calculate rotation angle
-        const elapsedUTCTimeSinceSimulationStart = this.getElapsedUTCServerTime(); // In days
-        const lengthOfDayDecimal = container.rotVelX * 3600 / 86400; // Convert hours to day fraction
-        const totalCycles = elapsedUTCTimeSinceSimulationStart / lengthOfDayDecimal;
-        const currentCycleDez = totalCycles % 1;
-        const currentCycleDeg = currentCycleDez * 360;
-        const currentCycleAngle = container.rotAdjX + currentCycleDeg;
-        const angleRad = currentCycleAngle * Math.PI / 180;
-        
-        let result: Vector3;
-        
-        if (direction === 'toLocal') {
-            // Global to local transformation
-            const dx = container.posX - coords.x;
-            const dy = container.posY - coords.y;
-            const dz = container.posZ - coords.z;
-
-            // Apply inverse rotation matrix
-            const rotX = dx * Math.cos(-angleRad) - dy * Math.sin(-angleRad);
-            const rotY = dx * Math.sin(-angleRad) + dy * Math.cos(-angleRad);
-
-            result = {
-                x: rotX / 1000, // Convert to km for display
-                y: rotY / 1000,
-                z: dz / 1000
-            };
-        } else {
-            // Local to global transformation
-            // Apply rotation matrix
-            const rotX = coords.x * Math.cos(angleRad) - coords.y * Math.sin(angleRad);
-            const rotY = coords.x * Math.sin(angleRad) + coords.y * Math.cos(angleRad);
-
-            // Transform to global coordinate system
-            result = {
-                x: container.posX + rotX * 1000, // Convert back to meters
-                y: container.posY + rotY * 1000,
-                z: container.posZ + coords.z * 1000
-            };
-        }
-        
-        // Cache the result
-        this.coordTransformCache.set(cacheKey, result);
-        
-        return result;
-    }
-
-    /**
      * Bidirectional A* pathfinding algorithm optimized for 3D space navigation
      * This approach searches from both start and end simultaneously, which is
      * significantly more efficient for large 3D spaces with sparse connectivity
      */
     private findPathBidirectional(startPos: Vector3, endPos: Vector3): NavNode[] | null {
+        // Log navigation parameters for debugging
+        console.log(`Starting pathfinding:`);
+        console.log(`- Origin: (${startPos.x.toFixed(2)}, ${startPos.y.toFixed(2)}, ${startPos.z.toFixed(2)})`);
+        console.log(`- Destination: (${endPos.x.toFixed(2)}, ${endPos.y.toFixed(2)}, ${endPos.z.toFixed(2)})`);
+        console.log(`- Direct distance: ${(this.calcDistance3d(startPos, endPos) / 1000).toFixed(2)} km`);
+        
         // Create start and end nodes
         const startNode = new NavNode(startPos, 'origin', 'Start Position');
         startNode.searchDirection = 'forward';
@@ -472,9 +354,12 @@ export class SCNavigationPlanner extends SCNavigationCore {
         const { hasLos, obstruction } = this.hasLineOfSight(startPos, endPos);
         if (hasLos) {
             // Direct path available
+            console.log(`Direct path available - no obstructions detected`);
             const directPath = [startNode, endNode];
             endNode.parentNode = startNode;
             return directPath;
+        } else if (obstruction) {
+            console.log(`Direct path obstructed by ${obstruction.name}`);
         }
         
         // Initialize open and closed sets for bidirectional search
@@ -493,8 +378,12 @@ export class SCNavigationPlanner extends SCNavigationCore {
         
         // Find visible markers from start and end
         // Include even obstructed markers for advanced pathfinding
+        console.log(`Finding visible navigation markers...`);
         const visibleFromStart = this.findVisibleMarkers(startPos);
         const visibleFromEnd = this.findVisibleMarkers(endPos);
+        
+        console.log(`- ${visibleFromStart.length} markers visible from start`);
+        console.log(`- ${visibleFromEnd.length} markers visible from destination`);
         
         // Add visible markers to the open sets
         visibleFromStart.forEach(({ node, obstruction }) => {
@@ -523,9 +412,11 @@ export class SCNavigationPlanner extends SCNavigationCore {
         let iterations = 0;
         
         // Bidirectional A* algorithm
+        console.log(`Starting bidirectional A* search...`);
         while (forwardOpenSet.length > 0 && backwardOpenSet.length > 0) {
             iterations++;
             if (iterations > this.MAX_ITERATIONS) {
+                console.warn(`Reached maximum iterations (${this.MAX_ITERATIONS}) - stopping search`);
                 break; // Safety limit to prevent infinite loops
             }
             
@@ -549,6 +440,7 @@ export class SCNavigationPlanner extends SCNavigationCore {
             
             // Check if we've found a meeting point
             if (bestMeetingPoint.value) {
+                console.log(`Found optimal path after ${iterations} iterations`);
                 // Reconstruct the bidirectional path
                 return this.reconstructBidirectionalPath(
                     bestMeetingPoint.value.forwardNode, 
@@ -560,12 +452,14 @@ export class SCNavigationPlanner extends SCNavigationCore {
         // If we reach here, no path was found
         // Check if the search at least made progress and try to construct a partial path
         if (bestMeetingPoint.value) {
+            console.log(`Found suboptimal path after ${iterations} iterations`);
             return this.reconstructBidirectionalPath(
                 bestMeetingPoint.value.forwardNode, 
                 bestMeetingPoint.value.backwardNode
             );
         }
         
+        console.error(`No path found after ${iterations} iterations`);
         // No viable path found
         return null;
     }
@@ -604,12 +498,10 @@ export class SCNavigationPlanner extends SCNavigationCore {
                 
                 // Update best meeting point if this is better
                 if (!bestMeetingPoint.value || totalCost < bestMeetingPoint.value.totalCost) {
-                    bestMeetingPoint = {
-                        value: {
-                            forwardNode: direction === 'forward' ? currentNode : oppositeNode,
-                            backwardNode: direction === 'backward' ? currentNode : oppositeNode,
-                            totalCost
-                        }
+                    bestMeetingPoint.value = {
+                        forwardNode: direction === 'forward' ? currentNode : oppositeNode,
+                        backwardNode: direction === 'backward' ? currentNode : oppositeNode,
+                        totalCost
                     };
                 }
             }
@@ -644,9 +536,9 @@ export class SCNavigationPlanner extends SCNavigationCore {
                 
                 // Set hCost based on search direction
                 if (direction === 'forward') {
-                    neighbor.hCost = this.calcDistance3d(neighbor.position, bestMeetingPoint?.value?.backwardNode.position || { x: 0, y: 0, z: 0 });
+                    neighbor.hCost = this.calcDistance3d(neighbor.position, bestMeetingPoint?.value?.backwardNode?.position || { x: 0, y: 0, z: 0 });
                 } else {
-                    neighbor.hCost = this.calcDistance3d(neighbor.position, bestMeetingPoint?.value?.forwardNode.position || { x: 0, y: 0, z: 0 });
+                    neighbor.hCost = this.calcDistance3d(neighbor.position, bestMeetingPoint?.value?.forwardNode?.position || { x: 0, y: 0, z: 0 });
                 }
                 
                 neighbor.calculateFCost();
@@ -683,7 +575,10 @@ export class SCNavigationPlanner extends SCNavigationCore {
         }
         
         // Join the paths
-        return [...forwardPath, ...backwardPath.slice(1)];
+        const completePath = [...forwardPath, ...backwardPath.slice(1)];
+        console.log(`Reconstructed path with ${completePath.length} nodes`);
+        
+        return completePath;
     }
 
     /**
@@ -740,10 +635,12 @@ export class SCNavigationPlanner extends SCNavigationCore {
             const from = path[i];
             const to = path[i + 1];
             
+            // Skip if either node is null/undefined
+            if (!from || !to) continue;
+            
             const distance = this.calcDistance3d(from.position, to.position);
             
             // Determine travel type based on distance and node types
-            // Quantum travel is used for distances > 20km and when not traveling to/from an OM
             const travelType: 'quantum' | 'sublight' = 
                 (distance > 20000 && from.type !== 'om' && to.type !== 'om') 
                     ? 'quantum' 
@@ -756,7 +653,7 @@ export class SCNavigationPlanner extends SCNavigationCore {
             const direction = this.calculateEulerAngles(from.position, to.position);
             
             // Check for obstructions in this segment
-            const { hasLos, obstruction } = this.hasLineOfSight(from.position, to.position);
+            const { obstruction } = this.hasLineOfSight(from.position, to.position);
             
             // Add obstruction to the list if found
             if (obstruction && !obstructions.includes(obstruction.name)) {
@@ -812,10 +709,258 @@ export class SCNavigationPlanner extends SCNavigationCore {
             quantumJumps,
             obstructionDetected: obstructions.length > 0,
             obstructions,
-            pathComplexity
+            pathComplexity,
+            originContainer: this.originContainer
         };
     }
+    
+    /**
+     * Set current position using local coordinates relative to an object container
+     * This provides deterministic positioning regardless of celestial rotation
+     */
+    public setPositionLocal(containerName: string, localX: number, localY: number, localZ: number): void {
+        const container = this.containers.find(c => c.name === containerName);
+        
+        if (!container) {
+            console.error(`Container ${containerName} not found`);
+            return;
+        }
+        
+        // Store reference to origin container for contextual navigation
+        this.originContainer = container;
+        
+        // Transform local coordinates (in km) to global coordinates (in m)
+        const globalPos = CoordinateTransformer.transformCoordinates(
+            { x: localX, y: localY, z: localZ },
+            container,
+            'toGlobal'
+        );
+        
+        // Update position with global coordinates
+        this.updatePosition(globalPos.x, globalPos.y, globalPos.z);
+        
+        // Log position information
+        console.log(`Position set: ${containerName} local (${localX.toFixed(3)}km, ${localY.toFixed(3)}km, ${localZ.toFixed(3)}km)`);
+        console.log(`Global position: (${globalPos.x.toFixed(2)}, ${globalPos.y.toFixed(2)}, ${globalPos.z.toFixed(2)})`);
+        
+        // Log nearby POIs for context
+        const nearbyPOIs = this.findNearbyPOIs(5);
+        if (nearbyPOIs.length > 0) {
+            console.log("Nearby references:");
+            nearbyPOIs.forEach(poi => {
+                console.log(`- ${poi.name}: ${poi.distance.toFixed(2)}km`);
+            });
+        }
+    }
+    
+    /**
+     * Update position and resolve to nearest container
+     */
+    public override updatePosition(x: number, y: number, z: number): void {
+        super.updatePosition(x, y, z);
+        
+        // Update origin container if not set
+        if (!this.originContainer) {
+            this.originContainer = this.currentObjectContainer;
+        }
+        
+        // Check if we have a current object container but no origin container, update it
+        if (this.currentObjectContainer && !this.originContainer) {
+            this.originContainer = this.currentObjectContainer;
+        }
+    }
 
+    /**
+     * Find nearby Points of Interest for contextual awareness
+     * @returns Array of POIs with distances
+     */
+    public findNearbyPOIs(limit: number = 3): Array<{name: string, distance: number}> {
+        if (!this.currentPosition) {
+            return [];
+        }
+        
+        return this.pois
+            .map(poi => {
+                const poiCoords = getCoordinates(poi);
+                return {
+                    name: poi.name,
+                    distance: this.calcDistance3d(this.currentPosition!, poiCoords) / 1000 // Convert to km
+                };
+            })
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, limit);
+    }
+    
+    /**
+     * Generate a unique key for a navigation node for graph operations
+     */
+    private getNodeKey(node: NavNode): string {
+        if (!node) {
+            throw new Error("Node reference is null during key generation");
+        }
+
+        return `${node.type}_${node.position.x.toFixed(3)}_${node.position.y.toFixed(3)}_${node.position.z.toFixed(3)}`;
+    }
+
+    /**
+     * Check if there's a direct line of sight between two positions
+     * Performs ray casting against celestial body collision geometry
+     */
+    private hasLineOfSight(from: Vector3, to: Vector3): { hasLos: boolean, obstruction: ObjectContainer | null } {
+        // Vector between positions
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const dz = to.z - from.z;
+        
+        // Distance between points
+        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        
+        // Direction vector (normalized)
+        const dirX = dx / distance;
+        const dirY = dy / distance;
+        const dirZ = dz / distance;
+        
+        // Check each celestial body for intersection
+        for (const body of this.containers) {
+            // Skip non-physical objects
+            if (!body.bodyRadius || body.bodyRadius <= 0) continue;
+            
+            // Vector from origin to sphere center
+            const ocX = body.posX - from.x;
+            const ocY = body.posY - from.y;
+            const ocZ = body.posZ - from.z;
+            
+            // Projection of oc onto the ray direction
+            const projOc = ocX * dirX + ocY * dirY + ocZ * dirZ;
+            
+            // If negative, sphere is behind the ray origin
+            if (projOc < 0 && (ocX * ocX + ocY * ocY + ocZ * ocZ) > body.bodyRadius * body.bodyRadius) continue;
+            
+            // Squared distance from sphere center to ray
+            const distSq = (ocX * ocX + ocY * ocY + ocZ * ocZ) - (projOc * projOc);
+            const radiusSq = body.bodyRadius * body.bodyRadius;
+            
+            // If this distance > radius, no intersection
+            if (distSq > radiusSq) continue;
+            
+            // Distance from projection to intersection points
+            const intersectDist = Math.sqrt(radiusSq - distSq);
+            
+            // Calculate first intersection distance
+            const intersect1 = projOc - intersectDist;
+            const intersect2 = projOc + intersectDist;
+            
+            // If either intersection point is within our segment length, we have obstruction
+            if ((intersect1 > 0 && intersect1 < distance) || 
+                (intersect2 > 0 && intersect2 < distance)) {
+                return { hasLos: false, obstruction: body };
+            }
+        }
+        
+        // No obstructions found
+        return { hasLos: true, obstruction: null };
+    }
+
+    /**
+     * Get the optimal orbital marker to navigate around an obstruction
+     */
+    private findOptimalOrbitalMarker(
+        start: Vector3,
+        end: Vector3,
+        obstruction: ObjectContainer
+    ): { name: string, position: Vector3 } {
+        // Get all orbital markers for this body
+        const markers = this.orbitalMarkers.get(obstruction.name) || [];
+        
+        // Fallback if no markers found
+        if (markers.length === 0) {
+            return {
+                name: `${obstruction.name} vicinity`,
+                position: {
+                    x: obstruction.posX + obstruction.omRadius,
+                    y: obstruction.posY,
+                    z: obstruction.posZ
+                }
+            };
+        }
+        
+        // Calculate vectors
+        const startToObstruction = {
+            x: obstruction.posX - start.x,
+            y: obstruction.posY - start.y,
+            z: obstruction.posZ - start.z
+        };
+        
+        const obstructionToEnd = {
+            x: end.x - obstruction.posX,
+            y: end.y - obstruction.posY,
+            z: end.z - obstruction.posZ
+        };
+        
+        // Initialize with first marker - guaranteed non-null due to length check above
+        let bestMarker: NavNode = markers[0]!;
+        let bestScore = -Infinity;
+    
+        // Normalize vectors
+        const startMag = Math.sqrt(
+            startToObstruction.x * startToObstruction.x +
+            startToObstruction.y * startToObstruction.y +
+            startToObstruction.z * startToObstruction.z
+        );
+        
+        const endMag = Math.sqrt(
+            obstructionToEnd.x * obstructionToEnd.x +
+            obstructionToEnd.y * obstructionToEnd.y +
+            obstructionToEnd.z * obstructionToEnd.z
+        );
+        
+        const normalized1 = {
+            x: startToObstruction.x / startMag,
+            y: startToObstruction.y / startMag,
+            z: startToObstruction.z / startMag
+        };
+        
+        const normalized2 = {
+            x: obstructionToEnd.x / endMag,
+            y: obstructionToEnd.y / endMag,
+            z: obstructionToEnd.z / endMag
+        };
+              
+        // Calculate cross product to determine optimal orbital plane
+        const crossProduct = {
+            x: normalized1.y * normalized2.z - normalized1.z * normalized2.y,
+            y: normalized1.z * normalized2.x - normalized1.x * normalized2.z,
+            z: normalized1.x * normalized2.y - normalized1.y * normalized2.x
+        };
+        
+        markers.forEach(marker => {
+            // Get marker vector from obstruction center
+            const markerVector = {
+                x: marker.position.x - obstruction.posX,
+                y: marker.position.y - obstruction.posY,
+                z: marker.position.z - obstruction.posZ
+            };
+            
+            // Calculate dot product with cross product to find alignment
+            const alignmentScore =
+                markerVector.x * crossProduct.x +
+                markerVector.y * crossProduct.y +
+                markerVector.z * crossProduct.z;
+            
+            if (Math.abs(alignmentScore) > Math.abs(bestScore)) {
+                bestScore = alignmentScore;
+                bestMarker = marker;
+            }
+        });
+        
+        // TypeScript assertion not needed here - bestMarker is guaranteed to be defined
+        // because we initialized it with markers[0] and markers.length > 0
+        return {
+            name: bestMarker.name,
+            position: bestMarker.position
+        };
+    }
+    
     /**
      * Plan a navigation route using the optimized bidirectional A* algorithm
      */
@@ -912,10 +1057,40 @@ export class SCNavigationPlanner extends SCNavigationCore {
         let instructions = "NAVIGATION PLAN\n";
         instructions += "===============\n\n";
         
+        // Add origin reference if available
+        if (plan.originContainer) {
+            instructions += `ORIGIN: ${plan.originContainer.name}\n\n`;
+        }
+        
         if (plan.obstructionDetected) {
             instructions += "⚠️ OBSTRUCTIONS DETECTED:\n";
             instructions += `Celestial bodies blocking direct path: ${plan.obstructions.join(', ')}\n`;
             instructions += `Multiple jumps required (${plan.segments.length} segments, ${plan.quantumJumps} quantum jumps)\n\n`;
+            
+            // Add specific obstruction handling instructions
+            instructions += "OBSTRUCTION MITIGATION PLAN:\n";
+            
+            plan.obstructions.forEach(obstruction => {
+                const obstructingBody = this.containers.find(c => c.name === obstruction);
+                
+                if (obstructingBody && this.currentPosition && plan.segments.length > 0) {
+                    // Find the optimal OM to use for navigation around this body
+                    // Safely access the last segment
+                    const lastSegment = plan.segments[plan.segments.length - 1];
+                    if (lastSegment && lastSegment.to) {
+                        const optimalOM = this.findOptimalOrbitalMarker(
+                            this.currentPosition,
+                            lastSegment.to.position,
+                            obstructingBody
+                        );
+                        
+                        instructions += `- To navigate around ${obstruction}, route via ${optimalOM.name}.\n`;
+                        instructions += `  Set HUD marker to ${optimalOM.name} first, then to final destination.\n`;
+                    }
+                }
+            });
+            
+            instructions += "\n";
         } else {
             instructions += "✓ CLEAR PATH AVAILABLE: Direct route possible.\n\n";
         }

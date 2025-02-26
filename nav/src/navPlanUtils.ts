@@ -2,13 +2,20 @@ import { ObjectContainer, Vector3 } from "./types";
 
 /**
  * Specialized utility for coordinate transformations in space navigation systems.
- * Implements high-performance quaternion-based transformations with caching.
+ * Implements high-precision quaternion-based transformations with optimized caching.
  */
 export class CoordinateTransformer {
-    // Cache for expensive coordinate transformations
+    // Cache for expensive coordinate transformations with pre-allocated size
     private static transformCache: Map<string, Vector3> = new Map();
-    // Cache size limit to prevent memory leaks
+    
+    // Cache size controls
     private static readonly CACHE_LIMIT = 2048;
+    private static readonly CACHE_PRUNE_THRESHOLD = 0.2; // Prune 20% of cache when limit reached
+    
+    // Cache access statistics for LRU implementation
+    private static cacheHits = 0;
+    private static cacheMisses = 0;
+    private static cacheTimestamps: Map<string, number> = new Map();
     
     /**
      * Generate a normalized quaternion from Euler angles (in degrees)
@@ -146,6 +153,45 @@ export class CoordinateTransformer {
     }
 
     /**
+     * Generate a cache key with precision control to avoid float comparison issues
+     */
+    private static generateCacheKey(
+        coords: Vector3,
+        container: ObjectContainer,
+        direction: 'toGlobal' | 'toLocal'
+    ): string {
+        // Use fixed precision to prevent floating point comparison issues
+        // but maintain enough precision for small-scale differences
+        return `${coords.x.toFixed(6)},${coords.y.toFixed(6)},${coords.z.toFixed(6)},${container.name},${direction}`;
+    }
+    
+    /**
+     * Prune least recently used cache entries when cache size limit is reached
+     */
+    private static pruneCache(): void {
+        if (this.transformCache.size <= this.CACHE_LIMIT) {
+            return;
+        }
+        
+        // Get all cache keys with their timestamps
+        const entries = Array.from(this.cacheTimestamps.entries())
+            .sort((a, b) => a[1] - b[1]); // Sort by timestamp (oldest first)
+        
+        // Calculate how many entries to remove
+        const removeCount = Math.ceil(this.CACHE_LIMIT * this.CACHE_PRUNE_THRESHOLD);
+        
+        // Remove oldest entries
+        const keysToRemove = entries.slice(0, removeCount).map(entry => entry[0]);
+        
+        keysToRemove.forEach(key => {
+            this.transformCache.delete(key);
+            this.cacheTimestamps.delete(key);
+        });
+        
+        console.log(`Pruned ${removeCount} entries from coordinate transform cache`);
+    }
+
+    /**
      * Unified coordinate transformation method with quaternion-based rotation
      * Handles both global-to-local and local-to-global transformations
      * @param coords Vector3 coordinates to transform
@@ -158,17 +204,29 @@ export class CoordinateTransformer {
         container: ObjectContainer,
         direction: 'toGlobal' | 'toLocal'
     ): Vector3 {
-        // Generate cache key
-        const cacheKey = `${coords.x.toFixed(2)},${coords.y.toFixed(2)},${coords.z.toFixed(2)},${container.name},${direction}`;
+        // Generate cache key with precision control
+        const cacheKey = this.generateCacheKey(coords, container, direction);
         
         // Check cache first
         const cachedResult = this.transformCache.get(cacheKey);
         if (cachedResult) {
-            return cachedResult;
+            // Update timestamp for LRU caching
+            this.cacheTimestamps.set(cacheKey, Date.now());
+            this.cacheHits++;
+            return { ...cachedResult }; // Return a copy to prevent mutation
         }
+        
+        this.cacheMisses++;
         
         // Get elapsed time and calculate current rotation
         const elapsedDays = this.getElapsedUTCServerTime();
+        
+        // Safety check for invalid rotation velocity
+        if (container.rotVelX === 0) {
+            console.warn(`Container ${container.name} has zero rotation velocity. Using dummy value.`);
+            container.rotVelX = 24; // Assume 24-hour day as fallback
+        }
+        
         const dayLengthFraction = container.rotVelX * 3600 / 86400; // Convert hours to day fraction
         const totalRotations = elapsedDays / dayLengthFraction;
         const currentRotationFraction = totalRotations % 1;
@@ -227,160 +285,64 @@ export class CoordinateTransformer {
             };
         }
         
-        // Cache the result
-        this.transformCache.set(cacheKey, result);
-        
-        // Manage cache size to prevent memory leaks
-        if (this.transformCache.size > this.CACHE_LIMIT) {
-            // Remove oldest entries (first 20% of the cache)
-            const keysToRemove = Array.from(this.transformCache.keys())
-                .slice(0, Math.floor(this.CACHE_LIMIT * 0.2));
+        // Verify result for NaN values
+        if (isNaN(result.x) || isNaN(result.y) || isNaN(result.z)) {
+            console.error("NaN detected in coordinate transformation:", {
+                input: coords,
+                container: container.name,
+                direction,
+                rotation: absoluteRotationDegrees
+            });
             
-            keysToRemove.forEach(key => this.transformCache.delete(key));
+            // Fallback to direct scaling without rotation
+            if (direction === 'toLocal') {
+                return {
+                    x: (coords.x - container.posX) / 1000,
+                    y: (coords.y - container.posY) / 1000,
+                    z: (coords.z - container.posZ) / 1000
+                };
+            } else {
+                return {
+                    x: coords.x * 1000 + container.posX,
+                    y: coords.y * 1000 + container.posY,
+                    z: coords.z * 1000 + container.posZ
+                };
+            }
         }
+        
+        // Cache the result with timestamp for LRU cache management
+        this.transformCache.set(cacheKey, { ...result });
+        this.cacheTimestamps.set(cacheKey, Date.now());
+        
+        // Manage cache size
+        this.pruneCache();
         
         return result;
     }
     
     /**
-     * Calculate relative velocity between two objects accounting for celestial body rotation
-     * @param pos1 Position at time t1
-     * @param pos2 Position at time t2
-     * @param t1 Time in milliseconds for pos1
-     * @param t2 Time in milliseconds for pos2
-     * @param container Optional celestial body reference frame
-     * @returns Velocity vector in m/s
+     * Get cache statistics for performance analysis
      */
-    public static calculateVelocity(
-        pos1: Vector3, 
-        pos2: Vector3, 
-        t1: number, 
-        t2: number,
-        container?: ObjectContainer
-    ): Vector3 {
-        if (t2 <= t1) {
-            return { x: 0, y: 0, z: 0 };
-        }
+    public static getCacheStats(): { hits: number, misses: number, size: number, hitRate: number } {
+        const total = this.cacheHits + this.cacheMisses;
+        const hitRate = total > 0 ? this.cacheHits / total : 0;
         
-        const timeDelta = (t2 - t1) / 1000; // Convert to seconds
-        
-        // If no container, calculate simple velocity
-        if (!container) {
-            return {
-                x: (pos2.x - pos1.x) / timeDelta,
-                y: (pos2.y - pos1.y) / timeDelta,
-                z: (pos2.z - pos1.z) / timeDelta
-            };
-        }
-        
-        // For positions on a celestial body, we need to account for rotation
-        
-        // Convert both positions to the local reference frame
-        const localPos1 = this.transformCoordinates(pos1, container, 'toLocal');
-        const localPos2 = this.transformCoordinates(pos2, container, 'toLocal');
-        
-        // Calculate velocity in the local reference frame
-        const localVelocity = {
-            x: (localPos2.x - localPos1.x) * 1000 / timeDelta, // Convert km to m for m/s
-            y: (localPos2.y - localPos1.y) * 1000 / timeDelta,
-            z: (localPos2.z - localPos1.z) * 1000 / timeDelta
-        };
-        
-        // Add rotational velocity component
-        // Angular velocity in radians per second
-        const angularVelocity = (container.rotVelX * 2 * Math.PI) / (3600); // rotVelX is in hours for a full rotation
-        
-        // Calculate tangential velocity component at this radius
-        const radiusVector = {
-            x: localPos2.x * 1000, // Convert to meters
-            y: localPos2.y * 1000,
-            z: 0 // Assuming rotation around z-axis
-        };
-        
-        const radius = Math.sqrt(radiusVector.x * radiusVector.x + radiusVector.y * radiusVector.y);
-        
-        // Tangential velocity is perpendicular to radius vector
-        const tangentialVelocity = {
-            x: -radiusVector.y * angularVelocity / radius,
-            y: radiusVector.x * angularVelocity / radius,
-            z: 0
-        };
-        
-        // Total velocity is local velocity plus tangential velocity
         return {
-            x: localVelocity.x + tangentialVelocity.x,
-            y: localVelocity.y + tangentialVelocity.y,
-            z: localVelocity.z + tangentialVelocity.z
+            hits: this.cacheHits,
+            misses: this.cacheMisses,
+            size: this.transformCache.size,
+            hitRate: hitRate
         };
     }
     
     /**
-     * Calculates planetary coordinates (lat/long) from global position
-     * @param globalPos Global position vector
-     * @param container Celestial body reference frame
-     * @returns {lat, long, altitude} in degrees and meters
+     * Clear coordinate transformation cache (useful for testing)
      */
-    public static calculatePlanetaryCoordinates(
-        globalPos: Vector3, 
-        container: ObjectContainer
-    ): { lat: number, long: number, altitude: number } {
-        // Convert to local reference frame
-        const localPos = this.transformCoordinates(globalPos, container, 'toLocal');
-        
-        // Calculate radius from center (in km)
-        const radius = Math.sqrt(
-            localPos.x * localPos.x + 
-            localPos.y * localPos.y + 
-            localPos.z * localPos.z
-        );
-        
-        // Calculate altitude (in meters) above surface
-        const altitude = (radius * 1000) - container.bodyRadius;
-        
-        // Calculate latitude and longitude
-        // Longitude: atan2(y, x)
-        const longitude = Math.atan2(localPos.y, localPos.x) * 180 / Math.PI;
-        
-        // Latitude: asin(z / radius)
-        const latitude = Math.asin(localPos.z / radius) * 180 / Math.PI;
-        
-        return {
-            lat: latitude,
-            long: longitude,
-            altitude: altitude
-        };
-    }
-    
-    /**
-     * Calculates global position from planetary coordinates
-     * @param lat Latitude in degrees
-     * @param long Longitude in degrees
-     * @param altitude Altitude in meters above surface
-     * @param container Celestial body reference frame
-     * @returns Global position vector
-     */
-    public static globalPositionFromPlanetaryCoords(
-        lat: number, 
-        long: number, 
-        altitude: number, 
-        container: ObjectContainer
-    ): Vector3 {
-        // Convert lat/long to radians
-        const latRad = lat * Math.PI / 180;
-        const longRad = long * Math.PI / 180;
-        
-        // Calculate radius from center (in km)
-        const radius = container.bodyRadius + altitude;
-        const radiusKm = radius / 1000;
-        
-        // Calculate local position
-        const localPos: Vector3 = {
-            x: radiusKm * Math.cos(latRad) * Math.cos(longRad),
-            y: radiusKm * Math.cos(latRad) * Math.sin(longRad),
-            z: radiusKm * Math.sin(latRad)
-        };
-        
-        // Transform to global coordinates
-        return this.transformCoordinates(localPos, container, 'toGlobal');
+    public static clearCache(): void {
+        this.transformCache.clear();
+        this.cacheTimestamps.clear();
+        this.cacheHits = 0;
+        this.cacheMisses = 0;
+        console.log("Coordinate transformation cache cleared");
     }
 }

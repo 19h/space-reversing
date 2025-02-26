@@ -99,45 +99,6 @@ export class SCNavigationCore {
     }
 
     /**
-     * Calculate planetary coordinates from global coordinates
-     * Implements exact quaternion-based rotation as used in Star Citizen
-     */
-    private calculatePlanetaryCoordinates(
-        globalPos: Vector3,
-        container: ObjectContainer
-    ): Vector3 {
-        // Calculate difference vectors (ECEF coordinate system)
-        const dx = container.posX - globalPos.x;
-        const dy = container.posY - globalPos.y;
-        const dz = container.posZ - globalPos.z;
-
-        // Get elapsed time and calculate rotation angle
-        const elapsedUTCTimeSinceSimulationStart = this.getElapsedUTCServerTime(); // In days
-
-        const lengthOfDayDecimal = container.rotVelX * 3600 / 86400; // Convert hours to day fraction
-
-        const totalCycles = elapsedUTCTimeSinceSimulationStart / lengthOfDayDecimal;
-
-        const currentCycleDez = totalCycles % 1;
-        const currentCycleDeg = currentCycleDez * 360;
-        const currentCycleAngle = container.rotAdjX + currentCycleDeg;
-
-        // Convert angle to radians
-        const angleRad = currentCycleAngle * Math.PI / 180;
-
-        // Apply rotation matrix to transform from ECEF to local planetary coordinates
-        // This implements the same rotation transform as in the original code
-        const rotX = dx * Math.cos(angleRad) - dy * Math.sin(angleRad);
-        const rotY = dx * Math.sin(angleRad) + dy * Math.cos(angleRad);
-
-        return {
-            x: rotX / 1000, // Convert to km for display
-            y: rotY / 1000,
-            z: dz / 1000
-        };
-    }
-
-    /**
      * Get elapsed time since simulation start in days
      */
     protected getElapsedUTCServerTime(): number {
@@ -218,16 +179,14 @@ export class SCNavigationCore {
      * Find closest orbital marker to a position on a planet
      */
     private findClosestOrbitalMarker(
-        position: Vector3,
+        _position: Vector3,
         container: ObjectContainer
     ): { name: string; distance: number } {
-        // Simplified implementation - would normally calculate distances to all 6 orbital markers
-        // and find the closest one
-
-        // Placeholder for demonstration
+        // Keep stub implementation as base class doesn't have orbital marker data
+        console.warn(`Base implementation called for ${container.name}`);
         return {
-            name: "OM-3",
-            distance: 100000 // Example distance in meters
+            name: "OM-3", // Placeholder
+            distance: 100000
         };
     }
 
@@ -288,15 +247,15 @@ export class SCNavigationCore {
         if (!this.currentPosition || !this.selectedPOI) {
             return null;
         }
-
+    
         let destinationCoords = getCoordinates(this.selectedPOI);
-
+    
         // If POI is on a planet, adjust for planetary rotation
         if (this.selectedPOI.objContainer) {
             const poiContainer = this.containers.find(
                 c => c.name === this.selectedPOI?.objContainer
             );
-
+    
             if (poiContainer) {
                 // The actual coordinates would need to be calculated with 
                 // the planet's current rotation
@@ -307,13 +266,13 @@ export class SCNavigationCore {
                 );
             }
         }
-
+    
         // Calculate distance
         const distance = this.calcDistance3d(this.currentPosition, destinationCoords);
-
+    
         // Calculate direction
         const direction = this.calculateEulerAngles(this.currentPosition, destinationCoords);
-
+    
         // Calculate angular deviation if we have a previous position
         let angularDeviation = undefined;
         if (this.previousPosition) {
@@ -323,14 +282,14 @@ export class SCNavigationCore {
                 destinationCoords
             );
         }
-
+    
         // Calculate velocity and ETA
         const velocity = this.calculateVelocity();
         let eta = -1;
         if (velocity) {
             eta = this.calculateETA(distance, velocity);
         }
-
+    
         // Get closest orbital marker if on a planet
         let closestOrbitalMarker = undefined;
         if (this.currentObjectContainer) {
@@ -339,17 +298,19 @@ export class SCNavigationCore {
                 this.currentObjectContainer
             );
         }
-
+    
         // Get closest QT beacon
         const closestQTBeacon = this.findClosestQTBeacon(this.currentPosition);
-
+    
+        // Safely create a NavigationResult with explicit undefined handling
         return {
             distance,
             direction,
             eta,
-            angularDeviation,
-            closestOrbitalMarker,
-            closestQTBeacon: closestQTBeacon || undefined
+            // Explicit type coercion for undefined values with null coalescing
+            angularDeviation: angularDeviation !== undefined ? angularDeviation : undefined,
+            closestOrbitalMarker: closestOrbitalMarker !== undefined ? closestOrbitalMarker : undefined,
+            closestQTBeacon: closestQTBeacon !== null ? closestQTBeacon : undefined
         };
     }
 
@@ -383,5 +344,77 @@ export class SCNavigationCore {
             y: container.posY + rotY * 1000,
             z: container.posZ + localCoords.z * 1000
         };
+    }
+
+    /**
+     * Convert system coordinates to non-rotated static coordinates
+     * This function reverses the planetary rotation to get static coordinates
+     * @param globalPos The global position in the system
+     * @param container The container (planet/moon) to calculate against
+     * @returns Vector3 coordinates in the static non-rotated reference frame
+     */
+    public convertToStaticCoordinates(
+        globalPos: Vector3,
+        container: ObjectContainer
+    ): Vector3 {
+        // Check if container is valid to prevent NaN results
+        if (!container || container.rotVelX === 0) {
+            console.warn("Invalid container or zero rotation velocity");
+            return { ...globalPos }; // Return copy of input to avoid NaN
+        }
+
+        // Calculate difference vectors (ECEF coordinate system)
+        const dx = globalPos.x - container.posX;
+        const dy = globalPos.y - container.posY;
+        const dz = globalPos.z - container.posZ;
+
+        // Get elapsed time and calculate rotation angle
+        const elapsedUTCTimeSinceSimulationStart = this.getElapsedUTCServerTime();
+        const lengthOfDayDecimal = container.rotVelX * 3600 / 86400; // Convert hours to day fraction
+        
+        // Prevent division by zero
+        if (lengthOfDayDecimal === 0) {
+            console.warn("Length of day decimal is zero, cannot calculate rotation");
+            return { ...globalPos };
+        }
+        
+        const totalCycles = elapsedUTCTimeSinceSimulationStart / lengthOfDayDecimal;
+        const currentCycleDez = totalCycles % 1;
+        const currentCycleDeg = currentCycleDez * 360;
+        const currentCycleAngle = container.rotAdjX + currentCycleDeg;
+
+        // Convert angle to radians
+        const angleRad = currentCycleAngle * Math.PI / 180;
+
+        // Apply inverse rotation matrix to transform from rotated to static coordinates
+        // We use the negative angle to reverse the rotation
+        const staticX = dx * Math.cos(-angleRad) - dy * Math.sin(-angleRad);
+        const staticY = dx * Math.sin(-angleRad) + dy * Math.cos(-angleRad);
+
+        // Return the static coordinates relative to the container's position
+        const result = {
+            x: container.posX + staticX,
+            y: container.posY + staticY,
+            z: container.posZ + dz
+        };
+        
+        // Debug output to help diagnose NaN issues
+        if (isNaN(result.x) || isNaN(result.y) || isNaN(result.z)) {
+            console.error("NaN detected in convertToStaticCoordinates:", {
+                input: globalPos,
+                container: {
+                    posX: container.posX,
+                    posY: container.posY,
+                    posZ: container.posZ,
+                    rotVelX: container.rotVelX,
+                    rotAdjX: container.rotAdjX
+                },
+                angleRad,
+                dx, dy, dz,
+                staticX, staticY
+            });
+        }
+        
+        return result;
     }
 }
