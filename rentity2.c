@@ -937,6 +937,15 @@ DWORD WINAPI HookInstallerThread(LPVOID lpParameter) {
     return 0;
 }
 
+DWORD WINAPI ConsoleThreadProc(LPVOID lpParameter) {
+    if (AllocConsole()) {
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr);
+        SetConsoleTitle("EntityTracker Console");
+    }
+    return 0;
+}
+
 // ==== DLL Entry Point ====
 // Modified to allocate a console window on DLL load.
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
@@ -944,10 +953,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
         case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(hModule);
             // Allocate a console window and redirect standard I/O
-            AllocConsole();
-            freopen("CONOUT$", "w", stdout);
-            freopen("CONOUT$", "w", stderr);
-            SetConsoleTitle("EntityTracker Console");
+            HANDLE hConsoleThread = CreateThread(NULL, 0, ConsoleThreadProc, NULL, 0, NULL);
+            if (hConsoleThread) {
+                CloseHandle(hConsoleThread);
+            }
             
             _mkdir("C:\\EntityTracker");
             g_logFile = fopen("C:\\EntityTracker\\entity_tracker.log", "a");
