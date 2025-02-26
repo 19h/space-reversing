@@ -1,38 +1,38 @@
 {
     "compilerOptions": {
-        "outDir": "./dist",
-        "module": "commonjs",
-        "target": "es2020",
-        "lib": [
-            "es6",
-            "es7",
-            "esnext",
-            "dom"
-        ],
-        "allowJs": false,
-        "moduleResolution": "node",
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "declaration": true,
-        "sourceMap": true,
-        "allowSyntheticDefaultImports": true,
-        "suppressImplicitAnyIndexErrors": false,
-        "noUnusedLocals": false,
-        "strict": true,
-        "typeRoots": [
-            "./node_modules/@types/",
-            "./src/types"
-        ]
+      "target": "ES2020",
+      "useDefineForClassFields": true,
+      "module": "ESNext",
+      "lib": ["ES2020", "DOM", "DOM.Iterable"],
+      "skipLibCheck": true,
+      "moduleResolution": "bundler",
+      "allowImportingTsExtensions": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "strictBindCallApply": true,
+      "strictPropertyInitialization": true,
+      "noImplicitThis": true,
+      "useUnknownInCatchVariables": true,
+      "alwaysStrict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "exactOptionalPropertyTypes": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUncheckedIndexedAccess": true,
+      "noImplicitOverride": true,
+      "allowSyntheticDefaultImports": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "jsx": "preserve",
+      "jsxImportSource": "react",
+      "outDir": "./dist"
     },
-    "include": [
-        "src/*.ts",
-        "tests/*/**.ts",
-        "src/ssr/render_worker.ts",
-    ],
-    "exclude": [
-        "node_modules"
-    ]
-}
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
+    "exclude": ["node_modules"]
+  }
