@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "module": "commonjs",
+        "target": "es2020",
+        "lib": [
+            "es6",
+            "es7",
+            "esnext",
+            "dom"
+        ],
+        "allowJs": false,
+        "moduleResolution": "node",
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "declaration": true,
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
+        "suppressImplicitAnyIndexErrors": false,
+        "noUnusedLocals": false,
+        "strict": true,
+        "typeRoots": [
+            "./node_modules/@types/",
+            "./src/types"
+        ]
+    },
+    "include": [
+        "src/*.ts",
+        "tests/*/**.ts",
+        "src/ssr/render_worker.ts",
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
