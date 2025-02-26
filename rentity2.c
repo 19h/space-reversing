@@ -16,12 +16,12 @@
 #include <direct.h>  /* For _mkdir, etc. */
 #include "hook.c"    /* MinHook header */
 
+// ==== Memory Safety Architecture ====
 // Thread-local storage for setjmp/longjmp-based exception handling
 __thread jmp_buf g_jmpBuf;
 __thread volatile sig_atomic_t g_safeToAccess = 0;
 
-// -------------------- Structure Definitions --------------------
-
+// ==== Data Structure Definitions ====
 // Entity Core Identification
 typedef struct {
     void* vtable;
@@ -163,21 +163,46 @@ struct EntityData {
     EntityData* next;
 };
 
-// -------------------- Global Variables --------------------
+// ==== Window Architecture State ====
+#define MAX_ENTITIES_DISPLAYED 64
+#define ROW_HEIGHT 20
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
+#define FONT_HEIGHT 16
+#define COLOR_TABLE_HEADER RGB(32, 32, 32)
+#define COLOR_TABLE_ROW_EVEN RGB(240, 240, 240)
+#define COLOR_TABLE_ROW_ODD RGB(220, 220, 220)
+#define COLOR_TABLE_TEXT RGB(0, 0, 0)
+#define COLOR_TABLE_BORDER RGB(180, 180, 180)
+#define COLOR_HIGHLIGHT RGB(100, 149, 237)
 
+// Synchronized window state architecture
+static HWND g_hWnd = NULL;
+static CRITICAL_SECTION g_windowDataCS;
+static EntityData* g_renderEntityList = NULL;
+static volatile BOOL g_windowInitialized = FALSE;
+static int g_totalEntities = 0;
+static int g_selectedEntityIndex = 0;
+
+// ==== Global State Architecture ====
 static CRITICAL_SECTION g_entityDataCS;
 static EntityData* g_entityDataList = NULL;
 static FILE* g_logFile = NULL;
 static HANDLE g_displayThread = NULL;
 static volatile BOOL g_keepRunning = TRUE;
-static HANDLE g_displayMutex = NULL;  // Missing synchronization primitive
 
 // Function pointer type for the target function
 typedef void* (__fastcall *fnSub146675AD0)(void* actorEntity);
 static fnSub146675AD0 orig_sub_146675AD0 = NULL;
 
-// -------------------- Utility Functions --------------------
+// Forward declarations
+LRESULT CALLBACK EntityTrackerWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+ATOM RegisterEntityTrackerClass(HINSTANCE hInstance);
+void RenderEntityTable(HDC hdc, RECT* clientRect);
+void RenderDetailedEntityInfo(HDC hdc, RECT* clientRect, EntityData* entity);
+char* FlagAnalysisToString(EntityData* data);
 
+// ==== Memory Safety Implementation ====
 // Signal handler for SIGSEGV (segmentation fault)
 void segv_handler(int sig) {
     // Only longjmp if we're in a read operation (indicated by g_safeToAccess)
@@ -276,8 +301,7 @@ void LogToFile(const char* format, ...) {
     fflush(g_logFile);
 }
 
-// -------------------- Entity Data Extraction --------------------
-
+// ==== Entity Data Extraction ====
 EntityData* ReadEntityFields(void* actorEntityPtr) {
     if (!IsValidMemory(actorEntityPtr, sizeof(void*))) {
         LogToFile("[!] Invalid actorEntity pointer: %p\n", actorEntityPtr);
@@ -459,55 +483,89 @@ void TrackEntity(EntityData* data) {
     data->next = g_entityDataList;
     g_entityDataList = data;
     LeaveCriticalSection(&g_entityDataCS);
-}
-
-// -------------------- Display Thread Function --------------------
-
-// Forward declaration for function used before definition
-char* FlagAnalysisToString(EntityData* data);
-
-char* FlagAnalysisToString(EntityData* data) {
-    static char buffer[512];
-    snprintf(buffer, sizeof(buffer), 
-        "Disabled: %s | Constrained: %s | AutoSleep: %s | Sleeping: %s | InCollision: %s | ForceApplied: %s",
-        data->state.flagsAnalysis.isDisabled ? "Yes" : "No",
-        data->state.flagsAnalysis.isConstrained ? "Yes" : "No",
-        data->state.flagsAnalysis.isAutoSleep ? "Yes" : "No",
-        data->state.flagsAnalysis.isSleeping ? "Yes" : "No",
-        data->state.simulationFlagsAnalysis.inCollision ? "Yes" : "No",
-        data->state.simulationFlagsAnalysis.forceApplied ? "Yes" : "No");
-    return buffer;
-}
-
-DWORD WINAPI DisplayThreadProc(LPVOID lpParameter) {
-    // Install thread-specific signal handler
-    signal(SIGSEGV, segv_handler);
     
-    while (g_keepRunning) {
-        DWORD now = GetTickCount();
-        
-        // Synchronize console access with proper mutex handling
-        DWORD dwWaitResult = WaitForSingleObject(g_displayMutex, 1000);
-        if (dwWaitResult == WAIT_OBJECT_0) {
-            // Clear with direct Win32 API call - more efficient than system()
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-            if (hConsole != INVALID_HANDLE_VALUE) {
-                CONSOLE_SCREEN_BUFFER_INFO csbi;
-                if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
-                    DWORD cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-                    COORD homeCoords = {0, 0};
-                    DWORD count;
-                    FillConsoleOutputCharacter(hConsole, ' ', cellCount, homeCoords, &count);
-                    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, cellCount, homeCoords, &count);
-                    SetConsoleCursorPosition(hConsole, homeCoords);
-                }
+    // Signal window to update
+    if (g_windowInitialized && g_hWnd) {
+        InvalidateRect(g_hWnd, NULL, FALSE);
+    }
+}
+
+// ==== Win32 Window Architecture ====
+
+// Window class registration with precise attributes
+ATOM RegisterEntityTrackerClass(HINSTANCE hInstance) {
+    WNDCLASSEXW wcex = {0};
+    wcex.cbSize = sizeof(WNDCLASSEXW);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = EntityTrackerWndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIconW(NULL, MAKEINTRESOURCEW(IDI_APPLICATION));
+    wcex.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_ARROW));
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"EntityTrackerClass";
+    wcex.hIconSm = LoadIconW(NULL, MAKEINTRESOURCEW(IDI_APPLICATION));
+    
+    return RegisterClassExW(&wcex);
+}
+
+// Window procedure with proper message dispatch architecture
+LRESULT CALLBACK EntityTrackerWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    static HDC hdcMem = NULL;
+    static HBITMAP hbmMem = NULL;
+    static HGDIOBJ hbmOld = NULL;
+    static int width = 0, height = 0;
+    
+    switch (message) {
+        case WM_CREATE:
+            // Initialize double-buffering surface
+            {
+                HDC hdc = GetDC(hWnd);
+                RECT rect;
+                GetClientRect(hWnd, &rect);
+                width = rect.right - rect.left;
+                height = rect.bottom - rect.top;
+                
+                hdcMem = CreateCompatibleDC(hdc);
+                hbmMem = CreateCompatibleBitmap(hdc, width, height);
+                hbmOld = SelectObject(hdcMem, hbmMem);
+                
+                ReleaseDC(hWnd, hdc);
+                
+                // Create refresh timer (every 500ms)
+                SetTimer(hWnd, 1, 500, NULL);
             }
+            return 0;
             
-            // Removed redundant system("cls") call
+        case WM_SIZE:
+            // Resize double-buffer for window size changes
+            width = LOWORD(lParam);
+            height = HIWORD(lParam);
             
+            if (hdcMem) {
+                // Clean up old double-buffer
+                SelectObject(hdcMem, hbmOld);
+                DeleteObject(hbmMem);
+                
+                // Create new double-buffer
+                HDC hdc = GetDC(hWnd);
+                hbmMem = CreateCompatibleBitmap(hdc, width, height);
+                hbmOld = SelectObject(hdcMem, hbmMem);
+                ReleaseDC(hWnd, hdc);
+            }
+            return 0;
+            
+        case WM_TIMER:
+            // Refresh window content
+            InvalidateRect(hWnd, NULL, FALSE);
+            
+            // Update entity list state
             EnterCriticalSection(&g_entityDataCS);
             
             // Remove expired entities (older than 5 seconds)
+            DWORD now = GetTickCount();
             EntityData** pp = &g_entityDataList;
             while (*pp) {
                 EntityData* current = *pp;
@@ -520,104 +578,427 @@ DWORD WINAPI DisplayThreadProc(LPVOID lpParameter) {
                 }
             }
             
-            // Print header
-            printf("===== Entity Tracker (MinHook) =====\n");
-            printf("| %-16s | %-10s | %-10s | %-10s | %-12s | %-10s |\n", 
-                "Entity", "X", "Y", "Z", "Distance", "Angle(deg)");
-            printf("|-----------------|------------|------------|------------|--------------|------------|\n");
+            // Copy entity list to render list
+            EnterCriticalSection(&g_windowDataCS);
             
-            // Print entity data
-            int entityCount = 0;
-            for (EntityData* current = g_entityDataList; current; current = current->next) {
-                // Calculate distance from origin (player at 0,0,0)
-                double entityX = current->spatial.position.x;
-                double entityY = current->spatial.position.y;
-                double entityZ = current->spatial.position.z;
-                
-                double distance = sqrt(entityX*entityX + entityY*entityY + entityZ*entityZ);
-                
-                // Calculate angle (azimuth) in XY plane (horizontal)
-                double azimuthRad = atan2(entityY, entityX);
-                // Use explicit constant instead of M_PI which may not be defined
-                double azimuthDeg = azimuthRad * (180.0 / 3.14159265358979323846);
-                
-                // Normalize to 0-360 range
-                if (azimuthDeg < 0) azimuthDeg += 360.0;
-                
-                printf("| %16p | %10.2f | %10.2f | %10.2f | %12.2f | %10.2f |\n",
-                    current->_debug.memAddresses.actorEntity,
-                    entityX, entityY, entityZ,
-                    distance,
-                    azimuthDeg);
-                
-                // Print detailed info for the first entity
-                if (entityCount == 0) {
-                    // Calculate elevation angle in addition to azimuth
-                    double horizontalDist = sqrt(entityX*entityX + entityY*entityY);
-                    double elevationRad = atan2(entityZ, horizontalDist);
-                    double elevationDeg = elevationRad * (180.0 / 3.14159265358979323846);
-                    
-                    // Calculate quaternion to Euler angles (Roll-Pitch-Yaw)
-                    float qx = current->spatial.orientation.x;
-                    float qy = current->spatial.orientation.y;
-                    float qz = current->spatial.orientation.z;
-                    float qw = current->spatial.orientation.w;
-                    
-                    float yaw = atan2(2.0f * (qw * qz + qx * qy), 1.0f - 2.0f * (qy * qy + qz * qz));
-                    float pitch = asin(2.0f * (qw * qy - qz * qx));
-                    float roll = atan2(2.0f * (qw * qx + qy * qz), 1.0f - 2.0f * (qx * qx + qy * qy));
-                    
-                    // Convert to degrees
-                    float yawDeg = yaw * (180.0f / 3.14159265358979323846f);
-                    float pitchDeg = pitch * (180.0f / 3.14159265358979323846f);
-                    float rollDeg = roll * (180.0f / 3.14159265358979323846f);
-                    
-                    printf("\nDetailed info for %p:\n", current->_debug.memAddresses.actorEntity);
-                    printf("  Flags: %s\n", FlagAnalysisToString(current));
-                    printf("  Spatial: Distance=%.2f | Azimuth=%.2f° | Elevation=%.2f°\n",
-                        distance,
-                        azimuthDeg,
-                        elevationDeg);
-                    printf("  Velocity: [%.2f, %.2f, %.2f] | Speed: %.2f\n",
-                        current->kinematic.linearVelocity.x,
-                        current->kinematic.linearVelocity.y,
-                        current->kinematic.linearVelocity.z,
-                        sqrt(pow(current->kinematic.linearVelocity.x, 2) + 
-                                pow(current->kinematic.linearVelocity.y, 2) + 
-                                pow(current->kinematic.linearVelocity.z, 2)));
-                    printf("  Orientation: Yaw=%.2f° | Pitch=%.2f° | Roll=%.2f° | Scale=%.2f\n",
-                        yawDeg, pitchDeg, rollDeg,
-                        current->spatial.scale);
-                    printf("  EntityID: %llu | Mass: %.2f | PhysType: %u\n",
-                        current->core.entityId,
-                        current->physical.mass,
-                        current->collision.physicalEntityType);
-                }
-                
-                entityCount++;
+            // First free old render list
+            while (g_renderEntityList) {
+                EntityData* current = g_renderEntityList;
+                g_renderEntityList = current->next;
+                free(current);
             }
             
-            printf("|-----------------|------------|------------|------------|--------------|------------|\n");
-            printf("Total entities: %d\n", entityCount);
+            // Create new render list (deep copy)
+            g_totalEntities = 0;
+            for (EntityData* src = g_entityDataList; src != NULL; src = src->next) {
+                EntityData* copy = (EntityData*)malloc(sizeof(EntityData));
+                if (copy) {
+                    // Copy entire structure
+                    memcpy(copy, src, sizeof(EntityData));
+                    
+                    // Fix next pointer for the copy
+                    copy->next = g_renderEntityList;
+                    g_renderEntityList = copy;
+                    g_totalEntities++;
+                }
+            }
             
+            // Keep selected index in valid range
+            if (g_selectedEntityIndex >= g_totalEntities) {
+                g_selectedEntityIndex = g_totalEntities > 0 ? g_totalEntities - 1 : 0;
+            }
+            
+            LeaveCriticalSection(&g_windowDataCS);
             LeaveCriticalSection(&g_entityDataCS);
             
-            // Release mutex after completing console operations
-            ReleaseMutex(g_displayMutex);
-        } else {
-            // Log mutex acquisition failure with detailed error code
-            LogToFile("[!] Failed to acquire display mutex (code: %lu)\n", GetLastError());
-        }
-        
-        // Wait for 500ms
-        Sleep(500);
+            return 0;
+            
+        case WM_KEYDOWN:
+            // Handle keyboard navigation
+            switch (wParam) {
+                case VK_UP:
+                    g_selectedEntityIndex = max(0, g_selectedEntityIndex - 1);
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    break;
+                    
+                case VK_DOWN:
+                    g_selectedEntityIndex = min(g_totalEntities - 1, g_selectedEntityIndex + 1);
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    break;
+            }
+            return 0;
+            
+        case WM_PAINT:
+            {
+                PAINTSTRUCT ps;
+                HDC hdc = BeginPaint(hWnd, &ps);
+                
+                // Get client area for drawing
+                RECT clientRect;
+                GetClientRect(hWnd, &clientRect);
+                
+                // Clear background with GDI
+                FillRect(hdcMem, &clientRect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+                
+                // Draw entity table
+                RenderEntityTable(hdcMem, &clientRect);
+                
+                // Blit double-buffer to screen
+                BitBlt(hdc, 0, 0, width, height, hdcMem, 0, 0, SRCCOPY);
+                
+                EndPaint(hWnd, &ps);
+            }
+            return 0;
+            
+        case WM_DESTROY:
+            // Clean up double-buffer
+            if (hdcMem) {
+                SelectObject(hdcMem, hbmOld);
+                DeleteObject(hbmMem);
+                DeleteDC(hdcMem);
+                hdcMem = NULL;
+            }
+            
+            // Kill timer
+            KillTimer(hWnd, 1);
+            
+            PostQuitMessage(0);
+            return 0;
     }
     
+    return DefWindowProcW(hWnd, message, wParam, lParam);
+}
+
+// Utility function to draw a table cell with text
+void DrawTableCell(HDC hdc, int x, int y, int width, int height, const char* text, 
+                  COLORREF bgColor, COLORREF textColor, UINT format) {
+    // Draw cell background
+    RECT cellRect = {x, y, x + width, y + height};
+    HBRUSH hBrush = CreateSolidBrush(bgColor);
+    FillRect(hdc, &cellRect, hBrush);
+    DeleteObject(hBrush);
+    
+    // Draw cell border
+    HPEN hPen = CreatePen(PS_SOLID, 1, COLOR_TABLE_BORDER);
+    HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+    Rectangle(hdc, cellRect.left, cellRect.top, cellRect.right, cellRect.bottom);
+    SelectObject(hdc, hOldPen);
+    DeleteObject(hPen);
+    
+    // Draw text with specified format
+    RECT textRect = {x + 4, y + 2, x + width - 4, y + height - 2};
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, textColor);
+    
+    // Convert string to wide char for DrawTextW
+    int len = MultiByteToWideChar(CP_UTF8, 0, text, -1, NULL, 0);
+    wchar_t* wtext = (wchar_t*)malloc(len * sizeof(wchar_t));
+    if (wtext) {
+        MultiByteToWideChar(CP_UTF8, 0, text, -1, wtext, len);
+        DrawTextW(hdc, wtext, -1, &textRect, format);
+        free(wtext);
+    }
+}
+
+// Entity table rendering implementation
+void RenderEntityTable(HDC hdc, RECT* clientRect) {
+    // Table settings
+    int tableTop = 50;
+    int tableLeft = 10;
+    int tablePadding = 5;
+    
+    int colWidths[] = {120, 100, 100, 100, 120, 120};
+    int numCols = sizeof(colWidths) / sizeof(colWidths[0]);
+    int tableWidth = 0;
+    
+    // Calculate total width
+    for (int i = 0; i < numCols; i++) {
+        tableWidth += colWidths[i];
+    }
+    
+    // Set up font for drawing
+    HFONT hFont = CreateFontW(FONT_HEIGHT, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                            CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Consolas");
+    HFONT hBoldFont = CreateFontW(FONT_HEIGHT, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+                                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Consolas");
+    HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+    
+    // Draw title
+    SetTextColor(hdc, RGB(0, 0, 0));
+    TextOutW(hdc, tableLeft, tableTop - 30, L"Entity Tracker (MinHook)", 24);
+    
+    char countText[64];
+    sprintf(countText, "Total Entities: %d", g_totalEntities);
+    TextOutA(hdc, tableLeft, tableTop - 15, countText, strlen(countText));
+    
+    // Table headers
+    const char* headers[] = {"Entity Ptr", "X", "Y", "Z", "Distance", "Angle(deg)"};
+    
+    // Draw table headers
+    int x = tableLeft;
+    SelectObject(hdc, hBoldFont);
+    for (int i = 0; i < numCols; i++) {
+        DrawTableCell(hdc, x, tableTop, colWidths[i], ROW_HEIGHT, 
+                     headers[i], COLOR_TABLE_HEADER, RGB(255, 255, 255), 
+                     DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        x += colWidths[i];
+    }
+    
+    // Draw entity rows
+    SelectObject(hdc, hFont);
+    
+    EnterCriticalSection(&g_windowDataCS);
+    
+    // Get selected entity for detailed view
+    EntityData* selectedEntity = NULL;
+    int rowIndex = 0;
+    
+    for (EntityData* current = g_renderEntityList; current != NULL; current = current->next) {
+        // Limit display to MAX_ENTITIES_DISPLAYED
+        if (rowIndex >= MAX_ENTITIES_DISPLAYED) break;
+        
+        // Save selected entity for detailed view
+        if (rowIndex == g_selectedEntityIndex) {
+            selectedEntity = current;
+        }
+        
+        // Calculate spatial info
+        double entityX = current->spatial.position.x;
+        double entityY = current->spatial.position.y;
+        double entityZ = current->spatial.position.z;
+        
+        double distance = sqrt(entityX*entityX + entityY*entityY + entityZ*entityZ);
+        
+        double azimuthRad = atan2(entityY, entityX);
+        double azimuthDeg = azimuthRad * (180.0 / 3.14159265358979323846);
+        
+        // Normalize to 0-360 range
+        if (azimuthDeg < 0) azimuthDeg += 360.0;
+        
+        // Format cell values
+        char entityPtr[32], xPos[32], yPos[32], zPos[32], distStr[32], angleStr[32];
+        sprintf(entityPtr, "%p", current->_debug.memAddresses.actorEntity);
+        sprintf(xPos, "%.2f", entityX);
+        sprintf(yPos, "%.2f", entityY);
+        sprintf(zPos, "%.2f", entityZ);
+        sprintf(distStr, "%.2f", distance);
+        sprintf(angleStr, "%.2f", azimuthDeg);
+        
+        const char* cellValues[] = {entityPtr, xPos, yPos, zPos, distStr, angleStr};
+        
+        // Alternate row colors
+        COLORREF rowColor = (rowIndex % 2 == 0) ? COLOR_TABLE_ROW_EVEN : COLOR_TABLE_ROW_ODD;
+        
+        // Highlight selected row
+        if (rowIndex == g_selectedEntityIndex) {
+            rowColor = COLOR_HIGHLIGHT;
+        }
+        
+        // Draw row cells
+        x = tableLeft;
+        int y = tableTop + (rowIndex + 1) * ROW_HEIGHT;
+        
+        for (int i = 0; i < numCols; i++) {
+            DrawTableCell(hdc, x, y, colWidths[i], ROW_HEIGHT, 
+                         cellValues[i], rowColor, COLOR_TABLE_TEXT,
+                         (i == 0) ? DT_LEFT | DT_VCENTER | DT_SINGLELINE : 
+                                   DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
+            x += colWidths[i];
+        }
+        
+        rowIndex++;
+    }
+    
+    // Draw detailed view for selected entity
+    if (selectedEntity) {
+        RECT detailRect = {
+            tableLeft, 
+            tableTop + (min(g_totalEntities, MAX_ENTITIES_DISPLAYED) + 1) * ROW_HEIGHT + 20, 
+            clientRect->right - tableLeft, 
+            clientRect->bottom - 10
+        };
+        
+        RenderDetailedEntityInfo(hdc, &detailRect, selectedEntity);
+    }
+    
+    LeaveCriticalSection(&g_windowDataCS);
+    
+    // Clean up GDI objects
+    SelectObject(hdc, hOldFont);
+    DeleteObject(hFont);
+    DeleteObject(hBoldFont);
+}
+
+// Format entity flag analysis as string
+char* FlagAnalysisToString(EntityData* data) {
+    static char buffer[512];
+    sprintf(buffer, 
+        "Disabled: %s | Constrained: %s | AutoSleep: %s | Sleeping: %s | InCollision: %s | ForceApplied: %s",
+        data->state.flagsAnalysis.isDisabled ? "Yes" : "No",
+        data->state.flagsAnalysis.isConstrained ? "Yes" : "No",
+        data->state.flagsAnalysis.isAutoSleep ? "Yes" : "No",
+        data->state.flagsAnalysis.isSleeping ? "Yes" : "No",
+        data->state.simulationFlagsAnalysis.inCollision ? "Yes" : "No",
+        data->state.simulationFlagsAnalysis.forceApplied ? "Yes" : "No");
+    return buffer;
+}
+
+// Render detailed entity information
+void RenderDetailedEntityInfo(HDC hdc, RECT* rect, EntityData* entity) {
+    // Set up font for drawing
+    HFONT hFont = CreateFontW(FONT_HEIGHT, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                            CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Consolas");
+    HFONT hBoldFont = CreateFontW(FONT_HEIGHT, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+                                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Consolas");
+    HFONT hOldFont = (HFONT)SelectObject(hdc, hBoldFont);
+    
+    // Draw section header
+    char headerText[64];
+    sprintf(headerText, "Detailed Info for %p:", entity->_debug.memAddresses.actorEntity);
+    TextOutA(hdc, rect->left, rect->top, headerText, strlen(headerText));
+    
+    // Switch to normal font for details
+    SelectObject(hdc, hFont);
+    
+    int y = rect->top + 25;
+    
+    // Entity flags
+    char* flagsText = FlagAnalysisToString(entity);
+    TextOutA(hdc, rect->left, y, "Flags:", 6);
+    TextOutA(hdc, rect->left + 100, y, flagsText, strlen(flagsText));
+    y += 20;
+    
+    // Calculate spatial analysis
+    double entityX = entity->spatial.position.x;
+    double entityY = entity->spatial.position.y;
+    double entityZ = entity->spatial.position.z;
+    
+    double distance = sqrt(entityX*entityX + entityY*entityY + entityZ*entityZ);
+    double horizontalDist = sqrt(entityX*entityX + entityY*entityY);
+    
+    double azimuthRad = atan2(entityY, entityX);
+    double azimuthDeg = azimuthRad * (180.0 / 3.14159265358979323846);
+    if (azimuthDeg < 0) azimuthDeg += 360.0;
+    
+    double elevationRad = atan2(entityZ, horizontalDist);
+    double elevationDeg = elevationRad * (180.0 / 3.14159265358979323846);
+    
+    // Spatial information
+    char spatialText[256];
+    sprintf(spatialText, "Distance=%.2f | Azimuth=%.2f° | Elevation=%.2f°", 
+            distance, azimuthDeg, elevationDeg);
+    TextOutA(hdc, rect->left, y, "Spatial:", 8);
+    TextOutA(hdc, rect->left + 100, y, spatialText, strlen(spatialText));
+    y += 20;
+    
+    // Velocity information
+    double speed = sqrt(pow(entity->kinematic.linearVelocity.x, 2) + 
+                       pow(entity->kinematic.linearVelocity.y, 2) + 
+                       pow(entity->kinematic.linearVelocity.z, 2));
+    
+    char velocityText[256];
+    sprintf(velocityText, "[%.2f, %.2f, %.2f] | Speed: %.2f",
+            entity->kinematic.linearVelocity.x,
+            entity->kinematic.linearVelocity.y,
+            entity->kinematic.linearVelocity.z,
+            speed);
+    TextOutA(hdc, rect->left, y, "Velocity:", 9);
+    TextOutA(hdc, rect->left + 100, y, velocityText, strlen(velocityText));
+    y += 20;
+    
+    // Calculate quaternion to Euler angles (Roll-Pitch-Yaw)
+    float qx = entity->spatial.orientation.x;
+    float qy = entity->spatial.orientation.y;
+    float qz = entity->spatial.orientation.z;
+    float qw = entity->spatial.orientation.w;
+    
+    float yaw = atan2(2.0f * (qw * qz + qx * qy), 1.0f - 2.0f * (qy * qy + qz * qz));
+    float pitch = asin(2.0f * (qw * qy - qz * qx));
+    float roll = atan2(2.0f * (qw * qx + qy * qz), 1.0f - 2.0f * (qx * qx + qy * qy));
+    
+    // Convert to degrees
+    float yawDeg = yaw * (180.0f / 3.14159265358979323846f);
+    float pitchDeg = pitch * (180.0f / 3.14159265358979323846f);
+    float rollDeg = roll * (180.0f / 3.14159265358979323846f);
+    
+    // Orientation information
+    char orientationText[256];
+    sprintf(orientationText, "Yaw=%.2f° | Pitch=%.2f° | Roll=%.2f° | Scale=%.2f",
+            yawDeg, pitchDeg, rollDeg, entity->spatial.scale);
+    TextOutA(hdc, rect->left, y, "Orientation:", 12);
+    TextOutA(hdc, rect->left + 100, y, orientationText, strlen(orientationText));
+    y += 20;
+    
+    // Entity information
+    char entityText[256];
+    sprintf(entityText, "EntityID: %llu | Mass: %.2f | PhysType: %u",
+            entity->core.entityId, entity->physical.mass, entity->collision.physicalEntityType);
+    TextOutA(hdc, rect->left, y, "Entity Info:", 12);
+    TextOutA(hdc, rect->left + 100, y, entityText, strlen(entityText));
+    
+    // Clean up GDI objects
+    SelectObject(hdc, hOldFont);
+    DeleteObject(hFont);
+    DeleteObject(hBoldFont);
+}
+
+// Window thread implementation with proper message dispatch architecture
+DWORD WINAPI WindowThreadProc(LPVOID lpParameter) {
+    // Install thread-specific signal handler
+    signal(SIGSEGV, segv_handler);
+    
+    LogToFile("[+] Window thread started\n");
+    
+    HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+    
+    // Register window class
+    if (!RegisterEntityTrackerClass(hInstance)) {
+        LogToFile("[!] Failed to register window class: %lu\n", GetLastError());
+        return 1;
+    }
+    
+    // Create window with proper Z-order and style attributes
+    g_hWnd = CreateWindowExW(
+        WS_EX_TOPMOST,
+        L"EntityTrackerClass",
+        L"Entity Tracker",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        WINDOW_WIDTH, WINDOW_HEIGHT,
+        NULL, NULL, hInstance, NULL);
+    
+    if (!g_hWnd) {
+        LogToFile("[!] Failed to create window: %lu\n", GetLastError());
+        return 1;
+    }
+    
+    // Display window with proper composition attributes
+    ShowWindow(g_hWnd, SW_SHOW);
+    UpdateWindow(g_hWnd);
+    
+    // Mark window as initialized
+    g_windowInitialized = TRUE;
+    
+    // Message dispatch loop
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    
+    // Window terminated
+    g_windowInitialized = FALSE;
+    g_hWnd = NULL;
+    
+    LogToFile("[+] Window thread exiting\n");
     return 0;
 }
 
-// -------------------- MinHook Functions --------------------
-
+// ==== MinHook Functions ====
 void* __fastcall HookedSub146675AD0(void* actorEntity) {
     // Log function entry
     LogToFile("[+] Entering sub_146675AD0, entity=%p\n", actorEntity);
@@ -672,7 +1053,7 @@ DWORD WINAPI HookInstallerThread(LPVOID lpParameter) {
         mbi.State == MEM_COMMIT && 
         (mbi.Protect & (PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY))) {
         
-        // Disassemble first few bytes to verify code signature (if possible)
+        // Disassemble first few bytes to verify code signature
         BYTE codeBytes[16];
         if (ReadProcessMemory(GetCurrentProcess(), (LPCVOID)targetAddress, codeBytes, sizeof(codeBytes), NULL)) {
             LogToFile("[*] Target function signature: %02X %02X %02X %02X %02X %02X\n", 
@@ -705,11 +1086,10 @@ DWORD WINAPI HookInstallerThread(LPVOID lpParameter) {
     return 0;
 }
 
-// -------------------- DLL Entry Point --------------------
-
+// ==== DLL Entry Point ====
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
     switch (ul_reason_for_call) {
-        case DLL_PROCESS_ATTACH:
+        case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(hModule);
             
             // Create log directory if it doesn't exist
@@ -725,72 +1105,43 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
             // Initialize the signal handler for the main thread
             signal(SIGSEGV, segv_handler);
             
-            // Initialize mutex for display thread synchronization
-            g_displayMutex = CreateMutex(NULL, FALSE, NULL);
-            if (!g_displayMutex) {
-                LogToFile("[!] Failed to create display mutex (error: %lu)\n", GetLastError());
-                // Continue execution, but display thread will log errors
-            }
-            
-            // Allocate console for display
-            BOOL consoleResult = AllocConsole();
-            if (!consoleResult) {
-                // Fallback to parent console if allocation fails
-                AttachConsole(ATTACH_PARENT_PROCESS);
-            }
-
-            // Force console window visibility
-            HWND consoleWindow = GetConsoleWindow();
-            if (consoleWindow) {
-                ShowWindow(consoleWindow, SW_SHOW);
-                SetForegroundWindow(consoleWindow);
-                
-                // Configure console buffer
-                HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-                if (hStdout != INVALID_HANDLE_VALUE) {
-                    DWORD mode = 0;
-                    GetConsoleMode(hStdout, &mode);
-                    mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT;
-                    SetConsoleMode(hStdout, mode);
-                    
-                    // Set distinctive title
-                    SetConsoleTitle("Entity Tracker - Debug Console");
-                }
-            }
-
-            // Redirect STDIO with verification
-            FILE* fDummy;
-            if (freopen_s(&fDummy, "CONOUT$", "w", stdout) != 0) {
-                // Direct output to kernel debugger as fallback
-                OutputDebugStringA("Failed to redirect stdout to console");
-            }
-            
-            // Initialize critical section
+            // Initialize critical sections
             InitializeCriticalSection(&g_entityDataCS);
+            InitializeCriticalSection(&g_windowDataCS);
+            
+            // Start window thread
+            HANDLE windowThread = CreateThread(NULL, 0, WindowThreadProc, NULL, 0, NULL);
+            if (windowThread) {
+                CloseHandle(windowThread);  // We don't need to track this thread
+            } else {
+                LogToFile("[!] Failed to create window thread\n");
+            }
             
             // Start hook installer thread
-            CreateThread(NULL, 0, HookInstallerThread, NULL, 0, NULL);
+            HANDLE hookThread = CreateThread(NULL, 0, HookInstallerThread, NULL, 0, NULL);
+            if (hookThread) {
+                CloseHandle(hookThread);  // We don't need to track this thread
+            } else {
+                LogToFile("[!] Failed to create hook installer thread\n");
+            }
             
-            // Start display thread
-            g_displayThread = CreateThread(NULL, 0, DisplayThreadProc, NULL, 0, NULL);
             break;
+        }
             
-        case DLL_PROCESS_DETACH:
+        case DLL_PROCESS_DETACH: {
             // Signal threads to terminate
             g_keepRunning = FALSE;
             
-            // Wait for display thread to terminate (with timeout)
-            if (g_displayThread) {
-                WaitForSingleObject(g_displayThread, 1000);
-                CloseHandle(g_displayThread);
-                g_displayThread = NULL;
+            // Send message to terminate window thread (if window exists)
+            if (g_hWnd && IsWindow(g_hWnd)) {
+                SendMessage(g_hWnd, WM_CLOSE, 0, 0);
             }
             
             // Clean up MinHook
             MH_DisableHook(MH_ALL_HOOKS);
             MH_Uninitialize();
             
-            // Clean up entity list with proper synchronization
+            // Clean up entity lists with proper synchronization
             EnterCriticalSection(&g_entityDataCS);
             while (g_entityDataList) {
                 EntityData* current = g_entityDataList;
@@ -799,14 +1150,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
             }
             LeaveCriticalSection(&g_entityDataCS);
             
-            // Delete critical section
-            DeleteCriticalSection(&g_entityDataCS);
-            
-            // Clean up mutex
-            if (g_displayMutex) {
-                CloseHandle(g_displayMutex);
-                g_displayMutex = NULL;
+            EnterCriticalSection(&g_windowDataCS);
+            while (g_renderEntityList) {
+                EntityData* current = g_renderEntityList;
+                g_renderEntityList = current->next;
+                free(current);
             }
+            LeaveCriticalSection(&g_windowDataCS);
+            
+            // Delete critical sections
+            DeleteCriticalSection(&g_entityDataCS);
+            DeleteCriticalSection(&g_windowDataCS);
             
             // Close log file
             if (g_logFile) {
@@ -815,9 +1169,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
                 g_logFile = NULL;
             }
             
-            // Free console
-            FreeConsole();
             break;
+        }
     }
     
     return TRUE;

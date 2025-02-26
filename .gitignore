@@ -1,3 +1,6 @@
+*.id*
+*.nam
+*.til
 *.exe
 *.dll
 *.a
