@@ -937,12 +937,51 @@ DWORD WINAPI HookInstallerThread(LPVOID lpParameter) {
     return 0;
 }
 
-DWORD WINAPI ConsoleThreadProc(LPVOID lpParameter) {
-    if (AllocConsole()) {
-        freopen("CONOUT$", "w", stdout);
-        freopen("CONOUT$", "w", stderr);
-        SetConsoleTitle("EntityTracker Console");
+static HANDLE g_consoleThread = NULL;
+
+DWORD WINAPI DeferredConsoleThreadProc(LPVOID lpParameter)
+{
+    // More robust wait pattern for loader lock
+    Sleep(2000);
+    
+    BOOL consoleResult = AllocConsole();
+    if (!consoleResult) {
+        DWORD errorCode = GetLastError();
+        // Write to error log since we can't use console
+        FILE* errorLog = fopen(".\\console_error.log", "w");
+        if (errorLog) {
+            fprintf(errorLog, "AllocConsole failed with error 0x%08X\n", errorCode);
+            fclose(errorLog);
+        }
+        
+        // Attempt console attachment as fallback
+        if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+            consoleResult = TRUE;
+        }
     }
+    
+    if (consoleResult) {
+        FILE* fpstdout = freopen("CONOUT$", "w", stdout);
+        FILE* fpstderr = freopen("CONOUT$", "w", stderr);
+        
+        if (!fpstdout || !fpstderr) {
+            // Handle redirection failure
+            LogToFile("[!] Console buffer redirection failed\n");
+        }
+        
+        SetConsoleTitle("EntityTracker Console");
+        
+        // Force console window to be visible
+        HWND consoleWnd = GetConsoleWindow();
+        if (consoleWnd) {
+            ShowWindow(consoleWnd, SW_SHOW);
+            SetForegroundWindow(consoleWnd);
+        }
+        
+        // Verify console functionality
+        printf("EntityTracker console initialized at 0x%p\n", GetConsoleWindow());
+    }
+    
     return 0;
 }
 
@@ -952,14 +991,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH: {
             DisableThreadLibraryCalls(hModule);
-            // Allocate a console window and redirect standard I/O
-            HANDLE hConsoleThread = CreateThread(NULL, 0, ConsoleThreadProc, NULL, 0, NULL);
-            if (hConsoleThread) {
-                CloseHandle(hConsoleThread);
+            
+            HANDLE consoleThread = CreateThread(NULL, 0, DeferredConsoleThreadProc, NULL, 0, NULL);
+            if (consoleThread) {
+                // Store handle in global for later synchronization
+                g_consoleThread = consoleThread;
+                LogToFile("[+] Console initialization thread created: 0x%p\n", consoleThread);
+            } else {
+                LogToFile("[!] Failed to create console initialization thread: 0x%08X\n", GetLastError());
             }
             
-            _mkdir("C:\\EntityTracker");
-            g_logFile = fopen("C:\\EntityTracker\\entity_tracker.log", "a");
+            g_logFile = fopen(".\\entity_tracker.log", "a");
             if (g_logFile) {
                 time_t t = time(NULL);
                 LogToFile("\n\n[%s] === EntityTracker DLL Loaded ===\n", ctime(&t));
