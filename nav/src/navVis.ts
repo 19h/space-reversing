@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { NavigationPlan } from './navPlan';
-import { ObjectContainer, Vector3 } from './types';
+import { ObjectContainer, System, Vector3 } from './types';
 
 /**
  * Enhanced 3D navigation path visualization with diagnostic capabilities
@@ -430,39 +430,39 @@ export class EnhancedNavigationHUD {
     }
 
     /**
- * Filter celestial bodies belonging to a specific system
- * Uses name-based identification rather than adding properties
- */
-    private filterBodiesBySystem(systemName: string): ObjectContainer[] {
+     * Filter celestial bodies belonging to a specific system
+     * Uses name-based identification rather than adding properties
+     */
+    private filterBodiesBySystem(system: System): ObjectContainer[] {
         return this.celestialBodiesData.filter(body => {
             // Simple name-based system detection
-            return body.name.includes(systemName);
+            return body.system === system;
         });
     }
 
     /**
      * Render a complete solar system
      */
-    public renderCompleteSolarSystem(systemName: string = "Stanton"): void {
-        console.log(`Rendering complete ${systemName} solar system`);
+    public renderCompleteSolarSystem(system: System): void {
+        console.log(`Rendering complete ${system} solar system`);
 
         // Store current system
-        this.currentSystem = systemName;
+        this.currentSystem = system;
 
         // Clear existing celestial bodies
         this.clearCelestialBodies();
 
         // Filter bodies for this system by name
-        const systemBodies = this.filterBodiesBySystem(systemName);
-        console.log(`Found ${systemBodies.length} bodies in ${systemName} system`);
+        const systemBodies = this.filterBodiesBySystem(system);
+        console.log(`Found ${systemBodies.length} bodies in ${system} system`);
 
         // Find the system star (usually at or near 0,0,0)
         const stars = systemBodies.filter(body => body.cont_type === 'Star');
 
         // If no star found, create a default one at origin
         if (stars.length === 0) {
-            console.log(`No star found for ${systemName} system, creating default at origin`);
-            this.renderDefaultStar(systemName);
+            console.log(`No star found for ${system} system, creating default at origin`);
+            this.renderDefaultStar(system);
         } else {
             stars.forEach(star => this.renderStar(star));
         }
@@ -529,7 +529,7 @@ export class EnhancedNavigationHUD {
             maxSystemRadius,
         );
 
-        console.log(`Rendered ${systemName} system with ${systemBodies.length} celestial bodies`);
+        console.log(`Rendered ${system} system with ${systemBodies.length} celestial bodies`);
     }
 
     /**

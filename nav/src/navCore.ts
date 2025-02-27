@@ -201,7 +201,15 @@ export class SCNavigationCore {
 
         for (const poi of this.pois) {
             if (poi.hasQTMarker) {
-                const distance = this.calcDistance3d(position, getCoordinates(poi));
+                const distance =
+                    this.calcDistance3d(
+                        position,
+                        getCoordinates(
+                            poi,
+                            this.containers,
+                        ),
+                    );
+
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestBeacon = poi;
@@ -248,7 +256,11 @@ export class SCNavigationCore {
             return null;
         }
     
-        let destinationCoords = getCoordinates(this.selectedPOI);
+        let destinationCoords =
+            getCoordinates(
+                this.selectedPOI,
+                this.containers,
+            );
     
         // If POI is on a planet, adjust for planetary rotation
         if (this.selectedPOI.objContainer) {
@@ -261,8 +273,11 @@ export class SCNavigationCore {
                 // the planet's current rotation
                 // This is a simplification
                 destinationCoords = this.calculateRotatedPlanetaryCoordinates(
-                    getCoordinates(this.selectedPOI),
-                    poiContainer
+                    getCoordinates(
+                        this.selectedPOI,
+                        this.containers,
+                    ),
+                    poiContainer,
                 );
             }
         }

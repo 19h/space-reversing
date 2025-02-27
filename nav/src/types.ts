@@ -1,3 +1,5 @@
+import { CoordinateTransformer } from "./navPlanUtils";
+
 // Core data structures
 export interface Vector3 {
     x: number;
@@ -104,13 +106,42 @@ export interface ObjectContainer {
     gridRadius: number;
 }
 
-// Helper function to get coordinates from a PointOfInterest
-export const getCoordinates = (poi: PointOfInterest): Vector3 => {
-    return {
-        x: poi.posX,
-        y: poi.posY,
-        z: poi.posZ
-    };
+/**
+ * Transform POI coordinates with celestial body positional correction
+ */
+export const getCoordinates = (
+    poi: PointOfInterest,
+    containers: ObjectContainer[],
+): Vector3 => {
+    // Direct coordinate handling for absolute coordinates
+    if (poi.hasQTMarker || !poi.objContainer) {
+        return {
+            x: poi.posX,
+            y: poi.posY,
+            z: poi.posZ
+        };
+    }
+    
+    // Locate parent celestial body
+    const container =
+        containers.find(c => c.name === poi.objContainer);
+    
+    if (!container) {
+        console.error(`Astronomical reference frame '${poi.objContainer}' not found for entity '${poi.name}'`);
+        // Fallback: treat as absolute coordinates
+        return {
+            x: poi.posX,
+            y: poi.posY,
+            z: poi.posZ
+        };
+    }
+    
+    // Coordinate space transformation with quaternion rotation
+    return CoordinateTransformer.transformCoordinates(
+        { x: poi.posX, y: poi.posY, z: poi.posZ },
+        container,
+        'toGlobal'
+    );
 }
 
 export interface NavigationResult {

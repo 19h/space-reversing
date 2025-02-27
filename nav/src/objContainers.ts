@@ -51,7 +51,7 @@ export const objectContainers: ObjectContainer[] = [
         id: 3,
         system: System.Stanton,
         cont_type: ContainerType.Planet,
-        name: "Microtech",
+        name: "MicroTech",
         internalName: "Stanton4",
         posX: 22462085252,
         posY: 37185744964,

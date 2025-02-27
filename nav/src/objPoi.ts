@@ -2084,7 +2084,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 145,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 18",
       class: "animallocation_oc018",
@@ -2246,7 +2246,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 156,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 10",
       class: "animallocation_oc010",
@@ -2459,7 +2459,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 171,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Event,
       name: "Citizencon 2953 Location of cows and homestead",
       class: "Cave Entrance",
@@ -4508,7 +4508,7 @@ export const pointsOfInterest: PointOfInterest[] = [
       system: "Stanton",
       objContainer: "",
       poiType: PoiType.JumpPoint,
-      name: "Jump Point - Microtech (missing)",
+      name: "Jump Point - MicroTech (missing)",
       class: "",
       posX: 23459705353.1987,
       posY: 37480476892.0171,
@@ -5980,7 +5980,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 421,
       system: "Stanton",
-      objContainer: "microTech",
+      objContainer: "MicroTech",
       poiType: PoiType.Wreck,
       name: "Freelancer B Wreck",
       class: "Derelict Crash Site",
@@ -5994,7 +5994,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 422,
       system: "Stanton",
-      objContainer: "microTech",
+      objContainer: "MicroTech",
       poiType: PoiType.Event,
       name: "Test Facility Octagon (missing)",
       class: "",
@@ -7215,7 +7215,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 505,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Druglab,
       name: "Raven's Roost",
       class: "",
@@ -7359,7 +7359,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 515,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "Moreland Hills",
       class: "Drlct_Stmnt_003_Moreland_Hills",
@@ -7373,7 +7373,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 516,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "Megaton",
       class: "Drlct_Stlmnt_008_Megaton_RastarLE",
@@ -7387,7 +7387,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 517,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "Harper's Point",
       class: "Drlct_Stmnt_007_HarpersPoint_RastarLE",
@@ -7402,7 +7402,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 518,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "BloodShot Ridge",
       class: "Drlct_Stmnt_006_BloodShotRidge_RastarLE",
@@ -7416,7 +7416,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 519,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "FrostBite",
       class: "Drlct_Stmnt_005_FrostBite_RastarLE",
@@ -7430,7 +7430,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 520,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "Astor's Clearing",
       class: "Drlct_Stmnt_004_Astor_Clearing",
@@ -7445,7 +7445,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 521,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictSettlement,
       name: "Razor's Edge",
       class: "Drlct_Stmnt_001_Razors_Edge",
@@ -9010,7 +9010,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 633,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DerelictOutpost,
       name: "Derelict Outpost #11",
       class: "ruin_sml_b_ovrly_occu_001",
@@ -9121,7 +9121,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 641,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 13",
       class: "animallocation_oc013",
@@ -10797,7 +10797,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 768,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Sakura Sun Goldenrod Workcenter",
       class: "s4_dc_sasu_goldenrod",
@@ -10812,7 +10812,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 769,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Covalex Distribution Centre S4DC05",
       class: "s4_dc_cvlx_s4dc05",
@@ -10826,9 +10826,9 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 770,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
-      name: "Microtech Logistics Depot S4LD01",
+      name: "MicroTech Logistics Depot S4LD01",
       class: "s4_dc_mite_s4ld01",
       posX: 884.615003941,
       posY: 467.867817,
@@ -10840,9 +10840,9 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 771,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
-      name: "Microtech Logistics Depot S4LD13",
+      name: "MicroTech Logistics Depot S4LD13",
       class: "s4_dc_mite_s4ld13",
       posX: 843.837953494,
       posY: -179.534831679,
@@ -10854,7 +10854,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 772,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Greycat Stanton IV Production Complex-A",
       class: "s4_dc_grin_pca",
@@ -10868,7 +10868,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 773,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Cry-Astro Processing Plant 34-12",
       class: "s4_dc_cras_pp34-12",
@@ -10882,7 +10882,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 774,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Cry-Astro Processing Plant 19-02",
       class: "s4_dc_cras_pp19-02",
@@ -10896,7 +10896,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 786,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 11",
       class: "animallocation_oc011,alt",
@@ -10909,7 +10909,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 796,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 05",
       class: "animallocation_oc005",
@@ -10977,7 +10977,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 801,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 19",
       class: "animallocation_oc019",
@@ -10990,7 +10990,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 802,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 06",
       class: "animallocation_oc006",
@@ -11003,7 +11003,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 803,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 02",
       class: "animallocation_oc002",
@@ -11029,7 +11029,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 805,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 08",
       class: "animallocation_oc008",
@@ -11042,7 +11042,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 806,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 20",
       class: "animallocation_oc020",
@@ -11055,7 +11055,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 807,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 12",
       class: "animallocation_oc012",
@@ -11068,7 +11068,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 808,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 03",
       class: "animallocation_oc003",
@@ -11081,7 +11081,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 809,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 07",
       class: "animallocation_oc007",
@@ -11094,7 +11094,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 810,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 21",
       class: "animallocation_oc021",
@@ -11198,7 +11198,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 818,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 16",
       class: "animallocation_oc016",
@@ -11406,7 +11406,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 834,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 14",
       class: "animallocation_oc014",
@@ -11484,7 +11484,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 840,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 15",
       class: "animallocation_oc015",
@@ -11497,7 +11497,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 841,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 09",
       class: "animallocation_oc009",
@@ -11510,7 +11510,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 842,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 04",
       class: "animallocation_oc004",
@@ -11523,7 +11523,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 843,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 01",
       class: "animallocation_oc001",
@@ -11536,7 +11536,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 844,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.AnimalArea,
       name: "Area 17",
       class: "animallocation_oc017",
@@ -11953,7 +11953,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 856,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.ForwardOperatingBase,
       name: "s4_fob_abnd_003",
       class: "Forward Operating Base, Abandoned, s4_fob_abnd_003",
@@ -11966,7 +11966,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 857,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.ForwardOperatingBase,
       name: "s4_fob_abnd_004",
       class: "Forward Operating Base, Abandoned, s4_fob_abnd_004",
@@ -11979,7 +11979,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 858,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.ForwardOperatingBase,
       name: "s4_fob_abnd_001",
       class: "Forward Operating Base, Abandoned, s4_fob_abnd_001",
@@ -11992,7 +11992,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 859,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.ForwardOperatingBase,
       name: "s4_fob_abnd_002",
       class: "Forward Operating Base, Abandoned, s4_fob_abnd_002",
@@ -15745,7 +15745,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1128,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size06_005_002_fauna",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size06_005_002_fauna",
@@ -15759,7 +15759,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1129,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size06_004_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size06_004_001",
@@ -15773,7 +15773,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1130,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size06_001_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size06_001_001",
@@ -15787,7 +15787,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1131,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size04_004_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size04_004_001",
@@ -15801,7 +15801,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1132,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size02_001_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size02_001_001",
@@ -15815,7 +15815,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1133,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size03_001_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size03_001_001",
@@ -15829,7 +15829,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1134,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size05_001_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size05_001_001",
@@ -15843,7 +15843,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1135,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size05_004_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size05_004_001",
@@ -15857,7 +15857,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1136,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size03_004_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size03_004_001",
@@ -15871,7 +15871,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1137,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size02_004_001",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size02_004_001",
@@ -15899,7 +15899,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1139,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.Cave,
       name: "Stanton4_rock01_unoc_001_size06_005_001_fauna",
       class: "Unoccupied Cave, Rock, Stanton4_rock01_unoc_001_size06_005_001_fauna",
@@ -16067,7 +16067,7 @@ export const pointsOfInterest: PointOfInterest[] = [
     {
       id: 1151,
       system: "Stanton",
-      objContainer: "Microtech",
+      objContainer: "MicroTech",
       poiType: PoiType.DistributionCenter,
       name: "Dist Landing(example)",
       class: "",
