@@ -27,7 +27,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 2,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Daymar",
         internalName: "Stanton2b",
         posX: -18930539540,
@@ -73,7 +73,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 4,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Lyria",
         internalName: "Stanton3a",
         posX: 18703607170,
@@ -96,7 +96,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 5,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Wala",
         internalName: "Stanton3b",
         posX: 18379649310,
@@ -119,7 +119,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 6,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Arial",
         internalName: "Stanton1a",
         posX: 12892673308,
@@ -165,7 +165,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 8,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Ita",
         internalName: "Stanton1d",
         posX: 12830194716,
@@ -188,7 +188,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 9,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Calliope",
         internalName: "Stanton4a",
         posX: 22398369308,
@@ -211,7 +211,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 10,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Cellin",
         internalName: "Stanton2a",
         posX: -18987611119,
@@ -234,7 +234,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 11,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Euterpe",
         internalName: "Stanton4c",
         posX: 22488109736,
@@ -257,7 +257,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 12,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Clio",
         internalName: "Stanton4b",
         posX: 22476728221,
@@ -326,7 +326,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 15,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Aberdeen",
         internalName: "Stanton1b",
         posX: 12905757636,
@@ -349,7 +349,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 16,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Magda",
         internalName: "Stanton1c",
         posX: 12792686359,
@@ -372,7 +372,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 17,
         system: System.Stanton,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Yela",
         internalName: "Stanton2c",
         posX: -19022916799,
@@ -1407,7 +1407,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 62,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Vuur",
         internalName: "Pyro5f",
         posX: -4049984180.41362,
@@ -1430,7 +1430,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 63,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Fuego",
         internalName: "Pyro5e",
         posX: -3780104297.52255,
@@ -1453,7 +1453,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 64,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Fairo",
         internalName: "Pyro5d",
         posX: -3946426939.49278,
@@ -1476,7 +1476,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 65,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Adir",
         internalName: "Pyro5c",
         posX: -3815633250.52238,
@@ -1499,7 +1499,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 66,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Vatra",
         internalName: "Pyro5b",
         posX: -3889829129.24634,
@@ -1522,7 +1522,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 67,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Ignis",
         internalName: "Pyro5a",
         posX: -3965327312.67945,
@@ -1568,7 +1568,7 @@ export const objectContainers: ObjectContainer[] = [
     {
         id: 69,
         system: System.Pyro,
-        cont_type: ContainerType.Planet,
+        cont_type: ContainerType.Moon,
         name: "Pyro4",
         internalName: "Pyro4",
         posX: -3704129440.06321,
@@ -2370,27 +2370,4 @@ export const objectContainers: ObjectContainer[] = [
         omRadius: 1439593,
         gridRadius: 2300000,
     },
-    {
-        id: 200,
-        system: System.Stanton,
-        cont_type: ContainerType.Moon,
-        name: "Daymar",
-        internalName: "Daymar",
-        posX: 18930267227,
-        posY: 2610218512,
-        posZ: -95733,
-        rotVelX: 0.1033,
-        rotVelY: 0,
-        rotVelZ: 0,
-        rotAdjX: 30.794,
-        rotAdjY: 0,
-        rotAdjZ: 0,
-        rotQuatW: 0,
-        rotQuatX: 0,
-        rotQuatY: 0,
-        rotQuatZ: 0,
-        bodyRadius: 295000,
-        omRadius: 1000000,
-        gridRadius: 2000000
-    }
 ]

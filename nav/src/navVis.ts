@@ -365,17 +365,6 @@ export class EnhancedNavigationHUD {
     }
 
     /**
-     * Helper method for calculating distance between two positions
-     */
-    private calcDistance3dFromPositions(p1: Vector3, p2: Vector3): number {
-        return Math.sqrt(
-            Math.pow(p1.x - p2.x, 2) +
-            Math.pow(p1.y - p2.y, 2) +
-            Math.pow(p1.z - p2.z, 2)
-        );
-    }
-
-    /**
      * Render celestial bodies from container data
      */
     private renderCelestialBodies(): void {
@@ -563,39 +552,6 @@ export class EnhancedNavigationHUD {
 
         // Add label
         this.addLabel(position, `${systemName} Star`, 0xffffaa);
-    }
-
-    /**
-     * Find the parent planet of a moon
-     */
-    private findParentPlanet(moon: ObjectContainer, planets: ObjectContainer[]): ObjectContainer | null {
-        // Try to infer parent planet from naming patterns
-        const moonName = moon.name.toLowerCase();
-
-        for (const planet of planets) {
-            const planetName = planet.name.toLowerCase();
-            if (moonName.includes(planetName)) {
-                return planet;
-            }
-        }
-
-        // Default to closest planet by distance
-        let closestPlanet = null;
-        let minDistance = Number.MAX_VALUE;
-
-        for (const planet of planets) {
-            const distance = this.calcDistance3dFromPositions(
-                { x: moon.posX, y: moon.posY, z: moon.posZ },
-                { x: planet.posX, y: planet.posY, z: planet.posZ }
-            );
-
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestPlanet = planet;
-            }
-        }
-
-        return closestPlanet;
     }
 
     /**
