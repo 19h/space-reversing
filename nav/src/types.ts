@@ -107,7 +107,8 @@ export interface ObjectContainer {
 }
 
 /**
- * Transform POI coordinates with celestial body positional correction
+ * Transform POI coordinates with enhanced celestial body positional correction
+ * Ensures all coordinates are returned in global space (meters)
  */
 export const getCoordinates = (
     poi: PointOfInterest,
@@ -136,9 +137,16 @@ export const getCoordinates = (
         };
     }
     
-    // Coordinate space transformation with quaternion rotation
+    // Create local coordinate vector (usually in kilometers)
+    const localPos: Vector3 = {
+        x: poi.posX,
+        y: poi.posY,
+        z: poi.posZ
+    };
+    
+    // Transform to global coordinates with proper unit conversion
     return CoordinateTransformer.transformCoordinates(
-        { x: poi.posX, y: poi.posY, z: poi.posZ },
+        localPos,
         container,
         'toGlobal'
     );
