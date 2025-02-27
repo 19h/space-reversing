@@ -82,7 +82,7 @@ export interface PointOfInterest {
 
 export interface ObjectContainer {
     id: number;
-    system: string;
+    system: System;
     cont_type: ContainerType;      // Use the enum
     name: string;
     internalName: string;

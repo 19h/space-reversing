@@ -825,6 +825,12 @@ export class SCNavigationPlanner extends SCNavigationCore {
             // Skip non-physical objects
             if (!body.bodyRadius || body.bodyRadius <= 0) continue;
             
+            // Skip bodies that are in the Pyro system when in Stanton (and vice versa)
+            // This prevents incorrect obstruction detection across star systems
+            if (body.system && this.currentObjectContainer?.system && body.system !== this.currentObjectContainer.system) {
+                continue;
+            }
+            
             // Vector from origin to sphere center
             const ocX = body.posX - from.x;
             const ocY = body.posY - from.y;
@@ -1155,5 +1161,72 @@ export class SCNavigationPlanner extends SCNavigationCore {
         });
         
         return instructions;
+    }
+    
+    /**
+     * Extract system name from a location name
+     */
+    private extractSystemName(locationName: string): string | null {
+        // Known star systems
+        const systems = ["Stanton", "Pyro", "Nyx", "Terra", "Odin", "Ellis", "Sol"];
+        
+        // Check if the name contains a system identifier
+        for (const system of systems) {
+            if (locationName.includes(system)) {
+                return system;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Determine which star system a navigation plan belongs to
+     * by examining the origin and destination names
+     */
+    public determineCurrentSolarSystem(
+        plan: NavigationPlan | null = null,
+    ): string {
+        if (plan === null) {
+            if (this.currentObjectContainer) {
+                return this.currentObjectContainer.system;
+            }
+
+            return "Stanton";
+        }
+
+        // Check for system markers in container and POI names
+        const systemNamePatterns = ["Stanton", "Pyro", "Nyx", "Terra", "Odin"];
+        
+        // Check origin container if available
+        if (plan.originContainer && plan.originContainer.name) {
+            for (const system of systemNamePatterns) {
+                if (plan.originContainer.name.includes(system)) {
+                    return system;
+                }
+            }
+        }
+        
+        // Check points in the route
+        if (plan.segments && plan.segments.length > 0) {
+            // Check origin
+            const originName = plan.segments[0]!.from.name;
+            for (const system of systemNamePatterns) {
+                if (originName.includes(system)) {
+                    return system;
+                }
+            }
+            
+            // Check destination
+            const destName = plan.segments[plan.segments.length - 1]!.to.name;
+            for (const system of systemNamePatterns) {
+                if (destName.includes(system)) {
+                    return system;
+                }
+            }
+        }
+        
+        // Default to Stanton if can't determine
+        return "Stanton";
     }
 }
