@@ -333,13 +333,47 @@ export class SCNavigationPlanner extends SCNavigationCore {
     }
 
     /**
+     * Find visible markers with system boundary enforcement
+     */
+    private findVisibleMarkersInSystem(
+        position: Vector3,
+        system: System,
+        searchType: 'all' | 'orbital' | 'qt' = 'all'
+    ): { node: NavNode, obstruction: ObjectContainer | null }[] {
+        const allMarkers = this.findVisibleMarkers(position, searchType);
+
+        // System-bounded filtration
+        return allMarkers.filter(({ node }) => {
+            // Container-based system resolution
+            if (node.containerRef && node.containerRef.system) {
+                return node.containerRef.system === system;
+            }
+
+            // If no container reference, use heuristic matching on name
+            if (node.name.includes(system)) {
+                return true;
+            }
+
+            // For QT markers that might be POIs, find the associated POI and check its system
+            if (node.type === 'qt_marker') {
+                const poi = this.pois.find(p => p.name === node.name);
+                if (poi) {
+                    return poi.system === system;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    /**
      * Bidirectional A* pathfinding algorithm optimized for 3D space navigation
      * This approach searches from both start and end simultaneously, which is
      * significantly more efficient for large 3D spaces with sparse connectivity
      */
     private findPathBidirectional(startPos: Vector3, endPos: Vector3): NavNode[] | null {
         // Log navigation parameters for debugging
-        console.log(`Starting pathfinding:`);
+        console.log(`Starting bidirectional pathfinding:`);
         console.log(`- Origin: (${startPos.x.toFixed(2)}, ${startPos.y.toFixed(2)}, ${startPos.z.toFixed(2)})`);
         console.log(`- Destination: (${endPos.x.toFixed(2)}, ${endPos.y.toFixed(2)}, ${endPos.z.toFixed(2)})`);
         console.log(`- Direct distance: ${(this.calcDistance3d(startPos, endPos) / 1000).toFixed(2)} km`);
@@ -901,6 +935,54 @@ export class SCNavigationPlanner extends SCNavigationCore {
     }
 
     /**
+     * Ensures a position is in global coordinate space (meters)
+     * Performs necessary conversions if the position appears to be in local space
+     * 
+     * @param position Position vector to normalize
+     * @param container Optional reference container for local-to-global conversion
+     * @returns Position vector in global coordinate space
+     */
+    private ensureGlobalCoordinates(position: Vector3, container?: ObjectContainer | null): Vector3 {
+        // Handle null/undefined case
+        if (!position) {
+            console.error("Null position vector encountered during coordinate normalization");
+            return { x: 0, y: 0, z: 0 };
+        }
+        
+        // Heuristic to detect if position is in local space (kilometers)
+        // Local coordinates are typically small (< 10000 km) 
+        // Typical orbital bodies have coordinates in the 10^9-10^12 range in global space
+        const isProbablyLocalSpace = 
+            Math.abs(position.x) < 10000 && 
+            Math.abs(position.y) < 10000 && 
+            Math.abs(position.z) < 10000 &&
+            // Only consider it local if we have a reference container
+            container !== undefined && 
+            container !== null;
+        
+        // If position is likely in local space and we have a container, convert to global
+        if (isProbablyLocalSpace && container) {
+            console.log(`Converting suspected local coordinates to global for ${container.name}`);
+            try {
+                // Properly clone position to avoid reference issues
+                const positionCopy = { ...position };
+                return CoordinateTransformer.transformCoordinates(
+                    positionCopy,
+                    container,
+                    'toGlobal'
+                );
+            } catch (error) {
+                console.error(`Error transforming coordinates: ${error}`);
+                // Return original position as fallback
+                return { ...position };
+            }
+        }
+        
+        // Otherwise, return a copy to avoid mutation
+        return { ...position };
+    }
+
+    /**
      * Get the optimal orbital marker to navigate around an obstruction
      */
     private findOptimalOrbitalMarker(
@@ -1001,38 +1083,75 @@ export class SCNavigationPlanner extends SCNavigationCore {
     }
 
     /**
-     * Helper method for calculating distance between two positions
-     */
-    private calcDistance3dFromPositions(p1: Vector3, p2: Vector3): number {
-        return Math.sqrt(
-            Math.pow(p1.x - p2.x, 2) +
-            Math.pow(p1.y - p2.y, 2) +
-            Math.pow(p1.z - p2.z, 2)
-        );
-    }
-
-    /**
      * Find the parent planet of a moon
+     * Properly analyzes the celestial hierarchy using enum-based container typing
+     * 
+     * @param moon The moon to find a parent for
+     * @param planets List of all planets
+     * @returns The parent planet or null if not found
      */
     private findParentPlanet(
         moon: ObjectContainer,
         planets: ObjectContainer[],
     ): ObjectContainer | null {
+        // Only process if this is actually a moon
+        if (moon.cont_type !== ContainerType.Moon) {
+            return null;
+        }
+
+        // Get all planets in the same system
+        const systemPlanets = planets.filter(p => 
+            p.cont_type === ContainerType.Planet && 
+            p.system === moon.system
+        );
+
+        if (systemPlanets.length === 0) {
+            return null;
+        }
+
         // Try to infer parent planet from naming patterns
         const moonName = moon.name.toLowerCase();
 
-        for (const planet of planets) {
+        for (const planet of systemPlanets) {
             const planetName = planet.name.toLowerCase();
+            
+            // Check if moon name contains planet name
             if (moonName.includes(planetName)) {
+                console.log(`Matched ${moon.name} to parent planet ${planet.name} by name`);
                 return planet;
             }
         }
 
+        // If name-based inference failed, use reference data
+        // This is a hard-coded mapping for known moons
+        const knownMoonParents: Record<string, string> = {
+            'Cellin': 'Crusader',
+            'Daymar': 'Crusader',
+            'Yela': 'Crusader',
+            'Aberdeen': 'Hurston',
+            'Arial': 'Hurston',
+            'Ita': 'Hurston',
+            'Magda': 'Hurston',
+            'Clio': 'Microtech',
+            'Calliope': 'Microtech',
+            'Euterpe': 'Microtech',
+            'Lyria': 'ArcCorp',
+            'Wala': 'ArcCorp'
+        };
+
+        if (knownMoonParents[moon.name]) {
+            const parent = systemPlanets.find(p => p.name === knownMoonParents[moon.name]);
+            if (parent) {
+                console.log(`Matched ${moon.name} to parent planet ${parent.name} by reference data`);
+                return parent;
+            }
+        }
+
         // Default to closest planet by distance
-        let closestPlanet = null;
+        let closestPlanet: ObjectContainer | null = null;
         let minDistance = Number.MAX_VALUE;
 
-        for (const planet of planets) {
+        for (const planet of systemPlanets) {
             const distance = this.calcDistance3dFromPositions(
                 { x: moon.posX, y: moon.posY, z: moon.posZ },
                 { x: planet.posX, y: planet.posY, z: planet.posZ }
@@ -1044,13 +1163,26 @@ export class SCNavigationPlanner extends SCNavigationCore {
             }
         }
 
+        if (closestPlanet) {
+            console.log(`Matched ${moon.name} to parent planet ${closestPlanet.name} by proximity`);
+        }
+        
         return closestPlanet;
     }
 
     /**
+     * Helper method for calculating distance between two positions
+     */
+    private calcDistance3dFromPositions(p1: Vector3, p2: Vector3): number {
+        return Math.sqrt(
+            Math.pow(p1.x - p2.x, 2) +
+            Math.pow(p1.y - p2.y, 2) +
+            Math.pow(p1.z - p2.z, 2)
+        );
+    }
+
+    /**
      * Determines if a destination requires going through its parent planet first
-     * Properly handles the complete celestial hierarchy for multi-body traversal
-     * 
      * @param destination The POI or container being navigated to
      * @param currentContainer The current container the player is in
      * @returns Whether planetary intercept is required and the parent container if applicable
@@ -1059,196 +1191,127 @@ export class SCNavigationPlanner extends SCNavigationCore {
         destination: PointOfInterest | ObjectContainer,
         currentContainer: ObjectContainer | null
     ): { required: boolean; parentContainer: ObjectContainer | null } {
-        // If no current container, we're in open space and need to approach any planetary body
-        if (!currentContainer) {
-            // If destination is or is on a celestial body, we need to approach it
-            const destContainer = 'objContainer' in destination
-                ? this.containers.find(c => c.name === destination.objContainer)
-                : ('cont_type' in destination ? destination : null);
-
-            return {
-                required: !!destContainer,
-                parentContainer: destContainer || null
-            };
-        }
-
-        // Determine destination container
-        const destContainer = 'objContainer' in destination
-            ? this.containers.find(c => c.name === destination.objContainer)
-            : ('cont_type' in destination ? destination : null);
-
-        // If we're already at the correct container, no intercept needed
-        if (destContainer && destContainer.name === currentContainer.name) {
-            return { required: false, parentContainer: null };
-        }
-
-        // Find parent planet of current container (if applicable)
-        const currentIsOnPlanet = currentContainer.cont_type === ContainerType.Planet;
-        const currentIsOnMoon = currentContainer.cont_type === ContainerType.Moon;
-        const currentParentPlanet = currentIsOnMoon
-            ? this.findParentPlanet(currentContainer, this.containers)
-            : (currentIsOnPlanet ? currentContainer : null);
-
-        // Find parent planet of destination (if applicable)
-        const destIsOnPlanet = destContainer && destContainer.cont_type === ContainerType.Planet;
-        const destIsOnMoon = destContainer && destContainer.cont_type === ContainerType.Moon;
-        const destParentPlanet = destIsOnMoon && destContainer
-            ? this.findParentPlanet(destContainer, this.containers)
-            : (destIsOnPlanet && destContainer ? destContainer : null);
-
         console.log(`Analyzing planetary hierarchy:`);
-        console.log(`- Current: ${currentContainer.name} (${currentContainer.cont_type})`);
-        if (currentParentPlanet) console.log(`  Parent: ${currentParentPlanet.name}`);
-        console.log(`- Destination: ${destContainer ? destContainer.name : 'None'} (${destContainer ? destContainer.cont_type : 'None'})`);
-        if (destParentPlanet) console.log(`  Parent: ${destParentPlanet.name}`);
-
-        // Case 1: If current and destination parent planets are different
-        if (currentParentPlanet && destParentPlanet &&
-            currentParentPlanet.name !== destParentPlanet.name) {
-            console.log(`Planetary intercept required: Must approach ${destParentPlanet.name} first`);
-            return { required: true, parentContainer: destParentPlanet };
-        }
-
-        // Case 2: If we're on a planet/moon and destination is on a different planet/moon
-        if ((currentIsOnPlanet || currentIsOnMoon) &&
-            destContainer &&
-            destContainer.name !== currentContainer.name) {
-            // If destination is a moon, need to go through its parent planet first
-            if (destIsOnMoon && destParentPlanet) {
-                console.log(`Moon intercept required: Must approach ${destParentPlanet.name} first, then ${destContainer.name}`);
-                return { required: true, parentContainer: destParentPlanet };
-            }
-
-            // If destination is a planet, go directly to it
-            if (destIsOnPlanet) {
-                console.log(`Planet intercept required: Direct approach to ${destContainer.name}`);
-                return { required: true, parentContainer: destContainer };
-            }
-        }
-
-        // Default: No special intercept required
-        return { required: false, parentContainer: null };
-    }
-
-    /**
-     * Creates a navigational route with proper planetary intercepts
-     * Handles multi-step approaches through parent planets when required
-     * 
-     * @param startPos Origin position in global coordinates
-     * @param endPos Destination position in global coordinates
-     * @param destination The destination entity
-     * @returns A properly structured navigation path 
-     */
-    private createHierarchicalPlanetaryRoute(
-        startPos: Vector3,
-        endPos: Vector3,
-        destination: PointOfInterest | ObjectContainer
-    ): NavNode[] {
-        // Normalize coordinates to ensure consistent space
-        startPos = this.ensureGlobalCoordinates(startPos, this.currentObjectContainer);
         
-        // Get destination container reference for coordinate normalization
+        // Log current container info
+        if (currentContainer) {
+            console.log(`- Current: ${currentContainer.name} (${currentContainer.cont_type})`);
+            
+            // Find current parent if applicable
+            const currentParentPlanet = currentContainer.cont_type === ContainerType.Moon ?
+                this.findParentPlanet(currentContainer, this.containers) : 
+                (currentContainer.cont_type === ContainerType.Planet ? currentContainer : null);
+                
+            if (currentParentPlanet) {
+                console.log(`  Parent: ${currentParentPlanet.name}`);
+            }
+        } else {
+            console.log(`- Current: None (open space)`);
+        }
+        
+        // Get destination container reference
         const destContainer = 'objContainer' in destination ? 
             this.containers.find(c => c.name === destination.objContainer) : 
             ('cont_type' in destination ? destination : null);
-        
-        endPos = this.ensureGlobalCoordinates(endPos, destContainer);
-        
-        // Start with origin node
-        const startNode = new NavNode(
-            startPos,
-            'origin',
-            'Start Position'
-        );
-
-        // Find current container
-        const currentContainer = this.currentObjectContainer;
-        
-        // Check if planetary intercept is required
-        const { required: interceptRequired, parentContainer: primaryIntercept } =
-            this.requiresPlanetaryIntercept(
-                destination,
-                currentContainer
-            );
-
-        // If no intercept required, return direct path
-        if (!interceptRequired || !primaryIntercept) {
-            const endNode = new NavNode(
-                endPos,
-                'destination',
-                'objContainer' in destination ? destination.name : destination.name
-            );
-            endNode.parentNode = startNode;
-            return [startNode, endNode];
-        }
-
-        // Create an array to build our route
-        const routeNodes: NavNode[] = [startNode];
-        
-        // Calculate primary intercept
-        const primaryInterceptPoint = this.calculatePlanetaryIntercept(
-            startPos,
-            primaryIntercept.posX ? 
-                { x: primaryIntercept.posX, y: primaryIntercept.posY, z: primaryIntercept.posZ } : 
-                endPos,
-            primaryIntercept
-        );
-        
-        // Add primary intercept node
-        const primaryInterceptNode = new NavNode(
-            primaryInterceptPoint,
-            'intermediate',
-            `${primaryIntercept.name} Approach Vector`,
-            primaryIntercept
-        );
-        primaryInterceptNode.parentNode = startNode;
-        routeNodes.push(primaryInterceptNode);
-        
-        // Check if we need a secondary intercept (for moon destinations)
-        const needsSecondaryIntercept = 
-            destContainer && 
-            destContainer.cont_type === ContainerType.Moon && 
-            primaryIntercept.name !== destContainer.name;
-        
-        if (needsSecondaryIntercept && destContainer) {
-            console.log(`Adding secondary intercept through ${destContainer.name}`);
-            // Calculate secondary intercept point
-            const secondaryInterceptPoint = this.calculatePlanetaryIntercept(
-                primaryInterceptPoint,
-                endPos,
-                destContainer
-            );
             
-            // Add secondary intercept node
-            const secondaryInterceptNode = new NavNode(
-                secondaryInterceptPoint,
-                'intermediate',
-                `${destContainer.name} Approach Vector`,
-                destContainer
-            );
-            secondaryInterceptNode.parentNode = primaryInterceptNode;
-            routeNodes.push(secondaryInterceptNode);
-            
-            // Add final destination
-            const endNode = new NavNode(
-                endPos,
-                'destination',
-                'objContainer' in destination ? destination.name : destination.name
-            );
-            endNode.parentNode = secondaryInterceptNode;
-            routeNodes.push(endNode);
-        } else {
-            // Add final destination directly
-            const endNode = new NavNode(
-                endPos,
-                'destination',
-                'objContainer' in destination ? destination.name : destination.name
-            );
-            endNode.parentNode = primaryInterceptNode;
-            routeNodes.push(endNode);
+        console.log(`- Destination: ${destContainer ? destContainer.name : 'None'} (${destContainer ? destContainer.cont_type : 'None'})`);
+        
+        // If we're already at the correct container, no intercept needed
+        if (currentContainer && destContainer && currentContainer.name === destContainer.name) {
+            console.log(`No intercept needed: Already at destination container`);
+            return { required: false, parentContainer: null };
         }
         
-        return routeNodes;
+        // If no current container, we're in open space
+        if (!currentContainer) {
+            // If destination is on a planet/moon, we need to go there first
+            if (destContainer) {
+                if (destContainer.cont_type === ContainerType.Moon) {
+                    // For moons, we should go to parent planet first
+                    const destParentPlanet = this.findParentPlanet(destContainer, this.containers);
+                    if (destParentPlanet) {
+                        console.log(`  Parent: ${destParentPlanet.name}`);
+                        console.log(`Planetary intercept required: Must approach ${destParentPlanet.name} first`);
+                        return { required: true, parentContainer: destParentPlanet };
+                    }
+                }
+                
+                // For planets or moons without identified parents, go directly
+                console.log(`Planetary intercept required: Direct approach to ${destContainer.name}`);
+                return { required: true, parentContainer: destContainer };
+            }
+            
+            return { required: false, parentContainer: null };
+        }
+        
+        // If destination is a moon, find its parent planet
+        if (destContainer && destContainer.cont_type === ContainerType.Moon) {
+            const destParentPlanet = this.findParentPlanet(destContainer, this.containers);
+            if (destParentPlanet) {
+                console.log(`  Parent: ${destParentPlanet.name}`);
+                
+                // If we're not on the parent planet (or its system), need to go there first
+                if (currentContainer.name !== destParentPlanet.name) {
+                    // Check if current location is on the parent planet's moon system
+                    const isOnSamePlanetSystem = 
+                        currentContainer.cont_type === ContainerType.Moon &&
+                        this.findParentPlanet(currentContainer, this.containers)?.name === destParentPlanet.name;
+                        
+                    if (!isOnSamePlanetSystem) {
+                        console.log(`Planetary intercept required: Must approach ${destParentPlanet.name} first`);
+                        return { required: true, parentContainer: destParentPlanet };
+                    }
+                }
+                
+                // If we're already on the parent planet or one of its moons, go directly to the destination moon
+                console.log(`Moon intercept required: Direct approach to ${destContainer.name}`);
+                return { required: true, parentContainer: destContainer };
+            }
+            
+            // Fallback if parent not found
+            console.log(`Moon intercept required: Direct approach to ${destContainer.name}`);
+            return { required: true, parentContainer: destContainer };
+        }
+        
+        // If destination is a planet
+        if (destContainer && destContainer.cont_type === ContainerType.Planet) {
+            console.log(`Planetary intercept required: Direct approach to ${destContainer.name}`);
+            return { required: true, parentContainer: destContainer };
+        }
+        
+        // If destination is a POI on a planet/moon
+        if ('objContainer' in destination && destination.objContainer) {
+            const poiContainer = this.containers.find(c => c.name === destination.objContainer);
+            if (poiContainer) {
+                // If POI is on a different container than current location
+                if (currentContainer.name !== poiContainer.name) {
+                    // For POIs on moons, check if we need to go through parent planet
+                    if (poiContainer.cont_type === ContainerType.Moon) {
+                        const poiParentPlanet = this.findParentPlanet(poiContainer, this.containers);
+                        if (poiParentPlanet && poiParentPlanet.name !== currentContainer.name) {
+                            console.log(`  POI Parent: ${poiParentPlanet.name}`);
+                            
+                            // Check if we're already on the same planet system
+                            const isOnSamePlanetSystem = 
+                                currentContainer.cont_type === ContainerType.Moon &&
+                                this.findParentPlanet(currentContainer, this.containers)?.name === poiParentPlanet.name;
+                                
+                            if (!isOnSamePlanetSystem) {
+                                console.log(`Planetary intercept required: Must approach ${poiParentPlanet.name} first for POI`);
+                                return { required: true, parentContainer: poiParentPlanet };
+                            }
+                        }
+                    }
+                    
+                    // Need to approach the POI's container
+                    console.log(`Container intercept required: Must approach ${poiContainer.name} for POI`);
+                    return { required: true, parentContainer: poiContainer };
+                }
+            }
+        }
+
+        // Default case - no special handling needed
+        return { required: false, parentContainer: null };
     }
 
     /**
@@ -1273,7 +1336,7 @@ export class SCNavigationPlanner extends SCNavigationCore {
         if (!planet.posX && planet.posX !== 0) {
             console.error(`Invalid planet coordinates for ${planet.name}`);
             // Return a fallback position
-            return startPos;
+            return { ...startPos };
         }
 
         // Vector from planet center to start position
@@ -1311,12 +1374,23 @@ export class SCNavigationPlanner extends SCNavigationCore {
             z: endPos.z - planet.posZ
         };
 
-        // Normalize vectors
+        // Normalize end vector
         const endMag = Math.sqrt(
             endVec.x * endVec.x +
             endVec.y * endVec.y +
             endVec.z * endVec.z
         );
+
+        // Safety check for end vector
+        if (endMag < 0.001) {
+            console.warn(`Near-zero magnitude for destination vector to ${planet.name}`);
+            // Use only start vector for approach
+            return {
+                x: planet.posX + (startVec.x / startMag) * interceptRadius,
+                y: planet.posY + (startVec.y / startMag) * interceptRadius,
+                z: planet.posZ + (startVec.z / startMag) * interceptRadius
+            };
+        }
 
         // Calculate weighted approach vector for optimal interception
         // Weight toward start vector but consider end direction
@@ -1333,6 +1407,24 @@ export class SCNavigationPlanner extends SCNavigationCore {
             approachVec.z * approachVec.z
         );
 
+        // Final safety check for approach vector
+        if (approachMag < 0.001) {
+            console.warn(`Calculated zero-magnitude approach vector to ${planet.name}`);
+            // Generate a fallback vector that's perpendicular to the start-end axis
+            // This gives us a valid intercept point even in edge cases
+            const fallbackVec = {
+                x: -startVec.y / startMag,
+                y: startVec.x / startMag,
+                z: startVec.z / startMag
+            };
+            
+            return {
+                x: planet.posX + fallbackVec.x * interceptRadius,
+                y: planet.posY + fallbackVec.y * interceptRadius,
+                z: planet.posZ + fallbackVec.z * interceptRadius
+            };
+        }
+
         // Calculate optimal intercept using the weighted approach
         const interceptPoint: Vector3 = {
             x: planet.posX + (approachVec.x / approachMag) * interceptRadius,
@@ -1345,9 +1437,148 @@ export class SCNavigationPlanner extends SCNavigationCore {
     }
 
     /**
+     * Creates a navigational route with proper planetary intercepts
+     * Handles multi-step approaches through parent planets when required
+     * 
+     * @param startPos Origin position in global coordinates
+     * @param endPos Destination position in global coordinates
+     * @param destination The destination entity
+     * @returns A properly structured navigation path 
+     */
+    private createHierarchicalPlanetaryRoute(
+        startPos: Vector3,
+        endPos: Vector3,
+        destination: PointOfInterest | ObjectContainer
+    ): NavNode[] | null {
+        try {
+            // Normalize coordinates to ensure consistent space
+            startPos = this.ensureGlobalCoordinates(startPos, this.currentObjectContainer);
+            
+            // Get destination container reference for coordinate normalization
+            const destContainer = 'objContainer' in destination ? 
+                this.containers.find(c => c.name === destination.objContainer) : 
+                ('cont_type' in destination ? destination : null);
+            
+            endPos = this.ensureGlobalCoordinates(endPos, destContainer);
+            
+            // Start with origin node
+            const startNode = new NavNode(
+                startPos,
+                'origin',
+                'Start Position'
+            );
+
+            // Find current container
+            const currentContainer = this.currentObjectContainer;
+            
+            // Check if there's a direct line of sight
+            const { hasLos } = this.hasLineOfSight(startPos, endPos);
+            if (hasLos) {
+                // Direct path is available
+                console.log(`Direct path available - proceeding with simple route`);
+                const endNode = new NavNode(
+                    endPos,
+                    'destination',
+                    'objContainer' in destination ? destination.name : destination.name
+                );
+                endNode.parentNode = startNode;
+                return [startNode, endNode];
+            }
+            
+            // Check if planetary intercept is required
+            const { required: interceptRequired, parentContainer: primaryIntercept } =
+                this.requiresPlanetaryIntercept(
+                    destination,
+                    currentContainer
+                );
+
+            // If no intercept required, try bidirectional pathfinding
+            if (!interceptRequired || !primaryIntercept) {
+                console.log(`No special intercept required, attempting bidirectional pathfinding`);
+                return this.findPathBidirectional(startPos, endPos);
+            }
+
+            // Create an array to build our route
+            const routeNodes: NavNode[] = [startNode];
+            
+            // Calculate primary intercept
+            const primaryInterceptPoint = this.calculatePlanetaryIntercept(
+                startPos,
+                primaryIntercept.posX ? 
+                    { x: primaryIntercept.posX, y: primaryIntercept.posY, z: primaryIntercept.posZ } : 
+                    endPos,
+                primaryIntercept
+            );
+            
+            // Add primary intercept node
+            const primaryInterceptNode = new NavNode(
+                primaryInterceptPoint,
+                'intermediate',
+                `${primaryIntercept.name} Approach Vector`,
+                primaryIntercept
+            );
+            primaryInterceptNode.parentNode = startNode;
+            routeNodes.push(primaryInterceptNode);
+            
+            // Check if we need a secondary intercept (for moon destinations)
+            const needsSecondaryIntercept = 
+                destContainer && 
+                destContainer.cont_type === ContainerType.Moon && 
+                primaryIntercept.name !== destContainer.name;
+            
+            if (needsSecondaryIntercept && destContainer) {
+                console.log(`Adding secondary intercept through ${destContainer.name}`);
+                // Calculate secondary intercept point
+                const secondaryInterceptPoint = this.calculatePlanetaryIntercept(
+                    primaryInterceptPoint,
+                    endPos,
+                    destContainer
+                );
+                
+                // Add secondary intercept node
+                const secondaryInterceptNode = new NavNode(
+                    secondaryInterceptPoint,
+                    'intermediate',
+                    `${destContainer.name} Approach Vector`,
+                    destContainer
+                );
+                secondaryInterceptNode.parentNode = primaryInterceptNode;
+                routeNodes.push(secondaryInterceptNode);
+                
+                // Add final destination
+                const endNode = new NavNode(
+                    endPos,
+                    'destination',
+                    'objContainer' in destination ? destination.name : destination.name
+                );
+                endNode.parentNode = secondaryInterceptNode;
+                routeNodes.push(endNode);
+            } else {
+                // Add final destination directly
+                const endNode = new NavNode(
+                    endPos,
+                    'destination',
+                    'objContainer' in destination ? destination.name : destination.name
+                );
+                endNode.parentNode = primaryInterceptNode;
+                routeNodes.push(endNode);
+            }
+            
+            return routeNodes;
+        } catch (error) {
+            console.error(`Error in createHierarchicalPlanetaryRoute: ${error}`);
+            // Fall back to bidirectional pathfinding
+            console.log(`Falling back to bidirectional pathfinding due to error`);
+            return this.findPathBidirectional(startPos, endPos);
+        }
+    }
+
+    /**
      * Plan navigation with improved system boundary enforcement and hierarchical routing
-     * @param destinationName Name of the destination point of interest or container
-     * @returns Complete navigation plan or null if route cannot be established
+     * Integrates both deterministic and bidirectional pathfinding approaches
+     * 
+     * @param destinationName Name of the destination POI or container
+     * @returns Complete navigation plan or null if no viable route found
      */
     public planNavigation(destinationName: string): NavigationPlan | null {
         if (!this.currentPosition) {
@@ -1396,63 +1627,70 @@ export class SCNavigationPlanner extends SCNavigationCore {
             return null;
         }
 
-        // Normalize destination coordinates to global space
-        destinationPos = this.ensureGlobalCoordinates(destinationPos, 
-            'objContainer' in destinationEntity ? 
-            this.containers.find(c => c.name === destinationEntity.objContainer) : null);
-
         console.log(`Planning route to ${destinationName} in ${destinationSystem} system`);
         console.log(`Destination coordinates: (${destinationPos.x.toFixed(2)}, ${destinationPos.y.toFixed(2)}, ${destinationPos.z.toFixed(2)})`);
 
-        // Create hierarchical planetary route with proper intercepts
+        // Try to create a hierarchical planetary route
         const path = this.createHierarchicalPlanetaryRoute(
             this.currentPosition,
             destinationPos,
             destinationEntity
         );
 
+        if (!path || path.length === 0) {
+            console.error("Path computation failed: no viable route found");
+            return null;
+        }
+
         // Navigation plan synthesis
         return this.createNavigationPlan(path);
     }
 
     /**
-     * Ensures a position is in global coordinate space (meters)
-     * Performs necessary conversions if the position appears to be in local space
-     * 
-     * @param position Position vector to normalize
-     * @param container Optional reference container for local-to-global conversion
-     * @returns Position vector in global coordinate space
+     * Determine current solar system with robust cross-system detection
      */
-    private ensureGlobalCoordinates(position: Vector3, container?: ObjectContainer | null): Vector3 {
-        // Handle null/undefined case
-        if (!position) {
-            console.error("Null position vector encountered during coordinate normalization");
-            return { x: 0, y: 0, z: 0 };
+    public determineCurrentSolarSystem(
+        plan: NavigationPlan | null = null,
+    ): System {
+        if (plan === null) {
+            if (this.currentObjectContainer) {
+                return this.currentObjectContainer.system;
+            }
+            return System.Stanton;
         }
-        
-        // Heuristic to detect if position is in local space (kilometers)
-        // Local coordinates are typically small (< 10000 km) 
-        // Typical orbital bodies have coordinates in the 10^9-10^12 range in global space
-        const isProbablyLocalSpace = 
-            Math.abs(position.x) < 10000 && 
-            Math.abs(position.y) < 10000 && 
-            Math.abs(position.z) < 10000 &&
-            // Only consider it local if we have a reference container
-            container !== undefined && 
-            container !== null;
-        
-        // If position is likely in local space and we have a container, convert to global
-        if (isProbablyLocalSpace && container) {
-            console.log(`Converting suspected local coordinates to global for ${container.name}`);
-            return CoordinateTransformer.transformCoordinates(
-                position,
-                container,
-                'toGlobal'
-            );
+
+        // Primary directive: Extract system from container metadata
+        if (plan.originContainer && plan.originContainer.system) {
+            return plan.originContainer.system;
         }
-        
-        // Otherwise, return as is
-        return { ...position };  // Return a copy to avoid mutation
+
+        // Tertiary analysis: Route segment inspection
+        if (plan.segments && plan.segments.length > 0) {
+            // Extract terminal node metadata
+            const firstSegment = plan.segments[0];
+            const lastSegment = plan.segments[plan.segments.length - 1];
+
+            if (firstSegment && firstSegment.from && firstSegment.from.name) {
+                // Container entity resolution
+                const originContainer = this.containers.find(c => c.name === firstSegment.from.name);
+
+                if (originContainer && originContainer.system) {
+                    return originContainer.system;
+                }
+            }
+
+            // Destination analysis fallback
+            if (lastSegment && lastSegment.to && lastSegment.to.name) {
+                const destContainer = this.containers.find(c => c.name === lastSegment.to.name);
+
+                if (destContainer && destContainer.system) {
+                    return destContainer.system;
+                }
+            }
+        }
+
+        console.warn("Celestial domain resolution failed: defaulting to Stanton system");
+        return System.Stanton;
     }
 
     /**
@@ -1564,52 +1802,5 @@ export class SCNavigationPlanner extends SCNavigationCore {
         });
 
         return instructions;
-    }
-
-    /**
-     * Determine current solar system with robust cross-system detection
-     */
-    public determineCurrentSolarSystem(
-        plan: NavigationPlan | null = null,
-    ): System {
-        if (plan === null) {
-            if (this.currentObjectContainer) {
-                return this.currentObjectContainer.system;
-            }
-            return System.Stanton;
-        }
-
-        // Primary directive: Extract system from container metadata
-        if (plan.originContainer && plan.originContainer.system) {
-            return plan.originContainer.system;
-        }
-
-        // Tertiary analysis: Route segment inspection
-        if (plan.segments && plan.segments.length > 0) {
-            // Extract terminal node metadata
-            const firstSegment = plan.segments[0];
-            const lastSegment = plan.segments[plan.segments.length - 1];
-
-            if (firstSegment && firstSegment.from && firstSegment.from.name) {
-                // Container entity resolution
-                const originContainer = this.containers.find(c => c.name === firstSegment.from.name);
-
-                if (originContainer && originContainer.system) {
-                    return originContainer.system;
-                }
-            }
-
-            // Destination analysis fallback
-            if (lastSegment && lastSegment.to && lastSegment.to.name) {
-                const destContainer = this.containers.find(c => c.name === lastSegment.to.name);
-
-                if (destContainer && destContainer.system) {
-                    return destContainer.system;
-                }
-            }
-        }
-
-        console.warn("Celestial domain resolution failed: defaulting to Stanton system");
-        return System.Stanton;
     }
 }
