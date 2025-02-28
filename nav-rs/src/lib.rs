@@ -7,21 +7,25 @@
 #[macro_use]
 extern crate log;
 
+pub mod types;
 pub mod coordinate_transform;
 pub mod nav_core;
 pub mod nav_planner;
-pub mod types;
+pub mod data_loader;
 
 use std::sync::Arc;
 
-use coordinate_transform::CoordinateTransformer;
-use nav_planner::NavigationPlanner;
-use types::{AstronomicalDataProvider, NavigationPlan, PointOfInterest, StaticAstronomicalData};
+pub use coordinate_transform::CoordinateTransformer;
+pub use nav_planner::NavigationPlanner;
+pub use types::{AstronomicalDataProvider, NavigationPlan, PointOfInterest, StaticAstronomicalData};
+
+pub use types::NamedDistance;
+pub use types::{PointOfInterest, ObjectContainer};
 
 /// Navigation system for interplanetary travel calculations
 pub struct SpaceNavigationSystem<T: AstronomicalDataProvider> {
-    planner: NavigationPlanner<T>,
-    data_provider: Arc<T>,
+    pub planner: NavigationPlanner<T>,
+    pub data_provider: Arc<T>,
 }
 
 impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {

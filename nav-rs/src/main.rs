@@ -1,8 +1,8 @@
-mod types;
-mod coordinate_transform;
-mod nav_core;
-mod nav_planner;
-mod data_loader;
+pub mod types;
+pub mod coordinate_transform;
+pub mod nav_core;
+pub mod nav_planner;
+pub mod data_loader;
 
 use clap::{App, Arg, SubCommand};
 use env_logger::Builder;
