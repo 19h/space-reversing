@@ -13,3 +13,6 @@ loginData.json
 merged_descriptor_set.pb
 .vscode
 dist/
+.parcel-cache/
+yarn.lock
+target/
