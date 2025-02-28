@@ -12,7 +12,7 @@ repository = "https://github.com/19h/space-reversing/tree/master/nav-rs"
 log = "0.4"
 env_logger = "0.9"
 chrono = "0.4"
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"
 clap = "2.33"
 

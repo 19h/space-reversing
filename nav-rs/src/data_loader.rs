@@ -5,34 +5,34 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use starnav::types::{
+use crate::types::{
     ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System, Vector3,
 };
 
 /// Serializable container representation for data loading
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SerializedContainer {
-    id: u32,
-    system: String,
-    cont_type: String,
-    name: String,
-    internal_name: String,
-    pos_x: f64,
-    pos_y: f64,
-    pos_z: f64,
-    rot_vel_x: f64,
-    rot_vel_y: f64,
-    rot_vel_z: f64,
-    rot_adj_x: f64,
-    rot_adj_y: f64,
-    rot_adj_z: f64,
-    rot_quat_w: f64,
-    rot_quat_x: f64,
-    rot_quat_y: f64,
-    rot_quat_z: f64,
-    body_radius: f64,
-    om_radius: f64,
-    grid_radius: f64,
+    pub id: u32,
+    pub system: String,
+    pub cont_type: String,
+    pub name: String,
+    pub internal_name: String,
+    pub pos_x: f64,
+    pub pos_y: f64,
+    pub pos_z: f64,
+    pub rot_vel_x: f64,
+    pub rot_vel_y: f64,
+    pub rot_vel_z: f64,
+    pub rot_adj_x: f64,
+    pub rot_adj_y: f64,
+    pub rot_adj_z: f64,
+    pub rot_quat_w: f64,
+    pub rot_quat_x: f64,
+    pub rot_quat_y: f64,
+    pub rot_quat_z: f64,
+    pub body_radius: f64,
+    pub om_radius: f64,
+    pub grid_radius: f64,
 }
 
 /// Serializable POI representation for data loading

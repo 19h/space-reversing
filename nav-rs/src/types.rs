@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
+
 /// 3D vector representation
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct Vector3 {
     pub x: f64,
     pub y: f64,
@@ -35,7 +37,7 @@ impl Vector3 {
 }
 
 /// Quaternion representation for rotations
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct Quaternion {
     pub w: f64,
     pub x: f64,
@@ -147,7 +149,7 @@ impl Quaternion {
 }
 
 /// Euler angles in degrees
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct EulerAngles {
     pub pitch: f64,
     pub yaw: f64,
@@ -161,7 +163,7 @@ impl EulerAngles {
 }
 
 /// Solar system identifier
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum System {
     Stanton,
     Pyro,
@@ -197,7 +199,7 @@ impl fmt::Display for System {
 }
 
 /// Container type classification
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ContainerType {
     JumpPoint,
     Lagrange,
@@ -226,7 +228,7 @@ impl ContainerType {
 }
 
 /// Point of interest classification
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PoiType {
     AnimalArea,
     AsteroidBelt,
@@ -301,7 +303,7 @@ impl PoiType {
 }
 
 /// Celestial body or station container
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ObjectContainer {
     pub id: u32,
     pub system: System,
@@ -350,7 +352,7 @@ impl ObjectContainer {
 }
 
 /// Point of interest location
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PointOfInterest {
     pub id: u32,
     pub name: String,
@@ -396,7 +398,7 @@ impl PointOfInterest {
 }
 
 /// Path complexity classification
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PathComplexity {
     Direct,
     Simple,
@@ -414,7 +416,7 @@ impl fmt::Display for PathComplexity {
 }
 
 /// Travel method classification
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TravelType {
     Quantum,
     Sublight,
@@ -430,7 +432,7 @@ impl fmt::Display for TravelType {
 }
 
 /// Navigation node types
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NavNodeType {
     Origin,
     Destination,
@@ -452,7 +454,7 @@ impl fmt::Display for NavNodeType {
 }
 
 /// Navigation search direction
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SearchDirection {
     Forward,
     Backward,
@@ -460,7 +462,7 @@ pub enum SearchDirection {
 }
 
 /// Enhanced navigation node for bidirectional pathfinding
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NavNode {
     pub position: Vector3,
     pub parent_node: Option<Arc<NavNode>>,
@@ -508,7 +510,7 @@ impl NavNode {
 }
 
 /// Path segment for navigation plan
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PathSegment {
     pub from: PathPoint,
     pub to: PathPoint,
@@ -521,7 +523,7 @@ pub struct PathSegment {
 }
 
 /// Point in a navigation path
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PathPoint {
     pub name: String,
     pub position: Vector3,
@@ -529,7 +531,7 @@ pub struct PathPoint {
 }
 
 /// Navigation plan with obstruction information
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NavigationPlan {
     pub segments: Vec<PathSegment>,
     pub total_distance: f64,
@@ -542,7 +544,7 @@ pub struct NavigationPlan {
 }
 
 /// Navigation result data
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NavigationResult {
     pub distance: f64,
     pub direction: EulerAngles,
@@ -553,21 +555,21 @@ pub struct NavigationResult {
 }
 
 /// Named distance structure for references
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NamedDistance {
     pub name: String,
     pub distance: f64,
 }
 
 /// Line of sight check result
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LineOfSightResult {
     pub has_los: bool,
     pub obstruction: Option<Arc<ObjectContainer>>,
 }
 
 /// Meeting point for bidirectional search
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MeetingPoint {
     pub forward_node: Arc<NavNode>,
     pub backward_node: Arc<NavNode>,
@@ -575,7 +577,7 @@ pub struct MeetingPoint {
 }
 
 /// Visibility edge for path planning
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VisibilityEdge {
     pub from_node: Arc<NavNode>,
     pub to_node: Arc<NavNode>,
@@ -593,6 +595,7 @@ pub trait AstronomicalDataProvider {
 }
 
 /// Default implementation of astronomical data provider
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StaticAstronomicalData {
     pub pois: Vec<PointOfInterest>,
     pub containers: Vec<ObjectContainer>,
