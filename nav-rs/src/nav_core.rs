@@ -548,4 +548,28 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         pois_with_distances.truncate(limit);
         pois_with_distances
     }
+
+    /// Resolve which container (planet/moon) a position is located within
+    pub fn resolve_container_at_position(&self, position: &Vector3) -> Option<ObjectContainer> {
+        for container in self.data_provider.get_object_containers() {
+            // Skip non-physical objects or containers with no meaningful radius
+            if container.body_radius <= 0.0 {
+                continue;
+            }
+            
+            // Calculate distance from position to container center
+            let distance = self.calc_distance_3d(position, &container.position);
+            
+            // If position is within the body radius (with a small buffer for atmosphere approximation)
+            // Use 1.05 as a multiplier to give a small buffer around the body
+            let effective_radius = container.body_radius * 1.05;
+            
+            if distance <= effective_radius {
+                return Some(container.clone());
+            }
+        }
+        
+        // Position isn't within any container
+        None
+    }
 }

@@ -955,7 +955,27 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
     }
     
     /// Calculate Euler angles for direction from current position to destination
-    fn calculate_euler_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
+    /// accounting for planetary curvature when both points are on the same body
+    pub fn calculate_euler_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
+        // First, determine if both points are on the same planetary body
+        let current_container = self.core.resolve_container_at_position(current);
+        let dest_container = self.core.resolve_container_at_position(destination);
+        
+        let same_planetary_body = match (&current_container, &dest_container) {
+            (Some(cc), Some(dc)) => {
+                cc.name == dc.name && 
+                (cc.container_type == ContainerType::Planet || cc.container_type == ContainerType::Moon)
+            },
+            _ => false
+        };
+        
+        if same_planetary_body {
+            // Both points are on the same celestial body - use great circle navigation
+            let planet = current_container.unwrap();
+            return self.calculate_surface_angles(current, destination, &planet);
+        }
+        
+        // Direct space navigation when points are not on the same body
         // Calculate deltas between current and destination positions
         let dx = destination.x - current.x;
         let dy = destination.y - current.y;
@@ -965,29 +985,219 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         let distance_xy = (dx * dx + dy * dy).sqrt();
         
         // Calculate pitch (vertical angle)
-        let pitch = (dz / distance_xy).atan() * (180.0 / std::f64::consts::PI);
+        let pitch = if distance_xy.abs() < 0.001 {
+            // Nearly vertical path
+            if dz >= 0.0 { 90.0 } else { -90.0 }
+        } else {
+            (dz / distance_xy).atan() * (180.0 / std::f64::consts::PI)
+        };
         
         // Roll is 0 for simplicity
         let roll = 0.0;
         
         // Calculate yaw (horizontal angle)
-        let mut yaw = (dy / dx).atan() * (180.0 / std::f64::consts::PI);
+        let mut yaw = if dx.abs() < 0.001 {
+            // Avoid division by zero
+            if dy >= 0.0 { 0.0 } else { 180.0 }
+        } else {
+            (dy / dx).atan() * (180.0 / std::f64::consts::PI)
+        };
+        
+        // Adjust quadrant based on dx sign
+        if dx < 0.0 {
+            yaw += 180.0;
+        }
         
         // Convert to game's coordinate system
-        if yaw > 90.0 {
-            yaw = yaw - 270.0;
-        } else {
-            yaw = yaw + 90.0;
+        yaw = (yaw + 90.0) % 360.0;
+        
+        EulerAngles::new(pitch, yaw, roll)
+    }
+    
+    /// Calculate navigation angles for surface travel on a planetary body
+    pub fn calculate_surface_angles(&self, current: &Vector3, destination: &Vector3, planet: &ObjectContainer) -> EulerAngles {
+        // Step 1: Calculate vectors from planet center to current and destination
+        let r_current = Vector3::new(
+            current.x - planet.position.x,
+            current.y - planet.position.y,
+            current.z - planet.position.z
+        );
+        
+        let r_dest = Vector3::new(
+            destination.x - planet.position.x,
+            destination.y - planet.position.y,
+            destination.z - planet.position.z
+        );
+        
+        // Step 2: Normalize these vectors to get unit direction vectors 
+        // from planet center to each position
+        let r1_mag = (r_current.x.powi(2) + r_current.y.powi(2) + r_current.z.powi(2)).sqrt();
+        let r2_mag = (r_dest.x.powi(2) + r_dest.y.powi(2) + r_dest.z.powi(2)).sqrt();
+        
+        if r1_mag < 0.001 || r2_mag < 0.001 {
+            // We're too close to the planet center - fall back to direct calculation
+            return self.calculate_direct_angles(current, destination);
         }
+        
+        let r1_norm = Vector3::new(
+            r_current.x / r1_mag,
+            r_current.y / r1_mag,
+            r_current.z / r1_mag
+        );
+        
+        let r2_norm = Vector3::new(
+            r_dest.x / r2_mag,
+            r_dest.y / r2_mag,
+            r_dest.z / r2_mag
+        );
+        
+        // Step 3: Find the tangent vector at current position that points toward destination
+        // This is done by calculating the cross product twice
+        
+        // Cross product of r1 and r2 gives a vector perpendicular to both
+        let cross1 = Vector3::new(
+            r1_norm.y * r2_norm.z - r1_norm.z * r2_norm.y,
+            r1_norm.z * r2_norm.x - r1_norm.x * r2_norm.z,
+            r1_norm.x * r2_norm.y - r1_norm.y * r2_norm.x
+        );
+        
+        let cross1_mag = (cross1.x.powi(2) + cross1.y.powi(2) + cross1.z.powi(2)).sqrt();
+        
+        if cross1_mag < 0.001 {
+            // Positions are too close or almost antipodal 
+            // (directly opposite on planet) - use direct angles
+            return self.calculate_direct_angles(current, destination);
+        }
+        
+        // Normalize the first cross product
+        let cross1_norm = Vector3::new(
+            cross1.x / cross1_mag,
+            cross1.y / cross1_mag,
+            cross1.z / cross1_mag
+        );
+        
+        // Cross product of r1 and the normalized first cross product gives tangent vector
+        let tangent = Vector3::new(
+            r1_norm.y * cross1_norm.z - r1_norm.z * cross1_norm.y,
+            r1_norm.z * cross1_norm.x - r1_norm.x * cross1_norm.z,
+            r1_norm.x * cross1_norm.y - r1_norm.y * cross1_norm.x
+        );
+        
+        // Step 4: Calculate pitch and yaw
+        // Pitch should be 0 as we're following the planet's surface
+        let pitch = 0.0;
+        
+        // Create a local coordinate system at the current position
+        // "Up" is from planet center to current position (r1_norm)
+        // "Forward" is initially along the tangent vector
+        
+        // For game-specific orientation, we need to translate these vectors
+        // into a pitch/yaw/roll system
+        
+        // Use the tangent vector projected onto coordinate planes to get yaw
+        // In spherical coordinates, this would be analogous to the heading
+        
+        // Project tangent onto the current position's local horizontal plane
+        let forward = tangent;
+        
+        // Determine north direction (arbitrary convention for planetary navigation)
+        // We'll use the planets's z-axis as the north pole reference
+        let planet_north = Vector3::new(0.0, 0.0, 1.0);
+        
+        // Calculate east direction as cross product of north and up
+        let east = Vector3::new(
+            r1_norm.y * planet_north.z - r1_norm.z * planet_north.y,
+            r1_norm.z * planet_north.x - r1_norm.x * planet_north.z,
+            r1_norm.x * planet_north.y - r1_norm.y * planet_north.x
+        );
+        
+        let east_mag = (east.x.powi(2) + east.y.powi(2) + east.z.powi(2)).sqrt();
+        
+        // If east vector is too small, we're at poles - use another reference
+        if east_mag < 0.001 {
+            // Use the x-axis as reference instead
+            let planet_east = Vector3::new(1.0, 0.0, 0.0);
+            let east = Vector3::new(
+                r1_norm.y * planet_east.z - r1_norm.z * planet_east.y,
+                r1_norm.z * planet_east.x - r1_norm.x * planet_east.z,
+                r1_norm.x * planet_east.y - r1_norm.y * planet_east.x
+            );
+        }
+        
+        // Calculate north direction as cross product of up and east
+        let north = Vector3::new(
+            r1_norm.y * east.z - r1_norm.z * east.y,
+            r1_norm.z * east.x - r1_norm.x * east.z,
+            r1_norm.x * east.y - r1_norm.y * east.x
+        );
+        
+        // Calculate the heading (yaw) using the tangent vector and north/east references
+        // This is the angle between north and the forward vector, measured clockwise
+        
+        // Get the dot products with north and east unit vectors
+        let dot_north = north.x * forward.x + north.y * forward.y + north.z * forward.z;
+        let dot_east = east.x * forward.x + east.y * forward.y + east.z * forward.z;
+        
+        // Calculate heading in radians (atan2 takes care of quadrant)
+        let heading_rad = dot_east.atan2(dot_north);
+        
+        // Convert to degrees and adjust to game-specific coordinate system
+        let mut yaw = heading_rad * (180.0 / std::f64::consts::PI);
+        
+        // Normalize to 0-360 range
+        yaw = (yaw + 360.0) % 360.0;
+        
+        // Roll is 0 for surface navigation
+        let roll = 0.0;
+        
+        EulerAngles::new(pitch, yaw, roll)
+    }
+    
+    /// Fallback to direct angle calculation
+    pub fn calculate_direct_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
+        // Calculate deltas between current and destination positions
+        let dx = destination.x - current.x;
+        let dy = destination.y - current.y;
+        let dz = destination.z - current.z;
+        
+        // Calculate distance in the XY plane
+        let distance_xy = (dx * dx + dy * dy).sqrt();
+        
+        // Calculate pitch (vertical angle)
+        let pitch = if distance_xy.abs() < 0.001 {
+            // Nearly vertical path
+            if dz >= 0.0 { 90.0 } else { -90.0 }
+        } else {
+            (dz / distance_xy).atan() * (180.0 / std::f64::consts::PI)
+        };
+        
+        // Roll is 0 for simplicity
+        let roll = 0.0;
+        
+        // Calculate yaw (horizontal angle)
+        let mut yaw = if dx.abs() < 0.001 {
+            // Avoid division by zero
+            if dy >= 0.0 { 0.0 } else { 180.0 }
+        } else {
+            (dy / dx).atan() * (180.0 / std::f64::consts::PI)
+        };
+        
+        // Adjust quadrant based on dx sign
+        if dx < 0.0 {
+            yaw += 180.0;
+        }
+        
+        // Convert to game's coordinate system
+        yaw = (yaw + 90.0) % 360.0;
         
         EulerAngles::new(pitch, yaw, roll)
     }
     
     /// Find the optimal orbital marker to navigate around an obstruction
-    fn find_optimal_orbital_marker(
+    pub fn find_optimal_orbital_marker(
         &self,
-        start: &Vector3,
-        end: &Vector3,
+        from: &Vector3,
+        to: &Vector3,
         obstruction: &ObjectContainer,
     ) -> OptimalMarker {
         // Get all orbital markers for this body
@@ -1009,15 +1219,15 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         
         // Calculate vectors
         let start_to_obstruction = Vector3::new(
-            obstruction.position.x - start.x,
-            obstruction.position.y - start.y,
-            obstruction.position.z - start.z,
+            obstruction.position.x - from.x,
+            obstruction.position.y - from.y,
+            obstruction.position.z - from.z,
         );
         
         let obstruction_to_end = Vector3::new(
-            end.x - obstruction.position.x,
-            end.y - obstruction.position.y,
-            end.z - obstruction.position.z,
+            to.x - obstruction.position.x,
+            to.y - obstruction.position.y,
+            to.z - obstruction.position.z,
         );
         
         // Initialize with first marker
