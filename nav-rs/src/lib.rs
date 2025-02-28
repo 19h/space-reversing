@@ -62,6 +62,37 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     pub fn find_nearby_pois(&self, limit: usize) -> Vec<types::NamedDistance> {
         self.planner.find_nearby_pois(limit)
     }
+    
+    /// Plan navigation to specific coordinates, either global or relative to a container
+    pub fn plan_navigation_to_coordinates(
+        &self, 
+        container_name: Option<&str>, 
+        pos_x: f64, 
+        pos_y: f64, 
+        pos_z: f64
+    ) -> Option<NavigationPlan> {
+        self.planner.plan_navigation_to_coordinates(container_name, pos_x, pos_y, pos_z)
+    }
+    
+    /// Determine current solar system
+    pub fn get_current_solar_system(&self, plan: Option<&NavigationPlan>) -> types::System {
+        self.planner.determine_current_solar_system(plan)
+    }
+    
+    /// Get the current position if available
+    pub fn get_current_position(&self) -> Option<types::Vector3> {
+        self.planner.core.get_current_position()
+    }
+    
+    /// Get the current object container (planet/moon/station) if available
+    pub fn get_current_object_container(&self) -> Option<types::ObjectContainer> {
+        self.planner.core.get_current_object_container().cloned()
+    }
+    
+    /// Find nearby points of interest within a specific radius
+    pub fn find_nearby_pois_in_radius(&self, radius: f64) -> Vec<types::NamedDistance> {
+        self.planner.find_nearby_pois_in_radius(radius)
+    }
 }
 
 /// Create a navigation system from predefined objects and POIs

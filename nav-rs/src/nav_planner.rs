@@ -2035,6 +2035,36 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         
         instructions
     }
+
+    // This method would need to be added to NavigationPlanner
+    /// Find nearby points of interest within a specific radius
+    pub fn find_nearby_pois_in_radius(&self, radius: f64) -> Vec<NamedDistance> {
+        if let Some(current_pos) = self.core.get_current_position() {
+            // Get all POIs
+            let mut all_pois: Vec<NamedDistance> = Vec::new();
+            
+            // Check all POIs with containers
+            for poi in self.data_provider.get_points_of_interest() {
+                let poi_global_pos = self.get_global_coordinates(&poi);
+                let distance = current_pos.distance(&poi_global_pos);
+                
+                // Only include POIs within the specified radius
+                if distance <= radius {
+                    all_pois.push(NamedDistance {
+                        name: poi.name.clone(),
+                        distance,
+                    });
+                }
+            }
+            
+            // Sort by distance (closest first)
+            all_pois.sort_by(|a, b| a.distance.partial_cmp(&b.distance).unwrap_or(std::cmp::Ordering::Equal));
+            
+            all_pois
+        } else {
+            Vec::new()
+        }
+    }
 }
 
 /// Type of markers to search for
