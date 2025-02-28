@@ -1,11 +1,12 @@
 [package]
-name = "star_nav"
-version = "0.1.0"
+name = "starnav"
+version = "0.1.1"
 edition = "2021"
 authors = ["Kenan Sulayman <sc_nav@ci.ax>"]
 description = "A comprehensive navigation system for celestial navigation in Star Citizen"
 license = "MIT"
-repository = "https://github.com/sc-nav/nav-system"
+readme="readme.md"
+repository = "https://github.com/19h/space-reversing/tree/master/nav-rs"
 
 [dependencies]
 log = "0.4"
