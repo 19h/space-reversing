@@ -251,8 +251,7 @@ struct ResolveContainerQuery {
 #[derive(Deserialize)]
 struct FilterQuery {
     system: Option<String>,
-    container_type: Option<String>,
-    poi_type: Option<String>,
+    r#type: Option<String>,
 }
 
 // API Handlers
@@ -357,7 +356,7 @@ mod poi_handlers {
                 }
                 
                 // Filter by container if specified
-                if let Some(ref container_type) = query.container_type {
+                if let Some(ref container_type) = query.r#type {
                     if let Some(container_name) = &poi.obj_container {
                         if let Some(container) = data_provider.get_object_container_by_name(container_name) {
                             if format!("{:?}", container.container_type) != *container_type {
@@ -372,7 +371,7 @@ mod poi_handlers {
                 }
                 
                 // Filter by POI type if specified
-                if let Some(ref poi_type) = query.poi_type {
+                if let Some(ref poi_type) = query.r#type {
                     if format!("{:?}", poi.poi_type) != *poi_type {
                         return false;
                     }
@@ -395,7 +394,7 @@ mod poi_handlers {
                 }
                 
                 // Filter by container type if specified
-                if let Some(ref container_type) = query.container_type {
+                if let Some(ref container_type) = query.r#type {
                     if format!("{:?}", container.container_type).to_lowercase() != *container_type.to_lowercase() {
                         return false;
                     }
