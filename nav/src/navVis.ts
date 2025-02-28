@@ -17,6 +17,7 @@ export class EnhancedNavigationHUD {
     private waypoints: THREE.Mesh[] = [];
     private celestialBodies: THREE.Mesh[] = [];
     private segmentLabels: THREE.Sprite[] = [];
+    private segmentMeshes: THREE.Mesh[] = []; // Store segment meshes for highlighting
 
     // Scale management and scene centering
     private sceneCenter: THREE.Vector3 = new THREE.Vector3();
@@ -38,6 +39,14 @@ export class EnhancedNavigationHUD {
     private slowFrameCount: number = 0;
     private qualityLevel: number = 3; // Start with highest quality
 
+    // Animation state for route traversal
+    private animatingRoute: boolean = false;
+    private currentRouteSegment: number = 0;
+    private routeAnimationProgress: number = 0;
+    private routeAnimationSpeed: number = 0.001; // Speed multiplier
+    private useRouteAnimation: boolean = false;
+    private activeHighlightedSegment: number = -1;
+
     // Colors
     private static readonly QUANTUM_PATH_COLOR = 0x4080ff;
     private static readonly SUBLIGHT_PATH_COLOR = 0x80ff40;
@@ -47,6 +56,7 @@ export class EnhancedNavigationHUD {
     private static readonly OBSTRUCTION_COLOR = 0xff8080;
     private static readonly PLANET_COLOR = 0x808080;
     private static readonly MOON_COLOR = 0xc0c0c0;
+    private static readonly HIGHLIGHT_COLOR = 0xffffff;
 
     // Scaling
     private static readonly SCALE_FACTOR = 1e-6; // Increased from original for better visibility
@@ -356,11 +366,33 @@ export class EnhancedNavigationHUD {
 
         const adaptiveScale = this.calculateAdaptiveScaleFactor(distanceFromOrigin);
 
+        // Normalize very large coordinates using logarithmic scaling for extreme values
+        // This prevents floating point precision issues in WebGL
+        const maxCoordinate = Math.max(
+            Math.abs(offsetPos.x), 
+            Math.abs(offsetPos.y), 
+            Math.abs(offsetPos.z)
+        );
+        
+        // Apply logarithmic scaling to extreme values
+        const logScalingThreshold = 1e9;
+        let normalizedScale = adaptiveScale;
+        
+        if (maxCoordinate > logScalingThreshold) {
+            // Apply additional logarithmic scaling for extremely large values
+            const logFactor = 1.0 - Math.min(0.9, Math.log10(maxCoordinate) / Math.log10(1e12));
+            normalizedScale *= logFactor;
+            
+            if (maxCoordinate > 1e11) {
+                console.log(`Applied logarithmic scaling: ${logFactor.toExponential(2)} to coordinates with magnitude ${maxCoordinate.toExponential(2)}`);
+            }
+        }
+
         // Transform to Three.js coordinate system (Y-up)
         return new THREE.Vector3(
-            offsetPos.x * adaptiveScale,
-            offsetPos.z * adaptiveScale, // Y-up in Three.js, using z for up
-            offsetPos.y * adaptiveScale
+            offsetPos.x * normalizedScale,
+            offsetPos.z * normalizedScale, // Y-up in Three.js, using z for up
+            offsetPos.y * normalizedScale
         );
     }
 
@@ -432,7 +464,7 @@ export class EnhancedNavigationHUD {
     /**
      * Render a complete solar system
      */
-    public renderCompleteSolarSystem(system: System): void {
+    private renderCompleteSolarSystem(system: System): void {
         console.log(`Rendering complete ${system} solar system`);
 
         // Store current system
@@ -441,41 +473,83 @@ export class EnhancedNavigationHUD {
         // Clear existing celestial bodies
         this.clearCelestialBodies();
 
+        // Apply a fixed scale factor to make the solar system viewable
+        // Original scale is 1e-6, but we need a much smaller scale for the whole system
+        const systemScaleFactor = 1e-10; // Much smaller scale for system view
+        
+        // Reset origin offset to ensure proper scaling
+        this.originOffset = null;
+
         // Filter bodies for this system by name
         const systemBodies = this.filterBodiesBySystem(system);
         console.log(`Found ${systemBodies.length} bodies in ${system} system`);
 
         // Find the system star (usually at or near 0,0,0)
         const stars = systemBodies.filter(body => body.cont_type === 'Star');
+        console.log(`Found ${stars.length} stars in ${system} system`);
+        
+        // Determine system center based on star position
+        const systemCenter = new THREE.Vector3(0, 0, 0);
+        let starPosition = { x: 0, y: 0, z: 0 };
+        
+        // If we have a star, use its position as the system center
+        if (stars.length > 0) {
+            starPosition = {
+                x: stars[0]!.posX,
+                y: stars[0]!.posY,
+                z: stars[0]!.posZ
+            };
+            
+            console.log(`Star position: (${starPosition.x}, ${starPosition.y}, ${starPosition.z})`);
+        }
 
         // If no star found, create a default one at origin
         if (stars.length === 0) {
             console.log(`No star found for ${system} system, creating default at origin`);
-            this.renderDefaultStar(system);
+            this.renderCelestialBodyAtScale(
+                { name: `${system} Star`, bodyRadius: 696340000, posX: 0, posY: 0, posZ: 0, cont_type: 'Star' } as ObjectContainer, 
+                0xffff80, 
+                true, 
+                systemScaleFactor
+            );
         } else {
-            stars.forEach(star => this.renderStar(star));
+            // Render the actual star
+            this.renderCelestialBodyAtScale(stars[0], 0xffff80, true, systemScaleFactor);
         }
 
-        // Render planets
+        // Render planets with custom scale, relative to star position
         const planets = systemBodies.filter(body => body.cont_type === 'Planet');
         planets.forEach(planet => {
-            this.renderCelestialBody(planet, EnhancedNavigationHUD.PLANET_COLOR, true);
+            // Adjust position relative to star center
+            const adjustedPlanet = { ...planet };
+            
+            this.renderCelestialBodyAtScale(
+                adjustedPlanet, 
+                EnhancedNavigationHUD.PLANET_COLOR, 
+                true, 
+                systemScaleFactor
+            );
         });
 
-        // Render moons 
+        // Render moons with custom scale
         const moons = systemBodies.filter(body => body.cont_type === 'Moon');
         moons.forEach(moon => {
-            this.renderCelestialBody(moon, EnhancedNavigationHUD.MOON_COLOR, false);
+            this.renderCelestialBodyAtScale(
+                moon, 
+                EnhancedNavigationHUD.MOON_COLOR, 
+                false, 
+                systemScaleFactor
+            );
 
             // Find parent planet based on naming convention
             const parentPlanet = this.findParentPlanet(moon, planets);
 
             if (parentPlanet) {
-                this.renderOrbitalPath(moon, parentPlanet);
+                this.renderOrbitalPathAtScale(moon, parentPlanet, systemScaleFactor);
             }
         });
 
-        // Render other objects
+        // Render other objects with custom scale
         const otherBodies = systemBodies.filter(body =>
             body.cont_type !== 'Star' &&
             body.cont_type !== 'Planet' &&
@@ -484,216 +558,302 @@ export class EnhancedNavigationHUD {
 
         otherBodies.forEach(body => {
             if (body.bodyRadius > 0) {
-                this.renderSmallBody(body);
+                this.renderCelestialBodyAtScale(
+                    body, 
+                    0xaaaaaa, 
+                    false, 
+                    systemScaleFactor
+                );
             }
         });
 
-        // Calculate the maximum radius of the system
-        let maxSystemRadius = 0;
-        
+        // Calculate an appropriate view radius based on planetary orbits
+        let maxDistance = 0;
         systemBodies.forEach(body => {
-            if (body.posX && body.posY && body.posZ) {
-                // Calculate distance from system center
+            if (body.posX && body.posY && body.posZ && body.cont_type !== 'Star') {
+                // Calculate distance from star (not from arbitrary origin)
                 const distance = Math.sqrt(
-                    Math.pow(body.posX, 0) + 
-                    Math.pow(body.posY, 0) + 
-                    Math.pow(body.posZ, 0)
+                    Math.pow(body.posX - starPosition.x, 2) + 
+                    Math.pow(body.posY - starPosition.y, 2) + 
+                    Math.pow(body.posZ - starPosition.z, 2)
                 );
                 
-                // Add body radius to get total extent
-                const totalRadius = distance + (body.bodyRadius || 0);
-                
-                // Update max radius if this body is further out
-                if (totalRadius > maxSystemRadius) {
-                    maxSystemRadius = totalRadius;
+                // Update max distance if this body is further out
+                if (distance > maxDistance) {
+                    maxDistance = distance;
                 }
             }
         });
         
-        console.log(`Calculated system maximum radius: ${maxSystemRadius}`);
+        // Scale by system view factor and add margin
+        const viewRadius = Math.max(maxDistance * systemScaleFactor * 1.2, 50);
+        
+        console.log(`System bounds: Maximum distance from star: ${maxDistance}`);
+        console.log(`Calculated system view radius: ${viewRadius}`);
 
-        // Position camera to view the system
+        // Position camera to view the system from the star's perspective
+        const starViewPosition = new THREE.Vector3(
+            starPosition.x * systemScaleFactor,
+            starPosition.z * systemScaleFactor,  // Y-up in Three.js
+            starPosition.y * systemScaleFactor
+        );
+        
         this.positionCameraForSystemView(
-            new THREE.Vector3(0, 0, 0),
-            maxSystemRadius,
+            starViewPosition,
+            viewRadius
         );
 
-        console.log(`Rendered ${system} system with ${systemBodies.length} celestial bodies`);
+        console.log(`Rendered ${system} system with ${systemBodies.length} celestial bodies at scale ${systemScaleFactor}`);
     }
 
     /**
-     * Create default star when none is found in the data
+     * Find parent planet for a moon based on naming conventions or proximity
      */
-    private renderDefaultStar(systemName: string): void {
-        const starRadius = 696340000; // Sun-like radius in meters
-        const scaledRadius = Math.max(
-            starRadius * EnhancedNavigationHUD.SCALE_FACTOR * 2,
-            EnhancedNavigationHUD.PLANET_MIN_SIZE * 3
+    private findParentPlanet(moon: ObjectContainer, planets: ObjectContainer[]): ObjectContainer | null {
+        // First try to find parent by name (often moons are named after planets)
+        // e.g., if moon is "Hurston Moon" or "Moon of Hurston", look for "Hurston"
+        for (const planet of planets) {
+            if (moon.name.includes(planet.name)) {
+                return planet;
+            }
+        }
+        
+        // If name matching fails, find closest planet
+        let closestPlanet: ObjectContainer | null = null;
+        let minDistance = Number.MAX_VALUE;
+        
+        for (const planet of planets) {
+            const moonPos = {
+                x: moon.posX,
+                y: moon.posY,
+                z: moon.posZ
+            };
+            
+            const planetPos = {
+                x: planet.posX,
+                y: planet.posY,
+                z: planet.posZ
+            };
+            
+            const distance = this.calcDistance3dFromPositions(moonPos, planetPos);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestPlanet = planet;
+            }
+        }
+        
+        return closestPlanet;
+    }
+
+    /**
+     * Calculate 3D distance between two positions
+     */
+    private calcDistance3dFromPositions(pos1: Vector3, pos2: Vector3): number {
+        return Math.sqrt(
+            Math.pow(pos2.x - pos1.x, 2) +
+            Math.pow(pos2.y - pos1.y, 2) +
+            Math.pow(pos2.z - pos1.z, 2)
         );
-
-        const geometry = new THREE.SphereGeometry(scaledRadius, 32, 32);
-        const material = new THREE.MeshBasicMaterial({ color: 0xffff80 });
-
-        const starMesh = new THREE.Mesh(geometry, material);
-        const position = this.worldToSceneCoords({ x: 0, y: 0, z: 0 });
-
-        starMesh.position.copy(position);
-        this.scene.add(starMesh);
-        this.celestialBodies.push(starMesh);
-
-        // Add light source
-        const light = new THREE.PointLight(0xffffee, 1.5, 0);
-        light.position.copy(position);
-        this.scene.add(light);
-
-        // Add star glow
-        const starGlow = this.createStarGlow(starMesh);
-        this.scene.add(starGlow);
-
-        // Add label
-        this.addLabel(position, `${systemName} Star`, 0xffffaa);
     }
 
     /**
-     * Render a star with glow effect
+     * Render a celestial body with fixed scale factor (for system view)
      */
-    private renderStar(star: ObjectContainer): void {
-        const scaledRadius = Math.max(
-            star.bodyRadius * EnhancedNavigationHUD.SCALE_FACTOR * 2,
-            EnhancedNavigationHUD.PLANET_MIN_SIZE * 3
-        );
-
-        const geometry = new THREE.SphereGeometry(scaledRadius, 32, 32);
-        const material = new THREE.MeshBasicMaterial({
-            color: 0xffff80
-            // MeshBasicMaterial doesn't support emissive property
-        });
-
-        const starMesh = new THREE.Mesh(geometry, material);
-        const position = this.worldToSceneCoords({
-            x: star.posX,
-            y: star.posY,
-            z: star.posZ
-        });
-
-        starMesh.position.copy(position);
-        this.scene.add(starMesh);
-        this.celestialBodies.push(starMesh);
-
-        // Add light source at star position
-        const light = new THREE.PointLight(0xffffee, 1.5, 0);
-        light.position.copy(position);
-        this.scene.add(light);
-
-        // Add star glow
-        const starGlow = this.createStarGlow(starMesh);
-        this.scene.add(starGlow);
-
-        // Add label
-        this.addLabel(position, star.name, 0xffffaa);
-    }
-
-    /**
-     * Create a glow effect for stars
-     */
-    private createStarGlow(mesh: THREE.Mesh): THREE.Mesh {
-        const geometry = mesh.geometry as THREE.SphereGeometry;
-        const radius = geometry.parameters.radius;
-
-        const glowGeometry = new THREE.SphereGeometry(radius * 1.5, 16, 16);
-        const glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffaa,
-            transparent: true,
-            opacity: 0.3,
-            side: THREE.BackSide
-        });
-
-        const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-        glowMesh.position.copy(mesh.position);
-
-        return glowMesh;
-    }
-
-    /**
-     * Render a celestial body with appropriate material
-     */
-    private renderCelestialBody(
+    private renderCelestialBodyAtScale(
         body: ObjectContainer,
         color: number,
-        isPlanet: boolean
+        isPrimary: boolean,
+        scaleFactor: number
     ): void {
-        // Calculate appropriate scale with min/max constraints
-        const scaledRadius = Math.min(
-            Math.max(
-                body.bodyRadius * EnhancedNavigationHUD.SCALE_FACTOR,
-                isPlanet ?
-                    EnhancedNavigationHUD.PLANET_MIN_SIZE :
-                    EnhancedNavigationHUD.PLANET_MIN_SIZE * 0.5
-            ),
-            isPlanet ? 10.0 : 5.0 // Maximum size constraints
+        // Find the system star to use as a reference point
+        const stars = this.celestialBodiesData.filter(b => b.cont_type === 'Star' && b.system === body.system);
+        const starPosition = stars.length > 0 ? 
+            { x: stars[0]!.posX, y: stars[0]!.posY, z: stars[0]!.posZ } : 
+            { x: 0, y: 0, z: 0 };
+            
+        // Special handling for stars to prevent them from being too large
+        if (body.cont_type === 'Star') {
+            // Calculate appropriate star size based on system size
+            // Stars are scaled differently than planets to avoid dominating the view
+            const starScaleFactor = scaleFactor * 0.1;
+            const maxStarSize = 10.0;
+            const minStarSize = 2.0;
+            
+            // Use a smaller scale factor for stars
+            const scaledRadius = Math.min(
+                Math.max(body.bodyRadius * starScaleFactor, minStarSize),
+                maxStarSize
+            );
+            
+            // Create geometry and materials for the star
+            const geometry = new THREE.SphereGeometry(scaledRadius, 32, 32);
+            const material = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: false
+            });
+            
+            // Create and position the star
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(
+                body.posX * scaleFactor,
+                body.posZ * scaleFactor,  // Y-up in Three.js
+                body.posY * scaleFactor
+            );
+            
+            // Add to scene
+            this.scene.add(mesh);
+            this.celestialBodies.push(mesh);
+            
+            // Add star glow
+            const glowRadius = scaledRadius * 1.5;
+            const glowGeometry = new THREE.SphereGeometry(glowRadius, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffff99,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.BackSide
+            });
+            
+            const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+            glowMesh.position.copy(mesh.position);
+            this.scene.add(glowMesh);
+            this.celestialBodies.push(glowMesh);
+            
+            // Add label
+            this.addSimpleLabel(mesh.position, body.name);
+            
+            return;
+        }
+        
+        // For non-star objects, regular scaling applies
+        // Minimum sizes to ensure visibility
+        const minSize = isPrimary ? 0.5 : 0.2;
+        
+        // Calculate radius with minimum size constraint
+        const scaledRadius = Math.max(
+            body.bodyRadius * scaleFactor,
+            minSize
         );
-
-        // Create optimized geometry with LOD based on distance
-        const detail = isPlanet ? 32 : 16;
+        
+        // Create geometry with appropriate detail level
+        const detail = isPrimary ? 32 : 16;
         const geometry = new THREE.SphereGeometry(scaledRadius, detail, detail);
-
-        // Material with physically-based rendering properties
-        const material = new THREE.MeshStandardMaterial({
+        
+        // Create material
+        const material = new THREE.MeshBasicMaterial({
             color: color,
-            roughness: 0.8,
-            metalness: 0.1,
-            flatShading: !isPlanet
+            transparent: false,
+            wireframe: false
         });
-
+        
+        // Create mesh and position relative to star
         const mesh = new THREE.Mesh(geometry, material);
-        const position = this.worldToSceneCoords({
-            x: body.posX,
-            y: body.posY,
-            z: body.posZ
-        });
-
-        mesh.position.copy(position);
+        mesh.position.set(
+            body.posX * scaleFactor,
+            body.posZ * scaleFactor,  // Y-up in Three.js
+            body.posY * scaleFactor
+        );
+        
+        // Add to scene
         this.scene.add(mesh);
         this.celestialBodies.push(mesh);
-
-        // Add name label only for planets and significant bodies
-        if (isPlanet || body.bodyRadius > 100000) {
-            this.addLabel(position, body.name, 0xffffff);
-        }
-
-        // Add orbital reference indicators for planets
-        if (isPlanet) {
-            this.addOrbitalIndicator(position, scaledRadius * 1.2);
+        
+        // Add name label (only for primary objects)
+        if (isPrimary) {
+            this.addSimpleLabel(mesh.position, body.name);
         }
     }
 
     /**
-     * Render smaller objects like stations, outposts, etc.
+     * Render an orbital path with fixed scale factor
      */
-    private renderSmallBody(body: ObjectContainer): void {
-        const scaledRadius = Math.max(
-            body.bodyRadius * EnhancedNavigationHUD.SCALE_FACTOR,
-            EnhancedNavigationHUD.PLANET_MIN_SIZE * 0.3
+    private renderOrbitalPathAtScale(
+        body: ObjectContainer,
+        parentBody: ObjectContainer,
+        scaleFactor: number
+    ): void {
+        // Calculate orbital distance
+        const orbitalDistance = this.calcDistance3dFromPositions(
+            {x: parentBody.posX, y: parentBody.posY, z: parentBody.posZ},
+            {x: body.posX, y: body.posY, z: body.posZ}
         );
-
-        const geometry = new THREE.SphereGeometry(scaledRadius, 16, 16);
-        const material = new THREE.MeshBasicMaterial({
-            color: 0xaaaaaa
+        
+        // Scale the distance
+        const scaledDistance = orbitalDistance * scaleFactor;
+        
+        // Create orbit geometry
+        const orbitGeometry = new THREE.RingGeometry(
+            scaledDistance - 0.01,
+            scaledDistance + 0.01,
+            36
+        );
+        
+        // Create orbit material
+        const orbitMaterial = new THREE.MeshBasicMaterial({
+            color: 0x4080ff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3,
+            depthWrite: false
         });
+        
+        // Create mesh
+        const orbitMesh = new THREE.Mesh(orbitGeometry, orbitMaterial);
+        
+        // Position at parent
+        orbitMesh.position.set(
+            parentBody.posX * scaleFactor,
+            parentBody.posZ * scaleFactor,  // Y-up in Three.js
+            parentBody.posY * scaleFactor
+        );
+        
+        // Calculate normal vector to align orbit plane
+        const orbitNormal = new THREE.Vector3(
+            body.posX - parentBody.posX,
+            body.posY - parentBody.posY,
+            body.posZ - parentBody.posZ
+        ).normalize();
+        
+        // Apply rotation to align with orbital plane
+        orbitMesh.lookAt(orbitNormal.add(orbitMesh.position));
+        orbitMesh.rotateX(Math.PI / 2);
+        
+        // Add to scene
+        this.scene.add(orbitMesh);
+        this.celestialBodies.push(orbitMesh);  // Track for cleanup
+    }
 
-        const mesh = new THREE.Mesh(geometry, material);
-        const position = this.worldToSceneCoords({
-            x: body.posX,
-            y: body.posY,
-            z: body.posZ
+    /**
+     * Add a simple text label for system overview
+     */
+    private addSimpleLabel(position: THREE.Vector3, text: string): void {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) return;
+        
+        canvas.width = 256;
+        canvas.height = 64;
+        
+        context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.font = 'Bold 20px Arial';
+        context.fillStyle = '#ffffff';
+        context.textAlign = 'center';
+        context.fillText(text, 128, 32);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true
         });
-
-        mesh.position.copy(position);
-        this.scene.add(mesh);
-        this.celestialBodies.push(mesh);
-
-        // Add label
-        this.addLabel(position, body.name, 0xcccccc);
+        
+        const sprite = new THREE.Sprite(material);
+        sprite.position.copy(position);
+        sprite.position.y += 1;  // Offset above the object
+        sprite.scale.set(5, 1.5, 1);
+        
+        this.scene.add(sprite);
     }
 
     /**
@@ -715,61 +875,101 @@ export class EnhancedNavigationHUD {
     }
 
     /**
-     * Render an orbital path between a body and its parent
+     * Create default star when none is found in the data
      */
-    private renderOrbitalPath(
-        body: ObjectContainer,
-        parentBody: ObjectContainer
-    ): void {
-        // Calculate orbital parameters
-        const parentPos = {
-            x: parentBody.posX,
-            y: parentBody.posY,
-            z: parentBody.posZ
-        };
-
-        const bodyPos = {
-            x: body.posX,
-            y: body.posY,
-            z: body.posZ
-        };
-
-        const orbitalDistance = this.calcDistance3dFromPositions(parentPos, bodyPos);
-        const scaledDistance = orbitalDistance * EnhancedNavigationHUD.SCALE_FACTOR;
-
-        // Create orbital path
-        const orbitGeometry = new THREE.RingGeometry(
-            scaledDistance - 0.025,
-            scaledDistance + 0.025,
-            64
+    private renderDefaultStar(systemName: string): void {
+        // Use a more reasonable star size that won't overwhelm the view
+        const starRadius = 696340000; // Sun-like radius in meters
+        const maxStarSize = 5.0; // Maximum star size in scene units
+        
+        // Calculate scaled radius with appropriate constraints
+        const scaledRadius = Math.min(
+            Math.max(
+                starRadius * EnhancedNavigationHUD.SCALE_FACTOR * 0.5, // Reduced scaling factor
+                EnhancedNavigationHUD.PLANET_MIN_SIZE * 2
+            ),
+            maxStarSize // Never exceed this size
         );
 
-        const orbitMaterial = new THREE.MeshBasicMaterial({
-            color: body.cont_type === 'Planet' ? 0x4080ff : 0x80c0ff,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.3,
-            depthWrite: false // Prevents z-fighting
+        console.log(`Rendering default star with scaled radius: ${scaledRadius}`);
+
+        const geometry = new THREE.SphereGeometry(scaledRadius, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0xffff80,
+            transparent: false
         });
 
-        const orbitMesh = new THREE.Mesh(orbitGeometry, orbitMaterial);
+        const starMesh = new THREE.Mesh(geometry, material);
+        const position = this.worldToSceneCoords({ x: 0, y: 0, z: 0 });
 
-        // Position at parent center
-        const parentScenePos = this.worldToSceneCoords(parentPos);
-        orbitMesh.position.copy(parentScenePos);
+        starMesh.position.copy(position);
+        this.scene.add(starMesh);
+        this.celestialBodies.push(starMesh);
 
-        // Calculate orbital plane alignment
-        const orbitNormal = new THREE.Vector3(
-            bodyPos.x - parentPos.x,
-            bodyPos.y - parentPos.y,
-            bodyPos.z - parentPos.z
-        ).normalize();
+        // Add light source
+        const light = new THREE.PointLight(0xffffee, 1.5, 0);
+        light.position.copy(position);
+        this.scene.add(light);
 
-        // Align orbit ring with orbital plane
-        orbitMesh.lookAt(orbitNormal.add(orbitMesh.position));
-        orbitMesh.rotateX(Math.PI / 2);
+        // Add star glow with reduced size
+        const glowRadius = scaledRadius * 1.3; // Reduced glow size
+        const glowGeometry = new THREE.SphereGeometry(glowRadius, 32, 32);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffff99,
+            transparent: true,
+            opacity: 0.15, // Reduced opacity
+            side: THREE.BackSide
+        });
+        
+        const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+        glowMesh.position.copy(position);
+        this.scene.add(glowMesh);
+        this.celestialBodies.push(glowMesh);
 
-        this.scene.add(orbitMesh);
+        // Add label
+        this.addLabel(position, `${systemName} Star`, 0xffffaa);
+    }
+
+    /**
+     * Toggle visibility of the star
+     */
+    public toggleStarVisibility(): void {
+        // Find all star objects in the scene
+        const stars = this.celestialBodies.filter(object => {
+            // Check if this is a star by checking position or other properties
+            // We'll need to use the position since we don't have a direct reference
+            const starObjects = this.celestialBodiesData.filter(body => body.cont_type === 'Star');
+            
+            if (starObjects.length === 0) return false;
+            
+            const starPos = {
+                x: starObjects[0]!.posX * 1e-10, // Use same scale factor as in renderCelestialBodyAtScale
+                y: starObjects[0]!.posZ * 1e-10, // Y-up in Three.js
+                z: starObjects[0]!.posY * 1e-10
+            };
+            
+            // Check if this object is at the star position with some tolerance
+            if (object instanceof THREE.Mesh) {
+                const pos = object.position;
+                const tolerance = 5; // Allow some difference due to scaling/offsets
+                
+                const isAtStarPosition = 
+                    Math.abs(pos.x - starPos.x) < tolerance &&
+                    Math.abs(pos.y - starPos.y) < tolerance &&
+                    Math.abs(pos.z - starPos.z) < tolerance;
+                    
+                return isAtStarPosition;
+            }
+            
+            return false;
+        });
+        
+        // Toggle visibility of all identified star objects
+        stars.forEach(star => {
+            star.visible = !star.visible;
+        });
+        
+        console.log(`Toggled visibility of ${stars.length} star objects`);
     }
 
     /**
@@ -797,14 +997,25 @@ export class EnhancedNavigationHUD {
      * Position camera to view the entire solar system
      */
     private positionCameraForSystemView(center: THREE.Vector3, radius: number): void {
-        // Position camera to view entire system
-        const cameraDistance = radius * 2.5;
+        // Apply a logarithmic scale to handle astronomical distances
+        // This prevents the camera from being positioned too far away
+        const maxViewDistance = 1000; // Maximum view distance in scene units
+        const logScale = Math.log10(radius + 1) / Math.log10(1e12);
+        const cameraDistance = Math.min(maxViewDistance, radius * 0.00001 * logScale);
 
+        console.log(`Scaled camera distance: ${cameraDistance} (from radius ${radius})`);
+
+        // Position camera at a reasonable distance
         this.camera.position.set(
             center.x + cameraDistance,
             center.y + cameraDistance / 2,
             center.z + cameraDistance / 2
         );
+
+        // Update camera clipping planes to handle the scene scale
+        this.camera.near = 0.001;
+        this.camera.far = maxViewDistance * 10;
+        this.camera.updateProjectionMatrix();
 
         this.controls.target.copy(center);
         this.controls.update();
@@ -814,7 +1025,7 @@ export class EnhancedNavigationHUD {
     }
 
     /**
-     * Render the navigation path in 3D space
+     * Render the navigation path in 3D space with improved visibility
      */
     private renderNavigationPath(): void {
         if (!this.navigationPlan || !this.navigationPlan.segments || this.navigationPlan.segments.length === 0) {
@@ -840,7 +1051,7 @@ export class EnhancedNavigationHUD {
                         originPos,
                         segments[0].from.name,
                         EnhancedNavigationHUD.ORIGIN_COLOR,
-                        EnhancedNavigationHUD.WAYPOINT_SIZE * 1.5
+                        EnhancedNavigationHUD.WAYPOINT_SIZE * 2.5
                     );
                 }
             }
@@ -851,17 +1062,19 @@ export class EnhancedNavigationHUD {
                 const segmentPos = this.worldToSceneCoords(segment.to.position);
                 points.push(segmentPos);
 
-                // Add waypoint marker with appropriate color
+                // Add waypoint marker with appropriate color and increased size
                 const isDestination = index === segments.length - 1;
                 const isObstruction = segment.isObstructionBypass;
 
-                const color = isDestination ? EnhancedNavigationHUD.DESTINATION_COLOR :
-                    isObstruction ? EnhancedNavigationHUD.OBSTRUCTION_COLOR :
+                const color = isDestination ? 
+                    EnhancedNavigationHUD.DESTINATION_COLOR :
+                    isObstruction ? 
+                        EnhancedNavigationHUD.OBSTRUCTION_COLOR :
                         EnhancedNavigationHUD.WAYPOINT_COLOR;
 
                 const size = isDestination ?
-                    EnhancedNavigationHUD.WAYPOINT_SIZE * 1.5 :
-                    EnhancedNavigationHUD.WAYPOINT_SIZE;
+                    EnhancedNavigationHUD.WAYPOINT_SIZE * 3.0 :
+                    EnhancedNavigationHUD.WAYPOINT_SIZE * 2.0;
 
                 this.addWaypoint(segmentPos, segment.to.name, color, size);
 
@@ -886,10 +1099,10 @@ export class EnhancedNavigationHUD {
                 }
             });
 
-            // Create the path line with multi-segment coloring
+            // Create the path line with thicker line width for visibility
             const pathMaterial = new THREE.LineBasicMaterial({
                 vertexColors: true,
-                linewidth: 2
+                linewidth: 5  // Note: WebGL limit typically caps this at 1.0
             });
 
             // Create color array for vertex coloring
@@ -918,6 +1131,9 @@ export class EnhancedNavigationHUD {
             // Create line with vertex colors
             this.navPath = new THREE.Line(pathGeometry, pathMaterial);
             this.scene.add(this.navPath);
+            
+            // Add a thicker line using GL lines for better visibility
+            this.addThickPathLines(points, segments);
 
             // Center camera on the navigation path
             this.centerCameraOnPath(points);
@@ -930,7 +1146,119 @@ export class EnhancedNavigationHUD {
     }
 
     /**
-     * Add a waypoint marker with label
+     * Add thick path lines using alternate technique
+     */
+    private addThickPathLines(points: THREE.Vector3[], segments: any[]): void {
+        // Create a tube geometry along the path for better visibility
+        if (points.length < 2) return;
+        
+        // Clear previous segment meshes
+        this.segmentMeshes.forEach(mesh => {
+            this.scene.remove(mesh);
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) {
+                if (Array.isArray(mesh.material)) {
+                    mesh.material.forEach(m => m.dispose());
+                } else {
+                    mesh.material.dispose();
+                }
+            }
+        });
+        this.segmentMeshes = [];
+        
+        // Create individual segment tubes for highlighting
+        segments.forEach((segment, index) => {
+            if (index >= points.length - 1) return;
+            
+            const color = segment.travelType === 'quantum' ?
+                EnhancedNavigationHUD.QUANTUM_PATH_COLOR :
+                EnhancedNavigationHUD.SUBLIGHT_PATH_COLOR;
+                
+            const material = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            // Create a tube for this segment
+            const segmentCurve = new THREE.LineCurve3(
+                points[index],
+                points[index + 1]
+            );
+            
+            const segmentTubeGeometry = new THREE.TubeGeometry(
+                segmentCurve,
+                10,     // tubular segments
+                0.15,   // radius
+                8,      // radial segments
+                false   // closed
+            );
+            
+            const tubeMesh = new THREE.Mesh(segmentTubeGeometry, material);
+            this.scene.add(tubeMesh);
+            
+            // Store for segment highlighting
+            this.segmentMeshes.push(tubeMesh);
+            
+            // Store original color for highlighting
+            tubeMesh.userData.originalColor = color;
+            tubeMesh.userData.segmentIndex = index;
+        });
+    }
+
+    /**
+     * Highlight a specific segment of the route
+     */
+    private highlightSegment(segmentIndex: number): void {
+        // Reset all segments to original color
+        this.segmentMeshes.forEach(mesh => {
+            const material = mesh.material as THREE.MeshBasicMaterial;
+            if (material) {
+                material.color.set(mesh.userData.originalColor);
+                material.opacity = 0.7;
+                material.needsUpdate = true;
+            }
+        });
+        
+        // Highlight the specified segment
+        if (segmentIndex >= 0 && segmentIndex < this.segmentMeshes.length) {
+            const highlightMesh = this.segmentMeshes[segmentIndex]!;
+            const material = highlightMesh.material as THREE.MeshBasicMaterial;
+            
+            if (material) {
+                material.color.set(EnhancedNavigationHUD.HIGHLIGHT_COLOR);
+                material.opacity = 1.0;
+                material.needsUpdate = true;
+                
+                // Create a pulsing effect on the highlighted segment
+                this.activeHighlightedSegment = segmentIndex;
+            }
+        } else {
+            this.activeHighlightedSegment = -1;
+        }
+    }
+
+    /**
+     * Update the highlighted segment's animation
+     */
+    private updateHighlightedSegment(): void {
+        if (this.activeHighlightedSegment >= 0 && this.activeHighlightedSegment < this.segmentMeshes.length) {
+            const highlightMesh = this.segmentMeshes[this.activeHighlightedSegment]!;
+            const material = highlightMesh.material as THREE.MeshBasicMaterial;
+            
+            if (material) {
+                // Create a pulsing opacity effect
+                const time = Date.now() * 0.001; // Convert to seconds
+                const pulseValue = 0.5 + 0.5 * Math.sin(time * 4); // Oscillate between 0.5 and 1.0
+                
+                material.opacity = 0.7 + 0.3 * pulseValue;
+                material.needsUpdate = true;
+            }
+        }
+    }
+
+    /**
+     * Add a waypoint marker with enhanced visibility
      */
     private addWaypoint(
         position: THREE.Vector3,
@@ -938,9 +1266,11 @@ export class EnhancedNavigationHUD {
         color: number,
         size: number
     ): void {
-        // Create sphere for waypoint
+        // Create sphere for waypoint with larger size
         const geometry = new THREE.SphereGeometry(size, 16, 16);
-        const material = new THREE.MeshBasicMaterial({ color });
+        const material = new THREE.MeshBasicMaterial({ 
+            color,
+        });
         const waypoint = new THREE.Mesh(geometry, material);
         waypoint.position.copy(position);
 
@@ -949,18 +1279,27 @@ export class EnhancedNavigationHUD {
         this.waypoints.push(waypoint);
 
         // Add text label
-        this.addLabel(position, name, color);
+        this.addEnhancedLabel(position, name, color, size * 2);
+        
+        // Add a point light at the waypoint for visibility
+        const light = new THREE.PointLight(color, 1.0, size * 10);
+        light.position.copy(position);
+        this.scene.add(light);
+        
+        // Add a pulse effect
+        this.addPulseEffect(position, color, size * 3);
     }
 
     /**
-     * Add a text label to a 3D position
+     * Add an enhanced text label with better visibility
      */
-    private addLabel(
+    private addEnhancedLabel(
         position: THREE.Vector3,
         text: string,
-        color: number
+        color: number,
+        size: number = 2.0
     ): void {
-        // Create canvas for label
+        // Create canvas for label with larger dimensions
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         if (!context) {
@@ -968,18 +1307,41 @@ export class EnhancedNavigationHUD {
             return;
         }
 
-        canvas.width = 256;
-        canvas.height = 128;
+        canvas.width = 512; // Larger canvas for better text quality
+        canvas.height = 256;
 
-        // Draw text
-        context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        // Draw text with improved visibility
+        context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        context.font = 'Bold 20px Arial';
+        context.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        context.lineWidth = 4;
+        context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+        
+        // Use larger, more visible font
+        context.font = 'Bold 32px Arial';
         context.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
         context.textAlign = 'center';
-        context.fillText(text, 128, 64);
+        context.fillText(text, 256, 80);
+        
+        // Add distance information if available
+        const segments = this.navigationPlan?.segments || [];
+        const matchingSegment = segments.find(s => 
+            s.to && s.to.name === text
+        );
+        
+        if (matchingSegment) {
+            const distance = (matchingSegment.distance / 1000).toFixed(1);
+            context.font = '24px Arial';
+            context.fillText(`${distance} km`, 256, 130);
+            
+            // Add travel time
+            const timeInSeconds = matchingSegment.estimatedTime || 0;
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.round(timeInSeconds % 60);
+            context.fillText(`Time: ${minutes}m ${seconds}s`, 256, 170);
+        }
 
-        // Create sprite from canvas
+        // Create sprite from canvas with larger scale
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
 
@@ -990,10 +1352,42 @@ export class EnhancedNavigationHUD {
 
         const sprite = new THREE.Sprite(material);
         sprite.position.copy(position);
-        sprite.position.y += 0.5; // Offset label position
-        sprite.scale.set(2, 1, 1);
+        sprite.position.y += size; // Offset label position
+        sprite.scale.set(size * 2, size, 1);
 
         this.scene.add(sprite);
+    }
+
+    /**
+     * Add a pulse effect to waypoints for better visibility
+     */
+    private addPulseEffect(position: THREE.Vector3, color: number, size: number): void {
+        // Create a ring geometry
+        const geometry = new THREE.RingGeometry(size * 0.8, size, 32);
+        const material = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        
+        const ring = new THREE.Mesh(geometry, material);
+        ring.position.copy(position);
+        
+        // Add random rotation for variety
+        ring.rotation.x = Math.random() * Math.PI * 2;
+        ring.rotation.y = Math.random() * Math.PI * 2;
+        
+        this.scene.add(ring);
+        this.waypoints.push(ring);
+        
+        // Store animation data for the pulse effect
+        // We'll use the userData property to store animation-related data
+        ring.userData.pulseAnimation = {
+            initialScale: 1.0,
+            growing: true,
+            rate: 0.01 + Math.random() * 0.02 // Randomize animation rate
+        };
     }
 
     /**
@@ -1038,6 +1432,50 @@ export class EnhancedNavigationHUD {
 
         this.scene.add(sprite);
         this.segmentLabels.push(sprite);
+    }
+
+    /**
+     * Add a label in legacy format
+     */
+    private addLabel(
+        position: THREE.Vector3,
+        text: string,
+        color: number
+    ): void {
+        // Create canvas for label
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) {
+            console.warn(`Unable to get 2D context for label '${text}'`);
+            return;
+        }
+
+        canvas.width = 256;
+        canvas.height = 128;
+
+        // Draw text
+        context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.font = 'Bold 20px Arial';
+        context.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+        context.textAlign = 'center';
+        context.fillText(text, 128, 64);
+
+        // Create sprite from canvas
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true
+        });
+
+        const sprite = new THREE.Sprite(material);
+        sprite.position.copy(position);
+        sprite.position.y += 0.5; // Offset label position
+        sprite.scale.set(2, 1, 1);
+
+        this.scene.add(sprite);
     }
 
     /**
@@ -1100,9 +1538,190 @@ export class EnhancedNavigationHUD {
         });
         this.segmentLabels = [];
 
+        // Clean up segment meshes
+        this.segmentMeshes.forEach(mesh => {
+            this.scene.remove(mesh);
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) {
+                if (Array.isArray(mesh.material)) {
+                    mesh.material.forEach(m => m.dispose());
+                } else {
+                    mesh.material.dispose();
+                }
+            }
+        });
+        this.segmentMeshes = [];
+
         // Update plan and render
         this.navigationPlan = newPlan;
         this.renderNavigationPath();
+    }
+
+    /**
+     * Toggle route animation
+     */
+    public toggleRouteAnimation(): void {
+        this.useRouteAnimation = !this.useRouteAnimation;
+        this.currentRouteSegment = 0;
+        this.routeAnimationProgress = 0;
+        
+        if (this.useRouteAnimation) {
+            console.log("Route animation enabled - camera will follow navigation path");
+            
+            // Reset camera to start point when beginning animation
+            if (this.navigationPlan && this.navigationPlan.segments && this.navigationPlan.segments.length > 0) {
+                const startSegment = this.navigationPlan.segments[0];
+                if (startSegment && startSegment.from && startSegment.from.position) {
+                    const startPos = this.worldToSceneCoords(startSegment.from.position);
+                    this.camera.position.set(
+                        startPos.x + 5, 
+                        startPos.y + 5, 
+                        startPos.z + 5
+                    );
+                    this.controls.target.copy(startPos);
+                    this.controls.update();
+                }
+            }
+        } else {
+            console.log("Route animation disabled - returning to overview");
+            // Return to system overview
+            this.centerCameraOnPath(this.getAllPathPoints());
+        }
+    }
+    
+    /**
+     * Get all path points for camera centering
+     */
+    private getAllPathPoints(): THREE.Vector3[] {
+        const points: THREE.Vector3[] = [];
+        
+        if (this.navigationPlan && this.navigationPlan.segments) {
+            // Add origin point
+            if (this.navigationPlan.segments.length > 0 && 
+                this.navigationPlan.segments[0]!.from && 
+                this.navigationPlan.segments[0]!.from.position) {
+                points.push(this.worldToSceneCoords(this.navigationPlan.segments[0]!.from.position));
+            }
+            
+            // Add destination points for each segment
+            this.navigationPlan.segments.forEach(segment => {
+                if (segment.to && segment.to.position) {
+                    points.push(this.worldToSceneCoords(segment.to.position));
+                }
+            });
+        }
+        
+        return points;
+    }
+    
+    /**
+     * Update route animation
+     */
+    private updateRouteAnimation(deltaTime: number): void {
+        if (!this.useRouteAnimation || !this.navigationPlan || !this.navigationPlan.segments) {
+            return;
+        }
+        
+        // Get current segment
+        const segments = this.navigationPlan.segments;
+
+        if (this.currentRouteSegment >= segments.length) {
+            // Animation complete, restart
+            this.currentRouteSegment = 0;
+            this.routeAnimationProgress = 0;
+            return;
+        }
+        
+        const segment = segments[this.currentRouteSegment]!;
+        
+        // Get start and end points
+        const startPos = this.currentRouteSegment === 0 ? 
+            this.worldToSceneCoords(segment.from.position) : 
+            this.worldToSceneCoords(segments[this.currentRouteSegment - 1]!.to.position);
+            
+        const endPos = this.worldToSceneCoords(segment.to.position);
+        
+        // Calculate position along the segment
+        this.routeAnimationProgress += this.routeAnimationSpeed * deltaTime;
+        
+        // Highlight the current segment
+        this.highlightSegment(this.currentRouteSegment);
+        
+        // Move to next segment if complete
+        if (this.routeAnimationProgress >= 1.0) {
+            this.currentRouteSegment++;
+            this.routeAnimationProgress = 0;
+            return;
+        }
+        
+        // Calculate current position
+        const currentPos = new THREE.Vector3().lerpVectors(
+            startPos, 
+            endPos, 
+            this.routeAnimationProgress
+        );
+        
+        // Position camera near the current position, looking toward the target
+        const lookAhead = this.routeAnimationProgress + 0.1 <= 1.0 ? 
+            new THREE.Vector3().lerpVectors(startPos, endPos, this.routeAnimationProgress + 0.1) : 
+            endPos;
+            
+        // Calculate camera position slightly offset from the path
+        const offset = new THREE.Vector3(2, 1, 2);
+        
+        // Position camera
+        this.camera.position.copy(currentPos).add(offset);
+        this.controls.target.copy(lookAhead);
+        this.controls.update();
+        this.controlsNeedUpdate = true;
+    }
+
+    /**
+     * Update animations for objects in the scene
+     */
+    private updateAnimations(): void {
+        // Update pulse animations for waypoints
+        this.waypoints.forEach(waypoint => {
+            // Basic rotation for standard waypoints
+            waypoint.rotation.y += 0.01;
+            
+            // Handle pulse animations
+            if (waypoint.userData && waypoint.userData.pulseAnimation) {
+                const anim = waypoint.userData.pulseAnimation;
+                
+                // Determine scale change
+                if (anim.growing) {
+                    anim.initialScale += anim.rate;
+                    if (anim.initialScale > 1.5) {
+                        anim.growing = false;
+                    }
+                } else {
+                    anim.initialScale -= anim.rate;
+                    if (anim.initialScale < 0.5) {
+                        anim.growing = true;
+                    }
+                }
+                
+                // Apply scale
+                waypoint.scale.set(
+                    anim.initialScale,
+                    anim.initialScale,
+                    anim.initialScale
+                );
+                
+                // Update opacity based on scale
+                if (waypoint.material) {
+                    const material = waypoint.material as THREE.MeshBasicMaterial;
+                    if (material.transparent) {
+                        // Fade out as it expands
+                        material.opacity = 1.0 - ((anim.initialScale - 0.5) / 1.0);
+                    }
+                }
+            }
+        });
+        
+        // Update highlighted segment animation
+        this.updateHighlightedSegment();
     }
 
     /**
@@ -1131,6 +1750,10 @@ export class EnhancedNavigationHUD {
             this.animationFrameId = requestAnimationFrame(this.renderScene.bind(this));
             this.forceRender = false;
 
+            // Calculate delta time for animations
+            const deltaTime = timestamp - this.lastRenderTime;
+            this.lastRenderTime = timestamp;
+
             // Profile frame time
             performance.mark('frame-start');
 
@@ -1140,19 +1763,19 @@ export class EnhancedNavigationHUD {
                 this.controlsNeedUpdate = false;
             }
 
-            // Optimize animation by skipping frames
-            if (timestamp - this.lastAnimationTime > 100) { // 10 FPS for animations
+            // Update route animation if enabled
+            if (this.useRouteAnimation) {
+                this.updateRouteAnimation(deltaTime);
+            }
+            // Otherwise update regular animations periodically
+            else if (timestamp - this.lastAnimationTime > 100) { // 10 FPS for animations
                 this.updateAnimations();
                 this.lastAnimationTime = timestamp;
             }
 
-            // Calculate frame time
-            const frameTime = timestamp - this.lastRenderTime;
-            this.lastRenderTime = timestamp;
-
             // Detect slow frames
-            if (frameTime > 100) { // More than 100ms (less than 10 FPS)
-                console.warn(`Slow frame detected: ${frameTime.toFixed(2)}ms (${(1000 / frameTime).toFixed(1)} FPS)`);
+            if (deltaTime > 100) { // More than 100ms (less than 10 FPS)
+                console.warn(`Slow frame detected: ${deltaTime.toFixed(2)}ms (${(1000 / deltaTime).toFixed(1)} FPS)`);
                 this.slowFrameCount++;
 
                 if (this.slowFrameCount > 5) {
@@ -1174,16 +1797,6 @@ export class EnhancedNavigationHUD {
             console.error("Critical error in render loop:", error);
             this.handleRenderError(error);
         }
-    }
-
-    /**
-     * Update animations for objects in the scene
-     */
-    private updateAnimations(): void {
-        // Rotate waypoints for visibility
-        this.waypoints.forEach(waypoint => {
-            waypoint.rotation.y += 0.01;
-        });
     }
 
     /**
