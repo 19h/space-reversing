@@ -1762,7 +1762,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         container_name: Option<&str>, 
         pos_x: f64, 
         pos_y: f64, 
-        pos_z: f64
+        pos_z: f64,
+        system_name: Option<&str>
     ) -> Option<NavigationPlan> {
         let current_position = match self.core.get_current_position() {
             Some(pos) => pos,
@@ -1812,14 +1813,18 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         };
         
-        // Destination system determination
-        let destination_system = match &destination_container {
-            Some(container) => container.system.to_string(),
-            None => {
-                // If coordinates are global without container, try to infer the system
-                // Default to current system if inference fails
-                self.core.get_current_object_container()
-                    .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string())
+        // Destination system determination - prioritize explicit system parameter
+        let destination_system = match system_name {
+            // Use explicitly provided system name if available
+            Some(name) => name.to_string(),
+            None => match &destination_container {
+                // Otherwise use container's system
+                Some(container) => container.system.to_string(),
+                None => {
+                    // Last resort: infer from current position if no explicit system or container
+                    self.core.get_current_object_container()
+                        .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string())
+                }
             }
         };
         

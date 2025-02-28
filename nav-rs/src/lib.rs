@@ -69,9 +69,10 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
         container_name: Option<&str>, 
         pos_x: f64, 
         pos_y: f64, 
-        pos_z: f64
+        pos_z: f64,
+        system_name: Option<&str>   
     ) -> Option<NavigationPlan> {
-        self.planner.plan_navigation_to_coordinates(container_name, pos_x, pos_y, pos_z)
+        self.planner.plan_navigation_to_coordinates(container_name, pos_x, pos_y, pos_z, system_name)
     }
     
     /// Determine current solar system
