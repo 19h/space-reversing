@@ -6,19 +6,19 @@ use crate::types::{ObjectContainer, Quaternion, Vector3};
 /// Specialized utility for coordinate transformations in space navigation systems
 pub struct CoordinateTransformer {
     /// Cache for expensive coordinate transformations
-    transform_cache: Mutex<HashMap<String, (Vector3, Instant)>>,
+    pub transform_cache: Mutex<HashMap<String, (Vector3, Instant)>>,
     
     /// Cache hit statistics
-    cache_hits: Mutex<usize>,
+    pub cache_hits: Mutex<usize>,
     
     /// Cache miss statistics
-    cache_misses: Mutex<usize>,
+    pub cache_misses: Mutex<usize>,
     
     /// Cache size limit
-    cache_limit: usize,
+    pub cache_limit: usize,
     
     /// Cache prune threshold (percentage as a fraction)
-    cache_prune_threshold: f64,
+    pub cache_prune_threshold: f64,
 }
 
 impl CoordinateTransformer {

@@ -12,23 +12,23 @@ use crate::types::{
 
 /// Advanced navigation planner with bidirectional search and pre-computed visibility
 pub struct NavigationPlanner<T: AstronomicalDataProvider> {
-    core: NavigationCore<T>,
-    data_provider: Arc<T>,
-    transformer: CoordinateTransformer,
+    pub core: NavigationCore<T>,
+    pub data_provider: Arc<T>,
+    pub transformer: CoordinateTransformer,
     
     // Navigation markers
-    orbital_markers: HashMap<String, Vec<Arc<NavNode>>>,
-    qt_markers: Vec<Arc<NavNode>>,
-    all_navigation_nodes: Vec<Arc<NavNode>>,
+    pub orbital_markers: HashMap<String, Vec<Arc<NavNode>>>,
+    pub qt_markers: Vec<Arc<NavNode>>,
+    pub all_navigation_nodes: Vec<Arc<NavNode>>,
     
     // Precomputed visibility graph for efficient pathfinding
-    visibility_graph: HashMap<String, Vec<VisibilityEdge>>,
+    pub visibility_graph: HashMap<String, Vec<VisibilityEdge>>,
     
     // Maximum iterations for pathfinding
-    max_iterations: usize,
+    pub max_iterations: usize,
     
     // Current position reference frame
-    origin_container: Option<Arc<ObjectContainer>>,
+    pub origin_container: Option<Arc<ObjectContainer>>,
 }
 
 impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
@@ -1918,7 +1918,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
 /// Type of markers to search for
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum MarkerSearchType {
+pub enum MarkerSearchType {
     All,
     Orbital,
     QuantumTravel,
@@ -1926,21 +1926,21 @@ enum MarkerSearchType {
 
 /// Wrapper for destination entity reference
 #[derive(Debug, Clone)]
-enum DestinationEntity {
+pub enum DestinationEntity {
     Poi(PointOfInterest),
     Container(Arc<ObjectContainer>),
 }
 
 /// Planetary intercept check result
 #[derive(Debug, Clone)]
-struct PlanetaryInterceptResult {
-    required: bool,
-    parent_container: Option<Arc<ObjectContainer>>,
+pub struct PlanetaryInterceptResult {
+    pub required: bool,
+    pub parent_container: Option<Arc<ObjectContainer>>,
 }
 
 /// Optimal marker for navigation
 #[derive(Debug, Clone)]
-struct OptimalMarker {
-    name: String,
-    position: Vector3,
+pub struct OptimalMarker {
+    pub name: String,
+    pub position: Vector3,
 }

@@ -9,14 +9,14 @@ use crate::types::{
 
 /// Core navigation functionality for the space navigation system
 pub struct NavigationCore<T: AstronomicalDataProvider> {
-    data_provider: Arc<T>,
-    transformer: CoordinateTransformer,
-    current_position: Option<Vector3>,
-    previous_position: Option<Vector3>,
-    position_timestamp: u64,
-    previous_timestamp: u64,
-    selected_poi: Option<usize>,
-    current_object_container: Option<usize>,
+    pub data_provider: Arc<T>,
+    pub transformer: CoordinateTransformer,
+    pub current_position: Option<Vector3>,
+    pub previous_position: Option<Vector3>,
+    pub position_timestamp: u64,
+    pub previous_timestamp: u64,
+    pub selected_poi: Option<usize>,
+    pub current_object_container: Option<usize>,
 }
 
 impl<T: AstronomicalDataProvider> NavigationCore<T> {

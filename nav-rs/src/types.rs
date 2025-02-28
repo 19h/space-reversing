@@ -596,8 +596,8 @@ pub trait AstronomicalDataProvider {
 pub struct StaticAstronomicalData {
     pub pois: Vec<PointOfInterest>,
     pub containers: Vec<ObjectContainer>,
-    poi_name_map: HashMap<String, usize>,
-    container_name_map: HashMap<String, usize>,
+    pub poi_name_map: HashMap<String, usize>,
+    pub container_name_map: HashMap<String, usize>,
 }
 
 impl StaticAstronomicalData {
