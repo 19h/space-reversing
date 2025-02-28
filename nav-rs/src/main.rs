@@ -9,9 +9,9 @@ use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
 
-use nav_system::create_navigation_system;
-use nav_system::types::NamedDistance;
-use nav_system::types::{PointOfInterest, ObjectContainer};
+use starnav::create_navigation_system;
+use starnav::types::NamedDistance;
+use starnav::types::{PointOfInterest, ObjectContainer};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize logging
@@ -142,7 +142,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Loaded {} points of interest and {} object containers", pois.len(), containers.len());
     
     // Create navigation system
-    let mut nav_system = create_navigation_system(pois, containers);
+    let mut starnav = create_navigation_system(pois, containers);
     
     // Execute requested command
     if let Some(matches) = matches.subcommand_matches("navigate") {
@@ -155,19 +155,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Set position and plan route
         println!("Setting position at {} ({}, {}, {})", from_container, local_x, local_y, local_z);
-        nav_system.set_position_local(from_container, local_x, local_y, local_z);
+        starnav.set_position_local(from_container, local_x, local_y, local_z);
         
         println!("Planning route to {}...", destination);
-        match nav_system.plan_navigation(destination) {
+        match starnav.plan_navigation(destination) {
             Some(plan) => {
                 // Print navigation instructions
-                let instructions = nav_system.format_navigation_instructions(&plan);
+                let instructions = starnav.format_navigation_instructions(&plan);
                 println!("\n{}", instructions);
                 
                 // Show nearby landmarks at destination
                 if let Some(last_segment) = plan.segments.last() {
                     let destination_pos = &last_segment.to.position;
-                    let nearby = nav_system.find_nearby_pois(3);
+                    let nearby = starnav.find_nearby_pois(3);
                     
                     let filtered_nearby: Vec<_> = nearby.into_iter()
                         .filter(|poi| poi.distance < 100.0 && poi.name != destination)
@@ -193,10 +193,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Set position and find nearby POIs
         println!("Setting position at {} ({}, {}, {})", from_container, local_x, local_y, local_z);
-        nav_system.set_position_local(from_container, local_x, local_y, local_z);
+        starnav.set_position_local(from_container, local_x, local_y, local_z);
         
         println!("Finding nearby points of interest...");
-        let nearby = nav_system.find_nearby_pois(limit);
+        let nearby = starnav.find_nearby_pois(limit);
         
         if nearby.is_empty() {
             println!("No nearby points of interest found.");

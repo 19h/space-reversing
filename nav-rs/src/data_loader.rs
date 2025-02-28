@@ -5,7 +5,7 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-use nav_system::types::{
+use starnav::types::{
     ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System, Vector3,
 };
 
