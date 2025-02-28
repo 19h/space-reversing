@@ -339,29 +339,26 @@ mod poi_handlers {
     ) -> Result<HttpResponse, actix_web::Error> {
         // Get nav system
         let nav_system = data.lock_nav_system()?;
-        let data_provider = nav_system.data_provider.clone();
+        let data_provider = &*nav_system.data_provider;
         
         // Get all POIs and containers
-        let all_pois = data_provider.get_all_points_of_interest();
-        let all_containers = data_provider.get_all_object_containers();
+        let all_pois = data_provider.pois.clone();
+        let all_containers = data_provider.containers.clone();
         
         // Filter POIs
         let filtered_pois: Vec<_> = all_pois.iter()
             .filter(|poi| {
                 // Filter by system if specified
                 if let Some(ref system_name) = query.system_name {
-                    if let Some(system_info) = data_provider.get_solar_system_for_position(&poi.position) {
-                        if system_info.to_string() != *system_name {
-                            return false;
-                        }
-                    } else {
+                    // Use the system property directly instead of deriving from position
+                    if poi.system.to_string() != *system_name {
                         return false;
                     }
                 }
                 
                 // Filter by container if specified
                 if let Some(ref container_type) = query.container_type {
-                    if let Some(ref container_name) = poi.obj_container {
+                    if let Some(container_name) = &poi.obj_container {
                         if let Some(container) = data_provider.get_object_container_by_name(container_name) {
                             if format!("{:?}", container.container_type) != *container_type {
                                 return false;
@@ -391,11 +388,8 @@ mod poi_handlers {
             .filter(|container| {
                 // Filter by system if specified
                 if let Some(ref system_name) = query.system_name {
-                    if let Some(system_info) = data_provider.get_solar_system_for_position(&container.position) {
-                        if system_info.to_string() != *system_name {
-                            return false;
-                        }
-                    } else {
+                    // Use the system property directly instead of deriving from position
+                    if container.system.to_string() != *system_name {
                         return false;
                     }
                 }
@@ -671,6 +665,8 @@ mod coordinate_handlers {
 
 // Handler functions for position and environmental operations
 mod position_handlers {
+    use starnav::types::System;
+
     use super::*;
 
     // Handler for getting current position and system
@@ -690,9 +686,10 @@ mod position_handlers {
         let container = nav_system.get_current_object_container()
             .map(|c| c.name.clone());
         
-        // Get current system
-        let system_info = nav_system.get_current_solar_system(None);
-        let system = Some(system_info.to_string());
+        // Get current system directly from the current object container
+        let system = nav_system.get_current_object_container()
+            .map(|c| c.system.to_string())
+            .or_else(|| Some(System::Stanton.to_string()));
         
         let response = PositionResponse {
             x: position.x,

@@ -1397,9 +1397,9 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "starnav"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45300b0526356203928e688fe1f87e6b560d1d4ee290564e5316fc39205587a1"
+checksum = "ce1d3fa583f2232abbd0051caba212d1ef8a312a6ce6386bf2b27f475c1874a5"
 dependencies = [
  "chrono",
  "clap",
