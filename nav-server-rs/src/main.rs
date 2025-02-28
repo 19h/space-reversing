@@ -57,9 +57,9 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
         pos_x: f64, 
         pos_y: f64, 
         pos_z: f64,
-        system_name: Option<&str>
+        system: Option<&str>
     ) -> Option<NavigationPlan> {
-        self.planner.plan_navigation_to_coordinates(container_name, pos_x, pos_y, pos_z, system_name)
+        self.planner.plan_navigation_to_coordinates(container_name, pos_x, pos_y, pos_z, system)
     }
 }
 
@@ -195,7 +195,7 @@ struct NavigateToCoordinatesQuery {
     to_x: f64,
     to_y: f64,
     to_z: f64,
-    system_name: Option<String>,
+    system: Option<String>,
 }
 
 // Query parameters for global-to-local coordinate transformation
@@ -250,7 +250,7 @@ struct ResolveContainerQuery {
 // Query parameters for filtering POIs and containers
 #[derive(Deserialize)]
 struct FilterQuery {
-    system_name: Option<String>,
+    system: Option<String>,
     container_type: Option<String>,
     poi_type: Option<String>,
 }
@@ -349,9 +349,9 @@ mod poi_handlers {
         let filtered_pois: Vec<_> = all_pois.iter()
             .filter(|poi| {
                 // Filter by system if specified
-                if let Some(ref system_name) = query.system_name {
+                if let Some(ref system) = query.system {
                     // Use the system property directly instead of deriving from position
-                    if poi.system.to_string() != *system_name {
+                    if poi.system.to_string().to_lowercase() != *system.to_lowercase() {
                         return false;
                     }
                 }
@@ -387,16 +387,16 @@ mod poi_handlers {
         let filtered_containers: Vec<_> = all_containers.iter()
             .filter(|container| {
                 // Filter by system if specified
-                if let Some(ref system_name) = query.system_name {
+                if let Some(ref system) = query.system {
                     // Use the system property directly instead of deriving from position
-                    if container.system.to_string() != *system_name {
+                    if container.system.to_string().to_lowercase() != *system.to_lowercase() {
                         return false;
                     }
                 }
                 
                 // Filter by container type if specified
                 if let Some(ref container_type) = query.container_type {
-                    if format!("{:?}", container.container_type) != *container_type {
+                    if format!("{:?}", container.container_type).to_lowercase() != *container_type.to_lowercase() {
                         return false;
                     }
                 }
@@ -558,7 +558,7 @@ mod navigation_handlers {
                 query.to_x,
                 query.to_y,
                 query.to_z,
-                query.system_name.as_deref()
+                query.system.as_deref()
             )
         }
     }
