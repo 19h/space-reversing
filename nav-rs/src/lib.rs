@@ -17,10 +17,9 @@ use std::sync::Arc;
 
 pub use coordinate_transform::CoordinateTransformer;
 pub use nav_planner::NavigationPlanner;
-pub use types::{AstronomicalDataProvider, NavigationPlan, PointOfInterest, StaticAstronomicalData};
+pub use types::{AstronomicalDataProvider, NavigationPlan, PointOfInterest, ObjectContainer, StaticAstronomicalData};
 
 pub use types::NamedDistance;
-pub use types::{PointOfInterest, ObjectContainer};
 
 /// Navigation system for interplanetary travel calculations
 pub struct SpaceNavigationSystem<T: AstronomicalDataProvider> {
