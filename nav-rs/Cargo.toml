@@ -1,9 +1,9 @@
 [package]
-name = "nav_system"
+name = "sc_nav_system"
 version = "0.1.0"
 edition = "2021"
-authors = ["Star Citizen Navigation Team"]
-description = "A comprehensive navigation system for celestial navigation"
+authors = ["Kenan Sulayman <sc_nav@ci.ax>"]
+description = "A comprehensive navigation system for celestial navigation in Star Citizen"
 license = "MIT"
 repository = "https://github.com/sc-nav/nav-system"
 
