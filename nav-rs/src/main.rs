@@ -1,8 +1,4 @@
-pub mod types;
-pub mod coordinate_transform;
-pub mod nav_core;
-pub mod nav_planner;
-pub mod data_loader;
+use starnav::data_loader;
 
 use clap::{App, Arg, SubCommand};
 use env_logger::Builder;
@@ -10,8 +6,6 @@ use log::LevelFilter;
 use std::io::Write;
 
 use starnav::create_navigation_system;
-use starnav::types::NamedDistance;
-use starnav::types::{PointOfInterest, ObjectContainer};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize logging

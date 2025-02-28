@@ -4,7 +4,6 @@
 //! pathfinding, quaternion-based coordinate transformations, and collision detection.
 //! Implements optimized bidirectional A* search with pre-computed visibility graphs.
 
-#[macro_use]
 extern crate log;
 
 pub mod types;
