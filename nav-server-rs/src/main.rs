@@ -247,6 +247,14 @@ struct ResolveContainerQuery {
     z: f64,
 }
 
+// Query parameters for filtering POIs and containers
+#[derive(Deserialize)]
+struct FilterQuery {
+    system_name: Option<String>,
+    container_type: Option<String>,
+    poi_type: Option<String>,
+}
+
 // API Handlers
 // ---------------------------------------------------------------------------
 
@@ -322,6 +330,101 @@ mod poi_handlers {
             position,
             container,
         }
+    }
+
+    // Handler for getting filtered POIs and containers
+    pub async fn get_filtered_data(
+        query: web::Query<FilterQuery>,
+        data: web::Data<AppState>,
+    ) -> Result<HttpResponse, actix_web::Error> {
+        // Get nav system
+        let nav_system = data.lock_nav_system()?;
+        let data_provider = nav_system.data_provider.clone();
+        
+        // Get all POIs and containers
+        let all_pois = data_provider.get_all_points_of_interest();
+        let all_containers = data_provider.get_all_object_containers();
+        
+        // Filter POIs
+        let filtered_pois: Vec<_> = all_pois.iter()
+            .filter(|poi| {
+                // Filter by system if specified
+                if let Some(ref system_name) = query.system_name {
+                    if let Some(system_info) = data_provider.get_solar_system_for_position(&poi.position) {
+                        if system_info.to_string() != *system_name {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                
+                // Filter by container if specified
+                if let Some(ref container_type) = query.container_type {
+                    if let Some(ref container_name) = poi.obj_container {
+                        if let Some(container) = data_provider.get_object_container_by_name(container_name) {
+                            if format!("{:?}", container.container_type) != *container_type {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    } else if *container_type != "None" {
+                        return false;
+                    }
+                }
+                
+                // Filter by POI type if specified
+                if let Some(ref poi_type) = query.poi_type {
+                    if format!("{:?}", poi.poi_type) != *poi_type {
+                        return false;
+                    }
+                }
+                
+                true
+            })
+            .cloned()
+            .collect();
+        
+        // Filter containers
+        let filtered_containers: Vec<_> = all_containers.iter()
+            .filter(|container| {
+                // Filter by system if specified
+                if let Some(ref system_name) = query.system_name {
+                    if let Some(system_info) = data_provider.get_solar_system_for_position(&container.position) {
+                        if system_info.to_string() != *system_name {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                
+                // Filter by container type if specified
+                if let Some(ref container_type) = query.container_type {
+                    if format!("{:?}", container.container_type) != *container_type {
+                        return false;
+                    }
+                }
+                
+                true
+            })
+            .cloned()
+            .collect();
+        
+        // Create response structure
+        #[derive(Serialize)]
+        struct FilteredDataResponse {
+            pois: Vec<PointOfInterest>,
+            containers: Vec<ObjectContainer>,
+        }
+        
+        let response = FilteredDataResponse {
+            pois: filtered_pois,
+            containers: filtered_containers,
+        };
+        
+        Ok(HttpResponse::Ok().json(response))
     }
 }
 
@@ -718,6 +821,7 @@ async fn main() -> std::io::Result<()> {
                     // POI endpoints
                     .route("/poi/nearby", web::get().to(poi_handlers::get_nearby_pois))
                     .route("/poi/in-radius", web::get().to(poi_handlers::find_pois_in_radius))
+                    .route("/data/filtered", web::get().to(poi_handlers::get_filtered_data))
                     
                     // Navigation endpoints
                     .route("/navigate/json", web::get().to(navigation_handlers::navigate_json))
