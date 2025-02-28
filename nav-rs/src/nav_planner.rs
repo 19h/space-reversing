@@ -318,7 +318,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             // For QT markers that might be POIs, find the associated POI and check its system
             if node.node_type == NavNodeType::QuantumMarker {
                 if let Some(poi) = self.data_provider.get_point_of_interest_by_name(&node.name) {
-                    return poi.system == system.to_string();
+                    return poi.system == system;
                 }
             }
             
@@ -1918,12 +1918,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             (Some(poi), _) => {
                 // POI found
                 let pos = self.get_global_coordinates(poi);
-                let system = poi.system.clone();
-                (pos, system, DestinationEntity::Poi(poi.clone()))
+                (pos, poi.system, DestinationEntity::Poi(poi.clone()))
             },
             (_, Some(container)) => {
                 // Container found
-                (container.position, container.system.to_string(), DestinationEntity::Container(Arc::new(container.clone())))
+                (container.position, container.system, DestinationEntity::Container(Arc::new(container.clone())))
             },
             _ => {
                 log::error!("Destination entity '{}' not found in astronomical database", destination_name);
@@ -1933,7 +1932,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         
         // Origin system determination
         let origin_system = self.core.get_current_object_container()
-            .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string());
+            .map_or_else(|| System::Stanton, |c| c.system);
         
         // Cross-system routing validation
         if destination_system != origin_system {
@@ -2064,7 +2063,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     name: format!("Coordinate Target ({:.1}, {:.1}, {:.1})", pos_x, pos_y, pos_z),
                     position: destination_pos,
                     obj_container: None,
-                    system: destination_system,
+                    system: System::from_str(&destination_system).unwrap_or(System::Stanton),
                     has_qt_marker: false,
                     poi_type: PoiType::Unknown,
                     class: "Custom".to_string(),

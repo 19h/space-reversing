@@ -222,7 +222,7 @@ mod tests {
             types::PointOfInterest {
                 id: 1,
                 name: "Shubin Mining Facility SCD-1".to_string(),
-                system: "Stanton".to_string(),
+                system: System::Stanton,
                 obj_container: Some("Daymar".to_string()),
                 poi_type: PoiType::Outpost,
                 class: "Mining".to_string(),
@@ -236,7 +236,7 @@ mod tests {
             types::PointOfInterest {
                 id: 2,
                 name: "Lorville".to_string(),
-                system: "Stanton".to_string(),
+                system: System::Stanton,
                 obj_container: Some("Hurston".to_string()),
                 poi_type: PoiType::LandingZone,
                 class: "City".to_string(),
@@ -250,7 +250,7 @@ mod tests {
             types::PointOfInterest {
                 id: 3,
                 name: "New Babbage".to_string(),
-                system: "Stanton".to_string(),
+                system: System::Stanton,
                 obj_container: Some("MicroTech".to_string()),
                 poi_type: PoiType::LandingZone,
                 class: "City".to_string(),

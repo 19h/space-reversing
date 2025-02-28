@@ -11,7 +11,7 @@ use crate::types::{
 
 /// Serializable container representation for data loading
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct SerializedContainer {
+pub struct SerializedContainer {
     pub id: u32,
     pub system: String,
     pub cont_type: String,
@@ -37,24 +37,24 @@ struct SerializedContainer {
 
 /// Serializable POI representation for data loading
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct SerializedPoi {
-    id: u32,
-    name: String,
-    system: String,
+pub struct SerializedPoi {
+    pub id: u32,
+    pub name: String,
+    pub system: String,
     #[serde(default)]
-    obj_container: Option<String>,
-    poi_type: String,
-    class: String,
-    pos_x: f64,
-    pos_y: f64,
-    pos_z: f64,
-    has_qt_marker: bool,
+    pub obj_container: Option<String>,
+    pub poi_type: String,
+    pub class: String,
+    pub pos_x: f64,
+    pub pos_y: f64,
+    pub pos_z: f64,
+    pub has_qt_marker: bool,
     #[serde(default)]
-    date_added: Option<String>,
+    pub date_added: Option<String>,
     #[serde(default)]
-    comment: Option<String>,
+    pub comment: Option<String>,
     #[serde(default)]
-    with_version: Option<String>,
+    pub with_version: Option<String>,
 }
 
 /// Data loading error types
@@ -171,7 +171,7 @@ pub fn load_pois(path: &str) -> Result<Vec<PointOfInterest>, DataLoadError> {
         let poi = PointOfInterest {
             id: sp.id,
             name: sp.name,
-            system: sp.system,
+            system: System::from_str(&sp.system).unwrap_or(System::Stanton),
             obj_container: sp.obj_container,
             poi_type,
             class: sp.class,
@@ -285,7 +285,7 @@ mod tests {
         assert_eq!(pois.len(), 1);
         assert_eq!(pois[0].id, 1);
         assert_eq!(pois[0].name, "Lorville");
-        assert_eq!(pois[0].system, "Stanton");
+        assert_eq!(pois[0].system, System::Stanton);
         assert_eq!(pois[0].obj_container, Some("Hurston".to_string()));
         assert_eq!(pois[0].poi_type, PoiType::LandingZone);
         assert_eq!(pois[0].position.x, -328.91);

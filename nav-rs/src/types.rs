@@ -356,7 +356,7 @@ impl ObjectContainer {
 pub struct PointOfInterest {
     pub id: u32,
     pub name: String,
-    pub system: String,
+    pub system: System,
     pub obj_container: Option<String>,
     pub poi_type: PoiType,
     pub class: String,
@@ -371,7 +371,7 @@ impl PointOfInterest {
     pub fn new(
         id: u32,
         name: String,
-        system: String,
+        system: System,
         obj_container: Option<String>,
         poi_type: PoiType,
         class: String,
