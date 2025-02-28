@@ -1,5 +1,5 @@
 [package]
-name = "sc_nav_system"
+name = "star_nav"
 version = "0.1.0"
 edition = "2021"
 authors = ["Kenan Sulayman <sc_nav@ci.ax>"]
