@@ -1,6 +1,6 @@
 [package]
 name = "starnav"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["Kenan Sulayman <sc_nav@ci.ax>"]
 description = "A comprehensive navigation system for celestial navigation in Star Citizen"

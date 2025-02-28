@@ -4,10 +4,7 @@ use std::sync::Arc;
 use crate::coordinate_transform::{CoordinateTransformer, TransformDirection};
 use crate::nav_core::NavigationCore;
 use crate::types::{
-    AstronomicalDataProvider, ContainerType, EulerAngles, LineOfSightResult, MeetingPoint,
-    NamedDistance, NavNode, NavNodeType, NavigationPlan, ObjectContainer, PathComplexity,
-    PathPoint, PathSegment, PointOfInterest, SearchDirection, System, TravelType, Vector3,
-    VisibilityEdge,
+    AstronomicalDataProvider, ContainerType, EulerAngles, LineOfSightResult, MeetingPoint, NamedDistance, NavNode, NavNodeType, NavigationPlan, ObjectContainer, PathComplexity, PathPoint, PathSegment, PoiType, PointOfInterest, SearchDirection, System, TravelType, Vector3, VisibilityEdge
 };
 
 /// Advanced navigation planner with bidirectional search and pre-computed visibility
@@ -1751,6 +1748,130 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             Some(p) => p,
             None => {
                 log::error!("Path computation failed: no viable route found");
+                return None;
+            }
+        };
+        
+        // Navigation plan synthesis
+        Some(self.create_navigation_plan(&path))
+    }
+
+    /// Plan navigation to specific coordinates, either global or relative to a container
+    pub fn plan_navigation_to_coordinates(
+        &self, 
+        container_name: Option<&str>, 
+        pos_x: f64, 
+        pos_y: f64, 
+        pos_z: f64
+    ) -> Option<NavigationPlan> {
+        let current_position = match self.core.get_current_position() {
+            Some(pos) => pos,
+            None => {
+                log::error!("Navigation origin undefined: position telemetry unavailable");
+                return None;
+            }
+        };
+        
+        // Determine if coordinates are global or local (container-relative)
+        let (destination_pos, destination_container) = match container_name {
+            // Local coordinates - need to transform to global
+            Some(name) => {
+                let container_opt = self.data_provider.get_object_container_by_name(name);
+                
+                match container_opt {
+                    Some(container) => {
+                        // Transform local coordinates to global using this container as reference
+                        let local_position = Vector3::new(pos_x, pos_y, pos_z);
+                        let global_position = self.transformer.transform_coordinates(
+                            &local_position,
+                            container,
+                            TransformDirection::ToGlobal,
+                        );
+                        
+                        log::info!(
+                            "Local coordinates ({:.2}, {:.2}, {:.2}) relative to {} transformed to global: ({:.2}, {:.2}, {:.2})",
+                            pos_x, pos_y, pos_z, name, global_position.x, global_position.y, global_position.z
+                        );
+                        
+                        (global_position, Some(Arc::new(container.clone())))
+                    },
+                    None => {
+                        log::error!("Container '{}' not found for coordinate transformation", name);
+                        return None;
+                    }
+                }
+            },
+            // Global coordinates - use as is
+            None => {
+                let global_position = Vector3::new(pos_x, pos_y, pos_z);
+                log::info!(
+                    "Using global coordinates: ({:.2}, {:.2}, {:.2})",
+                    global_position.x, global_position.y, global_position.z
+                );
+                (global_position, None)
+            }
+        };
+        
+        // Destination system determination
+        let destination_system = match &destination_container {
+            Some(container) => container.system.to_string(),
+            None => {
+                // If coordinates are global without container, try to infer the system
+                // Default to current system if inference fails
+                self.core.get_current_object_container()
+                    .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string())
+            }
+        };
+        
+        // Origin system determination
+        let origin_system = self.core.get_current_object_container()
+            .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string());
+        
+        // Cross-system routing validation
+        if destination_system != origin_system {
+            log::error!("Interstellar routing prohibited: {} → {}", origin_system, destination_system);
+            return None;
+        }
+        
+        log::info!("Planning route to coordinates in {} system", destination_system);
+        log::info!(
+            "Destination coordinates: ({:.2}, {:.2}, {:.2})",
+            destination_pos.x, destination_pos.y, destination_pos.z
+        );
+        
+        // Create a coordinate-based destination entity
+        let destination_entity = match &destination_container {
+            Some(container) => DestinationEntity::Container(Arc::clone(container)),
+            None => {
+                // Create a synthetic POI for the coordinate point
+                let coordinate_poi = PointOfInterest {
+                    id: 0,
+                    name: format!("Coordinate Target ({:.1}, {:.1}, {:.1})", pos_x, pos_y, pos_z),
+                    position: destination_pos,
+                    obj_container: None,
+                    system: destination_system,
+                    has_qt_marker: false,
+                    poi_type: PoiType::Unknown,
+                    class: "Custom".to_string(),
+                    date_added: None,
+                    comment: None,
+                    with_version: None,
+                };
+                DestinationEntity::Poi(coordinate_poi)
+            }
+        };
+        
+        // Try to create a hierarchical planetary route
+        let path = self.create_hierarchical_planetary_route(
+            &current_position,
+            &destination_pos,
+            &destination_entity,
+        );
+        
+        let path = match path {
+            Some(p) => p,
+            None => {
+                log::error!("Path computation failed: no viable route to coordinates");
                 return None;
             }
         };
