@@ -1,33 +1,38 @@
-use actix_web::{web, App, HttpServer, HttpResponse, Responder, middleware::Logger, error::ErrorInternalServerError};
-use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
-use std::io::Write;
+use actix_cors::Cors;
+use actix_web::{
+    error::ErrorInternalServerError, middleware::Logger, web, App, HttpResponse, HttpServer,
+};
 use env_logger::Builder;
 use log::LevelFilter;
+use serde::{Deserialize, Serialize};
+use std::io::Write;
+use std::sync::{Arc, Mutex};
 
 use starnav;
 
 // Re-export from the existing lib.rs
 use starnav::coordinate_transform::{CoordinateTransformer, TransformDirection};
 use starnav::nav_planner::NavigationPlanner;
-use starnav::types::{AstronomicalDataProvider, NavigationPlan, PointOfInterest, StaticAstronomicalData, Vector3};
-use starnav::types::ObjectContainer;
+use starnav::types::{
+    AstronomicalDataProvider, NavigationPlan, ObjectContainer, PointOfInterest,
+    StaticAstronomicalData, Vector3,
+};
 use starnav::types;
 
 // Import from lib.rs
 pub struct SpaceNavigationSystem<T: AstronomicalDataProvider> {
     planner: NavigationPlanner<T>,
-    data_provider: Arc<T>,
+    _data_provider: Arc<T>,
 }
 
 impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     pub fn new(data_provider: T) -> Self {
-        let data_provider = Arc::new(data_provider);
-        let planner = NavigationPlanner::new(Arc::clone(&data_provider));
+        let _data_provider = Arc::new(data_provider);
+        let planner = NavigationPlanner::new(Arc::clone(&_data_provider));
         
         Self {
             planner,
-            data_provider,
+            _data_provider,
         }
     }
     
@@ -63,7 +68,10 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     }
 }
 
-pub fn create_navigation_system(poi_data: Vec<PointOfInterest>, container_data: Vec<ObjectContainer>) -> SpaceNavigationSystem<StaticAstronomicalData> {
+pub fn create_navigation_system(
+    poi_data: Vec<PointOfInterest>,
+    container_data: Vec<ObjectContainer>,
+) -> SpaceNavigationSystem<StaticAstronomicalData> {
     let data_provider = StaticAstronomicalData::new(poi_data, container_data);
     SpaceNavigationSystem::new(data_provider)
 }
@@ -76,7 +84,12 @@ struct AppState {
 // Helper methods to reduce code duplication
 impl AppState {
     /// Get a lock on the navigation system, returning an error response if it fails
-    fn lock_nav_system(&self) -> Result<std::sync::MutexGuard<starnav::SpaceNavigationSystem<types::StaticAstronomicalData>>, actix_web::Error> {
+    fn lock_nav_system(
+        &self,
+    ) -> Result<
+        std::sync::MutexGuard<starnav::SpaceNavigationSystem<types::StaticAstronomicalData>>,
+        actix_web::Error,
+    > {
         self.nav_system.lock().map_err(|e| {
             log::error!("Failed to acquire lock: {}", e);
             ErrorInternalServerError("Server error: could not access navigation system")
@@ -84,7 +97,16 @@ impl AppState {
     }
     
     /// Set position in the navigation system based on provided parameters
-    fn set_position(&self, container: Option<&str>, x: f64, y: f64, z: f64) -> Result<std::sync::MutexGuard<starnav::SpaceNavigationSystem<types::StaticAstronomicalData>>, actix_web::Error> {
+    fn set_position(
+        &self,
+        container: Option<&str>,
+        x: f64,
+        y: f64,
+        z: f64,
+    ) -> Result<
+        std::sync::MutexGuard<starnav::SpaceNavigationSystem<types::StaticAstronomicalData>>,
+        actix_web::Error,
+    > {
         let mut nav_system = self.lock_nav_system()?;
         
         if let Some(container_name) = container {
@@ -146,12 +168,38 @@ struct LineOfSightResponse {
     distance_to_obstruction: Option<f64>,
 }
 
-// Request queries
-// ---------------------------------------------------------------------------
+// Query parameters for search operations
+#[derive(Deserialize)]
+struct SearchQuery {
+    query: String,
+    #[serde(default = "default_min_score")]
+    min_score: f64,
+    #[serde(default = "default_limit")]
+    limit: usize,
+    entity_type: Option<String>,
+}
+
+fn default_min_score() -> f64 {
+    0.3
+}
 
 fn default_limit() -> usize {
     10
 }
+
+// Response format for search results
+#[derive(Serialize)]
+struct SearchResponse {
+    name: String,
+    entity_type: String,
+    score: f64,
+    position: Option<Vector3>,
+    container: Option<String>,
+    system: Option<String>,
+}
+
+// Request queries
+// ---------------------------------------------------------------------------
 
 // Query parameters for nearby POIs endpoint
 #[derive(Deserialize)]
@@ -252,6 +300,22 @@ struct ResolveContainerQuery {
 struct FilterQuery {
     system: Option<String>,
     r#type: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(tag = "type", content = "data")]
+enum EntityWrapper {
+    PointOfInterest(PointOfInterest),
+    ObjectContainer(ObjectContainer),
+}
+
+impl From<types::Entity> for EntityWrapper {
+    fn from(entity: types::Entity) -> Self {
+        match entity {
+            types::Entity::PointOfInterest(poi) => EntityWrapper::PointOfInterest(poi),
+            types::Entity::ObjectContainer(container) => EntityWrapper::ObjectContainer(container),
+        }
+    }
 }
 
 // API Handlers
@@ -788,6 +852,148 @@ mod position_handlers {
     }
 }
 
+// Handler functions for search operations
+mod search_handlers {
+    use super::*;
+
+    // Handler for POI search
+    pub async fn search_pois(
+        query: web::Query<SearchQuery>,
+        data: web::Data<AppState>,
+    ) -> Result<HttpResponse, actix_web::Error> {
+        // Get nav system
+        let nav_system = data.lock_nav_system()?;
+        
+        // Perform search
+        let results = nav_system.search_pois(
+            &query.query,
+            query.min_score,
+            query.limit
+        );
+        
+        // Convert to response format
+        let response: Vec<SearchResponse> = results.into_iter()
+            .map(|(poi, score)| SearchResponse {
+                name: poi.name.clone(),
+                entity_type: format!("{:?}", poi.poi_type),
+                score,
+                position: Some(poi.position),
+                container: poi.obj_container.clone(),
+                system: Some(poi.system.to_string()),
+            })
+            .collect();
+        
+        Ok(HttpResponse::Ok().json(response))
+    }
+
+    // Handler for container search
+    pub async fn search_containers(
+        query: web::Query<SearchQuery>,
+        data: web::Data<AppState>,
+    ) -> Result<HttpResponse, actix_web::Error> {
+        // Get nav system
+        let nav_system = data.lock_nav_system()?;
+        
+        // Perform search
+        let results = nav_system.search_containers(
+            &query.query,
+            query.min_score,
+            query.limit
+        );
+        
+        // Convert to response format
+        let response: Vec<SearchResponse> = results.into_iter()
+            .map(|(container, score)| SearchResponse {
+                name: container.name.clone(),
+                entity_type: format!("{:?}", container.container_type),
+                score,
+                position: Some(container.position),
+                container: None,
+                system: Some(container.system.to_string()),
+            })
+            .collect();
+        
+        Ok(HttpResponse::Ok().json(response))
+    }
+
+    // Handler for combined search of both POIs and containers
+    pub async fn search_all(
+        query: web::Query<SearchQuery>,
+        data: web::Data<AppState>,
+    ) -> Result<HttpResponse, actix_web::Error> {
+        // Get nav system
+        let nav_system = data.lock_nav_system()?;
+        
+        // Perform search
+        let results =
+            nav_system
+                .fuzzy_search_all(
+                    &query.query,
+                    query.min_score,
+                    query.limit
+                )
+                .into_iter()
+                .map(|entity| entity.into())
+                .collect::<Vec<EntityWrapper>>();
+
+        dbg!(&results);
+        
+        Ok(HttpResponse::Ok().json(results))
+    }
+
+    // Handler for optimized search with precomputation
+    pub async fn optimized_search(
+        query: web::Query<SearchQuery>,
+        data: web::Data<AppState>,
+    ) -> Result<HttpResponse, actix_web::Error> {
+        // Get nav system
+        let nav_system = data.lock_nav_system()?;
+        
+        // Parse entity type if provided
+        let entity_type = query.entity_type.as_deref().and_then(|type_str| {
+            match type_str.to_lowercase().as_str() {
+                "poi" => Some(types::EntityType::PointOfInterest),
+                "container" => Some(types::EntityType::ObjectContainer),
+                _ => None,
+            }
+        });
+        
+        // Perform search
+        let results = nav_system.optimized_search(
+            &query.query,
+            query.min_score,
+            query.limit,
+            entity_type
+        );
+        
+        // Convert to response format
+        let response: Vec<SearchResponse> = results.into_iter()
+            .map(|(entity, score)| {
+                match entity {
+                    types::Entity::PointOfInterest(poi) => SearchResponse {
+                        name: poi.name.clone(),
+                        entity_type: format!("{:?}", poi.poi_type),
+                        score,
+                        position: Some(poi.position),
+                        container: poi.obj_container.clone(),
+                        system: Some(poi.system.to_string()),
+                    },
+                    types::Entity::ObjectContainer(container) => SearchResponse {
+                        name: container.name.clone(),
+                        entity_type: format!("{:?}", container.container_type),
+                        score,
+                        position: Some(container.position),
+                        container: None,
+                        system: Some(container.system.to_string()),
+                    },
+                }
+            })
+            .collect();
+        
+        Ok(HttpResponse::Ok().json(response))
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Initialize logging
@@ -809,8 +1015,16 @@ async fn main() -> std::io::Result<()> {
     // Start HTTP server
     log::info!("Starting Space Navigation API server on http://{}:{}", server_addr, server_port);
     HttpServer::new(move || {
+        // Configure CORS middleware
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(3600);
+            
         App::new()
             .wrap(Logger::default())
+            .wrap(cors)  // Add CORS middleware
             .app_data(app_state.clone())
             .service(
                 web::scope("/api")
@@ -834,6 +1048,12 @@ async fn main() -> std::io::Result<()> {
                     // Position and environment endpoints
                     .route("/position/current", web::get().to(position_handlers::get_current_position))
                     .route("/check/line-of-sight", web::get().to(position_handlers::check_line_of_sight))
+                    
+                    // Search endpoints
+                    .route("/search/pois", web::get().to(search_handlers::search_pois))
+                    .route("/search/containers", web::get().to(search_handlers::search_containers))
+                    .route("/search/all", web::get().to(search_handlers::search_all))
+                    .route("/search/optimized", web::get().to(search_handlers::optimized_search))
             )
     })
     .bind((server_addr, server_port))?

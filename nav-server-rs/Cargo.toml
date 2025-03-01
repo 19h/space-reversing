@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+actix-cors = "0.7.0"
 actix-web = "4.9.0"
 chrono = "0.4.40"
 env_logger = "0.11.6"
 log = "0.4.26"
 serde = { version = "1.0.218", features = ["derive"] }
-starnav = "0.1.9"
+starnav = "0.2.1"
