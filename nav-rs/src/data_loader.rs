@@ -99,16 +99,10 @@ impl StdError for DataLoadError {
     }
 }
 
-/// Load celestial object containers from JSON file
-pub fn load_containers(path: &str) -> Result<Vec<ObjectContainer>, DataLoadError> {
-    // Read file
-    let file = File::open(path)?;
-    let mut reader = BufReader::new(file);
-    let mut contents = String::new();
-    reader.read_to_string(&mut contents)?;
-    
+/// Load celestial object containers from JSON bytes
+pub fn load_containers_from_bytes(data: &[u8]) -> Result<Vec<ObjectContainer>, DataLoadError> {
     // Parse JSON
-    let serialized_containers: Vec<SerializedContainer> = serde_json::from_str(&contents)?;
+    let serialized_containers: Vec<SerializedContainer> = serde_json::from_slice(data)?;
     
     // Convert to domain objects
     let mut containers = Vec::with_capacity(serialized_containers.len());
@@ -147,16 +141,22 @@ pub fn load_containers(path: &str) -> Result<Vec<ObjectContainer>, DataLoadError
     Ok(containers)
 }
 
-/// Load points of interest from JSON file
-pub fn load_pois(path: &str) -> Result<Vec<PointOfInterest>, DataLoadError> {
+/// Load celestial object containers from JSON file
+pub fn load_containers(path: &str) -> Result<Vec<ObjectContainer>, DataLoadError> {
     // Read file
     let file = File::open(path)?;
     let mut reader = BufReader::new(file);
-    let mut contents = String::new();
-    reader.read_to_string(&mut contents)?;
+    let mut buffer = Vec::new();
+    reader.read_to_end(&mut buffer)?;
     
+    // Use the byte-based loader
+    load_containers_from_bytes(&buffer)
+}
+
+/// Load points of interest from JSON bytes
+pub fn load_pois_from_bytes(data: &[u8]) -> Result<Vec<PointOfInterest>, DataLoadError> {
     // Parse JSON
-    let serialized_pois: Vec<SerializedPoi> = serde_json::from_str(&contents)?;
+    let serialized_pois: Vec<SerializedPoi> = serde_json::from_slice(data)?;
     
     // Convert to domain objects
     let mut pois = Vec::with_capacity(serialized_pois.len());
@@ -188,10 +188,30 @@ pub fn load_pois(path: &str) -> Result<Vec<PointOfInterest>, DataLoadError> {
     Ok(pois)
 }
 
+/// Load points of interest from JSON file
+pub fn load_pois(path: &str) -> Result<Vec<PointOfInterest>, DataLoadError> {
+    // Read file
+    let file = File::open(path)?;
+    let mut reader = BufReader::new(file);
+    let mut buffer = Vec::new();
+    reader.read_to_end(&mut buffer)?;
+    
+    // Use the byte-based loader
+    load_pois_from_bytes(&buffer)
+}
+
 /// Initialize full navigation dataset from files
 pub fn load_navigation_data(poi_path: &str, container_path: &str) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
     let containers = load_containers(container_path)?;
     let pois = load_pois(poi_path)?;
+    
+    Ok((pois, containers))
+}
+
+/// Initialize full navigation dataset from bytes
+pub fn load_navigation_data_from_bytes(poi_data: &[u8], container_data: &[u8]) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
+    let containers = load_containers_from_bytes(container_data)?;
+    let pois = load_pois_from_bytes(poi_data)?;
     
     Ok((pois, containers))
 }
