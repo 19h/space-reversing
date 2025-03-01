@@ -1,7 +1,9 @@
 [package]
 name = "starnav-server"
-version = "0.1.0"
-edition = "2024"
+version = "0.1.1"
+edition = "2021"
+description = "starnav server"
+license = "MIT"
 
 [dependencies]
 actix-cors = "0.7.0"
