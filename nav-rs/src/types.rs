@@ -303,7 +303,7 @@ impl PoiType {
 }
 
 /// Celestial body or station container
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ObjectContainer {
     pub id: u32,
     pub system: System,
@@ -352,7 +352,7 @@ impl ObjectContainer {
 }
 
 /// Point of interest location
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PointOfInterest {
     pub id: u32,
     pub name: String,
@@ -430,6 +430,39 @@ impl fmt::Display for TravelType {
         }
     }
 }
+
+/// Entity types
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum EntityType {
+    PointOfInterest,
+    ObjectContainer,
+}
+
+impl fmt::Display for EntityType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EntityType::PointOfInterest => write!(f, "poi"),
+            EntityType::ObjectContainer => write!(f, "container"),
+        }
+    }
+}
+
+impl EntityType {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "poi" => Some(EntityType::PointOfInterest),
+            "container" => Some(EntityType::ObjectContainer),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum Entity {
+    PointOfInterest(PointOfInterest),
+    ObjectContainer(ObjectContainer),
+}
+
 
 /// Navigation node types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

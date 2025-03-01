@@ -16,6 +16,7 @@ use std::sync::Arc;
 
 pub use coordinate_transform::CoordinateTransformer;
 pub use nav_planner::NavigationPlanner;
+pub use nav_core::SearchProvider;
 pub use types::{
     AstronomicalDataProvider, NavigationPlan, ObjectContainer, PointOfInterest,
     StaticAstronomicalData,
@@ -148,6 +149,26 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
         container: &types::ObjectContainer,
     ) -> types::Vector3 {
         self.planner.core.convert_to_static_coordinates(global_pos, container)
+    }
+
+    /// Search for Points of Interest using fuzzy matching
+    pub fn search_pois(&self, query: &str, min_score: f64, limit: usize) -> Vec<(PointOfInterest, f64)> {
+        self.planner.core.search_pois(query, min_score, limit)
+    }
+    
+    /// Search for object containers (planets, moons, stations) using fuzzy matching
+    pub fn search_containers(&self, query: &str, min_score: f64, limit: usize) -> Vec<(ObjectContainer, f64)> {
+        self.planner.core.search_containers(query, min_score, limit)
+    }
+    
+    /// Search both POIs and containers, returning combined results
+    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<(String, types::EntityType, f64)> {
+        self.planner.core.fuzzy_search_all(query, min_score, limit)
+    }
+    
+    /// Performance-optimized search using precomputation for better response times
+    pub fn optimized_search(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<types::EntityType>) -> Vec<(types::Entity, f64)> {
+        self.planner.core.search_with_precomputation(query, min_score, limit, entity_type)
     }
 }
 

@@ -3,8 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::coordinate_transform::{CoordinateTransformer, TransformDirection};
 use crate::types::{
-    AstronomicalDataProvider, ContainerType, EulerAngles, LineOfSightResult, NamedDistance,
-    NavNodeType, NavigationResult, ObjectContainer, PointOfInterest, Vector3,
+    AstronomicalDataProvider, ContainerType, Entity, EntityType, EulerAngles, LineOfSightResult, NamedDistance, NavNodeType, NavigationResult, ObjectContainer, PointOfInterest, Vector3
 };
 
 /// Core navigation functionality for the space navigation system
@@ -17,6 +16,21 @@ pub struct NavigationCore<T: AstronomicalDataProvider> {
     pub previous_timestamp: u64,
     pub selected_poi: Option<usize>,
     pub current_object_container: Option<usize>,
+}
+
+/// Trait for entity search functionality
+pub trait SearchProvider {
+    /// Generate trigrams from a string for fuzzy matching
+    fn generate_trigrams(&self, text: &str) -> Vec<String>;
+    
+    /// Calculate similarity score between two sets of trigrams
+    fn calculate_similarity(&self, trigrams1: &[String], trigrams2: &[String]) -> f64;
+    
+    /// Search for entities by name with fuzzy matching
+    fn search_entities(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<EntityType>) -> Vec<(Entity, f64)>;
+    
+    /// Search with precomputation for better performance
+    fn search_with_precomputation(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<EntityType>) -> Vec<(Entity, f64)>;
 }
 
 impl<T: AstronomicalDataProvider> NavigationCore<T> {
@@ -293,9 +307,9 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         container: &ObjectContainer,
     ) -> Vector3 {
         // Get elapsed time and calculate rotation angle based on rotVelX
-        let elapsed_utc_time_since_simulation_start = self.get_elapsed_utc_server_time();
+        let elapsed_utc_time = self.get_elapsed_utc_server_time();
         let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0;
-        let total_cycles = elapsed_utc_time_since_simulation_start / length_of_day_decimal;
+        let total_cycles = elapsed_utc_time / length_of_day_decimal;
         let current_cycle_dez = total_cycles % 1.0;
         let current_cycle_deg = current_cycle_dez * 360.0;
         let current_cycle_angle = container.rot_adj.x + current_cycle_deg;
@@ -334,7 +348,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         let dz = global_pos.z - container.position.z;
 
         // Get elapsed time and calculate rotation angle
-        let elapsed_utc_time_since_simulation_start = self.get_elapsed_utc_server_time();
+        let elapsed_utc_time = self.get_elapsed_utc_server_time();
         let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0; // Convert hours to day fraction
         
         // Prevent division by zero
@@ -343,7 +357,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             return *global_pos;
         }
         
-        let total_cycles = elapsed_utc_time_since_simulation_start / length_of_day_decimal;
+        let total_cycles = elapsed_utc_time / length_of_day_decimal;
         let current_cycle_dez = total_cycles % 1.0;
         let current_cycle_deg = current_cycle_dez * 360.0;
         let current_cycle_angle = container.rot_adj.x + current_cycle_deg;
@@ -428,8 +442,8 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         Some(NavigationResult {
             distance,
             direction,
-            eta,
             angular_deviation,
+            eta,
             closest_orbital_marker,
             closest_qt_beacon,
         })
@@ -571,5 +585,205 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         
         // Position isn't within any container
         None
+    }
+
+    /// Generate trigrams from a string for fuzzy matching
+    fn generate_trigrams(&self, text: &str) -> Vec<String> {
+        let normalized = text.to_lowercase();
+        
+        // Handle strings shorter than 3 characters
+        if normalized.len() < 3 {
+            return vec![normalized];
+        }
+        
+        let padded = format!("  {}  ", normalized);
+        let chars: Vec<char> = padded.chars().collect();
+        
+        let mut trigrams = Vec::new();
+        for i in 0..chars.len() - 2 {
+            let trigram = format!("{}{}{}", chars[i], chars[i + 1], chars[i + 2]);
+            trigrams.push(trigram);
+        }
+        
+        trigrams
+    }
+    
+    /// Calculate similarity score between two sets of trigrams
+    fn calculate_similarity(&self, trigrams1: &[String], trigrams2: &[String]) -> f64 {
+        if trigrams1.is_empty() || trigrams2.is_empty() {
+            return 0.0;
+        }
+        
+        let common = trigrams1.iter()
+            .filter(|t| trigrams2.contains(t))
+            .count();
+            
+        // Jaccard similarity: intersection / union
+        let union = trigrams1.len() + trigrams2.len() - common;
+        
+        if union == 0 {
+            0.0
+        } else {
+            common as f64 / union as f64
+        }
+    }
+}
+
+impl<T: AstronomicalDataProvider> SearchProvider for NavigationCore<T> {
+    fn generate_trigrams(&self, text: &str) -> Vec<String> {
+        self.generate_trigrams(text)
+    }
+    
+    fn calculate_similarity(&self, trigrams1: &[String], trigrams2: &[String]) -> f64 {
+        self.calculate_similarity(trigrams1, trigrams2)
+    }
+    
+    fn search_entities(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<EntityType>) -> Vec<(Entity, f64)> {
+        if query.trim().is_empty() {
+            return Vec::new();
+        }
+        
+        let query_trigrams = self.generate_trigrams(query);
+        let mut results = Vec::new();
+        
+        // Search POIs if no entity type is specified or if POI is specified
+        if entity_type.is_none() || entity_type == Some(EntityType::PointOfInterest) {
+            for poi in self.data_provider.get_points_of_interest() {
+                let poi_trigrams = self.generate_trigrams(&poi.name);
+                let score = self.calculate_similarity(&query_trigrams, &poi_trigrams);
+                
+                if score >= min_score {
+                    results.push((Entity::PointOfInterest(poi.clone()), score));
+                }
+            }
+        }
+        
+        // Search containers if no entity type is specified or if Container is specified
+        if entity_type.is_none() || entity_type == Some(EntityType::ObjectContainer) {
+            for container in self.data_provider.get_object_containers() {
+                let container_trigrams = self.generate_trigrams(&container.name);
+                let score = self.calculate_similarity(&query_trigrams, &container_trigrams);
+                
+                if score >= min_score {
+                    results.push((Entity::ObjectContainer(container.clone()), score));
+                }
+            }
+        }
+        
+        // Sort by score (descending) and limit results
+        results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        results.truncate(limit);
+        
+        results
+    }
+    
+    fn search_with_precomputation(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<EntityType>) -> Vec<(Entity, f64)> {
+        use std::collections::HashMap;
+        
+        static mut TRIGRAM_CACHE: Option<HashMap<String, Vec<String>>> = None;
+        
+        if query.trim().is_empty() {
+            return Vec::new();
+        }
+        
+        // Initialize cache if not already initialized
+        unsafe {
+            if TRIGRAM_CACHE.is_none() {
+                let mut cache = HashMap::new();
+                
+                // Cache POI and container trigrams
+                for poi in self.data_provider.get_points_of_interest() {
+                    cache.insert(poi.name.clone(), self.generate_trigrams(&poi.name));
+                }
+                
+                for container in self.data_provider.get_object_containers() {
+                    cache.insert(container.name.clone(), self.generate_trigrams(&container.name));
+                }
+                
+                TRIGRAM_CACHE = Some(cache);
+            }
+        }
+        
+        let query_trigrams = self.generate_trigrams(query);
+        let mut results = Vec::new();
+        
+        // Use the cached trigrams for efficient searching
+        unsafe {
+            if let Some(cache) = &TRIGRAM_CACHE {
+                // Process POIs
+                if entity_type.is_none() || entity_type == Some(EntityType::PointOfInterest) {
+                    for poi in self.data_provider.get_points_of_interest() {
+                        if let Some(trigrams) = cache.get(&poi.name) {
+                            let score = self.calculate_similarity(&query_trigrams, trigrams);
+                            if score >= min_score {
+                                results.push((Entity::PointOfInterest(poi.clone()), score));
+                            }
+                        }
+                    }
+                }
+                
+                // Process containers
+                if entity_type.is_none() || entity_type == Some(EntityType::ObjectContainer) {
+                    for container in self.data_provider.get_object_containers() {
+                        if let Some(trigrams) = cache.get(&container.name) {
+                            let score = self.calculate_similarity(&query_trigrams, trigrams);
+                            if score >= min_score {
+                                results.push((Entity::ObjectContainer(container.clone()), score));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Sort by score (descending) and limit results
+        results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        results.truncate(limit);
+        
+        results
+    }
+}
+
+// Backward compatibility methods
+impl<T: AstronomicalDataProvider> NavigationCore<T> {
+    /// Search for Points of Interest using fuzzy matching
+    pub fn search_pois(&self, query: &str, min_score: f64, limit: usize) -> Vec<(PointOfInterest, f64)> {
+        self.search_entities(query, min_score, limit, Some(EntityType::PointOfInterest))
+            .into_iter()
+            .filter_map(|(entity, score)| {
+                if let Entity::PointOfInterest(poi) = entity {
+                    Some((poi, score))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+    
+    /// Search for object containers using fuzzy matching
+    pub fn search_containers(&self, query: &str, min_score: f64, limit: usize) -> Vec<(ObjectContainer, f64)> {
+        self.search_entities(query, min_score, limit, Some(EntityType::ObjectContainer))
+            .into_iter()
+            .filter_map(|(entity, score)| {
+                if let Entity::ObjectContainer(container) = entity {
+                    Some((container, score))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+    
+    /// Search both POIs and containers, returning combined results
+    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<(String, EntityType, f64)> {
+        self.search_entities(query, min_score, limit, None)
+            .into_iter()
+            .map(|(entity, score)| {
+                match entity {
+                    Entity::PointOfInterest(poi) => (poi.name, EntityType::PointOfInterest, score),
+                    Entity::ObjectContainer(container) => (container.name, EntityType::ObjectContainer, score),
+                }
+            })
+            .collect()
     }
 }
