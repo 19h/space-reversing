@@ -1105,7 +1105,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         let planet_north = Vector3::new(0.0, 0.0, 1.0);
         
         // Calculate east direction as cross product of north and up
-        let east = Vector3::new(
+        let mut east = Vector3::new(
             r1_norm.y * planet_north.z - r1_norm.z * planet_north.y,
             r1_norm.z * planet_north.x - r1_norm.x * planet_north.z,
             r1_norm.x * planet_north.y - r1_norm.y * planet_north.x
@@ -1117,7 +1117,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         if east_mag < 0.001 {
             // Use the x-axis as reference instead
             let planet_east = Vector3::new(1.0, 0.0, 0.0);
-            let east = Vector3::new(
+            east = Vector3::new(
                 r1_norm.y * planet_east.z - r1_norm.z * planet_east.y,
                 r1_norm.z * planet_east.x - r1_norm.x * planet_east.z,
                 r1_norm.x * planet_east.y - r1_norm.y * planet_east.x

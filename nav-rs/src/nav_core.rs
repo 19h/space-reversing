@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::coordinate_transform::{CoordinateTransformer, TransformDirection};
 use crate::types::{
-    AstronomicalDataProvider, ContainerType, Entity, EntityType, EulerAngles, LineOfSightResult, NamedDistance, NavNodeType, NavigationResult, ObjectContainer, PointOfInterest, Vector3
+    AstronomicalDataProvider, Entity, EntityType, EulerAngles, LineOfSightResult, NamedDistance, NavigationResult, ObjectContainer, PointOfInterest, Vector3
 };
 
 /// Core navigation functionality for the space navigation system
@@ -216,7 +216,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     /// Find closest orbital marker to a position on a planet
     fn find_closest_orbital_marker(
         &self,
-        position: &Vector3,
+        _position: &Vector3,
         container: &ObjectContainer,
     ) -> NamedDistance {
         // Base implementation assumes no orbital markers data
@@ -775,14 +775,11 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     }
     
     /// Search both POIs and containers, returning combined results
-    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<(String, EntityType, f64)> {
+    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<Entity> {
         self.search_entities(query, min_score, limit, None)
             .into_iter()
-            .map(|(entity, score)| {
-                match entity {
-                    Entity::PointOfInterest(poi) => (poi.name, EntityType::PointOfInterest, score),
-                    Entity::ObjectContainer(container) => (container.name, EntityType::ObjectContainer, score),
-                }
+            .map(|(entity, _)| {
+                entity
             })
             .collect()
     }

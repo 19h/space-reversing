@@ -17,6 +17,7 @@ use std::sync::Arc;
 pub use coordinate_transform::CoordinateTransformer;
 pub use nav_planner::NavigationPlanner;
 pub use nav_core::SearchProvider;
+use types::Entity;
 pub use types::{
     AstronomicalDataProvider, NavigationPlan, ObjectContainer, PointOfInterest,
     StaticAstronomicalData,
@@ -162,7 +163,7 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     }
     
     /// Search both POIs and containers, returning combined results
-    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<(String, types::EntityType, f64)> {
+    pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<Entity> {
         self.planner.core.fuzzy_search_all(query, min_score, limit)
     }
     
