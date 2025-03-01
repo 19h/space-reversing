@@ -1082,19 +1082,42 @@ fn setup_logging() {
 
 /// Load navigation data from JSON files
 fn load_navigation_data() -> std::io::Result<(Vec<PointOfInterest>, Vec<ObjectContainer>)> {
-    let poi_path = "pois.json";
-    let container_path = "objContainers.json";
+    #[cfg(feature = "embedded-data")]
+    {
+        // Include the JSON files at compile time when the feature is enabled
+        let poi_data = include_bytes!("../pois.json");
+        let container_data = include_bytes!("../objContainers.json");
+        
+        log::info!("Loading navigation data from embedded files (embedded-data feature enabled)");
+        match starnav::data_loader::load_navigation_data_from_bytes(poi_data, container_data) {
+            Ok(data) => {
+                log::info!("Successfully loaded {} points of interest and {} object containers", 
+                           data.0.len(), data.1.len());
+                Ok(data)
+            },
+            Err(e) => {
+                log::error!("Error loading embedded data: {}", e);
+                Err(std::io::Error::new(std::io::ErrorKind::Other, format!("Data loading error: {}", e)))
+            }
+        }
+    }
     
-    log::info!("Loading navigation data from {} and {}", poi_path, container_path);
-    match starnav::data_loader::load_navigation_data(poi_path, container_path) {
-        Ok(data) => {
-            log::info!("Successfully loaded {} points of interest and {} object containers", 
-                       data.0.len(), data.1.len());
-            Ok(data)
-        },
-        Err(e) => {
-            log::error!("Error loading data: {}", e);
-            Err(std::io::Error::new(std::io::ErrorKind::Other, format!("Data loading error: {}", e)))
+    #[cfg(not(feature = "embedded-data"))]
+    {
+        let poi_path = "pois.json";
+        let container_path = "objContainers.json";
+        
+        log::info!("Loading navigation data from {} and {}", poi_path, container_path);
+        match starnav::data_loader::load_navigation_data(poi_path, container_path) {
+            Ok(data) => {
+                log::info!("Successfully loaded {} points of interest and {} object containers", 
+                           data.0.len(), data.1.len());
+                Ok(data)
+            },
+            Err(e) => {
+                log::error!("Error loading data: {}", e);
+                Err(std::io::Error::new(std::io::ErrorKind::Other, format!("Data loading error: {}", e)))
+            }
         }
     }
 }
