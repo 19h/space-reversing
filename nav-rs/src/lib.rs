@@ -15,6 +15,7 @@ pub mod data_loader;
 pub mod nav_core;
 pub mod nav_planner;
 pub mod types;
+pub mod vector3;
 
 use std::sync::Arc;
 
@@ -28,6 +29,7 @@ pub use types::{
 };
 
 pub use types::NamedDistance;
+use vector3::Vector3;
 
 /// Navigation system for interplanetary travel calculations
 pub struct SpaceNavigationSystem<T: AstronomicalDataProvider> {
@@ -103,7 +105,7 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     }
 
     /// Get the current position if available
-    pub fn get_current_position(&self) -> Option<types::Vector3> {
+    pub fn get_current_position(&self) -> Option<Vector3> {
         self.planner.core.get_current_position()
     }
 
@@ -118,41 +120,41 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     }
 
     /// Check if there is a clear line of sight between two positions
-    pub fn check_line_of_sight(&self, from: &types::Vector3, to: &types::Vector3) -> types::LineOfSightResult {
+    pub fn check_line_of_sight(&self, from: &Vector3, to: &Vector3) -> types::LineOfSightResult {
         self.planner.core.check_line_of_sight(from, to)
     }
 
     /// Resolve which container (planet/moon) a position is located within
-    pub fn resolve_container_at_position(&self, position: &types::Vector3) -> Option<types::ObjectContainer> {
+    pub fn resolve_container_at_position(&self, position: &Vector3) -> Option<types::ObjectContainer> {
         self.planner.core.resolve_container_at_position(position)
     }
 
     /// Find optimal orbital marker for navigation around an obstructing celestial body
-    pub fn find_optimal_orbital_marker(&self, from: &types::Vector3, to: &types::Vector3, obstruction: &types::ObjectContainer) -> nav_planner::OptimalMarker {
+    pub fn find_optimal_orbital_marker(&self, from: &Vector3, to: &Vector3, obstruction: &types::ObjectContainer) -> nav_planner::OptimalMarker {
         self.planner.find_optimal_orbital_marker(from, to, obstruction)
     }
 
     /// Calculate distance between two 3D points
-    pub fn calculate_distance(&self, from: &types::Vector3, to: &types::Vector3) -> f64 {
+    pub fn calculate_distance(&self, from: &Vector3, to: &Vector3) -> f64 {
         self.planner.core.calc_distance_3d(from, to)
     }
 
     /// Transform coordinates between local and global reference frames
     pub fn transform_coordinates(
         &self,
-        coords: &types::Vector3,
+        coords: &Vector3,
         container: &types::ObjectContainer,
         direction: coordinate_transform::TransformDirection,
-    ) -> types::Vector3 {
+    ) -> Vector3 {
         self.planner.transformer.transform_coordinates(coords, container, direction)
     }
 
     /// Convert global coordinates to non-rotating static coordinates
     pub fn convert_to_static_coordinates(
         &self,
-        global_pos: &types::Vector3,
+        global_pos: &Vector3,
         container: &types::ObjectContainer,
-    ) -> types::Vector3 {
+    ) -> Vector3 {
         self.planner.core.convert_to_static_coordinates(global_pos, container)
     }
 
@@ -189,7 +191,8 @@ pub fn create_navigation_system(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{ContainerType, PoiType, Quaternion, System, Vector3};
+    use crate::types::{ContainerType, PoiType, Quaternion, System};
+    use crate::vector3::Vector3;
 
     /// Create a minimal set of test objects for navigation testing
     fn create_test_data() -> (Vec<PointOfInterest>, Vec<types::ObjectContainer>) {

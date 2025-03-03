@@ -1,40 +1,10 @@
-use std::collections::HashMap;
-use std::sync::Arc;
+
+use std::{collections::HashMap, sync::Arc};
 use std::fmt;
 
+use crate::vector3::Vector3;
+
 use serde::{Deserialize, Serialize};
-
-/// 3D vector representation
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
-pub struct Vector3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
-
-impl Vector3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self { x, y, z }
-    }
-
-    pub fn distance(&self, other: &Vector3) -> f64 {
-        ((self.x - other.x).powi(2) + 
-         (self.y - other.y).powi(2) + 
-         (self.z - other.z).powi(2)).sqrt()
-    }
-    
-    pub fn normalized(&self) -> Self {
-        let magnitude = (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt();
-        if magnitude < 1e-6 {
-            return *self; // Return unchanged if near-zero magnitude
-        }
-        Self {
-            x: self.x / magnitude,
-            y: self.y / magnitude,
-            z: self.z / magnitude,
-        }
-    }
-}
 
 /// Quaternion representation for rotations
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]

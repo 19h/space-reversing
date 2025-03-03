@@ -6,8 +6,9 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System, Vector3,
+    ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System,
 };
+use crate::vector3::Vector3;
 
 /// Serializable container representation for data loading
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -4,8 +4,9 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use crate::coordinate_transform::{CoordinateTransformer, TransformDirection};
 use crate::types::{
     AstronomicalDataProvider, ContainerType, Entity, EntityType, EulerAngles, LineOfSightResult,
-    NamedDistance, NavigationResult, ObjectContainer, PoiType, PointOfInterest, System, Vector3,
+    NamedDistance, NavigationResult, ObjectContainer, PoiType, PointOfInterest, System,
 };
+use crate::vector3::Vector3;
 
 /// Core navigation functionality for the space navigation system
 pub struct NavigationCore<T: AstronomicalDataProvider> {

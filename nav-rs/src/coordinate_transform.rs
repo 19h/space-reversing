@@ -1,4 +1,5 @@
-use crate::types::{ObjectContainer, Quaternion, Vector3};
+use crate::types::{ObjectContainer, Quaternion};
+use crate::vector3::Vector3;
 use std::time::{Duration, SystemTime};
 use std::f64::consts::PI;
 
@@ -145,7 +146,8 @@ pub enum TransformDirection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{ContainerType, ObjectContainer, Quaternion, System, Vector3};
+    use crate::types::{ContainerType, ObjectContainer, Quaternion, System};
+    use crate::vector3::Vector3;
     use std::f64::consts::PI;
 
     /// Create a test container for coordinate transformation tests
