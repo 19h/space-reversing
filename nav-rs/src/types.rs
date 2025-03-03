@@ -392,6 +392,7 @@ impl fmt::Display for PathComplexity {
 pub enum TravelType {
     Quantum,
     Sublight,
+    Planetary,
 }
 
 impl fmt::Display for TravelType {
@@ -399,6 +400,7 @@ impl fmt::Display for TravelType {
         match self {
             TravelType::Quantum => write!(f, "QUANTUM TRAVEL"),
             TravelType::Sublight => write!(f, "SUBLIGHT"),
+            TravelType::Planetary => write!(f, "PLANETARY"),
         }
     }
 }
@@ -444,6 +446,7 @@ pub enum NavNodeType {
     OrbitalMarker,
     QuantumMarker,
     Intermediate,
+    LandingZone,
 }
 
 impl fmt::Display for NavNodeType {
@@ -454,6 +457,7 @@ impl fmt::Display for NavNodeType {
             NavNodeType::OrbitalMarker => write!(f, "om"),
             NavNodeType::QuantumMarker => write!(f, "qt_marker"),
             NavNodeType::Intermediate => write!(f, "intermediate"),
+            NavNodeType::LandingZone => write!(f, "landing_zone"),
         }
     }
 }

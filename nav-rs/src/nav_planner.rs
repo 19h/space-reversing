@@ -395,7 +395,20 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         });
 
         // Check if there's a direct path
-        let los_result = self.check_line_of_sight(start_pos, end_pos);
+        let los_result =
+            self.check_line_of_sight(
+                start_pos,
+                end_pos,    
+            );
+
+        if !los_result.has_los {
+            if let Some(obstruction) = &los_result.obstruction {
+                log::info!("Direct path obstructed by {} - need complex routing", obstruction.name);
+            } else {
+                log::info!("Direct path obstructed but couldn't identify obstruction");
+            }
+        }
+
         if los_result.has_los {
             // Direct path available - no changes needed
             log::info!("Direct path available - no obstructions detected");
@@ -830,7 +843,41 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     (time_to_max_speed * 2.0) + cruise_time
                 }
             }
+            TravelType::Planetary => {
+                // Planetary travel with acceleration model
+                // Max speed ~ 200 m/s, acceleration ~ 15 m/s² (slower than space)
+                let max_speed = 200.0; // m/s (slower surface speed)
+                let acceleration = 15.0; // m/s² (less acceleration on surface)
+
+                // Time to reach full speed
+                let time_to_max_speed: f64 = max_speed / acceleration;
+
+                // Distance covered during acceleration/deceleration
+                let accel_distance = 0.5 * acceleration * time_to_max_speed.powi(2);
+
+                // Check if we have enough distance to reach max speed
+                if distance <= accel_distance * 2.0 {
+                    // Short distance - triangular velocity profile
+                    let peak_time = (distance / acceleration).sqrt();
+                    peak_time * 2.0
+                } else {
+                    // Long distance - trapezoidal velocity profile
+                    let cruise_distance = distance - (accel_distance * 2.0);
+                    let cruise_time = cruise_distance / max_speed;
+                    (time_to_max_speed * 2.0) + cruise_time
+                }
+            }
         }
+    }
+
+    /// Determines if a navigation node represents a surface destination
+    fn is_surface_destination(&self, node: &NavNode) -> bool {
+        if let Some(container_ref) = &node.container_ref {
+            return container_ref.container_type == ContainerType::Planet 
+                || container_ref.container_type == ContainerType::Moon;
+        }
+
+        false
     }
 
     /// Create a detailed navigation plan from the path
@@ -858,14 +905,19 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let distance = from.position.distance(&to.position);
 
             // Determine travel type based on distance and node types
-            let use_sublight = from.node_type == NavNodeType::OrbitalMarker
+            let use_sublight =
+                from.node_type == NavNodeType::OrbitalMarker
                 || to.node_type == NavNodeType::OrbitalMarker
-                || distance <= 20000.0;
+                // Add check for landing zones
+                || to.node_type == NavNodeType::LandingZone
+                || distance <= 20000.0
+                // Add check for surface POIs
+                || (to.container_ref.is_some() && self.is_surface_destination(&to));
 
             let travel_type = if use_sublight {
-                TravelType::Sublight
+            TravelType::Sublight
             } else {
-                TravelType::Quantum
+            TravelType::Quantum
             };
 
             // Calculate estimated time
@@ -931,12 +983,19 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             PathComplexity::Complex
         };
 
+        // In your plan_navigation or plan_navigation_to_coordinates method
+        let obstruction_detected =
+            match self.check_line_of_sight(&path.first().unwrap().position, &path.last().unwrap().position) {
+                LineOfSightResult { has_los: false, .. } => true,
+                _ => false
+            };
+
         NavigationPlan {
             segments,
             total_distance,
             total_estimated_time,
             quantum_jumps,
-            obstruction_detected: !obstructions.is_empty(),
+            obstruction_detected,
             obstructions: obstructions.into_iter().collect(),
             path_complexity,
             origin_container: self.origin_container.clone(),
@@ -2203,6 +2262,117 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             destination_pos.y,
             destination_pos.z
         );
+
+        // Check if both points are on the same planetary body for surface navigation
+        let current_container = self.core.get_current_object_container();
+        let is_surface_navigation = match (current_container.as_ref(), &destination_container) {
+            (Some(cc), Some(dc)) => {
+                cc.name == dc.name &&
+                (cc.container_type == ContainerType::Planet || 
+                cc.container_type == ContainerType::Moon)
+            },
+            _ => false,
+        };
+
+        // Handle surface-to-surface navigation as a special case
+        if is_surface_navigation {
+            let planet = current_container.as_ref().unwrap();
+            log::info!("Planning surface navigation route on {}", planet.name);
+
+            // Calculate the direct surface angles (great circle navigation)
+            let surface_angles = self.calculate_surface_angles(
+                &current_position, 
+                &destination_pos, 
+                planet
+            );
+
+            // Calculate vectors from planet center to each point
+            let r1 = current_position - planet.position;
+            let r2 = destination_pos - planet.position;
+            
+            // Log the distances from planet center for debugging
+            log::debug!(
+                "Distance from planet center - Start: {:.2} km, End: {:.2} km", 
+                r1.magnitude() / 1000.0,
+                r2.magnitude() / 1000.0
+            );
+
+            // Get unit vectors (normalize)
+            let p1_norm = r1.normalized();
+            let p2_norm = r2.normalized();
+
+            // Compute the dot product between unit vectors
+            let dot_product = p1_norm.dot(&p2_norm);
+            
+            // Calculate the angle between vectors (in radians)
+            let angle_rad = dot_product.clamp(-1.0, 1.0).acos();
+            
+            // Great circle distance is the angle (in radians) times the radius
+            let great_circle_distance = angle_rad * planet.body_radius;
+
+            log::info!(
+                "Points are {:.2} degrees apart on the surface", 
+                angle_rad.to_degrees()
+            );
+            log::info!(
+                "Great-circle distance: {:.2} km", 
+                great_circle_distance / 1000.0
+            );
+
+            // Create a destination name
+            let dest_name = format!(
+                "Surface Target ({:.1}, {:.1}, {:.1})",
+                pos_x, pos_y, pos_z
+            );
+
+            // Create start and end nodes for the path
+            let start_node = Arc::new(NavNode::new(
+                current_position,
+                NavNodeType::Origin,
+                "Current Position".to_string(),
+                None
+            ));
+
+            let end_node = Arc::new(NavNode {
+                position: destination_pos,
+                parent_node: Some(Arc::clone(&start_node)),
+                g_cost: great_circle_distance,
+                h_cost: 0.0,
+                f_cost: great_circle_distance,
+                node_type: NavNodeType::Destination,
+                name: dest_name,
+                container_ref: None,
+                obstruction_path: false,
+                search_direction: SearchDirection::Forward,
+            });
+
+            // Create a simple path with just origin and destination
+            let path = vec![start_node, end_node];
+
+            // Create a navigation plan with the correct surface distance
+            let mut plan = self.create_navigation_plan(&path);
+            
+            // Override the distance with the accurate great-circle distance
+            // This ensures we're using the surface path length, not straight-line
+            plan.total_distance = great_circle_distance;
+            plan.segments[0].distance = great_circle_distance;
+            plan.segments[0].estimated_time = self.calculate_travel_time(
+                great_circle_distance, 
+                plan.segments[0].travel_type
+            );
+            plan.total_estimated_time = plan.segments[0].estimated_time;
+            
+            // Set the direction for surface navigation
+            plan.segments[0].direction = surface_angles;
+            
+            // Set planetary travel type (since TravelType::Surface doesn't exist)
+            plan.segments[0].travel_type = TravelType::Planetary;
+            
+            // Set a direct path complexity for surface navigation
+            plan.path_complexity = PathComplexity::Direct;
+            
+            return Some(plan);
+        }
 
         // Create a coordinate-based destination entity
         let destination_entity = match &destination_container {
@@ -3666,39 +3836,44 @@ fn test_surface_navigation_efficiency() {
         .unwrap()
         .clone();
     
-    // Create two points on the planet's surface at known locations
-    // We'll use points 45 degrees apart on the equator (significant distance)
+    // Use microTech's defined body_radius
     let planet_radius = microtech.body_radius;
+    println!("Planet radius: {} km", planet_radius / 1000.0);
     
-    // Point 1: On the equator at 0 degrees (planet_radius, 0, 0)
+    // Point 1: On the equator at 0 degrees
     let point1 = Vector3::new(
-        microtech.position.x + planet_radius,
-        microtech.position.y,
-        microtech.position.z
+        planet_radius, // X-axis is the zero longitude reference
+        0.0,          // Y is zero for equator
+        0.0           // Z is zero for equator
     );
     
     // Point 2: On the equator at 45 degrees
-    let angle_rad = 45.0_f64.to_radians();
+    let angle_deg: f64 = 45.0;
+    let angle_rad = angle_deg.to_radians();
     let point2 = Vector3::new(
-        microtech.position.x + planet_radius * angle_rad.cos(),
-        microtech.position.y + planet_radius * angle_rad.sin(),
-        microtech.position.z
+        planet_radius * f64::cos(angle_rad),
+        planet_radius * f64::sin(angle_rad),
+        0.0
     );
     
     // Calculate the theoretical great-circle distance
-    // For points on the equator, this is angle (in radians) * radius
     let great_circle_distance = angle_rad * planet_radius;
+    println!("Angle in radians: {}", angle_rad);
     
-    // Set current position to point1
-    planner.set_current_position(point1.x, point1.y, point1.z);
+    // Set current position to point1 (IMPORTANT: Use microTech-relative coordinates)
+    planner.set_current_position(
+        microtech.position.x + point1.x,
+        microtech.position.y + point1.y,
+        microtech.position.z + point1.z
+    );
     planner.set_current_container("microTech");
     
-    // Plan navigation to point2
+    // Plan navigation to point2 (IMPORTANT: Use microTech-relative coordinates for destination)
     let plan = planner.plan_navigation_to_coordinates(
         Some("microTech"),
-        point2.x - microtech.position.x, // Convert to container-relative coordinates
-        point2.y - microtech.position.y,
-        point2.z - microtech.position.z,
+        point2.x, // Already relative to origin, just pass directly
+        point2.y,
+        point2.z,
         None
     );
     
@@ -3747,11 +3922,34 @@ fn test_bidirectional_search_meeting_points() {
         .unwrap()
         .clone();
     
-    // Position far from both planets but with Hurston between us and microTech
+    let microtech = planner
+        .data_provider
+        .get_object_container_by_name("microTech")
+        .unwrap()
+        .clone();
+    
+    // Calculate a position that guarantees Hurston is between us and microTech
+    // Create a vector from Hurston to microTech
+    let hurston_to_microtech = Vector3::new(
+        microtech.position.x - hurston.position.x,
+        microtech.position.y - hurston.position.y,
+        microtech.position.z - hurston.position.z
+    );
+    
+    // Normalize this vector and invert it
+    let direction_length = hurston_to_microtech.magnitude();
+    let direction_normalized = Vector3::new(
+        -hurston_to_microtech.x / direction_length,
+        -hurston_to_microtech.y / direction_length,
+        -hurston_to_microtech.z / direction_length
+    );
+    
+    // Position ourselves on the opposite side of Hurston from microTech
+    // at a distance of 20x the radius to ensure we're far enough away
     let start_position = Vector3::new(
-        hurston.position.x - hurston.body_radius * 10.0, // Far on opposite side
-        hurston.position.y,
-        hurston.position.z
+        hurston.position.x + direction_normalized.x * hurston.body_radius * 20.0,
+        hurston.position.y + direction_normalized.y * hurston.body_radius * 20.0,
+        hurston.position.z + direction_normalized.z * hurston.body_radius * 20.0
     );
     
     // Force a complex path calculation
@@ -3762,7 +3960,17 @@ fn test_bidirectional_search_meeting_points() {
     );
     planner.set_current_container("Stanton");
     
-    // Instead of using bidirectional search flag, we'll compare first plan with second plan
+    // Log positions to verify setup
+    println!("Hurston position: {:?}", hurston.position);
+    println!("Start position: {:?}", start_position);
+    println!("microTech position: {:?}", microtech.position);
+    
+    // Verify Hurston is between start and microTech
+    // Check line of sight directly to confirm obstruction
+    let los_result = planner.check_line_of_sight(&start_position, &microtech.position);
+    println!("Direct line of sight: {}", los_result.has_los);
+    println!("Obstruction: {:?}", los_result.obstruction.map(|o| o.name.clone()));
+    
     // Plan navigation to New Babbage (first attempt)
     let first_plan = planner.plan_navigation("New Babbage");
     assert!(first_plan.is_some(), "Should create a navigation plan");
@@ -3772,6 +3980,14 @@ fn test_bidirectional_search_meeting_points() {
     println!("First navigation plan:");
     println!("Total segments: {}", first_plan.segments.len());
     println!("Path complexity: {:?}", first_plan.path_complexity);
+    println!("Obstruction detected: {}", first_plan.obstruction_detected);
+    
+    // Output segments for debugging
+    for (i, segment) in first_plan.segments.iter().enumerate() {
+        println!("Segment {}: {} → {}", i+1, segment.from.name, segment.to.name);
+        println!("  Travel type: {:?}", segment.travel_type);
+        println!("  Obstruction bypass: {}", segment.is_obstruction_bypass);
+    }
     
     // Verify plan properties for obstruction bypass
     assert!(
