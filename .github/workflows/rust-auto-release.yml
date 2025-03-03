@@ -1,0 +1,85 @@
+name: Rust Auto-Release
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Cargo.toml'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.check_version.outputs.version_changed }}
+      version: ${{ steps.check_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check if version changed
+        id: check_version
+        run: |
+          git diff HEAD^ HEAD -- /nav-server-rs/Cargo.toml | grep -q '^+version' && VERSION_CHANGED=true || VERSION_CHANGED=false
+          echo "version_changed=$VERSION_CHANGED" >> $GITHUB_OUTPUT
+
+          if [ "$VERSION_CHANGED" = "true" ]; then
+            VERSION=$(grep -m 1 '^version' /nav-server-rs/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: clippy
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            /nav-server-rs/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build
+        working-directory: /nav-server-rs
+        run: cargo build --release
+
+      - name: Run tests
+        working-directory: /nav-server-rs
+        run: cargo test --release
+
+      - name: Create release artifacts
+        working-directory: /nav-server-rs
+        run: |
+          mkdir -p release
+          cp target/release/nav-server-rs release/
+          cd release
+          tar -czvf nav-server-rs-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz nav-server-rs
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body: |
+            Automated release of nav-server-rs version ${{ needs.check-version.outputs.version }}
+
+            Changes since last version:
+            ${{ github.event.head_commit.message }}
+          files: /nav-server-rs/release/nav-server-rs-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
