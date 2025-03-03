@@ -1008,9 +1008,12 @@ async fn main() -> std::io::Result<()> {
         nav_system: Arc::new(Mutex::new(nav_system)),
     });
     
-    // Define server address and port
-    let server_addr = "127.0.0.1";
-    let server_port = 8080;
+    // Define server address and port from environment variables or use defaults
+    let server_addr = std::env::var("LISTEN_ADDR").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let server_port = std::env::var("LISTEN_PORT")
+        .ok()
+        .and_then(|p| p.parse::<u16>().ok())
+        .unwrap_or(8080);
     
     // Start HTTP server
     log::info!("Starting Space Navigation API server on http://{}:{}", server_addr, server_port);
