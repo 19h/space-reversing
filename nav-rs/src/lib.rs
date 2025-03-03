@@ -1,3 +1,7 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_imports)]
+
 //! Space Navigation System
 //!
 //! A comprehensive navigation system for celestial navigation with advanced

@@ -951,7 +951,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
     
     /// Find nearby Points of Interest for contextual awareness
     pub fn find_nearby_pois(&self, limit: usize) -> Vec<NamedDistance> {
-        self.core.find_nearby_pois(limit)
+        self.core.find_nearby_pois(5000.0, limit)  // Set a default radius of 5000.0
     }
     
     /// Calculate Euler angles for direction from current position to destination
@@ -2309,3 +2309,4 @@ pub struct OptimalMarker {
     pub name: String,
     pub position: Vector3,
 }
+

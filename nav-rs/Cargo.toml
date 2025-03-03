@@ -17,6 +17,7 @@ serde_json = "1.0"
 clap = "2.33"
 
 [dev-dependencies]
+approx = "0.5.1"
 tempfile = "3.3"
 
 [[bin]]
