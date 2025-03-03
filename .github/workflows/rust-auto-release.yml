@@ -1,10 +1,10 @@
-name: Rust Auto-Release
+name: starnav-server Auto-Release
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
     paths:
-      - 'Cargo.toml'
+      - 'nav-server-rs/Cargo.toml'
 
 jobs:
   check-version:
@@ -20,11 +20,11 @@ jobs:
       - name: Check if version changed
         id: check_version
         run: |
-          git diff HEAD^ HEAD -- /nav-server-rs/Cargo.toml | grep -q '^+version' && VERSION_CHANGED=true || VERSION_CHANGED=false
+          git diff HEAD^ HEAD -- nav-server-rs/Cargo.toml | grep -q '^+version' && VERSION_CHANGED=true || VERSION_CHANGED=false
           echo "version_changed=$VERSION_CHANGED" >> $GITHUB_OUTPUT
 
           if [ "$VERSION_CHANGED" = "true" ]; then
-            VERSION=$(grep -m 1 '^version' /nav-server-rs/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+            VERSION=$(grep -m 1 '^version' nav-server-rs/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
@@ -53,20 +53,20 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Build
-        working-directory: /nav-server-rs
+        working-directory: ./nav-server-rs
         run: cargo build --release
 
       - name: Run tests
-        working-directory: /nav-server-rs
+        working-directory: ./nav-server-rs
         run: cargo test --release
 
       - name: Create release artifacts
-        working-directory: /nav-server-rs
+        working-directory: ./nav-server-rs
         run: |
           mkdir -p release
-          cp target/release/nav-server-rs release/
+          cp target/release/starnav-server release/
           cd release
-          tar -czvf nav-server-rs-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz nav-server-rs
+          tar -czvf starnav-server-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz starnav-server
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -74,12 +74,12 @@ jobs:
           tag_name: v${{ needs.check-version.outputs.version }}
           name: Release v${{ needs.check-version.outputs.version }}
           body: |
-            Automated release of nav-server-rs version ${{ needs.check-version.outputs.version }}
+            Automated release of starnav-server version ${{ needs.check-version.outputs.version }}
 
             Changes since last version:
             ${{ github.event.head_commit.message }}
-          files: /nav-server-rs/release/nav-server-rs-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz
+          files: ./nav-server-rs/release/starnav-server-${{ needs.check-version.outputs.version }}-linux-x86_64.tar.gz
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
