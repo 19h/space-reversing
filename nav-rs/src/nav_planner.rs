@@ -59,42 +59,104 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
     /// Initialize all navigation points and build the node network
     fn initialize_navigation_points(&mut self) {
-        // First, collect all containers that need orbital markers
+        // Generate orbital markers for planets and moons
+        self.initialize_orbital_markers();
+        
+        // Add quantum travel markers
+        self.initialize_quantum_travel_markers();
+        
+        // Log initialization summary
+        self.log_initialization_summary();
+    }
+    
+    /// Generate orbital markers for all planets and moons
+    fn initialize_orbital_markers(&mut self) {
+        // Collect all containers that need orbital markers
         let containers_needing_markers: Vec<ObjectContainer> = self
             .data_provider
             .get_object_containers()
             .iter()
             .filter(|container| {
-                container.container_type == ContainerType::Planet
-                    || container.container_type == ContainerType::Moon
+                matches!(
+                    container.container_type,
+                    ContainerType::Planet | ContainerType::Moon
+                )
             })
             .cloned()
             .collect();
 
-        // Now generate orbital markers for each container
+        // Generate orbital markers for each container
         for container in &containers_needing_markers {
             self.generate_orbital_markers(container);
         }
-
+    }
+    
+    /// Initialize quantum travel markers from POIs and special locations
+    fn initialize_quantum_travel_markers(&mut self) {
         // Add quantum travel markers from POIs
-        for poi in self.data_provider.get_points_of_interest() {
-            if poi.has_qt_marker {
-                let qt_node = Arc::new(NavNode::new(
-                    self.get_global_coordinates(poi),
-                    NavNodeType::QuantumMarker,
-                    poi.name.clone(),
-                    None,
-                ));
-                self.qt_markers.push(Arc::clone(&qt_node));
-                self.all_navigation_nodes.push(qt_node);
-            }
-        }
-
+        self.add_poi_quantum_markers();
+        
         // Add Lagrange points and Jump Points as QT markers
+        self.add_special_quantum_markers();
+    }
+    
+    /// Add quantum travel markers from points of interest
+    fn add_poi_quantum_markers(&mut self) {
+        // for poi in self.data_provider.get_points_of_interest() {
+        //     if poi.has_qt_marker {
+        //         let qt_node = Arc::new(NavNode::new(
+        //             self.get_global_coordinates(poi),
+        //             NavNodeType::QuantumMarker,
+        //             poi.name.clone(),
+        //             None,
+        //         ));
+        //         self.qt_markers.push(Arc::clone(&qt_node));
+        //         self.all_navigation_nodes.push(qt_node);
+        //     }
+        // }
+        for poi in self.data_provider.get_points_of_interest() {
+            // Assign node types based explicitly on POI type:
+            let node_type = match poi.poi_type {
+                PoiType::LandingZone | PoiType::Spaceport => NavNodeType::LandingZone,
+                PoiType::Outpost | PoiType::OrbitalStation | PoiType::ColonialOutpost |
+                PoiType::DistributionCenter | PoiType::CommArray | PoiType::Prison => NavNodeType::Destination,
+                PoiType::JumpPoint => NavNodeType::QuantumMarker,
+                _ => NavNodeType::QuantumMarker,
+            };
+    
+            // Define container_ref correctly to get Option<Arc<ObjectContainer>>
+            let container_ref = poi.obj_container.as_ref().and_then(|name| {
+                self.data_provider.get_object_container_by_name(name).map(|container| Arc::new(container.clone()))
+            });
+    
+            let node = Arc::new(
+                NavNode::new(
+                    self.get_global_coordinates(poi),
+                    node_type,
+                    poi.name.clone(),
+                    container_ref,
+                ),
+            );
+    
+            // Log explicitly to verify assignment correctness
+            log::info!("Created node '{}' as '{:?}'", node.name, node.node_type);
+    
+            // Assign QT markers only if explicitly relevant (e.g., Jump points or specific POIs)
+            if poi.has_qt_marker {
+                self.qt_markers.push(Arc::clone(&node));
+            }
+    
+            self.all_navigation_nodes.push(node);
+        }
+    }
+    
+    /// Add Lagrange points and Jump Points as quantum travel markers
+    fn add_special_quantum_markers(&mut self) {
         for container in self.data_provider.get_object_containers() {
-            if container.container_type == ContainerType::Lagrange
-                || container.container_type == ContainerType::JumpPoint
-            {
+            if matches!(
+                container.container_type,
+                ContainerType::Lagrange | ContainerType::JumpPoint
+            ) {
                 let container_arc = Arc::new(container.clone());
                 let nav_node = Arc::new(NavNode::new(
                     container.position,
@@ -106,7 +168,10 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 self.all_navigation_nodes.push(nav_node);
             }
         }
-
+    }
+    
+    /// Log summary of initialized navigation nodes
+    fn log_initialization_summary(&self) {
         log::info!(
             "Initialized {} navigation nodes",
             self.all_navigation_nodes.len()
@@ -196,66 +261,122 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             self.visibility_graph
                 .insert(self.get_node_key(node), Vec::new());
         }
-
-        // Compute visibility with explicit null checks
+    
+        // Compute visibility between all pairs of nodes
         for i in 0..self.all_navigation_nodes.len() {
             let from_node = Arc::clone(&self.all_navigation_nodes[i]);
             let from_key = self.get_node_key(&from_node);
-
+    
             for j in i + 1..self.all_navigation_nodes.len() {
                 let to_node = Arc::clone(&self.all_navigation_nodes[j]);
                 let to_key = self.get_node_key(&to_node);
-
-                // Skip orbital markers on the same celestial body
-                let same_orbital_markers = match (&from_node.node_type, &to_node.node_type) {
-                    (NavNodeType::OrbitalMarker, NavNodeType::OrbitalMarker) => {
-                        match (&from_node.container_ref, &to_node.container_ref) {
-                            (Some(fc), Some(tc)) => fc.name == tc.name,
-                            _ => false,
-                        }
-                    }
-                    _ => false,
-                };
-
-                if same_orbital_markers {
-                    continue;
+    
+                // Check for special case: Surface-to-OM connections on same body
+                if self.is_surface_to_orbital_marker_connection(&from_node, &to_node) {
+                    self.add_surface_to_orbital_marker_edges(&from_node, &to_node, &from_key, &to_key);
+                    continue; // Skip the normal LOS check
                 }
-
-                // Check line of sight
-                let los_result = self.check_line_of_sight(&from_node.position, &to_node.position);
-
-                // Create bidirectional edges
-                let forward_edge = VisibilityEdge {
-                    from_node: Arc::clone(&from_node),
-                    to_node: Arc::clone(&to_node),
-                    distance: from_node.position.distance(&to_node.position),
-                    has_los: los_result.has_los,
-                    obstruction: los_result.obstruction.clone(),
-                };
-
-                let backward_edge = VisibilityEdge {
-                    from_node: Arc::clone(&to_node),
-                    to_node: Arc::clone(&from_node),
-                    distance: to_node.position.distance(&from_node.position),
-                    has_los: los_result.has_los,
-                    obstruction: los_result.obstruction,
-                };
-
-                // Add edges to the graph
-                if let Some(edges) = self.visibility_graph.get_mut(&from_key) {
-                    edges.push(forward_edge);
-                }
-
-                if let Some(edges) = self.visibility_graph.get_mut(&to_key) {
-                    edges.push(backward_edge);
-                }
+                
+                // For all other nodes, perform normal LOS check
+                self.add_standard_visibility_edges(&from_node, &to_node, &from_key, &to_key);
             }
         }
-
+    
         log::info!(
             "Precomputed visibility graph with {} nodes",
             self.visibility_graph.len()
         );
+    }
+    
+    /// Determines if two nodes form a surface-to-orbital-marker connection
+    fn is_surface_to_orbital_marker_connection(&self, node1: &NavNode, node2: &NavNode) -> bool {
+        match (&node1.node_type, &node2.node_type) {
+            (NavNodeType::LandingZone | NavNodeType::Destination, NavNodeType::OrbitalMarker)
+            | (NavNodeType::OrbitalMarker, NavNodeType::LandingZone | NavNodeType::Destination) => {
+                match (&node1.container_ref, &node2.container_ref) {
+                    (Some(container1), Some(container2)) => container1.name == container2.name,
+                    _ => false,
+                }
+            }
+            _ => false,
+        }
+    }
+    
+    /// Adds special edges for surface-to-orbital-marker connections
+    fn add_surface_to_orbital_marker_edges(
+        &mut self,
+        from_node: &Arc<NavNode>,
+        to_node: &Arc<NavNode>,
+        from_key: &String,
+        to_key: &String,
+    ) {
+        // Calculate distance with ascent/descent penalty
+        let distance = from_node.position.distance(&to_node.position);
+        let adjusted_distance = distance * 1.5; // 50% penalty for ascending/descending
+        
+        // Create forward edge
+        let forward_edge = VisibilityEdge {
+            from_node: Arc::clone(from_node),
+            to_node: Arc::clone(to_node),
+            distance: adjusted_distance,
+            has_los: true, // Force this to true to ensure the path is considered
+            obstruction: None,
+        };
+        
+        // Create backward edge
+        let backward_edge = VisibilityEdge {
+            from_node: Arc::clone(to_node),
+            to_node: Arc::clone(from_node),
+            distance: adjusted_distance,
+            has_los: true,
+            obstruction: None,
+        };
+        
+        // Add edges to the graph
+        if let Some(edges) = self.visibility_graph.get_mut(from_key) {
+            edges.push(forward_edge);
+        }
+        
+        if let Some(edges) = self.visibility_graph.get_mut(to_key) {
+            edges.push(backward_edge);
+        }
+    }
+    
+    /// Adds standard visibility edges based on line-of-sight checks
+    fn add_standard_visibility_edges(
+        &mut self,
+        from_node: &Arc<NavNode>,
+        to_node: &Arc<NavNode>,
+        from_key: &String,
+        to_key: &String,
+    ) {
+        let los_result = self.check_line_of_sight(&from_node.position, &to_node.position);
+
+        // Create bidirectional edges
+        let forward_edge = VisibilityEdge {
+            from_node: Arc::clone(from_node),
+            to_node: Arc::clone(to_node),
+            distance: from_node.position.distance(&to_node.position),
+            has_los: los_result.has_los,
+            obstruction: los_result.obstruction.clone(),
+        };
+
+        let backward_edge = VisibilityEdge {
+            from_node: Arc::clone(to_node),
+            to_node: Arc::clone(from_node),
+            distance: to_node.position.distance(&from_node.position),
+            has_los: los_result.has_los,
+            obstruction: los_result.obstruction,
+        };
+
+        // Add edges to the graph
+        if let Some(edges) = self.visibility_graph.get_mut(from_key) {
+            edges.push(forward_edge);
+        }
+
+        if let Some(edges) = self.visibility_graph.get_mut(to_key) {
+            edges.push(backward_edge);
+        }
     }
 
     /// Generate a unique key for a navigation node for graph operations
@@ -277,33 +398,26 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         position: &Vector3,
         search_type: MarkerSearchType,
     ) -> Vec<(Arc<NavNode>, Option<Arc<ObjectContainer>>)> {
-        let mut results = Vec::new();
-
         // Determine which nodes to check based on search type
-        let nodes_to_check: Vec<Arc<NavNode>> = match search_type {
+        let nodes_to_check = match search_type {
             MarkerSearchType::All => self.all_navigation_nodes.clone(),
             MarkerSearchType::Orbital => {
-                let mut orbital_nodes = Vec::new();
-                for markers in self.orbital_markers.values() {
-                    orbital_nodes.extend(markers.iter().cloned());
-                }
-                orbital_nodes
+                self.orbital_markers
+                    .values()
+                    .flat_map(|markers| markers.iter().cloned())
+                    .collect()
             }
             MarkerSearchType::QuantumTravel => self.qt_markers.clone(),
         };
 
-        // Check visibility to each node
-        for node in nodes_to_check {
-            let los_result = self.check_line_of_sight(position, &node.position);
-            if los_result.has_los {
-                results.push((node, None));
-            } else {
-                // Even if not visible, include with obstruction info for advanced pathfinding
-                results.push((node, los_result.obstruction));
-            }
-        }
-
-        results
+        // Check visibility to each node and collect results
+        nodes_to_check
+            .into_iter()
+            .map(|node| {
+                let los_result = self.check_line_of_sight(position, &node.position);
+                (node, los_result.obstruction)
+            })
+            .collect()
     }
 
     /// Find visible markers with system boundary enforcement
@@ -313,33 +427,32 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         system: System,
         search_type: MarkerSearchType,
     ) -> Vec<(Arc<NavNode>, Option<Arc<ObjectContainer>>)> {
-        let all_markers = self.find_visible_markers(position, search_type);
-
-        // System-bounded filtration
-        all_markers
+        self.find_visible_markers(position, search_type)
             .into_iter()
-            .filter(|(node, _)| {
-                // Container-based system resolution
-                if let Some(container_ref) = &node.container_ref {
-                    return container_ref.system == system;
-                }
-
-                // If no container reference, use heuristic matching on name
-                if node.name.contains(&system.to_string()) {
-                    return true;
-                }
-
-                // For QT markers that might be POIs, find the associated POI and check its system
-                if node.node_type == NavNodeType::QuantumMarker {
-                    if let Some(poi) = self.data_provider.get_point_of_interest_by_name(&node.name)
-                    {
-                        return poi.system == system;
-                    }
-                }
-
-                false
-            })
+            .filter(|(node, _)| self.is_node_in_system(node, system))
             .collect()
+    }
+
+    /// Helper method to determine if a node belongs to a specific system
+    fn is_node_in_system(&self, node: &NavNode, system: System) -> bool {
+        // Check container-based system resolution first
+        if let Some(container_ref) = &node.container_ref {
+            return container_ref.system == system;
+        }
+
+        // If no container reference, use name-based heuristic
+        if node.name.contains(&system.to_string()) {
+            return true;
+        }
+
+        // For QT markers that might be POIs, check the associated POI's system
+        if node.node_type == NavNodeType::QuantumMarker {
+            if let Some(poi) = self.data_provider.get_point_of_interest_by_name(&node.name) {
+                return poi.system == system;
+            }
+        }
+
+        false
     }
 
     /// Bidirectional A* pathfinding algorithm optimized for 3D space navigation
@@ -395,22 +508,10 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         });
 
         // Check if there's a direct path
-        let los_result =
-            self.check_line_of_sight(
-                start_pos,
-                end_pos,    
-            );
+        let los_result = self.check_line_of_sight(start_pos, end_pos);
 
-        if !los_result.has_los {
-            if let Some(obstruction) = &los_result.obstruction {
-                log::info!("Direct path obstructed by {} - need complex routing", obstruction.name);
-            } else {
-                log::info!("Direct path obstructed but couldn't identify obstruction");
-            }
-        }
-
+        // Handle direct path case
         if los_result.has_los {
-            // Direct path available - no changes needed
             log::info!("Direct path available - no obstructions detected");
 
             // Create the end node with a parent link to the start node
@@ -428,19 +529,65 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             });
 
             return Some(vec![start_node, end_with_parent]);
-        } else if let Some(obstruction) = los_result.obstruction {
+        }
+
+        // Handle obstruction cases
+        if let Some(obstruction) = &los_result.obstruction {
             log::info!("Direct path obstructed by {}", obstruction.name);
-
-            // Explicitly handle obstruction with OM waypoints
-            // Find the optimal OM for bypassing this obstruction
-            let optimal_om = self.find_optimal_orbital_marker(start_pos, end_pos, &obstruction);
-            log::info!("Selected {} for obstruction bypass", optimal_om.name);
-
+            
+            // Try to find orbital markers for the obstructing body
+            if let Some(markers) = self.orbital_markers.get(&obstruction.name) {
+                if !markers.is_empty() {
+                    log::info!("Using orbital marker for {} to bypass obstruction", obstruction.name);
+                    
+                    // Select the first available marker (could be optimized further)
+                    let orbital_marker = &markers[0];
+                    
+                    // Create explicit path via orbital marker
+                    let om_with_parent = Arc::new(NavNode {
+                        position: orbital_marker.position,
+                        parent_node: Some(Arc::clone(&start_node)),
+                        g_cost: start_pos.distance(&orbital_marker.position),
+                        h_cost: orbital_marker.position.distance(end_pos),
+                        f_cost: start_pos.distance(&orbital_marker.position) 
+                            + orbital_marker.position.distance(end_pos),
+                        node_type: NavNodeType::OrbitalMarker,
+                        name: orbital_marker.name.clone(),
+                        container_ref: orbital_marker.container_ref.clone(),
+                        obstruction_path: true,
+                        search_direction: SearchDirection::Forward,
+                    });
+                    
+                    let end_with_parent = Arc::new(NavNode {
+                        position: *end_pos,
+                        parent_node: Some(Arc::clone(&om_with_parent)),
+                        g_cost: start_pos.distance(&orbital_marker.position)
+                            + orbital_marker.position.distance(end_pos),
+                        h_cost: 0.0,
+                        f_cost: start_pos.distance(&orbital_marker.position)
+                            + orbital_marker.position.distance(end_pos),
+                        node_type: NavNodeType::Destination,
+                        name: "Destination".to_string(),
+                        container_ref: None,
+                        obstruction_path: false,
+                        search_direction: SearchDirection::Forward,
+                    });
+                    
+                    log::info!("Created path via orbital marker: {}", orbital_marker.name);
+                    return Some(vec![start_node, om_with_parent, end_with_parent]);
+                }
+            }
+            
+            // If we couldn't find orbital markers for the specific obstruction,
+            // try to find the optimal orbital marker for bypassing
+            log::info!("Finding optimal orbital marker for obstruction bypass");
+            let optimal_om = self.find_optimal_orbital_marker(start_pos, end_pos, obstruction);
+            
             // Find the orbital marker node in our navigation nodes
             let om_node = self.all_navigation_nodes.iter().find(|&node| {
                 node.node_type == NavNodeType::OrbitalMarker && node.name == optimal_om.name
             });
-
+            
             if let Some(om_node) = om_node {
                 // Create an explicit path with the OM as an intermediate waypoint
                 let om_with_parent = Arc::new(NavNode {
@@ -456,7 +603,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     obstruction_path: true,
                     search_direction: SearchDirection::Forward,
                 });
-
+                
                 let end_with_parent = Arc::new(NavNode {
                     position: *end_pos,
                     parent_node: Some(Arc::clone(&om_with_parent)),
@@ -471,13 +618,15 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     obstruction_path: false,
                     search_direction: SearchDirection::Forward,
                 });
-
-                log::info!(
-                    "Created explicit obstruction bypass route via {}",
-                    om_node.name
-                );
+                
+                log::info!("Created explicit obstruction bypass route via {}", om_node.name);
                 return Some(vec![start_node, om_with_parent, end_with_parent]);
             }
+            
+            log::warn!(
+                "No suitable orbital markers found for obstruction: {}. Falling back to A* search.",
+                obstruction.name
+            );
         }
 
         // Initialize open and closed sets for bidirectional search
@@ -496,10 +645,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         let visible_from_end = self.find_visible_markers(end_pos, MarkerSearchType::All);
 
         log::info!("- {} markers visible from start", visible_from_start.len());
-        log::info!(
-            "- {} markers visible from destination",
-            visible_from_end.len()
-        );
+        log::info!("- {} markers visible from destination", visible_from_end.len());
 
         // Add visible markers to the open sets
         for (node, obstruction) in visible_from_start {
@@ -808,76 +954,82 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
     /// Calculate travel time with realistic acceleration/deceleration curves
     fn calculate_travel_time(&self, distance: f64, travel_type: TravelType) -> f64 {
         match travel_type {
-            TravelType::Quantum => {
-                // Quantum travel velocity ~ 20% speed of light
-                let speed_of_light = 299792458.0; // m/s
-                let quantum_speed = speed_of_light * 0.2; // m/s
+            TravelType::Quantum => self.calculate_quantum_travel_time(distance),
+            TravelType::Sublight => self.calculate_sublight_travel_time(distance),
+            TravelType::Planetary => self.calculate_planetary_travel_time(distance),
+        }
+    }
 
-                // Add acceleration/deceleration time (approximately 10 seconds each)
-                let cruise_time = distance / quantum_speed;
-                let transition_time = 20.0; // seconds
+    /// Calculate quantum travel time with acceleration/deceleration
+    fn calculate_quantum_travel_time(&self, distance: f64) -> f64 {
+        // Quantum travel velocity ~ 20% speed of light
+        let speed_of_light = 299792458.0; // m/s
+        let quantum_speed = speed_of_light * 0.2; // m/s
 
-                cruise_time + transition_time
-            }
-            TravelType::Sublight => {
-                // Sublight travel with acceleration model
-                // Max speed ~ 1,000 m/s, acceleration ~ 50 m/s²
-                let max_speed = 1000.0; // m/s
-                let acceleration = 50.0; // m/s²
+        // Add acceleration/deceleration time (approximately 10 seconds each)
+        let cruise_time = distance / quantum_speed;
+        let transition_time = 20.0; // seconds
 
-                // Time to reach full speed
-                let time_to_max_speed: f64 = max_speed / acceleration;
+        cruise_time + transition_time
+    }
 
-                // Distance covered during acceleration/deceleration
-                let accel_distance = 0.5 * acceleration * time_to_max_speed.powi(2);
+    /// Calculate sublight travel time with acceleration model
+    fn calculate_sublight_travel_time(&self, distance: f64) -> f64 {
+        // Sublight travel parameters
+        let max_speed = 1000.0; // m/s
+        let acceleration = 50.0; // m/s²
 
-                // Check if we have enough distance to reach max speed
-                if distance <= accel_distance * 2.0 {
-                    // Short distance - triangular velocity profile
-                    let peak_time = (distance / acceleration).sqrt();
-                    peak_time * 2.0
-                } else {
-                    // Long distance - trapezoidal velocity profile
-                    let cruise_distance = distance - (accel_distance * 2.0);
-                    let cruise_time = cruise_distance / max_speed;
-                    (time_to_max_speed * 2.0) + cruise_time
-                }
-            }
-            TravelType::Planetary => {
-                // Planetary travel with acceleration model
-                // Max speed ~ 200 m/s, acceleration ~ 15 m/s² (slower than space)
-                let max_speed = 200.0; // m/s (slower surface speed)
-                let acceleration = 15.0; // m/s² (less acceleration on surface)
+        self.calculate_travel_time_with_acceleration(distance, max_speed, acceleration)
+    }
 
-                // Time to reach full speed
-                let time_to_max_speed: f64 = max_speed / acceleration;
+    /// Calculate planetary travel time with acceleration model
+    fn calculate_planetary_travel_time(&self, distance: f64) -> f64 {
+        // Planetary travel parameters (slower than space)
+        let max_speed = 200.0; // m/s
+        let acceleration = 15.0; // m/s²
 
-                // Distance covered during acceleration/deceleration
-                let accel_distance = 0.5 * acceleration * time_to_max_speed.powi(2);
+        self.calculate_travel_time_with_acceleration(distance, max_speed, acceleration)
+    }
 
-                // Check if we have enough distance to reach max speed
-                if distance <= accel_distance * 2.0 {
-                    // Short distance - triangular velocity profile
-                    let peak_time = (distance / acceleration).sqrt();
-                    peak_time * 2.0
-                } else {
-                    // Long distance - trapezoidal velocity profile
-                    let cruise_distance = distance - (accel_distance * 2.0);
-                    let cruise_time = cruise_distance / max_speed;
-                    (time_to_max_speed * 2.0) + cruise_time
-                }
-            }
+    /// Helper method to calculate travel time using acceleration model
+    fn calculate_travel_time_with_acceleration(
+        &self,
+        distance: f64,
+        max_speed: f64,
+        acceleration: f64
+    ) -> f64 {
+        // Time to reach full speed
+        let time_to_max_speed = max_speed / acceleration;
+
+        // Distance covered during acceleration/deceleration
+        let accel_distance = 0.5 * acceleration * time_to_max_speed.powi(2);
+
+        // Check if we have enough distance to reach max speed
+        if distance <= accel_distance * 2.0 {
+            // Short distance - triangular velocity profile
+            let peak_time = (distance / acceleration).sqrt();
+            peak_time * 2.0
+        } else {
+            // Long distance - trapezoidal velocity profile
+            let cruise_distance = distance - (accel_distance * 2.0);
+            let cruise_time = cruise_distance / max_speed;
+            (time_to_max_speed * 2.0) + cruise_time
         }
     }
 
     /// Determines if a navigation node represents a surface destination
+    ///
+    /// A surface destination is a node located on a planet or moon surface.
     fn is_surface_destination(&self, node: &NavNode) -> bool {
-        if let Some(container_ref) = &node.container_ref {
-            return container_ref.container_type == ContainerType::Planet 
-                || container_ref.container_type == ContainerType::Moon;
+        match &node.container_ref {
+            Some(container_ref) => {
+                matches!(
+                    container_ref.container_type,
+                    ContainerType::Planet | ContainerType::Moon
+                )
+            },
+            None => false,
         }
-
-        false
     }
 
     /// Create a detailed navigation plan from the path
@@ -915,9 +1067,9 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 || (to.container_ref.is_some() && self.is_surface_destination(&to));
 
             let travel_type = if use_sublight {
-            TravelType::Sublight
+                TravelType::Sublight
             } else {
-            TravelType::Quantum
+                TravelType::Quantum
             };
 
             // Calculate estimated time
@@ -944,7 +1096,6 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 (path.len() == 2 && !obstructions.is_empty() && i == 0) ||
                 // For longer paths, mark intermediate segments as bypasses when there are obstructions
                 (!obstructions.is_empty() && i > 0 && i < path.len() - 1);
-
             // Create segment
             let segment = PathSegment {
                 from: PathPoint {
@@ -1010,11 +1161,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         local_y: f64,
         local_z: f64,
     ) {
-        let container_opt = self
-            .data_provider
-            .get_object_container_by_name(container_name);
-
-        let container = match container_opt {
+        // Find the container by name
+        let container = match self.data_provider.get_object_container_by_name(container_name) {
             Some(c) => c,
             None => {
                 log::error!("Container {} not found", container_name);
@@ -1052,6 +1200,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         );
 
         // Log nearby POIs for context
+        self.log_nearby_points_of_interest();
+    }
+
+    /// Log nearby points of interest for contextual awareness
+    fn log_nearby_points_of_interest(&self) {
         let nearby_pois = self.find_nearby_pois(5);
         if !nearby_pois.is_empty() {
             log::info!("Nearby references:");
@@ -1063,6 +1216,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
     /// Update position and resolve to nearest container
     pub fn update_position(&mut self, x: f64, y: f64, z: f64) {
+        // Update core position
         self.core.update_position(x, y, z);
 
         // Update origin container if not set
@@ -1081,10 +1235,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
     /// Calculate Euler angles for direction from current position to destination
     /// accounting for planetary curvature when both points are on the same body
     pub fn calculate_euler_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
-        // First, determine if both points are on the same planetary body
+        // Determine if both points are on the same planetary body
         let current_container = self.core.resolve_container_at_position(current);
         let dest_container = self.core.resolve_container_at_position(destination);
 
+        // Check if both points are on the same planet or moon
         let same_planetary_body = match (&current_container, &dest_container) {
             (Some(cc), Some(dc)) => {
                 cc.name == dc.name
@@ -1095,54 +1250,49 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         };
 
         if same_planetary_body {
-            // Both points are on the same celestial body - use great circle navigation
+            // Use great circle navigation when both points are on the same celestial body
             let planet = current_container.unwrap();
             return self.calculate_surface_angles(current, destination, &planet);
         }
 
-        // Direct space navigation when points are not on the same body
-        // Calculate deltas between current and destination positions
-        let dx = destination.x - current.x;
-        let dy = destination.y - current.y;
-        let dz = destination.z - current.z;
+        // Direct space navigation for points not on the same body
+        self.calculate_space_angles(current, destination)
+    }
 
+    /// Calculate angles for direct space navigation (not on same planetary body)
+    fn calculate_space_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
+        // Calculate direction vector from current to destination
+        let direction = destination - current;
+        
         // Calculate distance in the XY plane
-        let distance_xy = (dx * dx + dy * dy).sqrt();
+        let distance_xy = (direction.x.powi(2) + direction.y.powi(2)).sqrt();
 
         // Calculate pitch (vertical angle)
-        let pitch = if distance_xy.abs() < 0.001 {
+        let pitch = if distance_xy < 0.001 {
             // Nearly vertical path
-            if dz >= 0.0 {
-                90.0
-            } else {
-                -90.0
-            }
+            if direction.z >= 0.0 { 90.0 } else { -90.0 }
         } else {
-            (dz / distance_xy).atan() * (180.0 / std::f64::consts::PI)
+            (direction.z / distance_xy).atan().to_degrees()
         };
-
-        // Roll is 0 for simplicity
-        let roll = 0.0;
 
         // Calculate yaw (horizontal angle)
-        let mut yaw = if dx.abs() < 0.001 {
+        let mut yaw = if direction.x.abs() < 0.001 {
             // Avoid division by zero
-            if dy >= 0.0 {
-                0.0
-            } else {
-                180.0
-            }
+            if direction.y >= 0.0 { 0.0 } else { 180.0 }
         } else {
-            (dy / dx).atan() * (180.0 / std::f64::consts::PI)
+            (direction.y / direction.x).atan().to_degrees()
         };
 
-        // Adjust quadrant based on dx sign
-        if dx < 0.0 {
+        // Adjust quadrant based on x direction
+        if direction.x < 0.0 {
             yaw += 180.0;
         }
 
         // Convert to game's coordinate system
         yaw = (yaw + 90.0) % 360.0;
+
+        // Roll is 0 for simplicity
+        let roll = 0.0;
 
         EulerAngles::new(pitch, yaw, roll)
     }
@@ -1154,7 +1304,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         destination: &Vector3,
         planet: &ObjectContainer,
     ) -> EulerAngles {
-        // Step 1: Calculate vectors from planet center to current and destination
+        // Calculate vectors from planet center to current and destination
         let r_current = Vector3::new(
             current.x - planet.position.x,
             current.y - planet.position.y,
@@ -1167,120 +1317,68 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             destination.z - planet.position.z,
         );
 
-        // Step 2: Normalize these vectors to get unit direction vectors
-        // from planet center to each position
-        let r1_mag = (r_current.x.powi(2) + r_current.y.powi(2) + r_current.z.powi(2)).sqrt();
-        let r2_mag = (r_dest.x.powi(2) + r_dest.y.powi(2) + r_dest.z.powi(2)).sqrt();
+        // Normalize these vectors to get unit direction vectors
+        let r1_mag = r_current.magnitude();
+        let r2_mag = r_dest.magnitude();
 
         if r1_mag < 0.001 || r2_mag < 0.001 {
             // We're too close to the planet center - fall back to direct calculation
             return self.calculate_direct_angles(current, destination);
         }
 
-        let r1_norm = Vector3::new(
-            r_current.x / r1_mag,
-            r_current.y / r1_mag,
-            r_current.z / r1_mag,
-        );
+        let r1_norm = r_current.normalized();
+        let r2_norm = r_dest.normalized();
 
-        let r2_norm = Vector3::new(r_dest.x / r2_mag, r_dest.y / r2_mag, r_dest.z / r2_mag);
-
-        // Step 3: Find the tangent vector at current position that points toward destination
-        // This is done by calculating the cross product twice
-
-        // Cross product of r1 and r2 gives a vector perpendicular to both
-        let cross1 = Vector3::new(
-            r1_norm.y * r2_norm.z - r1_norm.z * r2_norm.y,
-            r1_norm.z * r2_norm.x - r1_norm.x * r2_norm.z,
-            r1_norm.x * r2_norm.y - r1_norm.y * r2_norm.x,
-        );
-
-        let cross1_mag = (cross1.x.powi(2) + cross1.y.powi(2) + cross1.z.powi(2)).sqrt();
+        // Find the tangent vector at current position that points toward destination
+        // First cross product gives a vector perpendicular to both position vectors
+        let cross1 = r1_norm.cross(&r2_norm);
+        let cross1_mag = cross1.magnitude();
 
         if cross1_mag < 0.001 {
-            // Positions are too close or almost antipodal
-            // (directly opposite on planet) - use direct angles
+            // Positions are too close or almost antipodal - use direct angles
             return self.calculate_direct_angles(current, destination);
         }
 
         // Normalize the first cross product
-        let cross1_norm = Vector3::new(
-            cross1.x / cross1_mag,
-            cross1.y / cross1_mag,
-            cross1.z / cross1_mag,
-        );
+        let cross1_norm = cross1.normalized();
 
-        // Cross product of r1 and the normalized first cross product gives tangent vector
-        let tangent = Vector3::new(
-            r1_norm.y * cross1_norm.z - r1_norm.z * cross1_norm.y,
-            r1_norm.z * cross1_norm.x - r1_norm.x * cross1_norm.z,
-            r1_norm.x * cross1_norm.y - r1_norm.y * cross1_norm.x,
-        );
-
-        // Step 4: Calculate pitch and yaw
-        // Pitch should be 0 as we're following the planet's surface
-        let pitch = 0.0;
+        // Second cross product gives the tangent vector in the direction of travel
+        let tangent = r1_norm.cross(&cross1_norm);
 
         // Create a local coordinate system at the current position
         // "Up" is from planet center to current position (r1_norm)
-        // "Forward" is initially along the tangent vector
+        // "Forward" is the tangent vector
 
-        // For game-specific orientation, we need to translate these vectors
-        // into a pitch/yaw/roll system
-
-        // Use the tangent vector projected onto coordinate planes to get yaw
-        // In spherical coordinates, this would be analogous to the heading
-
-        // Project tangent onto the current position's local horizontal plane
-        let forward = tangent;
-
-        // Determine north direction (arbitrary convention for planetary navigation)
-        // We'll use the planets's z-axis as the north pole reference
-        let planet_north = Vector3::new(0.0, 0.0, 1.0);
+        // Determine north direction (using planet's z-axis as reference)
+        let planet_north = Vector3::unit_z();
 
         // Calculate east direction as cross product of north and up
-        let mut east = Vector3::new(
-            r1_norm.y * planet_north.z - r1_norm.z * planet_north.y,
-            r1_norm.z * planet_north.x - r1_norm.x * planet_north.z,
-            r1_norm.x * planet_north.y - r1_norm.y * planet_north.x,
-        );
+        let mut east = r1_norm.cross(&planet_north);
+        let east_mag = east.magnitude();
 
-        let east_mag = (east.x.powi(2) + east.y.powi(2) + east.z.powi(2)).sqrt();
-
-        // If east vector is too small, we're at poles - use another reference
+        // If east vector is too small (we're at poles), use x-axis as reference
         if east_mag < 0.001 {
-            // Use the x-axis as reference instead
-            let planet_east = Vector3::new(1.0, 0.0, 0.0);
-            east = Vector3::new(
-                r1_norm.y * planet_east.z - r1_norm.z * planet_east.y,
-                r1_norm.z * planet_east.x - r1_norm.x * planet_east.z,
-                r1_norm.x * planet_east.y - r1_norm.y * planet_east.x,
-            );
+            let planet_east = Vector3::unit_x();
+            east = r1_norm.cross(&planet_east);
         }
 
         // Calculate north direction as cross product of up and east
-        let north = Vector3::new(
-            r1_norm.y * east.z - r1_norm.z * east.y,
-            r1_norm.z * east.x - r1_norm.x * east.z,
-            r1_norm.x * east.y - r1_norm.y * east.x,
-        );
+        let north = east.cross(&r1_norm);
 
-        // Calculate the heading (yaw) using the tangent vector and north/east references
-        // This is the angle between north and the forward vector, measured clockwise
+        // Calculate the heading (yaw) using dot products with north and east
+        let dot_north = tangent.dot(&north);
+        let dot_east = tangent.dot(&east);
 
-        // Get the dot products with north and east unit vectors
-        let dot_north = north.x * forward.x + north.y * forward.y + north.z * forward.z;
-        let dot_east = east.x * forward.x + east.y * forward.y + east.z * forward.z;
-
-        // Calculate heading in radians (atan2 takes care of quadrant)
+        // Calculate heading in radians and convert to degrees
         let heading_rad = dot_east.atan2(dot_north);
-
-        // Convert to degrees and adjust to game-specific coordinate system
-        let mut yaw = heading_rad * (180.0 / std::f64::consts::PI);
+        let mut yaw = heading_rad.to_degrees();
 
         // Normalize to 0-360 range
         yaw = (yaw + 360.0) % 360.0;
 
+        // Pitch is 0 as we're following the planet's surface
+        let pitch = 0.0;
+        
         // Roll is 0 for surface navigation
         let roll = 0.0;
 
@@ -1289,149 +1387,185 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
     /// Fallback to direct angle calculation
     pub fn calculate_direct_angles(&self, current: &Vector3, destination: &Vector3) -> EulerAngles {
-        // Calculate deltas between current and destination positions
-        let dx = destination.x - current.x;
-        let dy = destination.y - current.y;
-        let dz = destination.z - current.z;
-
+        // Calculate direction vector
+        let direction = destination - current;
+        
         // Calculate distance in the XY plane
-        let distance_xy = (dx * dx + dy * dy).sqrt();
+        let distance_xy = (direction.x.powi(2) + direction.y.powi(2)).sqrt();
 
         // Calculate pitch (vertical angle)
-        let pitch = if distance_xy.abs() < 0.001 {
+        let pitch = if distance_xy < 0.001 {
             // Nearly vertical path
-            if dz >= 0.0 {
-                90.0
-            } else {
-                -90.0
-            }
+            if direction.z >= 0.0 { 90.0 } else { -90.0 }
         } else {
-            (dz / distance_xy).atan() * (180.0 / std::f64::consts::PI)
+            (direction.z / distance_xy).atan().to_degrees()
         };
-
-        // Roll is 0 for simplicity
-        let roll = 0.0;
 
         // Calculate yaw (horizontal angle)
-        let mut yaw = if dx.abs() < 0.001 {
+        let mut yaw = if direction.x.abs() < 0.001 {
             // Avoid division by zero
-            if dy >= 0.0 {
-                0.0
-            } else {
-                180.0
-            }
+            if direction.y >= 0.0 { 0.0 } else { 180.0 }
         } else {
-            (dy / dx).atan() * (180.0 / std::f64::consts::PI)
+            (direction.y / direction.x).atan().to_degrees()
         };
 
-        // Adjust quadrant based on dx sign
-        if dx < 0.0 {
+        // Adjust quadrant based on x direction
+        if direction.x < 0.0 {
             yaw += 180.0;
         }
 
         // Convert to game's coordinate system
         yaw = (yaw + 90.0) % 360.0;
 
+        // Roll is 0 for simplicity
+        let roll = 0.0;
+
         EulerAngles::new(pitch, yaw, roll)
     }
 
-    /// Find the optimal orbital marker to navigate around an obstruction
+    /// Find the optimal orbital marker for bypassing an obstructing celestial body
     pub fn find_optimal_orbital_marker(
         &self,
-        from: &Vector3,
-        to: &Vector3,
+        start_pos: &Vector3,
+        end_pos: &Vector3,
         obstruction: &ObjectContainer,
     ) -> OptimalMarker {
-        // Get all orbital markers for this body
+        // Get all orbital markers for this container
         let markers = match self.orbital_markers.get(&obstruction.name) {
-            Some(m) => m,
+            Some(markers) => markers,
             None => {
-                // Fallback if no markers found
                 log::warn!("No orbital markers found for {}", obstruction.name);
-                return OptimalMarker {
-                    name: format!("{} vicinity", obstruction.name),
-                    position: Vector3::new(
-                        obstruction.position.x + obstruction.om_radius,
-                        obstruction.position.y,
-                        obstruction.position.z,
-                    ),
-                };
+                return self.create_fallback_marker(obstruction);
             }
         };
-
-        // Calculate vectors
-        let start_to_obstruction = Vector3::new(
-            obstruction.position.x - from.x,
-            obstruction.position.y - from.y,
-            obstruction.position.z - from.z,
+        
+        if markers.is_empty() {
+            log::warn!("Empty orbital markers for {}", obstruction.name);
+            return self.create_fallback_marker(obstruction);
+        }
+        
+        // Calculate normalized vectors from obstruction to start and end
+        let obs_to_start = self.calculate_normalized_vector(&obstruction.position, start_pos);
+        let obs_to_end = self.calculate_normalized_vector(&obstruction.position, end_pos);
+        
+        // Find the optimal direction vector
+        let direction = self.calculate_optimal_direction(&obs_to_start, &obs_to_end);
+        
+        // Normalize this direction
+        let dir_len = direction.magnitude();
+        if dir_len < 1e-6 {
+            // Something went wrong with our calculations, use first marker as fallback
+            log::warn!("Failed to calculate optimal marker direction for {}", obstruction.name);
+            return OptimalMarker {
+                name: markers[0].name.clone(),
+                position: markers[0].position.clone(),
+            };
+        }
+        
+        let direction_norm = direction.normalized();
+        
+        // Find the marker that's closest to this ideal direction
+        let best_marker = self.find_best_aligned_marker(markers, &obstruction.position, &direction_norm);
+        
+        log::info!(
+            "Selected {} as optimal marker for bypassing {} (score: {:.3})",
+            best_marker.marker.name,
+            obstruction.name,
+            best_marker.alignment_score
         );
-
-        let obstruction_to_end = Vector3::new(
-            to.x - obstruction.position.x,
-            to.y - obstruction.position.y,
-            to.z - obstruction.position.z,
+        
+        OptimalMarker {
+            name: best_marker.marker.name.clone(),
+            position: best_marker.marker.position.clone(),
+        }
+    }
+    
+    /// Creates a fallback marker when no orbital markers are available
+    fn create_fallback_marker(&self, obstruction: &ObjectContainer) -> OptimalMarker {
+        OptimalMarker {
+            name: format!("{} OM-1", obstruction.name),
+            position: Vector3::new(
+                obstruction.position.x,
+                obstruction.position.y + obstruction.om_radius,
+                obstruction.position.z,
+            ),
+        }
+    }
+    
+    /// Calculates a normalized vector from origin to target
+    fn calculate_normalized_vector(&self, origin: &Vector3, target: &Vector3) -> Vector3 {
+        let vector = Vector3::new(
+            target.x - origin.x,
+            target.y - origin.y,
+            target.z - origin.z,
         );
-
-        // Initialize with first marker
-        let mut best_marker = &markers[0];
-        let mut best_score = f64::NEG_INFINITY;
-
-        // Normalize vectors
-        let start_mag = (start_to_obstruction.x.powi(2)
-            + start_to_obstruction.y.powi(2)
-            + start_to_obstruction.z.powi(2))
-        .sqrt();
-
-        let end_mag = (obstruction_to_end.x.powi(2)
-            + obstruction_to_end.y.powi(2)
-            + obstruction_to_end.z.powi(2))
-        .sqrt();
-
-        let normalized1 = Vector3::new(
-            start_to_obstruction.x / start_mag,
-            start_to_obstruction.y / start_mag,
-            start_to_obstruction.z / start_mag,
-        );
-
-        let normalized2 = Vector3::new(
-            obstruction_to_end.x / end_mag,
-            obstruction_to_end.y / end_mag,
-            obstruction_to_end.z / end_mag,
-        );
-
-        // Calculate cross product to determine optimal orbital plane
+        
+        vector.normalized()
+    }
+    
+    /// Calculates the optimal direction vector for marker selection
+    fn calculate_optimal_direction(&self, start_norm: &Vector3, end_norm: &Vector3) -> Vector3 {
+        // Find a direction vector that's perpendicular to the plane containing
+        // the obstruction center, start point, and end point
         let cross_product = Vector3::new(
-            normalized1.y * normalized2.z - normalized1.z * normalized2.y,
-            normalized1.z * normalized2.x - normalized1.x * normalized2.z,
-            normalized1.x * normalized2.y - normalized1.y * normalized2.x,
+            start_norm.y * end_norm.z - start_norm.z * end_norm.y,
+            start_norm.z * end_norm.x - start_norm.x * end_norm.z,
+            start_norm.x * end_norm.y - start_norm.y * end_norm.x,
         );
-
-        for marker in markers {
-            // Get marker vector from obstruction center
-            let marker_vector = Vector3::new(
-                marker.position.x - obstruction.position.x,
-                marker.position.y - obstruction.position.y,
-                marker.position.z - obstruction.position.z,
-            );
-
-            // Calculate dot product with cross product to find alignment
-            let alignment_score = marker_vector.x * cross_product.x
-                + marker_vector.y * cross_product.y
-                + marker_vector.z * cross_product.z;
-
-            if alignment_score.abs() > best_score.abs() {
-                best_score = alignment_score;
-                best_marker = marker;
+        
+        // If cross product is too small, start and end are on opposite sides of obstruction
+        if cross_product.magnitude() < 1e-6 {
+            // Use the average of the two normalized vectors
+            Vector3::new(
+                (start_norm.x + end_norm.x) / 2.0,
+                (start_norm.y + end_norm.y) / 2.0,
+                (start_norm.z + end_norm.z) / 2.0,
+            )
+        } else {
+            // Use cross product of the two normalized vectors and one of the originals
+            // to get a vector in the right plane but perpendicular to one of our paths
+            Vector3::new(
+                start_norm.y * cross_product.z - start_norm.z * cross_product.y,
+                start_norm.z * cross_product.x - start_norm.x * cross_product.z,
+                start_norm.x * cross_product.y - start_norm.y * cross_product.x,
+            )
+        }
+    }
+    
+    /// Finds the marker best aligned with the optimal direction
+    fn find_best_aligned_marker(
+        &self, 
+        markers: &[Arc<NavNode>], 
+        obstruction_pos: &Vector3, 
+        direction_norm: &Vector3
+    ) -> MarkerAlignmentResult {
+        let mut best_marker_idx = 0;
+        let mut best_score = -1.0;
+        
+        for (idx, marker) in markers.iter().enumerate() {
+            // Calculate normalized vector from obstruction to marker
+            let obs_to_marker = self.calculate_normalized_vector(obstruction_pos, &marker.position);
+            
+            // Calculate dot product to see how well this marker aligns with our ideal direction
+            let alignment = direction_norm.dot(&obs_to_marker);
+            
+            // We want the marker that's most aligned with our direction
+            if alignment > best_score {
+                best_score = alignment;
+                best_marker_idx = idx;
             }
         }
-
-        OptimalMarker {
-            name: best_marker.name.clone(),
-            position: best_marker.position,
+        
+        MarkerAlignmentResult {
+            marker: Arc::clone(&markers[best_marker_idx]),
+            alignment_score: best_score,
         }
     }
 
     /// Find the parent planet of a moon
+    /// 
+    /// Determines which planet a moon orbits by finding the closest planet
+    /// in the same star system.
     fn find_parent_planet(
         &self,
         moon: &ObjectContainer,
@@ -1453,63 +1587,12 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             return None;
         }
 
-        // Try to infer parent planet from naming patterns
-        let moon_name = moon.name.to_lowercase();
-
-        for planet in &system_planets {
-            let planet_name = planet.name.to_lowercase();
-
-            // Check if moon name contains planet name
-            if moon_name.contains(&planet_name) {
-                log::info!(
-                    "Matched {} to parent planet {} by name",
-                    moon.name,
-                    planet.name
-                );
-                return Some(Arc::clone(planet));
-            }
-        }
-
-        // If name-based inference failed, use reference data
-        // This is a hard-coded mapping for known moons
-        let known_moon_parents: HashMap<&str, &str> = [
-            ("Cellin", "Crusader"),
-            ("Daymar", "Crusader"),
-            ("Yela", "Crusader"),
-            ("Aberdeen", "Hurston"),
-            ("Arial", "Hurston"),
-            ("Ita", "Hurston"),
-            ("Magda", "Hurston"),
-            ("Clio", "Microtech"),
-            ("Calliope", "Microtech"),
-            ("Euterpe", "Microtech"),
-            ("Lyria", "ArcCorp"),
-            ("Wala", "ArcCorp"),
-        ]
-        .iter()
-        .cloned()
-        .collect();
-
-        if let Some(parent_name) = known_moon_parents.get(moon.name.as_str()) {
-            if let Some(parent) = system_planets.iter().find(|p| p.name == *parent_name) {
-                log::info!(
-                    "Matched {} to parent planet {} by reference data",
-                    moon.name,
-                    parent.name
-                );
-                return Some(Arc::clone(parent));
-            }
-        }
-
-        // Default to closest planet by distance
+        // Find closest planet by distance
         let mut closest_planet = None;
         let mut min_distance = f64::MAX;
 
         for planet in &system_planets {
-            let distance = ((moon.position.x - planet.position.x).powi(2)
-                + (moon.position.y - planet.position.y).powi(2)
-                + (moon.position.z - planet.position.z).powi(2))
-            .sqrt();
+            let distance = moon.position.distance(&planet.position);
 
             if distance < min_distance {
                 min_distance = distance;
@@ -1517,9 +1600,10 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         }
 
+        // Log the result if we found a parent planet
         if let Some(ref planet) = closest_planet {
             log::info!(
-                "Matched {} to parent planet {} by proximity",
+                "Matched moon {} to parent planet {} by proximity",
                 moon.name,
                 planet.name
             );
@@ -1535,43 +1619,15 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         current_container: Option<&ObjectContainer>,
     ) -> PlanetaryInterceptResult {
         log::info!("Analyzing planetary hierarchy:");
-
-        // Log current container info
-        if let Some(current) = current_container {
-            log::info!("- Current: {} ({:?})", current.name, current.container_type);
-
-            // Find current parent if applicable
-            let containers = self.data_provider.get_object_containers();
-
-            let current_parent_planet = if current.container_type == ContainerType::Moon {
-                self.find_parent_planet(current, containers)
-            } else if current.container_type == ContainerType::Planet {
-                Some(Arc::new(current.clone()))
-            } else {
-                None
-            };
-
-            if let Some(ref parent) = current_parent_planet {
-                log::info!("  Parent: {}", parent.name);
-            }
-        } else {
-            log::info!("- Current: None (open space)");
-        }
-
+        self.log_container_info(current_container);
+        
         // Get destination container reference
-        let dest_container = match destination {
-            DestinationEntity::Poi(poi) => poi
-                .obj_container
-                .as_ref()
-                .and_then(|name| self.data_provider.get_object_container_by_name(name))
-                .map(|c| Arc::new(c.clone())),
-            DestinationEntity::Container(container) => Some(Arc::clone(container)),
-        };
-
+        let dest_container = self.get_destination_container(destination);
+        
         log::info!(
             "- Destination: {} ({})",
             dest_container.as_ref().map_or("None", |c| c.name.as_str()),
-            &dest_container
+            dest_container
                 .as_ref()
                 .map_or("None".to_string(), |c| format!("{:?}", c.container_type)),
         );
@@ -1587,92 +1643,16 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         }
 
-        // If no current container, we're in open space
+        // Handle different navigation scenarios
         if current_container.is_none() {
-            // If destination is on a planet/moon, we need to go there first
-            if let Some(dest) = &dest_container {
-                if dest.container_type == ContainerType::Moon {
-                    // For moons, we should go to parent planet first
-                    let containers = self.data_provider.get_object_containers();
-                    if let Some(dest_parent_planet) = self.find_parent_planet(dest, containers) {
-                        log::info!("  Parent: {}", dest_parent_planet.name);
-                        log::info!(
-                            "Planetary intercept required: Must approach {} first",
-                            dest_parent_planet.name
-                        );
-                        return PlanetaryInterceptResult {
-                            required: true,
-                            parent_container: Some(dest_parent_planet),
-                        };
-                    }
-                }
-
-                // For planets or moons without identified parents, go directly
-                log::info!(
-                    "Planetary intercept required: Direct approach to {}",
-                    dest.name
-                );
-                return PlanetaryInterceptResult {
-                    required: true,
-                    parent_container: Some(Arc::clone(dest)),
-                };
-            }
-
-            return PlanetaryInterceptResult {
-                required: false,
-                parent_container: None,
-            };
-        }
-
-        // If destination is a moon, find its parent planet
-        if let Some(dest) = &dest_container {
+            return self.handle_from_open_space(dest_container);
+        } else if let Some(dest) = &dest_container {
+            // Handle moon destinations
             if dest.container_type == ContainerType::Moon {
-                let containers = self.data_provider.get_object_containers();
-                if let Some(dest_parent_planet) = self.find_parent_planet(dest, containers) {
-                    log::info!("  Parent: {}", dest_parent_planet.name);
-
-                    // If we're not on the parent planet (or its system), need to go there first
-                    if current_container.map_or(true, |c| c.name != dest_parent_planet.name) {
-                        // Check if current location is on the parent planet's moon system
-                        if let Some(current) = current_container {
-                            let is_on_same_planet_system = current.container_type
-                                == ContainerType::Moon
-                                && self
-                                    .find_parent_planet(current, containers)
-                                    .map_or(false, |p| p.name == dest_parent_planet.name);
-
-                            if !is_on_same_planet_system {
-                                log::info!(
-                                    "Planetary intercept required: Must approach {} first",
-                                    dest_parent_planet.name
-                                );
-                                return PlanetaryInterceptResult {
-                                    required: true,
-                                    parent_container: Some(dest_parent_planet),
-                                };
-                            }
-                        }
-                    }
-
-                    // If we're already on the parent planet or one of its moons, go directly to the destination moon
-                    log::info!("Moon intercept required: Direct approach to {}", dest.name);
-                    return PlanetaryInterceptResult {
-                        required: true,
-                        parent_container: Some(Arc::clone(dest)),
-                    };
-                }
-
-                // Fallback if parent not found
-                log::info!("Moon intercept required: Direct approach to {}", dest.name);
-                return PlanetaryInterceptResult {
-                    required: true,
-                    parent_container: Some(Arc::clone(dest)),
-                };
+                return self.handle_moon_destination(dest, current_container);
             }
-        }
-
-        // If destination is a planet
-        if let Some(dest) = &dest_container {
+            
+            // Handle planet destinations
             if dest.container_type == ContainerType::Planet {
                 log::info!(
                     "Planetary intercept required: Direct approach to {}",
@@ -1685,57 +1665,10 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         }
 
-        // If destination is a POI on a planet/moon
+        // Handle POI destinations
         if let DestinationEntity::Poi(poi) = destination {
-            if let Some(poi_container_name) = &poi.obj_container {
-                if let Some(current) = current_container {
-                    if current.name != *poi_container_name {
-                        if let Some(poi_container) = self
-                            .data_provider
-                            .get_object_container_by_name(poi_container_name)
-                        {
-                            // If POI is on a different container than current location
-                            // For POIs on moons, check if we need to go through parent planet
-                            if poi_container.container_type == ContainerType::Moon {
-                                let containers = self.data_provider.get_object_containers();
-                                if let Some(poi_parent_planet) =
-                                    self.find_parent_planet(poi_container, containers)
-                                {
-                                    if poi_parent_planet.name != current.name {
-                                        log::info!("  POI Parent: {}", poi_parent_planet.name);
-
-                                        // Check if we're already on the same planet system
-                                        let is_on_same_planet_system = current.container_type
-                                            == ContainerType::Moon
-                                            && self
-                                                .find_parent_planet(current, containers)
-                                                .map_or(false, |p| {
-                                                    p.name == poi_parent_planet.name
-                                                });
-
-                                        if !is_on_same_planet_system {
-                                            log::info!("Planetary intercept required: Must approach {} first for POI", poi_parent_planet.name);
-                                            return PlanetaryInterceptResult {
-                                                required: true,
-                                                parent_container: Some(poi_parent_planet),
-                                            };
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Need to approach the POI's container
-                            log::info!(
-                                "Container intercept required: Must approach {} for POI",
-                                poi_container.name
-                            );
-                            return PlanetaryInterceptResult {
-                                required: true,
-                                parent_container: Some(Arc::new(poi_container.clone())),
-                            };
-                        }
-                    }
-                }
+            if let Some(result) = self.handle_poi_destination(poi, current_container) {
+                return result;
             }
         }
 
@@ -1744,6 +1677,211 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             required: false,
             parent_container: None,
         }
+    }
+    
+    /// Logs information about the current container
+    fn log_container_info(&self, current_container: Option<&ObjectContainer>) {
+        match current_container {
+            Some(current) => {
+                log::info!("- Current: {} ({:?})", current.name, current.container_type);
+
+                // Find current parent if applicable
+                let containers = self.data_provider.get_object_containers();
+                let current_parent_planet = match current.container_type {
+                    ContainerType::Moon => self.find_parent_planet(current, containers),
+                    ContainerType::Planet => Some(Arc::new(current.clone())),
+                    _ => None,
+                };
+
+                if let Some(parent) = current_parent_planet {
+                    log::info!("  Parent: {}", parent.name);
+                }
+            }
+            None => log::info!("- Current: None (open space)"),
+        }
+    }
+    
+    /// Gets the container for a destination entity
+    fn get_destination_container(&self, destination: &DestinationEntity) -> Option<Arc<ObjectContainer>> {
+        match destination {
+            DestinationEntity::Poi(poi) => {
+                poi.obj_container
+                    .as_ref()
+                    .and_then(|name| self.data_provider.get_object_container_by_name(name))
+                    .map(|c| Arc::new(c.clone()))
+            }
+            DestinationEntity::Container(container) => Some(Arc::clone(container)),
+        }
+    }
+    
+    /// Handles navigation from open space
+    fn handle_from_open_space(&self, dest_container: Option<Arc<ObjectContainer>>) -> PlanetaryInterceptResult {
+        // If destination is on a planet/moon, we need to go there first
+        if let Some(dest) = &dest_container {
+            if dest.container_type == ContainerType::Moon {
+                // For moons, we should go to parent planet first
+                let containers = self.data_provider.get_object_containers();
+                if let Some(dest_parent_planet) = self.find_parent_planet(dest, containers) {
+                    log::info!("  Parent: {}", dest_parent_planet.name);
+                    log::info!(
+                        "Planetary intercept required: Must approach {} first",
+                        dest_parent_planet.name
+                    );
+                    return PlanetaryInterceptResult {
+                        required: true,
+                        parent_container: Some(dest_parent_planet),
+                    };
+                }
+            }
+
+            // For planets or moons without identified parents, go directly
+            log::info!(
+                "Planetary intercept required: Direct approach to {}",
+                dest.name
+            );
+            return PlanetaryInterceptResult {
+                required: true,
+                parent_container: Some(Arc::clone(dest)),
+            };
+        }
+
+        PlanetaryInterceptResult {
+            required: false,
+            parent_container: None,
+        }
+    }
+    
+    /// Handles navigation to a moon destination
+    fn handle_moon_destination(
+        &self, 
+        dest: &ObjectContainer, 
+        current_container: Option<&ObjectContainer>
+    ) -> PlanetaryInterceptResult {
+        let containers = self.data_provider.get_object_containers();
+        
+        if let Some(dest_parent_planet) = self.find_parent_planet(dest, containers) {
+            log::info!("  Parent: {}", dest_parent_planet.name);
+
+            // Check if we need to go to the parent planet first
+            if let Some(current) = current_container {
+                // Check if current location is on the parent planet's moon system
+                let is_on_same_planet_system = current.container_type == ContainerType::Moon
+                    && self
+                        .find_parent_planet(current, containers)
+                        .map_or(false, |p| p.name == dest_parent_planet.name);
+
+                // If not on parent planet or its moon system, go to parent first
+                if current.name != dest_parent_planet.name && !is_on_same_planet_system {
+                    log::info!(
+                        "Planetary intercept required: Must approach {} first",
+                        dest_parent_planet.name
+                    );
+                    return PlanetaryInterceptResult {
+                        required: true,
+                        parent_container: Some(dest_parent_planet),
+                    };
+                }
+            } else {
+                // Coming from open space, go to parent planet first
+                log::info!(
+                    "Planetary intercept required: Must approach {} first",
+                    dest_parent_planet.name
+                );
+                return PlanetaryInterceptResult {
+                    required: true,
+                    parent_container: Some(dest_parent_planet),
+                };
+            }
+
+            // If we're already on the parent planet or one of its moons, go directly to the destination moon
+            log::info!("Moon intercept required: Direct approach to {}", dest.name);
+            return PlanetaryInterceptResult {
+                required: true,
+                parent_container: Some(Arc::new(dest.clone())),
+            };
+        }
+
+        // Fallback if parent not found
+        log::info!("Moon intercept required: Direct approach to {}", dest.name);
+        PlanetaryInterceptResult {
+            required: true,
+            parent_container: Some(Arc::new(dest.clone())),
+        }
+    }
+    
+    /// Handles navigation to a POI destination
+    fn handle_poi_destination(
+        &self,
+        poi: &PointOfInterest,
+        current_container: Option<&ObjectContainer>
+    ) -> Option<PlanetaryInterceptResult> {
+        // If POI doesn't have a container, no intercept needed
+        let poi_container_name = match &poi.obj_container {
+            Some(name) => name,
+            None => return None,
+        };
+        
+        // If we're already at the POI's container, no intercept needed
+        if let Some(current) = current_container {
+            if current.name == *poi_container_name {
+                return None;
+            }
+        }
+        
+        // Find the POI's container
+        let poi_container = match self.data_provider.get_object_container_by_name(poi_container_name) {
+            Some(container) => container,
+            None => return None,
+        };
+        
+        // Special handling for POIs on moons
+        if poi_container.container_type == ContainerType::Moon {
+            let containers = self.data_provider.get_object_containers();
+            
+            if let Some(poi_parent_planet) = self.find_parent_planet(poi_container, containers) {
+                log::info!("  POI Parent: {}", poi_parent_planet.name);
+                
+                // Check if we're already on the same planet system
+                if let Some(current) = current_container {
+                    let is_on_same_planet_system = current.container_type == ContainerType::Moon
+                        && self.find_parent_planet(current, containers)
+                            .map_or(false, |p| p.name == poi_parent_planet.name);
+                    
+                    // If not on the same planet system, approach parent planet first
+                    if !is_on_same_planet_system && current.name != poi_parent_planet.name {
+                        log::info!(
+                            "Planetary intercept required: Must approach {} first for POI", 
+                            poi_parent_planet.name
+                        );
+                        return Some(PlanetaryInterceptResult {
+                            required: true,
+                            parent_container: Some(poi_parent_planet),
+                        });
+                    }
+                } else {
+                    // Coming from open space, approach parent planet first
+                    log::info!(
+                        "Planetary intercept required: Must approach {} first for POI", 
+                        poi_parent_planet.name
+                    );
+                    return Some(PlanetaryInterceptResult {
+                        required: true,
+                        parent_container: Some(poi_parent_planet),
+                    });
+                }
+            }
+        }
+        
+        // Need to approach the POI's container directly
+        log::info!(
+            "Container intercept required: Must approach {} for POI",
+            poi_container.name
+        );
+        
+        Some(PlanetaryInterceptResult {
+            required: true,
+            parent_container: Some(Arc::new(poi_container.clone())),
+        })
     }
 
     /// Calculate the optimal intercept point on a planet's surface
@@ -1761,17 +1899,10 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         }
 
         // Vector from planet center to start position
-        let start_vec = Vector3::new(
-            start_pos.x - planet.position.x,
-            start_pos.y - planet.position.y,
-            start_pos.z - planet.position.z,
-        );
-
-        // Normalize start vector
-        let start_mag = (start_vec.x.powi(2) + start_vec.y.powi(2) + start_vec.z.powi(2)).sqrt();
+        let start_vec = start_pos - &planet.position;
 
         // Safety check to prevent division by zero
-        if start_mag < 0.001 {
+        if start_vec.is_near_zero(0.001) {
             log::warn!("Near-zero magnitude for approach vector to {}", planet.name);
             // Create a fallback intercept vector
             return Vector3::new(
@@ -1789,68 +1920,36 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         };
 
         // Vector from planet center to end position
-        let end_vec = Vector3::new(
-            end_pos.x - planet.position.x,
-            end_pos.y - planet.position.y,
-            end_pos.z - planet.position.z,
-        );
-
-        // Normalize end vector
-        let end_mag = (end_vec.x.powi(2) + end_vec.y.powi(2) + end_vec.z.powi(2)).sqrt();
+        let end_vec = end_pos - &planet.position;
 
         // Safety check for end vector
-        if end_mag < 0.001 {
+        if end_vec.is_near_zero(0.001) {
             log::warn!(
                 "Near-zero magnitude for destination vector to {}",
                 planet.name
             );
             // Use only start vector for approach
-            return Vector3::new(
-                planet.position.x + (start_vec.x / start_mag) * intercept_radius,
-                planet.position.y + (start_vec.y / start_mag) * intercept_radius,
-                planet.position.z + (start_vec.z / start_mag) * intercept_radius,
-            );
+            return planet.position + start_vec.normalized().scale(intercept_radius);
         }
 
         // Calculate weighted approach vector for optimal interception
         // Weight toward start vector but consider end direction
-        let approach_vec = Vector3::new(
-            (start_vec.x / start_mag * 0.7) + (end_vec.x / end_mag * 0.3),
-            (start_vec.y / start_mag * 0.7) + (end_vec.y / end_mag * 0.3),
-            (start_vec.z / start_mag * 0.7) + (end_vec.z / end_mag * 0.3),
-        );
-
-        // Normalize approach vector
-        let approach_mag =
-            (approach_vec.x.powi(2) + approach_vec.y.powi(2) + approach_vec.z.powi(2)).sqrt();
+        let approach_vec = start_vec.normalized().scale(0.7) + end_vec.normalized().scale(0.3);
 
         // Final safety check for approach vector
-        if approach_mag < 0.001 {
+        if approach_vec.is_near_zero(0.001) {
             log::warn!(
                 "Calculated zero-magnitude approach vector to {}",
                 planet.name
             );
             // Generate a fallback vector that's perpendicular to the start-end axis
             // This gives us a valid intercept point even in edge cases
-            let fallback_vec = Vector3::new(
-                -start_vec.y / start_mag,
-                start_vec.x / start_mag,
-                start_vec.z / start_mag,
-            );
-
-            return Vector3::new(
-                planet.position.x + fallback_vec.x * intercept_radius,
-                planet.position.y + fallback_vec.y * intercept_radius,
-                planet.position.z + fallback_vec.z * intercept_radius,
-            );
+            let fallback_vec = start_vec.normalized().cross(&Vector3::unit_z()).normalized();
+            return planet.position + fallback_vec.scale(intercept_radius);
         }
 
         // Calculate optimal intercept using the weighted approach
-        let intercept_point = Vector3::new(
-            planet.position.x + (approach_vec.x / approach_mag) * intercept_radius,
-            planet.position.y + (approach_vec.y / approach_mag) * intercept_radius,
-            planet.position.z + (approach_vec.z / approach_mag) * intercept_radius,
-        );
+        let intercept_point = planet.position + approach_vec.normalized().scale(intercept_radius);
 
         log::info!(
             "Calculated intercept for {} at ({:.2}, {:.2}, {:.2})",
@@ -1888,6 +1987,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         if los_result.has_los {
             // Direct path is available
             log::info!("Direct path available - proceeding with simple route");
+            
             let dest_name = match destination {
                 DestinationEntity::Poi(poi) => poi.name.clone(),
                 DestinationEntity::Container(container) => container.name.clone(),
@@ -1924,7 +2024,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         let mut route_nodes = vec![start_node];
 
         // Calculate primary intercept
-        let primary_intercept_point =
+        let primary_intercept_point = 
             self.calculate_planetary_intercept(start_pos, end_pos, &primary_intercept);
 
         // Add primary intercept node
@@ -1933,8 +2033,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             parent_node: Some(Arc::clone(route_nodes.last().unwrap())),
             g_cost: start_pos.distance(&primary_intercept_point),
             h_cost: primary_intercept_point.distance(end_pos),
-            f_cost: start_pos.distance(&primary_intercept_point)
-                + primary_intercept_point.distance(end_pos),
+            f_cost: start_pos.distance(&primary_intercept_point) + 
+                   primary_intercept_point.distance(end_pos),
             node_type: NavNodeType::Intermediate,
             name: format!("{} Approach Vector", primary_intercept.name),
             container_ref: Some(Arc::clone(&primary_intercept)),
@@ -1973,12 +2073,12 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let secondary_intercept_node = Arc::new(NavNode {
                 position: secondary_intercept_point,
                 parent_node: Some(Arc::clone(&primary_intercept_node)),
-                g_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(&secondary_intercept_point),
+                g_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(&secondary_intercept_point),
                 h_cost: secondary_intercept_point.distance(end_pos),
-                f_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(&secondary_intercept_point)
-                    + secondary_intercept_point.distance(end_pos),
+                f_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(&secondary_intercept_point) + 
+                       secondary_intercept_point.distance(end_pos),
                 node_type: NavNodeType::Intermediate,
                 name: format!("{} Approach Vector", dest_container.name),
                 container_ref: Some(Arc::clone(&dest_container)),
@@ -1997,13 +2097,13 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let end_node = Arc::new(NavNode {
                 position: *end_pos,
                 parent_node: Some(Arc::clone(&secondary_intercept_node)),
-                g_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(&secondary_intercept_point)
-                    + secondary_intercept_point.distance(end_pos),
+                g_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(&secondary_intercept_point) + 
+                       secondary_intercept_point.distance(end_pos),
                 h_cost: 0.0,
-                f_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(&secondary_intercept_point)
-                    + secondary_intercept_point.distance(end_pos),
+                f_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(&secondary_intercept_point) + 
+                       secondary_intercept_point.distance(end_pos),
                 node_type: NavNodeType::Destination,
                 name: dest_name,
                 container_ref: None,
@@ -2022,11 +2122,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let end_node = Arc::new(NavNode {
                 position: *end_pos,
                 parent_node: Some(Arc::clone(&primary_intercept_node)),
-                g_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(end_pos),
+                g_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(end_pos),
                 h_cost: 0.0,
-                f_cost: start_pos.distance(&primary_intercept_point)
-                    + primary_intercept_point.distance(end_pos),
+                f_cost: start_pos.distance(&primary_intercept_point) + 
+                       primary_intercept_point.distance(end_pos),
                 node_type: NavNodeType::Destination,
                 name: dest_name,
                 container_ref: None,
@@ -2068,6 +2168,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
     /// Plan navigation to a destination by name
     pub fn plan_navigation(&self, destination_name: &str) -> Option<NavigationPlan> {
+        // Get current position or return early if unavailable
         let current_position = match self.core.get_current_position() {
             Some(pos) => pos,
             None => {
@@ -2076,48 +2177,40 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         };
 
-        // Try to find the destination as a POI first
-        let poi_destination = self
-            .data_provider
-            .get_point_of_interest_by_name(destination_name);
-
-        // Then try to find it as a container
-        let container_destination = self
-            .data_provider
-            .get_object_container_by_name(destination_name);
+        // Try to find the destination as either a POI or a container
+        let poi_destination = self.data_provider.get_point_of_interest_by_name(destination_name);
+        let container_destination = self.data_provider.get_object_container_by_name(destination_name);
 
         // Resolve the destination entity
-        let (destination_pos, destination_system, destination_entity) =
-            match (poi_destination, container_destination) {
-                (Some(poi), _) => {
-                    // POI found
-                    let pos = self.get_global_coordinates(poi);
-                    (pos, poi.system, DestinationEntity::Poi(poi.clone()))
-                }
-                (_, Some(container)) => {
-                    // Container found
-                    (
-                        container.position,
-                        container.system,
-                        DestinationEntity::Container(Arc::new(container.clone())),
-                    )
-                }
-                _ => {
-                    log::error!(
-                        "Destination entity '{}' not found in astronomical database",
-                        destination_name
-                    );
-                    return None;
-                }
-            };
+        let (destination_pos, destination_system, destination_entity) = match (poi_destination, container_destination) {
+            (Some(poi), _) => {
+                // POI found - get its global coordinates
+                let pos = self.get_global_coordinates(poi);
+                (pos, poi.system, DestinationEntity::Poi(poi.clone()))
+            }
+            (_, Some(container)) => {
+                // Container found
+                (
+                    container.position,
+                    container.system,
+                    DestinationEntity::Container(Arc::new(container.clone())),
+                )
+            }
+            _ => {
+                log::error!(
+                    "Destination entity '{}' not found in astronomical database",
+                    destination_name
+                );
+                return None;
+            }
+        };
 
-        // Origin system determination
-        let origin_system = self
-            .core
+        // Determine origin system
+        let origin_system = self.core
             .get_current_object_container()
             .map_or_else(|| System::Stanton, |c| c.system);
 
-        // Cross-system routing validation
+        // Validate cross-system routing
         if destination_system != origin_system {
             log::error!(
                 "Interstellar routing prohibited: {} → {}",
@@ -2127,6 +2220,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             return None;
         }
 
+        // Log navigation planning details
         log::info!(
             "Planning route to {} in {} system",
             destination_name,
@@ -2139,14 +2233,12 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             destination_pos.z
         );
 
-        // Try to create a hierarchical planetary route
-        let path = self.create_hierarchical_planetary_route(
+        // Create hierarchical planetary route
+        let path = match self.create_hierarchical_planetary_route(
             &current_position,
             &destination_pos,
             &destination_entity,
-        );
-
-        let path = match path {
+        ) {
             Some(p) => p,
             None => {
                 log::error!("Path computation failed: no viable route found");
@@ -2154,7 +2246,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         };
 
-        // Navigation plan synthesis
+        // Create and return the navigation plan
         Some(self.create_navigation_plan(&path))
     }
 
@@ -2167,6 +2259,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         pos_z: f64,
         system_name: Option<&str>,
     ) -> Option<NavigationPlan> {
+        // Get current position or return early if unavailable
         let current_position = match self.core.get_current_position() {
             Some(pos) => pos,
             None => {
@@ -2175,15 +2268,13 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         };
 
-        // Determine if coordinates are global or local (container-relative)
+        // Determine if coordinates are global or container-relative
         let (destination_pos, destination_container) = match container_name {
-            // Local coordinates - need to transform to global
+            // Local coordinates - transform to global
             Some(name) => {
-                let container_opt = self.data_provider.get_object_container_by_name(name);
-
-                match container_opt {
+                match self.data_provider.get_object_container_by_name(name) {
                     Some(container) => {
-                        // Transform local coordinates to global using this container as reference
+                        // Transform local coordinates to global
                         let local_position = Vector3::new(pos_x, pos_y, pos_z);
                         let global_position = self.transformer.transform_coordinates(
                             &local_position,
@@ -2199,10 +2290,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                         (global_position, Some(Arc::new(container.clone())))
                     }
                     None => {
-                        log::error!(
-                            "Container '{}' not found for coordinate transformation",
-                            name
-                        );
+                        log::error!("Container '{}' not found for coordinate transformation", name);
                         return None;
                     }
                 }
@@ -2212,55 +2300,40 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 let global_position = Vector3::new(pos_x, pos_y, pos_z);
                 log::info!(
                     "Using global coordinates: ({:.2}, {:.2}, {:.2})",
-                    global_position.x,
-                    global_position.y,
-                    global_position.z
+                    global_position.x, global_position.y, global_position.z
                 );
                 (global_position, None)
             }
         };
 
-        // Destination system determination - prioritize explicit system parameter
+        // Determine destination and origin systems
         let destination_system = match system_name {
-            // Use explicitly provided system name if available
             Some(name) => name.to_string(),
             None => match &destination_container {
-                // Otherwise use container's system
                 Some(container) => container.system.to_string(),
-                None => {
-                    // Last resort: infer from current position if no explicit system or container
-                    self.core
-                        .get_current_object_container()
-                        .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string())
-                }
+                None => self.core
+                    .get_current_object_container()
+                    .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string())
             },
         };
 
-        // Origin system determination
-        let origin_system = self
-            .core
+        let origin_system = self.core
             .get_current_object_container()
             .map_or_else(|| System::Stanton.to_string(), |c| c.system.to_string());
 
-        // Cross-system routing validation
+        // Validate cross-system routing
         if destination_system != origin_system {
             log::error!(
                 "Interstellar routing prohibited: {} → {}",
-                origin_system,
-                destination_system
+                origin_system, destination_system
             );
             return None;
         }
 
-        log::info!(
-            "Planning route to coordinates in {} system",
-            destination_system
-        );
+        log::info!("Planning route to coordinates in {} system", destination_system);
         log::info!(
             "Destination coordinates: ({:.2}, {:.2}, {:.2})",
-            destination_pos.x,
-            destination_pos.y,
-            destination_pos.z
+            destination_pos.x, destination_pos.y, destination_pos.z
         );
 
         // Check if both points are on the same planetary body for surface navigation
@@ -2269,7 +2342,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             (Some(cc), Some(dc)) => {
                 cc.name == dc.name &&
                 (cc.container_type == ContainerType::Planet || 
-                cc.container_type == ContainerType::Moon)
+                 cc.container_type == ContainerType::Moon)
             },
             _ => false,
         };
@@ -2301,31 +2374,19 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let p1_norm = r1.normalized();
             let p2_norm = r2.normalized();
 
-            // Compute the dot product between unit vectors
+            // Compute the dot product and angle between vectors
             let dot_product = p1_norm.dot(&p2_norm);
-            
-            // Calculate the angle between vectors (in radians)
             let angle_rad = dot_product.clamp(-1.0, 1.0).acos();
             
             // Great circle distance is the angle (in radians) times the radius
             let great_circle_distance = angle_rad * planet.body_radius;
 
-            log::info!(
-                "Points are {:.2} degrees apart on the surface", 
-                angle_rad.to_degrees()
-            );
-            log::info!(
-                "Great-circle distance: {:.2} km", 
-                great_circle_distance / 1000.0
-            );
+            log::info!("Points are {:.2} degrees apart on the surface", angle_rad.to_degrees());
+            log::info!("Great-circle distance: {:.2} km", great_circle_distance / 1000.0);
 
-            // Create a destination name
-            let dest_name = format!(
-                "Surface Target ({:.1}, {:.1}, {:.1})",
-                pos_x, pos_y, pos_z
-            );
-
-            // Create start and end nodes for the path
+            // Create a simple path with just origin and destination
+            let dest_name = format!("Surface Target ({:.1}, {:.1}, {:.1})", pos_x, pos_y, pos_z);
+            
             let start_node = Arc::new(NavNode::new(
                 current_position,
                 NavNodeType::Origin,
@@ -2346,14 +2407,12 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 search_direction: SearchDirection::Forward,
             });
 
-            // Create a simple path with just origin and destination
             let path = vec![start_node, end_node];
 
             // Create a navigation plan with the correct surface distance
             let mut plan = self.create_navigation_plan(&path);
             
-            // Override the distance with the accurate great-circle distance
-            // This ensures we're using the surface path length, not straight-line
+            // Override with accurate great-circle distance
             plan.total_distance = great_circle_distance;
             plan.segments[0].distance = great_circle_distance;
             plan.segments[0].estimated_time = self.calculate_travel_time(
@@ -2362,13 +2421,9 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             );
             plan.total_estimated_time = plan.segments[0].estimated_time;
             
-            // Set the direction for surface navigation
+            // Set the direction and travel type
             plan.segments[0].direction = surface_angles;
-            
-            // Set planetary travel type (since TravelType::Surface doesn't exist)
             plan.segments[0].travel_type = TravelType::Planetary;
-            
-            // Set a direct path complexity for surface navigation
             plan.path_complexity = PathComplexity::Direct;
             
             return Some(plan);
@@ -2381,10 +2436,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 // Create a synthetic POI for the coordinate point
                 let coordinate_poi = PointOfInterest {
                     id: 0,
-                    name: format!(
-                        "Coordinate Target ({:.1}, {:.1}, {:.1})",
-                        pos_x, pos_y, pos_z
-                    ),
+                    name: format!("Coordinate Target ({:.1}, {:.1}, {:.1})", pos_x, pos_y, pos_z),
                     position: destination_pos,
                     obj_container: None,
                     system: System::from_str(&destination_system).unwrap_or(System::Stanton),
@@ -2400,13 +2452,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         };
 
         // Try to create a hierarchical planetary route
-        let path = self.create_hierarchical_planetary_route(
+        let path = match self.create_hierarchical_planetary_route(
             &current_position,
             &destination_pos,
             &destination_entity,
-        );
-
-        let path = match path {
+        ) {
             Some(p) => p,
             None => {
                 log::error!("Path computation failed: no viable route to coordinates");
@@ -2414,24 +2464,32 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             }
         };
 
-        // Navigation plan synthesis
+        // Create and return the navigation plan
         Some(self.create_navigation_plan(&path))
     }
 
-    /// Determine current solar system
+    /// Determines the current solar system based on available information
+    /// 
+    /// This function attempts to identify the current solar system using the following methods:
+    /// 1. Extract from navigation plan's origin container
+    /// 2. Analyze route segments in the navigation plan
+    /// 3. Use the core's current object container
+    /// 
+    /// If all methods fail, defaults to the Stanton system.
     pub fn determine_current_solar_system(&self, plan: Option<&NavigationPlan>) -> System {
+        // First try to get system from the navigation plan
         if let Some(p) = plan {
-            // Primary directive: Extract system from container metadata
+            // Check if origin container is available in the plan
             if let Some(origin_container) = &p.origin_container {
                 return origin_container.system;
             }
 
-            // Tertiary analysis: Route segment inspection
+            // If plan has segments, try to determine system from them
             if !p.segments.is_empty() {
-                // Extract terminal node metadata
                 let first_segment = &p.segments[0];
                 let last_segment = &p.segments[p.segments.len() - 1];
 
+                // Try to get system from the first segment's origin
                 if let Some(origin_container) = self
                     .data_provider
                     .get_object_container_by_name(&first_segment.from.name)
@@ -2439,7 +2497,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     return origin_container.system;
                 }
 
-                // Destination analysis fallback
+                // If that fails, try the last segment's destination
                 if let Some(dest_container) = self
                     .data_provider
                     .get_object_container_by_name(&last_segment.to.name)
@@ -2447,11 +2505,14 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                     return dest_container.system;
                 }
             }
-        } else if let Some(container) = self.core.get_current_object_container() {
+        } 
+        // If no plan is available, use current object container
+        else if let Some(container) = self.core.get_current_object_container() {
             return container.system;
         }
 
-        log::warn!("Celestial domain resolution failed: defaulting to Stanton system");
+        // Default to Stanton if all else fails
+        log::warn!("Unable to determine current solar system: defaulting to Stanton");
         System::Stanton
     }
 
@@ -2469,6 +2530,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             instructions.push_str(&format!("ORIGIN: {}\n\n", origin_container.name));
         }
 
+        // Obstruction information
         if plan.obstruction_detected {
             instructions.push_str("⚠️ OBSTRUCTIONS DETECTED:\n");
             instructions.push_str(&format!(
@@ -2487,8 +2549,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             for obstruction in &plan.obstructions {
                 let obstructing_body = self.data_provider.get_object_container_by_name(obstruction);
 
-                if let (Some(body), Some(current_pos)) =
-                    (obstructing_body, self.core.get_current_position())
+                if let (Some(body), Some(current_pos)) = 
+                    (obstructing_body, self.core.get_current_position()) 
                 {
                     // Find the optimal OM to use for navigation around this body
                     if let Some(last_segment) = plan.segments.last() {
@@ -2515,6 +2577,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             instructions.push_str("✓ CLEAR PATH AVAILABLE: Direct route possible.\n\n");
         }
 
+        // Summary statistics
         instructions.push_str(&format!(
             "Total Distance: {:.2} km\n",
             plan.total_distance / 1000.0
@@ -2524,8 +2587,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         let hours = (plan.total_estimated_time / 3600.0) as u32;
         let minutes = ((plan.total_estimated_time % 3600.0) / 60.0) as u32;
         let seconds = (plan.total_estimated_time % 60.0) as u32;
+        
         let mut time_string = String::new();
-
         if hours > 0 {
             time_string.push_str(&format!("{}h ", hours));
         }
@@ -2536,6 +2599,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
         instructions.push_str(&format!("Estimated Travel Time: {}\n", time_string));
         instructions.push_str(&format!("Path Complexity: {}\n\n", plan.path_complexity));
+        
+        // Route segments
         instructions.push_str("ROUTE SEGMENTS:\n");
 
         // Format each segment
@@ -2562,8 +2627,8 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
             let seg_hours = (segment.estimated_time / 3600.0) as u32;
             let seg_minutes = ((segment.estimated_time % 3600.0) / 60.0) as u32;
             let seg_seconds = (segment.estimated_time % 60.0) as u32;
+            
             let mut seg_time_string = String::new();
-
             if seg_hours > 0 {
                 seg_time_string.push_str(&format!("{}h ", seg_hours));
             }
@@ -2594,8 +2659,9 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
         instructions
     }
 
-    // This method would need to be added to NavigationPlanner
     /// Find nearby points of interest within a specific radius
+    /// 
+    /// Returns a vector of points of interest sorted by distance (closest first)
     pub fn find_nearby_pois_in_radius(&self, radius: f64) -> Vec<NamedDistance> {
         // Make sure we have a current position
         let current_position = match self.core.get_current_position() {
@@ -2605,15 +2671,11 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
 
         let mut nearby_pois = Vec::new();
 
-        // Get all POIs
+        // Collect all POIs within radius
         for poi in self.data_provider.get_points_of_interest() {
-            // Get the global position of the POI
             let poi_position = self.get_global_coordinates(poi);
-
-            // Calculate distance to POI
             let distance = current_position.distance(&poi_position);
-
-            // Include if within radius
+            
             if distance <= radius {
                 nearby_pois.push(NamedDistance {
                     name: poi.name.clone(),
@@ -2662,6 +2724,13 @@ pub struct OptimalMarker {
     pub position: Vector3,
 }
 
+/// Result of marker alignment calculation
+#[derive(Debug, Clone)]
+pub struct MarkerAlignmentResult {
+    pub marker: Arc<NavNode>,
+    pub alignment_score: f64,
+}
+
 #[cfg(test)]
 mod navigation_planner_tests {
     use crate::{
@@ -2671,9 +2740,7 @@ mod navigation_planner_tests {
             DestinationEntity, MarkerSearchType, NavigationPlanner, PlanetaryInterceptResult,
         },
         types::{
-            AstronomicalDataProvider, ContainerType, LineOfSightResult, NavNode, NavNodeType,
-            NavigationPlan, ObjectContainer, PathComplexity, PoiType, PointOfInterest,
-            SearchDirection, System, TravelType,
+            AstronomicalDataProvider, ContainerType, LineOfSightResult, NavNode, NavNodeType, NavigationPlan, ObjectContainer, PathComplexity, PoiType, PointOfInterest, Quaternion, SearchDirection, System, TravelType
         },
     };
     use approx::assert_relative_eq;
@@ -3614,7 +3681,7 @@ mod navigation_planner_tests {
         assert!(has_qt_segment, "Plan should include Quantum travel between containers");
     }
 
-    #[test]
+#[test]
 fn test_optimal_orbital_marker_selection() {
     let (_, mut planner) = create_test_fixtures();
     
@@ -3912,6 +3979,147 @@ fn test_surface_navigation_efficiency() {
 }
 
 #[test]
+fn test_travel_type_selection() {
+    // Use the existing test fixtures instead of creating new ones
+    let (config, planner) = create_test_fixtures();
+    
+    // Create a test planet that follows your actual ObjectContainer structure
+    let planet = Arc::new(ObjectContainer::new(
+        999, // test ID
+        System::Stanton,
+        ContainerType::Planet,
+        "TestPlanet".to_string(),
+        "test_planet".to_string(), // internal_name
+        Vector3::new(0.0, 0.0, 0.0), // position
+        Vector3::new(0.0, 0.0, 0.0), // velocity
+        Vector3::new(0.0, 0.0, 0.0), // rotation
+        Quaternion::identity(), // orientation
+        1000000.0, // body_radius
+        1500000.0, // grid_radius
+        2000000.0, // safe_zone_radius
+    ));
+    
+    // Create test nodes (rest is similar to what you had)
+    
+    // Origin node in deep space
+    let origin = Arc::new(NavNode::new(
+        Vector3::new(-10000000.0, 0.0, 0.0),
+        NavNodeType::Origin,
+        "Origin".to_string(),
+        None,
+    ));
+    
+    // Orbital marker around planet
+    let orbital_marker = Arc::new(NavNode::new(
+        Vector3::new(1200000.0, 0.0, 0.0),  // Just outside planet
+        NavNodeType::OrbitalMarker,
+        "Orbital Marker".to_string(),
+        Some(Arc::clone(&planet)),
+    ));
+    
+    // Landing zone on planet
+    let landing_zone = Arc::new(NavNode::new(
+        Vector3::new(980000.0, 0.0, 0.0),  // On planet surface
+        NavNodeType::LandingZone,
+        "Landing Zone".to_string(),
+        Some(Arc::clone(&planet)),
+    ));
+    
+    // Destination POI on surface
+    let surface_poi = Arc::new(NavNode::new(
+        Vector3::new(950000.0, 200000.0, 0.0),  // On planet surface
+        NavNodeType::Destination,
+        "Surface POI".to_string(),
+        Some(Arc::clone(&planet)),
+    ));
+    
+    // Another deep space node
+    let deep_space = Arc::new(NavNode::new(
+        Vector3::new(5000000.0, 5000000.0, 0.0),
+        NavNodeType::QuantumMarker,
+        "Deep Space".to_string(),
+        None,
+    ));
+    
+    // Test Case 1: Deep space to orbital marker (long distance, should be Quantum travel)
+    // followed by approach to landing zone (should be Sublight travel)
+    {
+        // Create a path with three nodes to ensure two segments
+        let path = vec![
+            Arc::clone(&origin), 
+            Arc::clone(&deep_space),
+            Arc::clone(&landing_zone)  // Add landing zone as third point
+        ];
+        let plan = planner.create_navigation_plan(&path);
+
+        println!("First navigation plan:");
+        println!("Total segments: {}", plan.segments.len());
+        println!("Path complexity: {:?}", plan.path_complexity);
+        println!("Obstruction detected: {}", plan.obstruction_detected);
+
+        assert_eq!(
+            plan.segments[0].travel_type, 
+            TravelType::Quantum,
+            "Long distance space travel should use Quantum travel"
+        );
+        assert_eq!(
+            plan.segments[1].travel_type,
+            TravelType::Sublight,
+            "Approach to landing zone should use Sublight travel"
+        );
+    }
+    
+    // Test Case 2: Deep space to orbital marker (should be Sublight due to marker)
+    {
+        let path: Vec<Arc<NavNode>> = vec![Arc::clone(&deep_space), Arc::clone(&orbital_marker)];
+        let plan = planner.create_navigation_plan(&path);
+        assert_eq!(plan.segments[0].travel_type, TravelType::Sublight, 
+            "Approach to orbital marker should use Sublight travel");
+    }
+    
+    // Test Case 3: Orbital marker to landing zone (should be Sublight)
+    {
+        let path = vec![Arc::clone(&orbital_marker), Arc::clone(&landing_zone)];
+        let plan = planner.create_navigation_plan(&path);
+        assert_eq!(plan.segments[0].travel_type, TravelType::Sublight, 
+            "Approach to landing zone should use Sublight travel");
+    }
+    
+    // Test Case 4: Orbital marker to surface POI (should be Sublight)
+    {
+        let path = vec![Arc::clone(&orbital_marker), Arc::clone(&surface_poi)];
+        let plan = planner.create_navigation_plan(&path);
+        assert_eq!(plan.segments[0].travel_type, TravelType::Sublight, 
+            "Approach to surface POI should use Sublight travel");
+    }
+    
+    // Test Case 5: Short distance space travel (should be Sublight)
+    {
+        // Create a nearby point
+        let nearby = Arc::new(NavNode {
+            position: Vector3::new(-9990000.0, 0.0, 0.0),  // 10km from origin
+            parent_node: None,
+            g_cost: 0.0,
+            h_cost: 0.0,
+            f_cost: 0.0,
+            node_type: NavNodeType::QuantumMarker,
+            name: "Nearby Point".to_string(),
+            container_ref: None,
+            obstruction_path: false,
+            search_direction: SearchDirection::Forward,
+        });
+        
+        let path = vec![Arc::clone(&origin), Arc::clone(&nearby)];
+        let plan = planner.create_navigation_plan(&path);
+        assert_eq!(plan.segments[0].travel_type, TravelType::Sublight, 
+            "Short distance travel (<20km) should use Sublight travel");
+    }
+    
+    // Add debugging log
+    log::info!("All travel type selection tests passed successfully!");
+}
+
+#[test]
 fn test_bidirectional_search_meeting_points() {
     let (_, mut planner) = create_test_fixtures();
     
@@ -3970,7 +4178,7 @@ fn test_bidirectional_search_meeting_points() {
     let los_result = planner.check_line_of_sight(&start_position, &microtech.position);
     println!("Direct line of sight: {}", los_result.has_los);
     println!("Obstruction: {:?}", los_result.obstruction.map(|o| o.name.clone()));
-    
+
     // Plan navigation to New Babbage (first attempt)
     let first_plan = planner.plan_navigation("New Babbage");
     assert!(first_plan.is_some(), "Should create a navigation plan");
@@ -3981,6 +4189,18 @@ fn test_bidirectional_search_meeting_points() {
     println!("Total segments: {}", first_plan.segments.len());
     println!("Path complexity: {:?}", first_plan.path_complexity);
     println!("Obstruction detected: {}", first_plan.obstruction_detected);
+
+    // Add assertions to verify travel types
+    assert_eq!(
+        first_plan.segments[0].travel_type, 
+        TravelType::Quantum,
+        "Long distance space travel should use Quantum travel"
+    );
+    assert_eq!(
+        first_plan.segments[1].travel_type,
+        TravelType::Sublight,
+        "Approach to landing zone should use Sublight travel"
+    );
     
     // Output segments for debugging
     for (i, segment) in first_plan.segments.iter().enumerate() {

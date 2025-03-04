@@ -24,6 +24,10 @@ tempfile = "3.3"
 name = "nav_system_cli"
 path = "src/main.rs"
 
+[[bin]]
+name = "smoke_test"
+path = "src/smoke_test.rs"
+
 [lib]
 name = "starnav"
 path = "src/lib.rs"
