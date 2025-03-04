@@ -64,7 +64,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
 
     /// Calculate 3D Euclidean distance between two points
     pub fn calc_distance_3d(&self, p1: &Vector3, p2: &Vector3) -> f64 {
-        ((p1.x - p2.x).powi(2) + (p1.y - p2.y).powi(2) + (p1.z - p2.z).powi(2)).sqrt()
+        p1.distance(p2)
     }
 
     /// Update current player position
@@ -116,14 +116,9 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
 
         // Find POI by ID
         let index = pois.iter().position(|p| p.id == poi_id);
-
         self.selected_poi = index;
 
-        if let Some(idx) = index {
-            Some(&pois[idx])
-        } else {
-            None
-        }
+        index.map(|idx| &pois[idx])
     }
 
     /// Select a point of interest by name
@@ -132,14 +127,9 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
 
         // Find POI by name
         let index = pois.iter().position(|p| p.name == name);
-
         self.selected_poi = index;
 
-        if let Some(idx) = index {
-            Some(&pois[idx])
-        } else {
-            None
-        }
+        index.map(|idx| &pois[idx])
     }
 
     /// Calculate velocity vector based on position changes
@@ -150,14 +140,12 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
                     return None;
                 }
 
-                let time_delta =
+                let time_delta = 
                     (self.position_timestamp - self.previous_timestamp) as f64 / 1000.0; // in seconds
 
-                Some(Vector3::new(
-                    (current.x - previous.x) / time_delta,
-                    (current.y - previous.y) / time_delta,
-                    (current.z - previous.z) / time_delta,
-                ))
+                Some(
+                    (current - previous) / time_delta
+                )
             }
             _ => None,
         }
@@ -172,71 +160,52 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     pub fn calculate_euler_angles(&self, target_position: &Vector3) -> EulerAngles {
         // Make sure we have a current position
         if let Some(current_pos) = &self.current_position {
-            // Calculate direction vector
+            // Calculate direction vector from current position to target
             let direction = Vector3::new(
                 target_position.x - current_pos.x,
                 target_position.y - current_pos.y,
                 target_position.z - current_pos.z,
             );
 
-            // Normalize the direction vector
-            let magnitude = 
-                (direction.x.powi(2) + direction.y.powi(2) + direction.z.powi(2)).sqrt();
-            if magnitude < 1e-6 {
+            // Handle zero-length direction vector
+            if direction.is_near_zero(1e-10) {
                 return EulerAngles::new(0.0, 0.0, 0.0);
             }
 
-            let dir = Vector3::new(
-                direction.x / magnitude,
-                direction.y / magnitude,
-                direction.z / magnitude,
-            );
+            // Normalize the direction vector
+            let dir = direction.normalized();
 
             // Special case for vertical vectors (looking straight up or down)
             if dir.z.abs() > 0.999 {
-                // Looking straight up or down
                 let pitch = if dir.z > 0.0 { -90.0 } else { 90.0 };
-                return EulerAngles::new(pitch, 0.0, 0.0); // Yaw doesn't matter for vertical look
+                return EulerAngles::new(pitch, 0.0, 0.0);
             }
 
-            // Fixed coordinate system mapping for the game coordinates
-            let dir_up = dir.z;       // Vertical component stays the same
-            let dir_forward = dir.x;  // Use x as forward direction (0 degree yaw)
-            let dir_right = dir.y;    // Use y as right direction (90 degree yaw)
+            // Game coordinate system mapping
+            let dir_up = dir.z;       // Vertical component
+            let dir_forward = dir.x;  // Forward direction (0 degree yaw)
+            let dir_right = dir.y;    // Right direction (90 degree yaw)
 
-            // Game's pitch calculation with clamping
-            let mut arc_input = -dir_up;
-            if arc_input > 1.0 {
-                arc_input = 1.0;
-            }
-            if arc_input < -1.0 {
-                arc_input = -1.0;
-            }
+            // Calculate pitch (vertical angle)
+            let pitch_input = -dir_up.clamp(-1.0, 1.0);
+            let mut pitch_rad = pitch_input.asin();
 
-            let mut angle_asin = arc_input.asin();
+            // Calculate yaw (horizontal angle)
+            let yaw_rad;
 
             // Special case handling for looking straight up/down
-            let tmp = angle_asin.abs();
-            let tmp_diff = (tmp - std::f64::consts::FRAC_PI_2).abs();
-            let near_pi_over_2 = tmp_diff < 0.01;
-
-            let angle_b;
-
-            if near_pi_over_2 {
-                // Special case when looking straight up/down
-                angle_asin = if dir_up > 0.0 { -std::f64::consts::FRAC_PI_2 } else { std::f64::consts::FRAC_PI_2 };
-                angle_b = 0.0;
+            if (pitch_rad.abs() - std::f64::consts::FRAC_PI_2).abs() < 0.01 {
+                // When looking straight up/down, fix the pitch and set yaw to 0
+                pitch_rad = if dir_up > 0.0 { -std::f64::consts::FRAC_PI_2 } else { std::f64::consts::FRAC_PI_2 };
+                yaw_rad = 0.0;
             } else {
-                // Normal case - this part also needed fixing
-                angle_b = dir_right.atan2(dir_forward);
+                // Normal case - calculate yaw from forward and right components
+                yaw_rad = dir_right.atan2(dir_forward);
             }
 
-            // Convert to degrees
-            let pitch = angle_asin.to_degrees();
-            let yaw = angle_b.to_degrees();
-
-            // Normalize yaw to 0-360 range
-            let yaw = (yaw + 360.0) % 360.0;
+            // Convert to degrees and normalize yaw to 0-360 range
+            let pitch = pitch_rad.to_degrees();
+            let yaw = (yaw_rad.to_degrees() + 360.0) % 360.0;
 
             return EulerAngles::new(pitch, yaw, 0.0); // Roll is fixed at 0
         }
@@ -253,29 +222,26 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         dest_pos: &Vector3,
     ) -> f64 {
         // Vector from previous to current position = current trajectory
-        let vx = current_pos.x - prev_pos.x;
-        let vy = current_pos.y - prev_pos.y;
-        let vz = current_pos.z - prev_pos.z;
+        let trajectory = Vector3::new(
+            current_pos.x - prev_pos.x,
+            current_pos.y - prev_pos.y,
+            current_pos.z - prev_pos.z,
+        );
 
         // Vector from current to destination
-        let dx = dest_pos.x - current_pos.x;
-        let dy = dest_pos.y - current_pos.y;
-        let dz = dest_pos.z - current_pos.z;
-
-        // Calculate dot product
-        let dot_product = vx * dx + vy * dy + vz * dz;
-
-        // Calculate magnitudes
-        let v_mag = (vx * vx + vy * vy + vz * vz).sqrt();
-        let d_mag = (dx * dx + dy * dy + dz * dz).sqrt();
+        let to_destination = Vector3::new(
+            dest_pos.x - current_pos.x,
+            dest_pos.y - current_pos.y,
+            dest_pos.z - current_pos.z,
+        );
 
         // Safety check to avoid division by zero
-        if v_mag < 1e-6 || d_mag < 1e-6 {
+        if trajectory.is_near_zero(1e-6) || to_destination.is_near_zero(1e-6) {
             return 0.0;
         }
 
         // Calculate angle in radians and convert to degrees
-        (dot_product / (v_mag * d_mag)).acos() * (180.0 / std::f64::consts::PI)
+        trajectory.angle_between(&to_destination).to_degrees()
     }
 
     /// Find closest orbital marker to a position on a planet
@@ -293,7 +259,6 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             distance: 100000.0,
         }
     }
-
     /// Find closest QT beacon to a position
     fn find_closest_qt_beacon(&self, position: &Vector3) -> Option<NamedDistance> {
         let pois = self.data_provider.get_points_of_interest();
@@ -324,8 +289,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     /// Calculate ETA based on current velocity and distance
     fn calculate_eta(&self, distance: f64, velocity: &Vector3) -> f64 {
         // Calculate speed (magnitude of velocity vector)
-        let speed =
-            (velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z).sqrt();
+        let speed = velocity.magnitude();
 
         // If not moving or moving away, return -1
         if speed <= 0.0 {
@@ -343,52 +307,35 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             return poi.position;
         }
 
-        // Get the container name
+        // Get the container name and find the container in our data
         let container_name = poi.obj_container.as_ref().unwrap();
-
-        // Find the container in our data
-        let container = match self
-            .data_provider
-            .get_object_container_by_name(container_name)
-        {
+        let container = match self.data_provider.get_object_container_by_name(container_name) {
             Some(container) => container,
             None => return poi.position, // If container not found, return as-is
         };
 
         // For POIs on a planetary body:
-        // 1. The test data seems to use coordinates in range [-1000, 1000] representing
+        // 1. The test data uses coordinates in range [-1000, 1000] representing
         //    position relative to the planet's center
         // 2. We need to convert these to global coordinates
 
-        // Get normalized local position (direction vector from center)
         let local_pos = &poi.position;
-        let local_magnitude =
-            (local_pos.x.powi(2) + local_pos.y.powi(2) + local_pos.z.powi(2)).sqrt();
-
-        if local_magnitude < 1e-6 {
-            // If local magnitude is zero, use container position
+        
+        // If local position is zero, use container position
+        if local_pos.is_near_zero(1e-6) {
             return container.position;
         }
 
-        // Normalize to get direction from center
-        let normalized_local = Vector3::new(
-            local_pos.x / local_magnitude,
-            local_pos.y / local_magnitude,
-            local_pos.z / local_magnitude,
-        );
-
         // Calculate surface point - in game, POIs are typically on or near the surface
-        // For test data, we assume coordinates are in range [-1000, 1000]
-        // This scale will convert test data into global coordinates
+        let local_magnitude = local_pos.magnitude();
+        let normalized_local = local_pos.normalized();
         let surface_radius = container.body_radius;
+        
+        // This scale will convert test data into global coordinates
         let altitude_factor = local_magnitude / 1000.0;
 
         // Add container's global position to get global coordinates
-        Vector3::new(
-            container.position.x + normalized_local.x * surface_radius * altitude_factor,
-            container.position.y + normalized_local.y * surface_radius * altitude_factor,
-            container.position.z + normalized_local.z * surface_radius * altitude_factor,
-        )
+        container.position + normalized_local.scale(surface_radius * altitude_factor)
     }
 
     /// Calculate coordinates accounting for planetary rotation
@@ -397,25 +344,29 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         local_coords: &Vector3,
         container: &ObjectContainer,
     ) -> Vector3 {
-        // Get elapsed time and calculate rotation angle based on rotVelX
+        // Get elapsed time and rotation parameters
         let elapsed_utc_time = self.get_elapsed_utc_server_time();
+        
+        // Calculate rotation parameters
         let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0;
         let total_cycles = elapsed_utc_time / length_of_day_decimal;
-        let current_cycle_dez = total_cycles % 1.0;
-        let current_cycle_deg = current_cycle_dez * 360.0;
-        let current_cycle_angle = container.rot_adj.x + current_cycle_deg;
-
-        // Calculate rotation with precise angular transform
-        let angle_rad = current_cycle_angle * std::f64::consts::PI / 180.0;
-
-        // Apply rotation matrix to the local coordinates
-        let rot_x = local_coords.x * angle_rad.cos() - local_coords.y * angle_rad.sin();
-        let rot_y = local_coords.x * angle_rad.sin() + local_coords.y * angle_rad.cos();
-
-        // Transform back to global coordinate system by adding planet position
+        let current_cycle_fraction = total_cycles % 1.0;
+        let current_cycle_degrees = current_cycle_fraction * 360.0;
+        let current_angle = container.rot_adj.x + current_cycle_degrees;
+        
+        // Convert to radians for rotation calculation
+        let angle_rad = current_angle * std::f64::consts::PI / 180.0;
+        let cos_angle = angle_rad.cos();
+        let sin_angle = angle_rad.sin();
+        
+        // Apply 2D rotation matrix to x-y coordinates
+        let rotated_x = local_coords.x * cos_angle - local_coords.y * sin_angle;
+        let rotated_y = local_coords.x * sin_angle + local_coords.y * cos_angle;
+        
+        // Transform to global coordinates by adding container position
         Vector3::new(
-            container.position.x + rot_x * 1000.0, // Convert back to meters
-            container.position.y + rot_y * 1000.0,
+            container.position.x + rotated_x * 1000.0,
+            container.position.y + rotated_y * 1000.0,
             container.position.z + local_coords.z * 1000.0,
         )
     }
@@ -427,46 +378,44 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         global_pos: &Vector3,
         container: &ObjectContainer,
     ) -> Vector3 {
-        // Check if container is valid to prevent NaN results
+        // Check if container has valid rotation
         if container.rot_vel.x == 0.0 {
             log::warn!("Invalid container or zero rotation velocity");
-            return *global_pos; // Return copy of input to avoid NaN
+            return *global_pos;
         }
 
-        // Calculate difference vectors (ECEF coordinate system)
-        let dx = global_pos.x - container.position.x;
-        let dy = global_pos.y - container.position.y;
-        let dz = global_pos.z - container.position.z;
+        // Calculate position relative to container center
+        let relative_pos = global_pos - &container.position;
 
-        // Get elapsed time and calculate rotation angle
+        // Get elapsed time and calculate rotation parameters
         let elapsed_utc_time = self.get_elapsed_utc_server_time();
-        let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0; // Convert hours to day fraction
-
+        let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0;
+        
         // Prevent division by zero
         if length_of_day_decimal == 0.0 {
             log::warn!("Length of day decimal is zero, cannot calculate rotation");
             return *global_pos;
         }
 
+        // Calculate current rotation angle
         let total_cycles = elapsed_utc_time / length_of_day_decimal;
-        let current_cycle_dez = total_cycles % 1.0;
-        let current_cycle_deg = current_cycle_dez * 360.0;
-        let current_cycle_angle = container.rot_adj.x + current_cycle_deg;
-
-        // Convert angle to radians
-        let angle_rad = current_cycle_angle * std::f64::consts::PI / 180.0;
-
-        // Apply inverse rotation matrix to transform from rotated to static coordinates
-        // We use the negative angle to reverse the rotation
+        let current_cycle_fraction = total_cycles % 1.0;
+        let current_cycle_degrees = current_cycle_fraction * 360.0;
+        let current_angle = container.rot_adj.x + current_cycle_degrees;
+        
+        // Convert to radians and calculate inverse rotation
+        let angle_rad = current_angle * std::f64::consts::PI / 180.0;
         let cos_angle = (-angle_rad).cos();
         let sin_angle = (-angle_rad).sin();
-        let static_x = dx * cos_angle - dy * sin_angle;
-        let static_y = dx * sin_angle + dy * cos_angle;
-
-        // Return the static coordinates relative to the container's position
-        Vector3::new(static_x, static_y, dz)
+        
+        // Apply inverse rotation matrix
+        let static_x = relative_pos.x * cos_angle - relative_pos.y * sin_angle;
+        let static_y = relative_pos.x * sin_angle + relative_pos.y * cos_angle;
+        
+        // Return static coordinates
+        Vector3::new(static_x, static_y, relative_pos.z)
     }
-
+    
     /// Get comprehensive navigation data to selected POI
     pub fn get_navigation_data(&self) -> Option<NavigationResult> {
         // Ensure we have a current position and selected POI
@@ -490,7 +439,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         }
 
         // Calculate distance
-        let distance = self.calc_distance_3d(&current_position, &destination_coords);
+        let distance = current_position.distance(&destination_coords);
 
         // Calculate direction
         let direction = self.calculate_euler_angles(&destination_coords);
@@ -527,10 +476,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     /// Check line of sight between two points, accounting for planetary bodies
     pub fn check_line_of_sight(&self, from: &Vector3, to: &Vector3) -> LineOfSightResult {
         // Quick check for same points
-        if (from.x - to.x).abs() < 1e-6
-            && (from.y - to.y).abs() < 1e-6
-            && (from.z - to.z).abs() < 1e-6
-        {
+        if from.approx_eq(to, 1e-6) {
             return LineOfSightResult {
                 has_los: true,
                 obstruction: None,
@@ -538,10 +484,13 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         }
 
         // Vector from start to end point
-        let direction = Vector3::new(to.x - from.x, to.y - from.y, to.z - from.z);
+        let direction = to - from;
         
         // Calculate line length
-        let line_length = self.calc_distance_3d(from, to);
+        let line_length = from.distance(to);
+        
+        // Normalize direction vector
+        let dir_normalized = direction.normalized();
         
         // Iterate through all celestial bodies to check for intersections
         for container in self.data_provider.get_object_containers() {
@@ -551,32 +500,16 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             }
             
             // Vector from start point to container center
-            let to_center = Vector3::new(
-                container.position.x - from.x,
-                container.position.y - from.y,
-                container.position.z - from.z,
-            );
+            let to_center = &container.position - from;
             
             // Calculate projection of center vector onto the normalized direction
-            let dir_normalized = Vector3::new(
-                direction.x / line_length,
-                direction.y / line_length,
-                direction.z / line_length,
-            );
-            
-            let projection_length = to_center.x * dir_normalized.x + 
-                                  to_center.y * dir_normalized.y + 
-                                  to_center.z * dir_normalized.z;
+            let projection_length = to_center.dot(&dir_normalized);
             
             // Calculate the closest point on the line to the container center
-            let closest_point = Vector3::new(
-                from.x + dir_normalized.x * projection_length,
-                from.y + dir_normalized.y * projection_length,
-                from.z + dir_normalized.z * projection_length,
-            );
+            let closest_point = from + &dir_normalized.scale(projection_length);
             
             // Calculate the distance from container center to the closest point on the line
-            let distance_to_line = self.calc_distance_3d(&container.position, &closest_point);
+            let distance_to_line = container.position.distance(&closest_point);
             
             // Check if closest point is within the line segment (with small buffer)
             let on_segment = projection_length >= -1e-6 && projection_length <= line_length + 1e-6;
