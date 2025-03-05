@@ -1,0 +1,8 @@
+[package]
+name = "nav-sim-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rand = "0.9.0"
+starnav = { path = "../nav-rs" }
