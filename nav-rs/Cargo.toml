@@ -19,6 +19,7 @@ clap = "2.33"
 [dev-dependencies]
 approx = "0.5.1"
 tempfile = "3.3"
+ctor = "0.1.26"
 
 [[bin]]
 name = "nav_system_cli"
@@ -38,3 +39,4 @@ opt-level = 3
 codegen-units = 1
 panic = "abort"
 strip = true
+debug = true

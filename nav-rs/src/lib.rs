@@ -20,8 +20,8 @@ pub mod vector3;
 use std::sync::Arc;
 
 pub use coordinate_transform::CoordinateTransformer;
-pub use nav_planner::NavigationPlanner;
 pub use nav_core::SearchProvider;
+pub use nav_planner::NavigationPlanner;
 use types::Entity;
 pub use types::{
     AstronomicalDataProvider, NavigationPlan, ObjectContainer, PointOfInterest,
@@ -59,6 +59,11 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     ) {
         self.planner
             .set_position_local(container_name, local_x, local_y, local_z);
+    }
+
+    /// Set current position to the location of a Point of Interest
+    pub fn set_position_at_poi(&mut self, poi_name: &str) {
+        self.planner.set_position_at_poi(poi_name);
     }
 
     /// Update position with absolute coordinates
@@ -125,13 +130,22 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
     }
 
     /// Resolve which container (planet/moon) a position is located within
-    pub fn resolve_container_at_position(&self, position: &Vector3) -> Option<types::ObjectContainer> {
+    pub fn resolve_container_at_position(
+        &self,
+        position: &Vector3,
+    ) -> Option<types::ObjectContainer> {
         self.planner.core.resolve_container_at_position(position)
     }
 
     /// Find optimal orbital marker for navigation around an obstructing celestial body
-    pub fn find_optimal_orbital_marker(&self, from: &Vector3, to: &Vector3, obstruction: &types::ObjectContainer) -> nav_planner::OptimalMarker {
-        self.planner.find_optimal_orbital_marker(from, to, obstruction)
+    pub fn find_optimal_orbital_marker(
+        &self,
+        from: &Vector3,
+        to: &Vector3,
+        obstruction: &types::ObjectContainer,
+    ) -> nav_planner::OptimalMarker {
+        self.planner
+            .find_optimal_orbital_marker(from, to, obstruction)
     }
 
     /// Calculate distance between two 3D points
@@ -146,7 +160,9 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
         container: &types::ObjectContainer,
         direction: coordinate_transform::TransformDirection,
     ) -> Vector3 {
-        self.planner.transformer.transform_coordinates(coords, container, direction)
+        self.planner
+            .transformer
+            .transform_coordinates(coords, container, direction)
     }
 
     /// Convert global coordinates to non-rotating static coordinates
@@ -155,27 +171,47 @@ impl<T: AstronomicalDataProvider> SpaceNavigationSystem<T> {
         global_pos: &Vector3,
         container: &types::ObjectContainer,
     ) -> Vector3 {
-        self.planner.core.convert_to_static_coordinates(global_pos, container)
+        self.planner
+            .core
+            .convert_to_static_coordinates(global_pos, container)
     }
 
     /// Search for Points of Interest using fuzzy matching
-    pub fn search_pois(&self, query: &str, min_score: f64, limit: usize) -> Vec<(PointOfInterest, f64)> {
+    pub fn search_pois(
+        &self,
+        query: &str,
+        min_score: f64,
+        limit: usize,
+    ) -> Vec<(PointOfInterest, f64)> {
         self.planner.core.search_pois(query, min_score, limit)
     }
-    
+
     /// Search for object containers (planets, moons, stations) using fuzzy matching
-    pub fn search_containers(&self, query: &str, min_score: f64, limit: usize) -> Vec<(ObjectContainer, f64)> {
+    pub fn search_containers(
+        &self,
+        query: &str,
+        min_score: f64,
+        limit: usize,
+    ) -> Vec<(ObjectContainer, f64)> {
         self.planner.core.search_containers(query, min_score, limit)
     }
-    
+
     /// Search both POIs and containers, returning combined results
     pub fn fuzzy_search_all(&self, query: &str, min_score: f64, limit: usize) -> Vec<Entity> {
         self.planner.core.fuzzy_search_all(query, min_score, limit)
     }
-    
+
     /// Performance-optimized search using precomputation for better response times
-    pub fn optimized_search(&self, query: &str, min_score: f64, limit: usize, entity_type: Option<types::EntityType>) -> Vec<(types::Entity, f64)> {
-        self.planner.core.search_with_precomputation(query, min_score, limit, entity_type)
+    pub fn optimized_search(
+        &self,
+        query: &str,
+        min_score: f64,
+        limit: usize,
+        entity_type: Option<types::EntityType>,
+    ) -> Vec<(types::Entity, f64)> {
+        self.planner
+            .core
+            .search_with_precomputation(query, min_score, limit, entity_type)
     }
 }
 

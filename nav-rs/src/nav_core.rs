@@ -140,12 +140,10 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
                     return None;
                 }
 
-                let time_delta = 
+                let time_delta =
                     (self.position_timestamp - self.previous_timestamp) as f64 / 1000.0; // in seconds
 
-                Some(
-                    (current - previous) / time_delta
-                )
+                Some((current - previous) / time_delta)
             }
             _ => None,
         }
@@ -182,9 +180,9 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             }
 
             // Game coordinate system mapping
-            let dir_up = dir.z;       // Vertical component
-            let dir_forward = dir.x;  // Forward direction (0 degree yaw)
-            let dir_right = dir.y;    // Right direction (90 degree yaw)
+            let dir_up = dir.z; // Vertical component
+            let dir_forward = dir.x; // Forward direction (0 degree yaw)
+            let dir_right = dir.y; // Right direction (90 degree yaw)
 
             // Calculate pitch (vertical angle)
             let pitch_input = -dir_up.clamp(-1.0, 1.0);
@@ -196,7 +194,11 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
             // Special case handling for looking straight up/down
             if (pitch_rad.abs() - std::f64::consts::FRAC_PI_2).abs() < 0.01 {
                 // When looking straight up/down, fix the pitch and set yaw to 0
-                pitch_rad = if dir_up > 0.0 { -std::f64::consts::FRAC_PI_2 } else { std::f64::consts::FRAC_PI_2 };
+                pitch_rad = if dir_up > 0.0 {
+                    -std::f64::consts::FRAC_PI_2
+                } else {
+                    std::f64::consts::FRAC_PI_2
+                };
                 yaw_rad = 0.0;
             } else {
                 // Normal case - calculate yaw from forward and right components
@@ -309,7 +311,10 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
 
         // Get the container name and find the container in our data
         let container_name = poi.obj_container.as_ref().unwrap();
-        let container = match self.data_provider.get_object_container_by_name(container_name) {
+        let container = match self
+            .data_provider
+            .get_object_container_by_name(container_name)
+        {
             Some(container) => container,
             None => return poi.position, // If container not found, return as-is
         };
@@ -320,7 +325,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         // 2. We need to convert these to global coordinates
 
         let local_pos = &poi.position;
-        
+
         // If local position is zero, use container position
         if local_pos.is_near_zero(1e-6) {
             return container.position;
@@ -330,7 +335,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         let local_magnitude = local_pos.magnitude();
         let normalized_local = local_pos.normalized();
         let surface_radius = container.body_radius;
-        
+
         // This scale will convert test data into global coordinates
         let altitude_factor = local_magnitude / 1000.0;
 
@@ -346,23 +351,23 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     ) -> Vector3 {
         // Get elapsed time and rotation parameters
         let elapsed_utc_time = self.get_elapsed_utc_server_time();
-        
+
         // Calculate rotation parameters
         let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0;
         let total_cycles = elapsed_utc_time / length_of_day_decimal;
         let current_cycle_fraction = total_cycles % 1.0;
         let current_cycle_degrees = current_cycle_fraction * 360.0;
         let current_angle = container.rot_adj.x + current_cycle_degrees;
-        
+
         // Convert to radians for rotation calculation
         let angle_rad = current_angle * std::f64::consts::PI / 180.0;
         let cos_angle = angle_rad.cos();
         let sin_angle = angle_rad.sin();
-        
+
         // Apply 2D rotation matrix to x-y coordinates
         let rotated_x = local_coords.x * cos_angle - local_coords.y * sin_angle;
         let rotated_y = local_coords.x * sin_angle + local_coords.y * cos_angle;
-        
+
         // Transform to global coordinates by adding container position
         Vector3::new(
             container.position.x + rotated_x * 1000.0,
@@ -390,7 +395,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         // Get elapsed time and calculate rotation parameters
         let elapsed_utc_time = self.get_elapsed_utc_server_time();
         let length_of_day_decimal = container.rot_vel.x * 3600.0 / 86400.0;
-        
+
         // Prevent division by zero
         if length_of_day_decimal == 0.0 {
             log::warn!("Length of day decimal is zero, cannot calculate rotation");
@@ -402,20 +407,20 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
         let current_cycle_fraction = total_cycles % 1.0;
         let current_cycle_degrees = current_cycle_fraction * 360.0;
         let current_angle = container.rot_adj.x + current_cycle_degrees;
-        
+
         // Convert to radians and calculate inverse rotation
         let angle_rad = current_angle * std::f64::consts::PI / 180.0;
         let cos_angle = (-angle_rad).cos();
         let sin_angle = (-angle_rad).sin();
-        
+
         // Apply inverse rotation matrix
         let static_x = relative_pos.x * cos_angle - relative_pos.y * sin_angle;
         let static_y = relative_pos.x * sin_angle + relative_pos.y * cos_angle;
-        
+
         // Return static coordinates
         Vector3::new(static_x, static_y, relative_pos.z)
     }
-    
+
     /// Get comprehensive navigation data to selected POI
     pub fn get_navigation_data(&self) -> Option<NavigationResult> {
         // Ensure we have a current position and selected POI
@@ -474,6 +479,7 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
     }
 
     /// Check line of sight between two points, accounting for planetary bodies
+    #[inline(always)]
     pub fn check_line_of_sight(&self, from: &Vector3, to: &Vector3) -> LineOfSightResult {
         // Quick check for same points
         if from.approx_eq(to, 1e-6) {
@@ -485,57 +491,48 @@ impl<T: AstronomicalDataProvider> NavigationCore<T> {
 
         // Vector from start to end point
         let direction = to - from;
-        
+
         // Calculate line length
         let line_length = from.distance(to);
-        
+
         // Normalize direction vector
         let dir_normalized = direction.normalized();
-        
+
         // Iterate through all celestial bodies to check for intersections
         for container in self.data_provider.get_object_containers() {
             // Skip containers with zero or negative radius
             if container.body_radius <= 0.0 {
                 continue;
             }
-            
+
             // Vector from start point to container center
             let to_center = &container.position - from;
-            
+
             // Calculate projection of center vector onto the normalized direction
             let projection_length = to_center.dot(&dir_normalized);
-            
+
             // Calculate the closest point on the line to the container center
             let closest_point = from + &dir_normalized.scale(projection_length);
-            
+
             // Calculate the distance from container center to the closest point on the line
             let distance_to_line = container.position.distance(&closest_point);
-            
+
             // Check if closest point is within the line segment (with small buffer)
             let on_segment = projection_length >= -1e-6 && projection_length <= line_length + 1e-6;
-            
+
             // Check if the line passes close enough to the container to be considered an obstruction
             // For tangential paths in tests, use a more generous buffer (90% of radius)
             let effective_radius = container.body_radius * 0.90;
-            
+
             if on_segment && distance_to_line < effective_radius {
                 // Print debugging information for the test
-                #[cfg(test)]
-                println!(
-                    "Obstruction found: container {}, radius {}, distance to line: {}, effective radius: {}", 
-                    container.name, 
-                    container.body_radius, 
-                    distance_to_line, 
-                    effective_radius
-                );
-                
                 return LineOfSightResult {
                     has_los: false,
                     obstruction: Some(Arc::new(container.clone())),
                 };
             }
         }
-        
+
         // No obstructions found
         LineOfSightResult {
             has_los: true,
@@ -1701,56 +1698,87 @@ mod tests {
     fn test_comprehensive_line_of_sight() {
         // Create a navigation core with test data
         let (fixtures, nav_core) = create_test_fixtures();
-        
+
         // Use microTech for testing
         let containers = fixtures.get_object_containers();
         let planet = containers.iter().find(|c| c.name == "microTech").unwrap();
-        
-        println!("Testing with planet: {} at position ({}, {}, {}) with radius {}", 
-                 planet.name, planet.position.x, planet.position.y, planet.position.z, planet.body_radius);
-        
+
+        println!(
+            "Testing with planet: {} at position ({}, {}, {}) with radius {}",
+            planet.name,
+            planet.position.x,
+            planet.position.y,
+            planet.position.z,
+            planet.body_radius
+        );
+
         // Test case 1: Points with direct line of sight (no obstructions)
-        let point_a = Vector3::new(planet.position.x + 1000000.0, planet.position.y, planet.position.z);
-        let point_b = Vector3::new(planet.position.x + 2000000.0, planet.position.y, planet.position.z);
-        
+        let point_a = Vector3::new(
+            planet.position.x + 1000000.0,
+            planet.position.y,
+            planet.position.z,
+        );
+        let point_b = Vector3::new(
+            planet.position.x + 2000000.0,
+            planet.position.y,
+            planet.position.z,
+        );
+
         let result = nav_core.check_line_of_sight(&point_a, &point_b);
-        assert!(result.has_los, "Should have line of sight when no obstructions");
-        
+        assert!(
+            result.has_los,
+            "Should have line of sight when no obstructions"
+        );
+
         // Test case 2: Line passing through the planet
-        let point_c = Vector3::new(planet.position.x - 1000000.0, planet.position.y, planet.position.z);
-        let point_d = Vector3::new(planet.position.x + 1000000.0, planet.position.y, planet.position.z);
-        
+        let point_c = Vector3::new(
+            planet.position.x - 1000000.0,
+            planet.position.y,
+            planet.position.z,
+        );
+        let point_d = Vector3::new(
+            planet.position.x + 1000000.0,
+            planet.position.y,
+            planet.position.z,
+        );
+
         let result = nav_core.check_line_of_sight(&point_c, &point_d);
-        assert!(!result.has_los, "Should not have line of sight when passing through planet");
+        assert!(
+            !result.has_los,
+            "Should not have line of sight when passing through planet"
+        );
         assert_eq!(result.obstruction.unwrap().name, planet.name);
-        
+
         // Test case 3: Properly tangential path (at exactly 1.1x radius from center)
         // A truly tangential path requires the distance from the line to the center to be equal to the radius
         let tangent_distance = planet.body_radius * 1.1; // Using 1.1 times radius to be clearly outside
-        
+
         // Create points that form a truly tangential line by placing them perpendicular to the radius
         // For a line passing along the Y axis, tangent to the planet at the +X axis
         let point_e = Vector3::new(
             planet.position.x + tangent_distance, // X coordinate is at tangent_distance from center
             planet.position.y - 1000000.0,        // Y coordinate is far below
-            planet.position.z                     // Z coordinate is same as planet
+            planet.position.z,                    // Z coordinate is same as planet
         );
-        
+
         let point_f = Vector3::new(
             planet.position.x + tangent_distance, // X coordinate is at tangent_distance from center
             planet.position.y + 1000000.0,        // Y coordinate is far above
-            planet.position.z                     // Z coordinate is same as planet
+            planet.position.z,                    // Z coordinate is same as planet
         );
-        
+
         let result = nav_core.check_line_of_sight(&point_e, &point_f);
-        assert!(result.has_los, "Should have line of sight when path is tangential to planet");
+        assert!(
+            result.has_los,
+            "Should have line of sight when path is tangential to planet"
+        );
     }
 
     #[test]
     fn test_rotating_planet_simulation() {
         use std::f64::consts::PI;
         use std::sync::Mutex;
-        
+
         // Create a special test fixture with a single planet and a fixed rotation rate
         let planet = ObjectContainer {
             id: 1,
@@ -1766,7 +1794,7 @@ mod tests {
             container_type: ContainerType::Planet,
             grid_radius: 1200000.0,
         };
-        
+
         // Create a POI on the planet's equator
         let poi = PointOfInterest {
             id: 1,
@@ -1781,14 +1809,14 @@ mod tests {
             comment: None,
             with_version: None,
         };
-        
+
         // Create data provider and navigation core with custom time provider
         struct MockDataProviderWithTime {
             points_of_interest: Vec<PointOfInterest>,
             object_containers: Vec<ObjectContainer>,
             current_time_days: Mutex<f64>,
         }
-        
+
         impl AstronomicalDataProvider for MockDataProviderWithTime {
             fn get_points_of_interest(&self) -> &[PointOfInterest] {
                 &self.points_of_interest
@@ -1808,14 +1836,14 @@ mod tests {
                     .find(|container| container.name == name)
             }
         }
-        
+
         // Implementation of NavigationCore that allows overriding the time function
         struct TestNavigationCore {
             nav_core: NavigationCore<MockDataProviderWithTime>,
             current_position: Vector3,
             selected_poi: Option<u32>,
         }
-        
+
         impl TestNavigationCore {
             fn new(provider: Arc<MockDataProviderWithTime>) -> Self {
                 Self {
@@ -1824,57 +1852,68 @@ mod tests {
                     selected_poi: None,
                 }
             }
-            
+
             // Override to use our custom time
             fn get_elapsed_utc_server_time(&self) -> f64 {
-                *self.nav_core.data_provider.current_time_days.lock().unwrap()
+                *self
+                    .nav_core
+                    .data_provider
+                    .current_time_days
+                    .lock()
+                    .unwrap()
             }
-            
+
             // Delegate other methods to the inner nav_core but keep track of state
             fn update_position(&mut self, x: f64, y: f64, z: f64) {
                 self.current_position = Vector3::new(x, y, z);
                 self.nav_core.update_position(x, y, z);
             }
-            
+
             fn select_poi(&mut self, id: u32) -> Option<&PointOfInterest> {
                 self.selected_poi = Some(id);
                 self.nav_core.select_poi(id)
             }
-            
+
             // Custom implementation to get navigation data directly
             fn get_navigation_data(&self) -> Option<NavigationResult> {
                 // Make sure we have a selected POI
                 if let Some(poi_id) = self.selected_poi {
                     // Find the POI in our data provider
-                    let poi = self.nav_core.data_provider.get_points_of_interest()
+                    let poi = self
+                        .nav_core
+                        .data_provider
+                        .get_points_of_interest()
                         .iter()
                         .find(|p| p.id == poi_id)?;
-                    
+
                     // Calculate global POI position after rotation
                     let mut global_poi_position = poi.position;
-                    
+
                     // If the POI is on a container (planet), apply rotation
                     if let Some(container_name) = &poi.obj_container {
-                        if let Some(container) = self.nav_core.data_provider.get_object_container_by_name(container_name) {
-                            global_poi_position = self.calculate_rotated_planetary_coordinates(
-                                &poi.position,
-                                container
-                            );
+                        if let Some(container) = self
+                            .nav_core
+                            .data_provider
+                            .get_object_container_by_name(container_name)
+                        {
+                            global_poi_position = self
+                                .calculate_rotated_planetary_coordinates(&poi.position, container);
                         }
                     }
-                    
+
                     // Calculate distance
-                    let distance = self.calc_distance_3d(&self.current_position, &global_poi_position);
-                    
+                    let distance =
+                        self.calc_distance_3d(&self.current_position, &global_poi_position);
+
                     // Calculate direction
                     let direction_vector = Vector3::new(
                         global_poi_position.x - self.current_position.x,
                         global_poi_position.y - self.current_position.y,
                         global_poi_position.z - self.current_position.z,
                     );
-                    
+
                     let euler_angles = self.nav_core.calculate_euler_angles(&global_poi_position);
-                    
+
                     // Return the navigation result with the correct fields
                     Some(NavigationResult {
                         distance,
@@ -1888,7 +1927,7 @@ mod tests {
                     None
                 }
             }
-            
+
             fn calculate_rotated_planetary_coordinates(
                 &self,
                 local_coords: &Vector3,
@@ -1916,7 +1955,7 @@ mod tests {
                     container.position.z + local_coords.z,
                 )
             }
-            
+
             fn calc_distance_3d(&self, v1: &Vector3, v2: &Vector3) -> f64 {
                 // Simple 3D distance formula
                 let dx = v2.x - v1.x;
@@ -1924,27 +1963,27 @@ mod tests {
                 let dz = v2.z - v1.z;
                 (dx * dx + dy * dy + dz * dz).sqrt()
             }
-            
+
             fn check_line_of_sight(&self, from: &Vector3, to: &Vector3) -> LineOfSightResult {
                 self.nav_core.check_line_of_sight(from, to)
             }
         }
-        
+
         // Create the data provider with our custom time field
         let data_provider = Arc::new(MockDataProviderWithTime {
             points_of_interest: vec![poi.clone()],
             object_containers: vec![planet.clone()],
             current_time_days: Mutex::new(0.0), // Start at time zero
         });
-        
+
         let mut nav_core = TestNavigationCore::new(data_provider.clone());
-        
+
         // Simulation parameters
-        let orbit_radius = 600000.0;  // Orbit 100km above the surface
+        let orbit_radius = 600000.0; // Orbit 100km above the surface
         let time_steps = 24;
         let time_steps_f64 = time_steps as f64;
         let time_increment = 1.0 / time_steps_f64; // 1 hour increments
-        
+
         // Expected positions after each time step (precalculated based on rotation)
         let mut expected_positions = Vec::new();
         for i in 0..time_steps {
@@ -1955,10 +1994,10 @@ mod tests {
             let y = 500000.0 * angle.sin();
             expected_positions.push(Vector3::new(x, y, 0.0));
         }
-        
+
         println!("Starting rotating planet simulation");
         println!("-----------------------------------");
-        
+
         // Run the simulation
         for step in 0..time_steps {
             // Update the simulation time using Mutex
@@ -1966,79 +2005,101 @@ mod tests {
                 let mut time = data_provider.current_time_days.lock().unwrap();
                 *time = step as f64 * time_increment;
             }
-            
+
             // Set spacecraft position in a circular orbit
             // Spacecraft moves in the opposite direction to the planet's rotation
             let orbit_angle = 2.0 * PI * (step as f64) / time_steps_f64;
             let spacecraft_x = orbit_radius * orbit_angle.cos();
             let spacecraft_y = -orbit_radius * orbit_angle.sin(); // Negative to go clockwise
-            
+
             nav_core.update_position(spacecraft_x, spacecraft_y, 0.0);
-            
+
             // Select the test POI
             nav_core.select_poi(1);
-            
+
             // Get navigation data to the POI
             let nav_data = nav_core.get_navigation_data().unwrap();
-            
+
             // Calculate position of the POI based on our simulation time
-            let global_poi_position = nav_core.calculate_rotated_planetary_coordinates(
-                &poi.position, 
-                &planet
-            );
-            
+            let global_poi_position =
+                nav_core.calculate_rotated_planetary_coordinates(&poi.position, &planet);
+
             // Print the current state
             println!("Time step {}: {} days", step, step as f64 * time_increment);
-            println!("  Spacecraft position: ({:.1}, {:.1}, {:.1})", 
-                     spacecraft_x, spacecraft_y, 0.0);
-            println!("  Expected POI position: ({:.1}, {:.1}, {:.1})",
-                     expected_positions[step].x, expected_positions[step].y, expected_positions[step].z);
-            println!("  Calculated POI position: ({:.1}, {:.1}, {:.1})",
-                     global_poi_position.x, global_poi_position.y, global_poi_position.z);
+            println!(
+                "  Spacecraft position: ({:.1}, {:.1}, {:.1})",
+                spacecraft_x, spacecraft_y, 0.0
+            );
+            println!(
+                "  Expected POI position: ({:.1}, {:.1}, {:.1})",
+                expected_positions[step].x, expected_positions[step].y, expected_positions[step].z
+            );
+            println!(
+                "  Calculated POI position: ({:.1}, {:.1}, {:.1})",
+                global_poi_position.x, global_poi_position.y, global_poi_position.z
+            );
             println!("  Distance to POI: {:.1}", nav_data.distance);
-            println!("  Direction to POI: pitch={:.1}, yaw={:.1}", 
-                     nav_data.direction.pitch, nav_data.direction.yaw);
-            
+            println!(
+                "  Direction to POI: pitch={:.1}, yaw={:.1}",
+                nav_data.direction.pitch, nav_data.direction.yaw
+            );
+
             // Verify coordinates are approximately correct
             let expected_pos = &expected_positions[step];
             assert!(
-                (global_poi_position.x - expected_pos.x).abs() < 1000.0 &&
-                (global_poi_position.y - expected_pos.y).abs() < 1000.0,
+                (global_poi_position.x - expected_pos.x).abs() < 1000.0
+                    && (global_poi_position.y - expected_pos.y).abs() < 1000.0,
                 "POI position incorrect at step {}. Expected: ({:.1}, {:.1}), Got: ({:.1}, {:.1})",
-                step, expected_pos.x, expected_pos.y, global_poi_position.x, global_poi_position.y
+                step,
+                expected_pos.x,
+                expected_pos.y,
+                global_poi_position.x,
+                global_poi_position.y
             );
-            
+
             // Verify navigation data is consistent with geometry
             let expected_distance = nav_core.calc_distance_3d(
                 &Vector3::new(spacecraft_x, spacecraft_y, 0.0),
-                &global_poi_position
+                &global_poi_position,
             );
-            
+
             assert!(
                 (nav_data.distance - expected_distance).abs() < 100.0,
                 "Distance calculation incorrect at step {}. Expected: {:.1}, Got: {:.1}",
-                step, expected_distance, nav_data.distance
+                step,
+                expected_distance,
+                nav_data.distance
             );
-            
+
             // Check line of sight - should be obstructed when POI is on the far side
             let los_result = nav_core.check_line_of_sight(
                 &Vector3::new(spacecraft_x, spacecraft_y, 0.0),
-                &global_poi_position
+                &global_poi_position,
             );
-            
+
             // Simple check - when spacecraft and POI are on opposite sides (±X),
             // the line of sight should be obstructed by the planet
-            let opposite_sides = spacecraft_x * global_poi_position.x < 0.0 &&
-                                 spacecraft_x.abs() > planet.body_radius * 0.5 &&
-                                 global_poi_position.x.abs() > planet.body_radius * 0.5;
-                                 
-            println!("  Line of sight: {}", if los_result.has_los { "Clear" } else { "Obstructed" });
+            let opposite_sides = spacecraft_x * global_poi_position.x < 0.0
+                && spacecraft_x.abs() > planet.body_radius * 0.5
+                && global_poi_position.x.abs() > planet.body_radius * 0.5;
+
+            println!(
+                "  Line of sight: {}",
+                if los_result.has_los {
+                    "Clear"
+                } else {
+                    "Obstructed"
+                }
+            );
             if opposite_sides {
-                assert!(!los_result.has_los, 
-                        "LOS should be obstructed when POI is on far side at step {}", step);
+                assert!(
+                    !los_result.has_los,
+                    "LOS should be obstructed when POI is on far side at step {}",
+                    step
+                );
             }
         }
-        
+
         println!("Simulation completed successfully");
     }
 }

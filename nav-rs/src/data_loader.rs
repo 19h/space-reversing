@@ -1,13 +1,11 @@
-use std::fs::File;
-use std::io::{BufReader, Error as IoError, Read};
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::File;
+use std::io::{BufReader, Error as IoError, Read};
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{
-    ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System,
-};
+use crate::types::{ContainerType, ObjectContainer, PoiType, PointOfInterest, Quaternion, System};
 use crate::vector3::Vector3;
 
 /// Serializable container representation for data loading
@@ -104,23 +102,33 @@ impl StdError for DataLoadError {
 pub fn load_containers_from_bytes(data: &[u8]) -> Result<Vec<ObjectContainer>, DataLoadError> {
     // Parse JSON
     let serialized_containers: Vec<SerializedContainer> = serde_json::from_slice(data)?;
-    
+
     // Convert to domain objects
     let mut containers = Vec::with_capacity(serialized_containers.len());
-    
+
     for sc in serialized_containers {
         // Parse system
         let system = match System::from_str(&sc.system) {
             Some(sys) => sys,
-            None => return Err(DataLoadError::ParseError(format!("Unknown system: {}", sc.system))),
+            None => {
+                return Err(DataLoadError::ParseError(format!(
+                    "Unknown system: {}",
+                    sc.system
+                )))
+            }
         };
-        
+
         // Parse container type
         let container_type = match ContainerType::from_str(&sc.cont_type) {
             Some(ct) => ct,
-            None => return Err(DataLoadError::ParseError(format!("Unknown container type: {}", sc.cont_type))),
+            None => {
+                return Err(DataLoadError::ParseError(format!(
+                    "Unknown container type: {}",
+                    sc.cont_type
+                )))
+            }
         };
-        
+
         let container = ObjectContainer {
             id: sc.id,
             system,
@@ -135,10 +143,10 @@ pub fn load_containers_from_bytes(data: &[u8]) -> Result<Vec<ObjectContainer>, D
             om_radius: sc.om_radius,
             grid_radius: sc.grid_radius,
         };
-        
+
         containers.push(container);
     }
-    
+
     Ok(containers)
 }
 
@@ -149,7 +157,7 @@ pub fn load_containers(path: &str) -> Result<Vec<ObjectContainer>, DataLoadError
     let mut reader = BufReader::new(file);
     let mut buffer = Vec::new();
     reader.read_to_end(&mut buffer)?;
-    
+
     // Use the byte-based loader
     load_containers_from_bytes(&buffer)
 }
@@ -158,17 +166,22 @@ pub fn load_containers(path: &str) -> Result<Vec<ObjectContainer>, DataLoadError
 pub fn load_pois_from_bytes(data: &[u8]) -> Result<Vec<PointOfInterest>, DataLoadError> {
     // Parse JSON
     let serialized_pois: Vec<SerializedPoi> = serde_json::from_slice(data)?;
-    
+
     // Convert to domain objects
     let mut pois = Vec::with_capacity(serialized_pois.len());
-    
+
     for sp in serialized_pois {
         // Parse POI type
         let poi_type = match PoiType::from_str(&sp.poi_type) {
             Some(pt) => pt,
-            None => return Err(DataLoadError::ParseError(format!("Unknown POI type: {}", sp.poi_type))),
+            None => {
+                return Err(DataLoadError::ParseError(format!(
+                    "Unknown POI type: {}",
+                    sp.poi_type
+                )))
+            }
         };
-        
+
         let poi = PointOfInterest {
             id: sp.id,
             name: sp.name,
@@ -182,10 +195,10 @@ pub fn load_pois_from_bytes(data: &[u8]) -> Result<Vec<PointOfInterest>, DataLoa
             comment: sp.comment,
             with_version: sp.with_version,
         };
-        
+
         pois.push(poi);
     }
-    
+
     Ok(pois)
 }
 
@@ -196,24 +209,30 @@ pub fn load_pois(path: &str) -> Result<Vec<PointOfInterest>, DataLoadError> {
     let mut reader = BufReader::new(file);
     let mut buffer = Vec::new();
     reader.read_to_end(&mut buffer)?;
-    
+
     // Use the byte-based loader
     load_pois_from_bytes(&buffer)
 }
 
 /// Initialize full navigation dataset from files
-pub fn load_navigation_data(poi_path: &str, container_path: &str) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
+pub fn load_navigation_data(
+    poi_path: &str,
+    container_path: &str,
+) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
     let containers = load_containers(container_path)?;
     let pois = load_pois(poi_path)?;
-    
+
     Ok((pois, containers))
 }
 
 /// Initialize full navigation dataset from bytes
-pub fn load_navigation_data_from_bytes(poi_data: &[u8], container_data: &[u8]) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
+pub fn load_navigation_data_from_bytes(
+    poi_data: &[u8],
+    container_data: &[u8],
+) -> Result<(Vec<PointOfInterest>, Vec<ObjectContainer>), DataLoadError> {
     let containers = load_containers_from_bytes(container_data)?;
     let pois = load_pois_from_bytes(poi_data)?;
-    
+
     Ok((pois, containers))
 }
 
@@ -223,13 +242,13 @@ mod tests {
     use std::fs::File;
     use std::io::Write;
     use tempfile::tempdir;
-    
+
     #[test]
     fn test_load_containers() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test_containers.json");
-        
+
         // Create a test JSON file
         let test_json = r#"[
             {
@@ -256,13 +275,13 @@ mod tests {
                 "grid_radius": 2000000.0
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let containers = load_containers(file_path.to_str().unwrap()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(containers.len(), 1);
         assert_eq!(containers[0].id, 1);
@@ -271,13 +290,13 @@ mod tests {
         assert_eq!(containers[0].container_type, ContainerType::Planet);
         assert_eq!(containers[0].position.x, 12875442280.0);
     }
-    
+
     #[test]
     fn test_load_pois() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test_pois.json");
-        
+
         // Create a test JSON file
         let test_json = r#"[
             {
@@ -295,13 +314,13 @@ mod tests {
                 "with_version": "3.0.0"
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load POIs from the file
         let pois = load_pois(file_path.to_str().unwrap()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(pois.len(), 1);
         assert_eq!(pois[0].id, 1);
@@ -313,13 +332,13 @@ mod tests {
         assert_eq!(pois[0].position.y, -785.98);
         assert_eq!(pois[0].position.z, 564.17);
     }
-    
+
     #[test]
     fn test_load_multiple_containers() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("multi_containers.json");
-        
+
         // Create a test JSON file with multiple containers
         let test_json = r#"[
             {
@@ -369,60 +388,60 @@ mod tests {
                 "grid_radius": 400000.0
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let containers = load_containers(file_path.to_str().unwrap()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(containers.len(), 2);
         assert_eq!(containers[0].id, 1);
         assert_eq!(containers[0].name, "Hurston");
         assert_eq!(containers[0].container_type, ContainerType::Planet);
-        
+
         assert_eq!(containers[1].id, 2);
         assert_eq!(containers[1].name, "Arial");
         assert_eq!(containers[1].container_type, ContainerType::Moon);
         assert_eq!(containers[1].position.y, 1000000.0);
         assert_eq!(containers[1].body_radius, 200000.0);
     }
-    
+
     #[test]
     fn test_load_empty_containers() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("empty_containers.json");
-        
+
         // Create an empty array JSON file
         let test_json = r#"[]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let containers = load_containers(file_path.to_str().unwrap()).unwrap();
-        
+
         // Verify loaded data is empty
         assert!(containers.is_empty());
     }
-    
+
     #[test]
     fn test_load_invalid_json_containers() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("invalid_containers.json");
-        
+
         // Create an invalid JSON file
         let test_json = r#"[{"id": 1, "invalid": true]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let result = load_containers(file_path.to_str().unwrap());
-        
+
         // Verify error
         assert!(result.is_err());
         if let Err(DataLoadError::JsonError(_)) = result {
@@ -431,13 +450,13 @@ mod tests {
             panic!("Expected JsonError, got different error: {:?}", result);
         }
     }
-    
+
     #[test]
     fn test_load_container_with_unknown_system() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("unknown_system.json");
-        
+
         // Create a test JSON file with unknown system
         let test_json = r#"[
             {
@@ -464,13 +483,13 @@ mod tests {
                 "grid_radius": 2000.0
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let result = load_containers(file_path.to_str().unwrap());
-        
+
         // Verify error
         assert!(result.is_err());
         if let Err(DataLoadError::ParseError(msg)) = &result {
@@ -479,13 +498,13 @@ mod tests {
             panic!("Expected ParseError for unknown system, got: {:?}", result);
         }
     }
-    
+
     #[test]
     fn test_load_container_with_unknown_type() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("unknown_type.json");
-        
+
         // Create a test JSON file with unknown container type
         let test_json = r#"[
             {
@@ -512,28 +531,31 @@ mod tests {
                 "grid_radius": 2000.0
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load containers from the file
         let result = load_containers(file_path.to_str().unwrap());
-        
+
         // Verify error
         assert!(result.is_err());
         if let Err(DataLoadError::ParseError(msg)) = &result {
             assert!(msg.contains("Unknown container type"));
         } else {
-            panic!("Expected ParseError for unknown container type, got: {:?}", result);
+            panic!(
+                "Expected ParseError for unknown container type, got: {:?}",
+                result
+            );
         }
     }
-    
+
     #[test]
     fn test_load_multiple_pois() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("multi_pois.json");
-        
+
         // Create a test JSON file with multiple POIs
         let test_json = r#"[
             {
@@ -564,32 +586,32 @@ mod tests {
                 "comment": "Test comment"
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load POIs from the file
         let pois = load_pois(file_path.to_str().unwrap()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(pois.len(), 2);
         assert_eq!(pois[0].id, 1);
         assert_eq!(pois[0].name, "Lorville");
         assert_eq!(pois[0].poi_type, PoiType::LandingZone);
-        
+
         assert_eq!(pois[1].id, 2);
         assert_eq!(pois[1].name, "Aberdeen Mining Facility");
         assert_eq!(pois[1].obj_container, Some("Aberdeen".to_string()));
         assert_eq!(pois[1].poi_type, PoiType::Outpost);
         assert_eq!(pois[1].comment, Some("Test comment".to_string()));
     }
-    
+
     #[test]
     fn test_load_poi_with_unknown_poi_type() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("unknown_poi_type.json");
-        
+
         // Create a test JSON file with unknown POI type
         let test_json = r#"[
             {
@@ -605,22 +627,25 @@ mod tests {
                 "has_qt_marker": false
             }
         ]"#;
-        
+
         let mut file = File::create(&file_path).unwrap();
         file.write_all(test_json.as_bytes()).unwrap();
-        
+
         // Load POIs from the file
         let result = load_pois(file_path.to_str().unwrap());
-        
+
         // Verify error
         assert!(result.is_err());
         if let Err(DataLoadError::ParseError(msg)) = &result {
             assert!(msg.contains("Unknown POI type"));
         } else {
-            panic!("Expected ParseError for unknown POI type, got: {:?}", result);
+            panic!(
+                "Expected ParseError for unknown POI type, got: {:?}",
+                result
+            );
         }
     }
-    
+
     #[test]
     fn test_load_containers_from_bytes() {
         // Create a test JSON
@@ -649,10 +674,10 @@ mod tests {
                 "grid_radius": 2000000.0
             }
         ]"#;
-        
+
         // Load containers directly from bytes
         let containers = load_containers_from_bytes(test_json.as_bytes()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(containers.len(), 1);
         assert_eq!(containers[0].id, 1);
@@ -660,7 +685,7 @@ mod tests {
         assert_eq!(containers[0].system, System::Stanton);
         assert_eq!(containers[0].container_type, ContainerType::Planet);
     }
-    
+
     #[test]
     fn test_load_pois_from_bytes() {
         // Create a test JSON
@@ -680,10 +705,10 @@ mod tests {
                 "with_version": "3.0.0"
             }
         ]"#;
-        
+
         // Load POIs directly from bytes
         let pois = load_pois_from_bytes(test_json.as_bytes()).unwrap();
-        
+
         // Verify loaded data
         assert_eq!(pois.len(), 1);
         assert_eq!(pois[0].id, 1);
@@ -691,14 +716,14 @@ mod tests {
         assert_eq!(pois[0].system, System::Stanton);
         assert_eq!(pois[0].poi_type, PoiType::LandingZone);
     }
-    
+
     #[test]
     fn test_load_navigation_data() {
         // Create a temporary directory
         let dir = tempdir().unwrap();
         let container_path = dir.path().join("test_containers.json");
         let poi_path = dir.path().join("test_pois.json");
-        
+
         // Create container test JSON file
         let container_json = r#"[
             {
@@ -725,7 +750,7 @@ mod tests {
                 "grid_radius": 2000000.0
             }
         ]"#;
-        
+
         let poi_json = r#"[
             {
                 "id": 1,
@@ -740,29 +765,28 @@ mod tests {
                 "has_qt_marker": true
             }
         ]"#;
-        
+
         // Write test files
         let mut container_file = File::create(&container_path).unwrap();
         container_file.write_all(container_json.as_bytes()).unwrap();
-        
+
         let mut poi_file = File::create(&poi_path).unwrap();
         poi_file.write_all(poi_json.as_bytes()).unwrap();
-        
+
         // Load navigation data
-        let (pois, containers) = load_navigation_data(
-            poi_path.to_str().unwrap(),
-            container_path.to_str().unwrap()
-        ).unwrap();
-        
+        let (pois, containers) =
+            load_navigation_data(poi_path.to_str().unwrap(), container_path.to_str().unwrap())
+                .unwrap();
+
         // Verify data
         assert_eq!(containers.len(), 1);
         assert_eq!(containers[0].name, "Hurston");
-        
+
         assert_eq!(pois.len(), 1);
         assert_eq!(pois[0].name, "Lorville");
         assert_eq!(pois[0].obj_container, Some("Hurston".to_string()));
     }
-    
+
     #[test]
     fn test_load_navigation_data_from_bytes() {
         // Create test JSONs
@@ -791,7 +815,7 @@ mod tests {
                 "grid_radius": 2000000.0
             }
         ]"#;
-        
+
         let poi_json = r#"[
             {
                 "id": 1,
@@ -806,27 +830,26 @@ mod tests {
                 "has_qt_marker": true
             }
         ]"#;
-        
+
         // Load navigation data from bytes
-        let (pois, containers) = load_navigation_data_from_bytes(
-            poi_json.as_bytes(),
-            container_json.as_bytes()
-        ).unwrap();
-        
+        let (pois, containers) =
+            load_navigation_data_from_bytes(poi_json.as_bytes(), container_json.as_bytes())
+                .unwrap();
+
         // Verify data
         assert_eq!(containers.len(), 1);
         assert_eq!(containers[0].name, "Hurston");
-        
+
         assert_eq!(pois.len(), 1);
         assert_eq!(pois[0].name, "Lorville");
         assert_eq!(pois[0].obj_container, Some("Hurston".to_string()));
     }
-    
+
     #[test]
     fn test_nonexistent_file() {
         // Try to load a file that doesn't exist
         let result = load_containers("nonexistent_file.json");
-        
+
         // Verify error
         assert!(result.is_err());
         if let Err(DataLoadError::IoError(_)) = result {
