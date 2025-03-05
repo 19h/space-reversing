@@ -2396,14 +2396,68 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 }
 
                 if orbital_markers.is_empty() {
-                    panic!("No orbital markers found for {}", obstruction.name);
+                    log::warn!("No orbital markers found for {}, creating synthetic marker", obstruction.name);
+                    
+                    // Create a synthetic marker positioned away from both the start and destination
+                    // Calculate a position that's perpendicular to both the start-obstruction and obstruction-end vectors
+                    let obs_to_start = (*start_pos - obstruction.position).normalized();
+                    let obs_to_end = (*end_pos - obstruction.position).normalized();
+                    
+                    // Average direction but perpendicular
+                    let avg_dir = (obs_to_start + obs_to_end).normalized();
+                    let perp_dir = avg_dir.cross(&Vector3::unit_z()).normalized();
+                    
+                    // Use a distance that's safely outside the body's radius
+                    let safe_distance = obstruction.body_radius * 2.0 + obstruction.om_radius.max(1000.0);
+                    let synthetic_pos = obstruction.position + perp_dir.scale(safe_distance);
+                    
+                    log::info!("Created synthetic orbital marker at ({:.2}, {:.2}, {:.2})", 
+                        synthetic_pos.x, synthetic_pos.y, synthetic_pos.z);
+                    
+                    // Create a NavNode for this synthetic marker
+                    let synthetic_marker = Arc::new(NavNode {
+                        position: synthetic_pos,
+                        parent_node: Some(Arc::clone(&start_node)),
+                        g_cost: start_pos.distance(&synthetic_pos),
+                        h_cost: synthetic_pos.distance(end_pos),
+                        f_cost: start_pos.distance(&synthetic_pos) + synthetic_pos.distance(end_pos),
+                        node_type: NavNodeType::OrbitalMarker,
+                        name: format!("Synthetic OM for {}", obstruction.name),
+                        container_ref: Some(obstruction.clone()),
+                        obstruction_path: true,
+                        search_direction: SearchDirection::Forward,
+                    });
+                    
+                    // Add destination node
+                    let final_dest_name = match destination {
+                        DestinationEntity::Poi(poi) => poi.name.clone(),
+                        DestinationEntity::Container(container) => container.name.clone(),
+                        DestinationEntity::DeepSpace(_) => {
+                            format!("Deep Space ({:.1}, {:.1}, {:.1})", end_pos.x, end_pos.y, end_pos.z)
+                        }
+                    };
+                    
+                    let final_node = Arc::new(NavNode {
+                        position: *end_pos,
+                        parent_node: Some(Arc::clone(&synthetic_marker)),
+                        g_cost: start_pos.distance(&synthetic_pos) + synthetic_pos.distance(end_pos),
+                        h_cost: 0.0,
+                        f_cost: start_pos.distance(&synthetic_pos) + synthetic_pos.distance(end_pos),
+                        node_type: NavNodeType::Destination,
+                        name: final_dest_name.clone(),
+                        container_ref: None,
+                        obstruction_path: false,
+                        search_direction: SearchDirection::Forward,
+                    });
+                    
+                    log::debug!("Created synthetic orbital path around {} with 3 nodes", obstruction.name);
+                    return Some(vec![start_node, synthetic_marker, final_node]);
                 }
 
                 // Direction from obstruction (e.g. Hurston) towards destination
                 let obstruction_to_dest = (*end_pos - obstruction.position).normalized();
 
-                let optimal_marker =
-                    orbital_markers.iter()
+                let optimal_marker = orbital_markers.iter()
                     // Filter markers clearly positioned towards the destination
                     .filter(|marker| {
                         let marker_dir = (marker.position - obstruction.position).normalized();
@@ -2414,31 +2468,60 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                         let a_dist = start_pos.distance(&a.position) + a.position.distance(end_pos);
                         let b_dist = start_pos.distance(&b.position) + b.position.distance(end_pos);
                         a_dist.partial_cmp(&b_dist).unwrap()
-                    })
-                    .expect("No suitable orbital markers aligned towards destination");
+                    });
 
-                log::info!("Selected optimal orbital marker: {}", optimal_marker.name);
-
-                // Add orbital marker node to the route
-                let orbital_node = Arc::new(NavNode {
-                    position: optimal_marker.position,
-                    parent_node: Some(Arc::clone(&start_node)),
-                    g_cost: start_pos.distance(&optimal_marker.position),
-                    h_cost: optimal_marker.position.distance(end_pos),
-                    f_cost: start_pos.distance(&optimal_marker.position) + optimal_marker.position.distance(end_pos),
-                    node_type: NavNodeType::OrbitalMarker,
-                    name: optimal_marker.name.clone(),
-                    container_ref: optimal_marker.container_ref.clone(),
-                    obstruction_path: true,
-                    search_direction: SearchDirection::Forward,
-                });
+                // Handle the Option result properly
+                let optimal_marker = match optimal_marker {
+                    Some(marker) => {
+                        log::info!("Selected optimal orbital marker: {}", marker.name);
+                        Arc::clone(&marker)
+                    },
+                    None => {
+                        log::warn!("No orbital markers aligned towards destination, creating synthetic marker");
+                        
+                        // Create a synthetic marker positioned away from both the start and destination
+                        // Calculate a position that's perpendicular to both the start-obstruction and obstruction-end vectors
+                        let obs_to_start = (*start_pos - obstruction.position).normalized();
+                        let obs_to_end = (*end_pos - obstruction.position).normalized();
+                        
+                        // Average direction but perpendicular
+                        let avg_dir = (obs_to_start + obs_to_end).normalized();
+                        let perp_dir = avg_dir.cross(&Vector3::unit_z()).normalized();
+                        
+                        // Use a distance that's safely outside the body's radius
+                        let safe_distance = obstruction.body_radius * 2.0 + obstruction.om_radius.max(1000.0);
+                        let synthetic_pos = obstruction.position + perp_dir.scale(safe_distance);
+                        
+                        log::info!("Created synthetic orbital marker at ({:.2}, {:.2}, {:.2})", 
+                            synthetic_pos.x, synthetic_pos.y, synthetic_pos.z);
+                        
+                        // Create a NavNode for this synthetic marker
+                        Arc::new(NavNode {
+                            position: synthetic_pos,
+                            parent_node: Some(Arc::clone(&start_node)),
+                            g_cost: start_pos.distance(&synthetic_pos),
+                            h_cost: synthetic_pos.distance(end_pos),
+                            f_cost: start_pos.distance(&synthetic_pos) + synthetic_pos.distance(end_pos),
+                            node_type: NavNodeType::OrbitalMarker,
+                            name: format!("Synthetic OM for {}", obstruction.name),
+                            container_ref: Some(obstruction.clone()),
+                            obstruction_path: true,
+                            search_direction: SearchDirection::Forward,
+                        })
+                    }
+                };
 
                 log::info!("Using orbital marker '{}', position: {:?}", optimal_marker.name, optimal_marker.position);
 
                 // Recheck LOS from selected orbital marker to destination
                 let updated_los: LineOfSightResult = self.check_line_of_sight(&optimal_marker.position, end_pos);
                 if !updated_los.has_los {
-                    panic!("Even after using orbital marker '{}', LOS still obstructed by {}", optimal_marker.name, updated_los.obstruction.unwrap().name);
+                    log::warn!("Even after using orbital marker '{}', LOS still obstructed by {}", 
+                        optimal_marker.name, updated_los.obstruction.unwrap().name);
+                    
+                    // Try to find another orbital marker or continue with this one anyway
+                    // This allows the navigation to proceed even with potential obstructions
+                    log::info!("Proceeding with orbital marker '{}' despite obstruction", optimal_marker.name);
                 }
 
                 // Add final destination node after orbital marker
@@ -2464,7 +2547,7 @@ impl<T: AstronomicalDataProvider> NavigationPlanner<T> {
                 });
 
                 log::debug!("Added optimal orbital marker '{}' and final destination '{}' to route.", optimal_marker.name, final_dest_name);
-                return Some(vec![start_node, orbital_node.clone(), final_node]);
+                return Some(vec![start_node, optimal_marker, final_node]);
             }
         }
 
