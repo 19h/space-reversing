@@ -1,0 +1,3195 @@
+[
+    {
+        "id": 1,
+        "system": "Stanton",
+        "container_type": "Star",
+        "name": "Stanton Star",
+        "internal_name": "Stanton",
+        "body_radius": 696000000,
+        "om_radius": 0,
+        "grid_radius": 696000,
+        "position": {
+            "x": 136049870,
+            "y": 1294427400,
+            "z": 2923345368
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 2,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Daymar",
+        "internal_name": "Stanton2b",
+        "body_radius": 295000,
+        "om_radius": 432850,
+        "grid_radius": 590000,
+        "position": {
+            "x": -18930539540,
+            "y": -2610158765,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.48000002,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 188.3514639,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 3,
+        "system": "Stanton",
+        "container_type": "Planet",
+        "name": "MicroTech",
+        "internal_name": "Stanton4",
+        "body_radius": 1000000,
+        "om_radius": 1439593,
+        "grid_radius": 2300000,
+        "position": {
+            "x": 22462085252,
+            "y": 37185744964,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.11999999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 248.19629679,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 4,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Lyria",
+        "internal_name": "Stanton3a",
+        "body_radius": 223000,
+        "om_radius": 331030,
+        "grid_radius": 446000,
+        "position": {
+            "x": 18703607170,
+            "y": -22121650134,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 6.42999983,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 193.13245297,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 5,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Wala",
+        "internal_name": "Stanton3b",
+        "body_radius": 283000,
+        "om_radius": 415880,
+        "grid_radius": 566300,
+        "position": {
+            "x": 18379649310,
+            "y": -22000466768,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 6.32000017,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 24.73411402,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 6,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Arial",
+        "internal_name": "Stanton1a",
+        "body_radius": 344500,
+        "om_radius": 502850,
+        "grid_radius": 689000,
+        "position": {
+            "x": 12892673308,
+            "y": -31476128,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.51000023,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 41.50707375,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 7,
+        "system": "Stanton",
+        "container_type": "Planet",
+        "name": "Crusader",
+        "internal_name": "Stanton2",
+        "body_radius": 7450000,
+        "om_radius": 10673170,
+        "grid_radius": 15000000,
+        "position": {
+            "x": -18962176000,
+            "y": -2664960000,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.0999999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 260.08465438,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 8,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Ita",
+        "internal_name": "Stanton1d",
+        "body_radius": 325000,
+        "om_radius": 475280,
+        "grid_radius": 650000,
+        "position": {
+            "x": 12830194716,
+            "y": 114913608,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.8499999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 233.575862,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 9,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Calliope",
+        "internal_name": "Stanton4a",
+        "body_radius": 240000,
+        "om_radius": 355070,
+        "grid_radius": 480666,
+        "position": {
+            "x": 22398369308,
+            "y": 37168840679,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.59000015,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 204.23399846,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 10,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Cellin",
+        "internal_name": "Stanton2a",
+        "body_radius": 260000,
+        "om_radius": 383350,
+        "grid_radius": 520666,
+        "position": {
+            "x": -18987611119,
+            "y": -2709009661,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.44999981,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 390.38072034,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 11,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Euterpe",
+        "internal_name": "Stanton4c",
+        "body_radius": 213000,
+        "om_radius": 316880,
+        "grid_radius": 425666,
+        "position": {
+            "x": 22488109736,
+            "y": 37081123565,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.28000021,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 189.19148823,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 12,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Clio",
+        "internal_name": "Stanton4b",
+        "body_radius": 337170,
+        "om_radius": 492490,
+        "grid_radius": 674334,
+        "position": {
+            "x": 22476728221,
+            "y": 37091020074,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 3.25,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 410.93383339,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 13,
+        "system": "Stanton",
+        "container_type": "Planet",
+        "name": "Hurston",
+        "internal_name": "Stanton1",
+        "body_radius": 1000000,
+        "om_radius": 1436800,
+        "grid_radius": 2000000,
+        "position": {
+            "x": 12850457093,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.48000002,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 152.9598871,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 14,
+        "system": "Stanton",
+        "container_type": "Planet",
+        "name": "ArcCorp",
+        "internal_name": "Stanton3",
+        "body_radius": 800000,
+        "om_radius": 1151452,
+        "grid_radius": 1900000,
+        "position": {
+            "x": 18587664740,
+            "y": -22151916920,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 3.1099999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 178.53700624,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 15,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Aberdeen",
+        "internal_name": "Stanton1b",
+        "body_radius": 274000,
+        "om_radius": 403150,
+        "grid_radius": 548000,
+        "position": {
+            "x": 12905757636,
+            "y": 40955550,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.5999999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 324.59175712,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 16,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Magda",
+        "internal_name": "Stanton1c",
+        "body_radius": 340830,
+        "om_radius": 497600,
+        "grid_radius": 681666,
+        "position": {
+            "x": 12792686359,
+            "y": -74464581,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 1.94000006,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 206.91767093,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 17,
+        "system": "Stanton",
+        "container_type": "Moon",
+        "name": "Yela",
+        "internal_name": "Stanton2c",
+        "body_radius": 313000,
+        "om_radius": 458310,
+        "grid_radius": 1016000,
+        "position": {
+            "x": -19022916799,
+            "y": -2613996152,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 1.8200005,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 361.0529024,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 18,
+        "system": "Stanton",
+        "container_type": "JumpPoint",
+        "name": "Pyro JumpPoint",
+        "internal_name": "Stanton_Pyro",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 3310491639.80218,
+            "y": -27979408221.4568,
+            "z": -2676285679
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 19,
+        "system": "Stanton",
+        "container_type": "JumpPoint",
+        "name": "Terra JumpPoint",
+        "internal_name": "Stanton_Terra",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 51118221616.9033,
+            "y": -5269981303.11381,
+            "z": -4339551619
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 20,
+        "system": "Stanton",
+        "container_type": "JumpPoint",
+        "name": "Magnus JumpPoint",
+        "internal_name": "Stanton_Magnus",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -62284273860.7205,
+            "y": 23467618051.3957,
+            "z": 20198396608
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 21,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Green Glade Station",
+        "internal_name": "HUR-L1-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -3998772.246343,
+            "y": -262923.20307,
+            "z": -484614.272233
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 22,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Faithful Dream Station",
+        "internal_name": "HUR-L2-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 4132733.257641,
+            "y": -1967281.288555,
+            "z": -527794.652046
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 23,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Thundering Express Station",
+        "internal_name": "HUR-L3-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 5714047.700759,
+            "y": -1553267.713991,
+            "z": 1335042.126724
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 24,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Melodic Fields Station",
+        "internal_name": "HUR-L4-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 2399285.850316,
+            "y": -4056977.607235,
+            "z": 666284.287928
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 25,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "High Course Station",
+        "internal_name": "HUR-L5-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 495237.544279,
+            "y": 461676.822044,
+            "z": -842035.054335
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 26,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Wide Forest Station",
+        "internal_name": "ARC-L1-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 16729220034.5729,
+            "y": -19942048185.8436,
+            "z": 2239765.214955
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 27,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Shallow Frontier Station",
+        "internal_name": "MIC-L1 Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 20215827268.8881,
+            "y": 33467069517.8379,
+            "z": -943.200883
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 28,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Long Forest Station",
+        "internal_name": "MIC-L2-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 24713774897.7407,
+            "y": 40912934444.477,
+            "z": -10634826.699256
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 29,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Endless Odyssey Station",
+        "internal_name": "MIC-L3-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -22452218251.9082,
+            "y": -37179923023.0001,
+            "z": -10590410.524509
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 30,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Red Crossroads Station",
+        "internal_name": "MIC-L4-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -20968720663.2777,
+            "y": 38056058357.4567,
+            "z": -11799274.780179
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 31,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Modern Icarus Station",
+        "internal_name": "MIC-L5-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 43448559856.6716,
+            "y": -857708037.078453,
+            "z": -7824371.169867
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 32,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Ambitious Dream Station",
+        "internal_name": "CRU-L1-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -2796346.220133,
+            "y": -1018270.588192,
+            "z": -20043.24729
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 33,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Shallow Fields Station",
+        "internal_name": "CRU-L4-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -599663.560167,
+            "y": 4147667.36741,
+            "z": -2174785.282594
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 34,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Beautiful Glen Station",
+        "internal_name": "CRU-L5-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 3996778.312065,
+            "y": 1989652.047372,
+            "z": -2796439.642359
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 35,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Lively Pathway Station",
+        "internal_name": "ARC-L2-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 20451005907.8842,
+            "y": -24368053520.6711,
+            "z": -293845.452982
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 36,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Modern Express Station",
+        "internal_name": "ARC-L3-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -25045525486.8275,
+            "y": 14463255232.6371,
+            "z": -1892762.817474
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 37,
+        "system": "Stanton",
+        "container_type": "RefineryStation",
+        "name": "Faint Glen Station",
+        "internal_name": "ARC-L4-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 28476140156.22,
+            "y": 5018904178.64352,
+            "z": 959731.505652
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 38,
+        "system": "Stanton",
+        "container_type": "RestStop",
+        "name": "Yellow Core Station",
+        "internal_name": "ARC-L5-A Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -9895751577.39578,
+            "y": -27175156672.4832,
+            "z": 882465.416416
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 39,
+        "system": "Stanton",
+        "container_type": "NavalStation",
+        "name": "INS Jericho",
+        "internal_name": "MIC-L1-B Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 20243753011,
+            "y": 33468394836,
+            "z": -17086342.92
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 40,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "ARC-L1",
+        "internal_name": "Stanton3_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 16729134637,
+            "y": -19937006925,
+            "z": 8076.625
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 41,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "ARC-L2",
+        "internal_name": "Stanton3_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 20446718503.3901,
+            "y": -24367450990.706,
+            "z": 8076.625
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 42,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "ARC-L3",
+        "internal_name": "Stanton3_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -25043446883.5029,
+            "y": 14458841787.628,
+            "z": 8076.625
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 43,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "ARC-L4",
+        "internal_name": "Stanton3_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 28478354915.6557,
+            "y": 5021502482.91174,
+            "z": 8076.625
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 44,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "ARC-L5",
+        "internal_name": "Stanton3_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -9890422516.16967,
+            "y": -27173732225.14,
+            "z": 8076.625
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 45,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "CRU-L1",
+        "internal_name": "Stanton2_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -17065957376,
+            "y": -2398464000,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 46,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "CRU-L2",
+        "internal_name": "Stanton2_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -20858376485,
+            "y": -2931474402,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 47,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "CRU-L3",
+        "internal_name": "Stanton2_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 18962164826,
+            "y": 2664965040,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 48,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "CRU-L4",
+        "internal_name": "Stanton2_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -7173168640,
+            "y": -17754204160,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 49,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "CRU-L5",
+        "internal_name": "Stanton2_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -11789008988,
+            "y": 15089246106.7638,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 50,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "HUR-L1",
+        "internal_name": "Stanton1_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 11565411328,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 51,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "HUR-L2",
+        "internal_name": "Stanton1_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 14135502848,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 52,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "HUR-L3",
+        "internal_name": "Stanton1_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -12850457600,
+            "y": -1123.422729,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 53,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "HUR-L4",
+        "internal_name": "Stanton1_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 6425228288,
+            "y": 11128823808,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 54,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "HUR-L5",
+        "internal_name": "Stanton1_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 6425227776,
+            "y": -11128823808,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 55,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "MIC-L1",
+        "internal_name": "Stanton4_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 20215824238,
+            "y": 33467065007,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 56,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "MIC-L2",
+        "internal_name": "Stanton4_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 24708827153,
+            "y": 40905202459,
+            "z": -0.050088
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 57,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "MIC-L3",
+        "internal_name": "Stanton4_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -22457170265,
+            "y": -37187612395,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 58,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "MIC-L4",
+        "internal_name": "Stanton4_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -20971933230,
+            "y": 38045504032,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 59,
+        "system": "Stanton",
+        "container_type": "Lagrange",
+        "name": "MIC-L5",
+        "internal_name": "Stanton4_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 43435204288.2185,
+            "y": -851406955.908429,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 60,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P1_L1",
+        "internal_name": "P1_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -7128820246.10938,
+            "y": -2148305944.9269,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 61,
+        "system": "Pyro",
+        "container_type": "Planet",
+        "name": "Terminus",
+        "internal_name": "Pyro6",
+        "body_radius": 285000,
+        "om_radius": 400000,
+        "grid_radius": 870000,
+        "position": {
+            "x": -48118274993.6202,
+            "y": 48503115853.2016,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.8699999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 62,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Vuur",
+        "internal_name": "Pyro5f",
+        "body_radius": 452830,
+        "om_radius": 653227,
+        "grid_radius": 905666,
+        "position": {
+            "x": -4049984180.41362,
+            "y": -42648941418.554,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.1599998,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 63,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Fuego",
+        "internal_name": "Pyro5e",
+        "body_radius": 465670,
+        "om_radius": 671385,
+        "grid_radius": 931334,
+        "position": {
+            "x": -3780104297.52255,
+            "y": 274743928.340523,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 64,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Fairo",
+        "internal_name": "Pyro5d",
+        "body_radius": 392240,
+        "om_radius": 570368,
+        "grid_radius": 784480,
+        "position": {
+            "x": -3946426939.49278,
+            "y": -42879832782.7205,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.0799999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 65,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Adir",
+        "internal_name": "Pyro5c",
+        "body_radius": 431000,
+        "om_radius": 622355,
+        "grid_radius": 862000,
+        "position": {
+            "x": -3815633250.52238,
+            "y": -42729087626.8891,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.3699999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 66,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Vatra",
+        "internal_name": "Pyro5b",
+        "body_radius": 365810,
+        "om_radius": 530162,
+        "grid_radius": 731610,
+        "position": {
+            "x": -3889829129.24634,
+            "y": -42688062494.2562,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 3.4200001,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 67,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Ignis",
+        "internal_name": "Pyro5a",
+        "body_radius": 393170,
+        "om_radius": 568855,
+        "grid_radius": 786334,
+        "position": {
+            "x": -3965327312.67945,
+            "y": -42774792826.9439,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 3.4400001,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 68,
+        "system": "Pyro",
+        "container_type": "Planet",
+        "name": "Pyro5",
+        "internal_name": "Pyro5",
+        "body_radius": 7812300,
+        "om_radius": 7812300,
+        "grid_radius": 1000000,
+        "position": {
+            "x": -3912418653.61905,
+            "y": -42758726672.8782,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.0999999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 69,
+        "system": "Pyro",
+        "container_type": "Moon",
+        "name": "Pyro4",
+        "internal_name": "Pyro4",
+        "body_radius": 321400,
+        "om_radius": 475842,
+        "grid_radius": 942800,
+        "position": {
+            "x": -3704129440.06321,
+            "y": 30280651.9067382,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.0900002,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 70,
+        "system": "Pyro",
+        "container_type": "Planet",
+        "name": "Bloom",
+        "internal_name": "pyro3",
+        "body_radius": 413900,
+        "om_radius": 601114,
+        "grid_radius": 1127800,
+        "position": {
+            "x": -16103893419.3125,
+            "y": 7587934807.89416,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 5.0300002,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 199.4794168,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 71,
+        "system": "Pyro",
+        "container_type": "Planet",
+        "name": "Monox",
+        "internal_name": "Pyro2",
+        "body_radius": 529500,
+        "om_radius": 765583,
+        "grid_radius": 1359000,
+        "position": {
+            "x": 6057267758.2087,
+            "y": -8724928707.98473,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 3.1099999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 178.405387,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 72,
+        "system": "Pyro",
+        "container_type": "Planet",
+        "name": "Pyro1",
+        "internal_name": "Pyro1",
+        "body_radius": 411700,
+        "om_radius": 602993,
+        "grid_radius": 1123400,
+        "position": {
+            "x": -7920919212.26458,
+            "y": -2386977493.49058,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 2.4200001,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 22.4002208,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 73,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P6_L5",
+        "internal_name": "P6_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 29122470164.3387,
+            "y": 61804895101.4097,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 74,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P6_L4",
+        "internal_name": "P6_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -62036440806.4568,
+            "y": -28625942535.941,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 75,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P6_L3",
+        "internal_name": "P6_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 52161403642.242,
+            "y": -44126491135.6201,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 76,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P6_L2",
+        "internal_name": "P6_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -49918483338.131,
+            "y": 50320251342.2699,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 77,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P6_L1",
+        "internal_name": "P6_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -46604522695.139,
+            "y": 46979749572.7736,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 78,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P5_L5",
+        "internal_name": "P5_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -42314565583.5993,
+            "y": -7286465628.46906,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 79,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P5_L4",
+        "internal_name": "P5_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 41429351313.3098,
+            "y": -11279333425.3262,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 80,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P5_L3",
+        "internal_name": "P5_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 18302065394.5192,
+            "y": 38841341951.7326,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 81,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P5_L2",
+        "internal_name": "P5_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -4305013180.34407,
+            "y": -47034474329.37,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 82,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P5_L1",
+        "internal_name": "P5_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -3522319939.44293,
+            "y": -38482740207.6644,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 83,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P3_L5",
+        "internal_name": "P3_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 12638431338.8065,
+            "y": 12537403510.6462,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 84,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P3_L4",
+        "internal_name": "P3_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -14623507669.0335,
+            "y": -10152318683.6845,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 85,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P3_L3",
+        "internal_name": "P3_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 14541573612.6615,
+            "y": -10269333167.8828,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 86,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P3_L2",
+        "internal_name": "P3_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -17714300607.251,
+            "y": 8346987643.49238,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 87,
+        "system": "Pyro",
+        "container_type": "RestStop",
+        "name": "Checkmate Station",
+        "internal_name": "PYR2-L4 Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 88,
+        "system": "Pyro",
+        "container_type": "RestStop",
+        "name": "Ruin Station",
+        "internal_name": "PYR6 Station",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 89,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P3_L1",
+        "internal_name": "P3_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -14493519662.2722,
+            "y": 6829353989.97241,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 90,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P2_L5",
+        "internal_name": "P2_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -6127061368.36346,
+            "y": -8676078957.11457,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 91,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P2_L4",
+        "internal_name": "P2_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 10577229334.37,
+            "y": -968166324.911032,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 92,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P2_L3",
+        "internal_name": "P2_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -2707846809.10924,
+            "y": 10270479208.6781,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 93,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P2_L2",
+        "internal_name": "P2_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 6662973750.89419,
+            "y": -9597452987.01204,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 94,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P2_L1",
+        "internal_name": "P2_L1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 5451522554.41785,
+            "y": -7852459484.2715,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 95,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P1_L5",
+        "internal_name": "P1_L5",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -6027626644.57736,
+            "y": 5666241171.99014,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 96,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P1_L4",
+        "internal_name": "P1_L4",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -1893296274.44599,
+            "y": -8053202252.63223,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 97,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P1_L3",
+        "internal_name": "P1_L3",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 8274711438.80223,
+            "y": 2229680545.63711,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 98,
+        "system": "Pyro",
+        "container_type": "Lagrange",
+        "name": "P1_L2",
+        "internal_name": "P1_L2",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": -8713009576.03091,
+            "y": -2625677640.0681,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 99,
+        "system": "Pyro",
+        "container_type": "Star",
+        "name": "Pyrostar",
+        "internal_name": "Pyrostar",
+        "body_radius": 570720,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 2000,
+        "system": "Nyx",
+        "container_type": "Planet",
+        "name": "Delamar",
+        "internal_name": "nyx1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 2001,
+        "system": "Sol",
+        "container_type": "Planet",
+        "name": "Earth",
+        "internal_name": "sol1",
+        "body_radius": 0,
+        "om_radius": 0,
+        "grid_radius": 0,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "id": 100,
+        "system": "Nyx",
+        "container_type": "Planet",
+        "name": "Delamar",
+        "internal_name": "nyx1",
+        "body_radius": 75000,
+        "om_radius": 118890,
+        "grid_radius": 700000,
+        "position": {
+            "x": -10531703.478,
+            "y": 18241438.664,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0.025662,
+            "x": 0.76970404,
+            "y": 0.45771712,
+            "z": 0.44428843
+        }
+    },
+    {
+        "id": 101,
+        "system": "Ellis",
+        "container_type": "Planet",
+        "name": "Ellis3",
+        "internal_name": "ellis3",
+        "body_radius": 1000000,
+        "om_radius": 1439593,
+        "grid_radius": 2300000,
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_vel": {
+            "x": 4.11999999,
+            "y": 0,
+            "z": 0
+        },
+        "rot_adj": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rot_quat": {
+            "w": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    }
+]
