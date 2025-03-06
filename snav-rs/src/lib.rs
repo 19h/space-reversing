@@ -1100,8 +1100,19 @@ impl OctreeNode {
     ) -> bool {
         // Check if entity exists in this node
         let entity_index = self.entities.iter().position(|&(id, ty)| id == entity_id && ty == entity_type);
-        
+
         if let Some(index) = entity_index {
+            /*
+                [src/lib.rs:1105:13] &entity_index = Some(
+                    0,
+                )
+                [src/lib.rs:1105:13] &entity_type = PointOfInterest
+            */
+            dbg!(
+                &entity_index,
+                &entity_type,
+            );
+
             let entity = self.entities.remove(index);
             // Re-insert at its new position
             self.insert(containers, pois, entity.0, entity.1, new_position, max_depth, max_entities);
@@ -2499,7 +2510,14 @@ impl InterstellarNavigationSystem {
     }
     
     // A* pathfinding algorithm for optimal navigation
-    pub fn find_path_astar(&self, start_id: u32, start_type: EntityType, end_id: u32, end_type: EntityType, constraints: NavigationConstraints) -> NavigationPath {
+    pub fn find_path_astar(
+        &self,
+        start_id: u32,
+        start_type: EntityType,
+        end_id: u32,
+        end_type: EntityType,
+        constraints: NavigationConstraints,
+    ) -> NavigationPath {
         // Extract positions
         let start_pos = self.get_entity_position(start_id, start_type)
             .unwrap_or_else(|| Vector3::zero());
