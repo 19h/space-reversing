@@ -24,7 +24,11 @@ fn main() {
 
     nav_system.load_containers(obj_containers);
     nav_system.load_pois(pois);
+let mut i = 0;
+loop {
+i = i + 1;
 
+if (i >= 100) {break};
     nav_system.update_time(1.0);
 
     let start_id = nav_system.pois.iter().find(|poi| poi.1.name == start).unwrap().0;
@@ -59,4 +63,5 @@ fn main() {
         "{}",
         serde_json::to_string_pretty(&path).unwrap(),
     );
+}
 }
