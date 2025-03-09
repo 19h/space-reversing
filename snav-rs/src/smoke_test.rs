@@ -24,12 +24,11 @@ fn main() {
 
     nav_system.load_containers(obj_containers);
     nav_system.load_pois(pois);
-let mut i = 0;
-loop {
-i = i + 1;
 
-if (i >= 100) {break};
     nav_system.update_time(1.0);
+    
+    // Important: Update positions to ensure all POIs have proper global coordinates
+    nav_system.update_positions();
 
     let start_id = nav_system.pois.iter().find(|poi| poi.1.name == start).unwrap().0;
     let end_id = nav_system.containers.iter().find(|poi| poi.1.name == end).unwrap().0;
@@ -41,8 +40,8 @@ if (i >= 100) {break};
         NavigationConstraints {
             min_approach_distance: 10_000.0, // Minimum distance to approach objects
             prefer_distance: true,           // Prioritize shortest distance
-            prefer_segments: false,          // Don’t prioritize fewer segments
-            prefer_safety: false,            // Don’t prioritize safety over distance
+            prefer_segments: false,          // Don't prioritize fewer segments
+            prefer_safety: false,            // Don't prioritize safety over distance
             buffer_distance: 10_000.0,       // Buffer around obstacles
             max_hydrogen_distance: 100_000.0, // Max distance for hydrogen propulsion
             avoid_atmospheres: true,         // Avoid atmospheric entry
@@ -51,17 +50,16 @@ if (i >= 100) {break};
         };
 
     let path =
-        nav_system.find_path_astar(
+        nav_system.calculate_path(
             *start_id,
             EntityType::PointOfInterest,
             *end_id,
             EntityType::ObjectContainer,
-            constraints,
+            Some(constraints),
         );
 
     println!(
         "{}",
         serde_json::to_string_pretty(&path).unwrap(),
     );
-}
 }

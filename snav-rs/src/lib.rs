@@ -287,7 +287,7 @@ impl Ord for PathNode {
 
 // Internal computational state for derived properties
 #[derive(Debug)]
-struct ContainerState {
+pub struct ContainerState {
     pub atmosphere_radius: f64,
     pub safety_radius: f64,
     pub parent_id: Option<u32>,
@@ -323,7 +323,7 @@ pub struct InterstellarNavigationSystem {
     
     // Simulation parameters
     current_time: f64,
-    origin_time: f64,
+    _origin_time: f64,
     last_position_update: f64,
     last_index_update: f64,
     
@@ -340,27 +340,224 @@ pub fn resolve_entity_position(
     containers: &HashMap<u32, ObjectContainer>,
     pois: &HashMap<u32, PointOfInterest>,
     poi_states: &HashMap<u32, PoiState>,
+    container_states: &HashMap<u32, ContainerState>,
     entity_id: u32,
-    entity_type: EntityType
+    entity_type: EntityType,
+    current_time: f64
 ) -> Option<Vector3> {
-    match entity_type {
-        EntityType::ObjectContainer => {
-            containers.get(&entity_id).map(|container| container.position.clone())
-        },
-        EntityType::PointOfInterest => {
-            let poi = pois.get(&entity_id)?;
-            let state = poi_states.get(&entity_id)?;
-            
-            if let (Some(parent_id), MotionType::Static) = (state.parent_id, state.motion_type) {
-                if let Some(parent) = containers.get(&parent_id) {
-                    let rotated = parent.rot_quat.rotate_vector(&state.local_position);
-                    return Some(parent.position.add(&rotated));
+    // Track visited entities to prevent infinite recursion
+    let mut visited = HashSet::new();
+    
+    fn resolve_recursive(
+        containers: &HashMap<u32, ObjectContainer>,
+        pois: &HashMap<u32, PointOfInterest>,
+        poi_states: &HashMap<u32, PoiState>,
+        container_states: &HashMap<u32, ContainerState>,
+        entity_id: u32,
+        entity_type: EntityType,
+        current_time: f64,
+        visited: &mut HashSet<(u32, EntityType)>
+    ) -> Option<Vector3> {
+        // Prevent infinite recursion
+        let entity_key = (entity_id, entity_type);
+        if visited.contains(&entity_key) {
+            return None; // Circular reference detected
+        }
+        visited.insert(entity_key);
+        
+        match entity_type {
+            EntityType::ObjectContainer => {
+                let container = containers.get(&entity_id)?;
+                
+                // Check if container has a parent
+                if let Some(state) = container_states.get(&entity_id) {
+                    if let Some(parent_id) = state.parent_id {
+                        // Recursively get parent position
+                        if let Some(parent_pos) = resolve_recursive(
+                            containers, pois, poi_states, container_states,
+                            parent_id, EntityType::ObjectContainer, current_time, visited
+                        ) {
+                            // For now, simply return container position relative to parent
+                            // This can be enhanced if orbital mechanics are available
+                            return Some(parent_pos.add(&container.position));
+                        }
+                    }
                 }
-            }
-            
-            Some(poi.position.clone())
-        },
+                
+                // Default: return direct position
+                Some(container.position.clone())
+            },
+            EntityType::PointOfInterest => {
+                let poi = pois.get(&entity_id)?;
+                let state = poi_states.get(&entity_id)?;
+                
+                match state.motion_type {
+                    MotionType::Static => {
+                        if let Some(parent_id) = state.parent_id {
+                            // Get parent position recursively
+                            let parent_pos = resolve_recursive(
+                                containers, pois, poi_states, container_states,
+                                parent_id, EntityType::ObjectContainer, current_time, visited
+                            )?;
+                            
+                            // Get parent orientation
+                            let parent = containers.get(&parent_id)?;
+                            
+                            // Apply parent rotation to local position
+                            let rotated = parent.rot_quat.rotate_vector(&state.local_position);
+                            
+                            // Add to parent position
+                            Some(parent_pos.add(&rotated))
+                        } else {
+                            // No parent, use direct position
+                            Some(poi.position.clone())
+                        }
+                    },
+                    MotionType::Independent => {
+                        if let Some(ref independent) = state.independent_motion {
+                            match independent {
+                                IndependentMotionType::Linear { velocity, acceleration } => {
+                                    let time_delta = current_time - state.last_update_time;
+                                    let dx = velocity.x * time_delta + 0.5 * acceleration.x * time_delta * time_delta;
+                                    let dy = velocity.y * time_delta + 0.5 * acceleration.y * time_delta * time_delta;
+                                    let dz = velocity.z * time_delta + 0.5 * acceleration.z * time_delta * time_delta;
+                                    
+                                    Some(Vector3::new(
+                                        poi.position.x + dx,
+                                        poi.position.y + dy,
+                                        poi.position.z + dz
+                                    ))
+                                },
+                                IndependentMotionType::Circular { center, axis, angular_velocity, radius } => {
+                                    let time_delta = current_time - state.last_update_time;
+                                    let angle = angular_velocity * time_delta;
+                                    let rotation_quat = Quaternion::from_axis_angle(axis, angle);
+                                    
+                                    // Vector from center to original position
+                                    let relative_pos = Vector3::new(
+                                        poi.position.x - center.x,
+                                        poi.position.y - center.y,
+                                        poi.position.z - center.z
+                                    );
+                                    
+                                    // Rotate around center
+                                    let rotated_pos = rotation_quat.rotate_vector(&relative_pos);
+                                    
+                                    // Ensure constant radius
+                                    let actual_radius = rotated_pos.magnitude();
+                                    let correction_factor = if actual_radius > 0.00001 {
+                                        *radius / actual_radius
+                                    } else {
+                                        1.0
+                                    };
+                                    
+                                    Some(Vector3::new(
+                                        center.x + rotated_pos.x * correction_factor,
+                                        center.y + rotated_pos.y * correction_factor,
+                                        center.z + rotated_pos.z * correction_factor
+                                    ))
+                                },
+                                IndependentMotionType::Programmed { waypoints, current_index, loop_motion } => {
+                                    let sim_time = current_time;
+                                    
+                                    if waypoints.len() < 2 {
+                                        return Some(poi.position.clone());
+                                    }
+                                    
+                                    // Find current segment
+                                    let mut idx = *current_index;
+                                    while idx < waypoints.len() - 1 && waypoints[idx + 1].1 < sim_time {
+                                        idx += 1;
+                                    }
+                                    
+                                    if idx >= waypoints.len() - 1 {
+                                        if *loop_motion {
+                                            return Some(waypoints[0].0.clone());
+                                        } else {
+                                            return Some(waypoints.last().unwrap().0.clone());
+                                        }
+                                    }
+                                    
+                                    // Interpolate between waypoints
+                                    let t1 = waypoints[idx].1;
+                                    let t2 = waypoints[idx + 1].1;
+                                    let p1 = &waypoints[idx].0;
+                                    let p2 = &waypoints[idx + 1].0;
+                                    
+                                    let t_factor = if t2 > t1 { (sim_time - t1) / (t2 - t1) } else { 0.0 };
+                                    let t_clamped = t_factor.max(0.0).min(1.0);
+                                    
+                                    Some(Vector3::new(
+                                        p1.x + (p2.x - p1.x) * t_clamped,
+                                        p1.y + (p2.y - p1.y) * t_clamped,
+                                        p1.z + (p2.z - p1.z) * t_clamped
+                                    ))
+                                },
+                                IndependentMotionType::Bezier { control_points, durations, current_segment, current_segment_time } => {
+                                    let time_delta = current_time - state.last_update_time;
+                                    let mut segment = *current_segment;
+                                    let mut segment_time = *current_segment_time + time_delta;
+                                    
+                                    // Find current segment
+                                    while segment < durations.len() && segment_time > durations[segment] {
+                                        segment_time -= durations[segment];
+                                        segment += 1;
+                                        
+                                        if segment >= durations.len() {
+                                            segment = 0;
+                                            segment_time = 0.0;
+                                        }
+                                    }
+                                    
+                                    let segment_start = segment * 3;
+                                    if segment_start + 3 >= control_points.len() {
+                                        return Some(poi.position.clone());
+                                    }
+                                    
+                                    // Bezier interpolation
+                                    let p0 = &control_points[segment_start];
+                                    let p1 = &control_points[segment_start + 1];
+                                    let p2 = &control_points[segment_start + 2];
+                                    let p3 = &control_points[segment_start + 3];
+                                    
+                                    let t = if durations[segment] > 0.0 {
+                                        (segment_time / durations[segment]).clamp(0.0, 1.0)
+                                    } else {
+                                        0.0
+                                    };
+                                    
+                                    let t2 = t * t;
+                                    let t3 = t2 * t;
+                                    let mt = 1.0 - t;
+                                    let mt2 = mt * mt;
+                                    let mt3 = mt2 * mt;
+                                    
+                                    Some(Vector3::new(
+                                        mt3 * p0.x + 3.0 * mt2 * t * p1.x + 3.0 * mt * t2 * p2.x + t3 * p3.x,
+                                        mt3 * p0.y + 3.0 * mt2 * t * p1.y + 3.0 * mt * t2 * p2.y + t3 * p3.y,
+                                        mt3 * p0.z + 3.0 * mt2 * t * p1.z + 3.0 * mt * t2 * p2.z + t3 * p3.z
+                                    ))
+                                },
+                                IndependentMotionType::Stationary => Some(poi.position.clone()),
+                            }
+                        } else {
+                            // No independent motion data, use direct position
+                            Some(poi.position.clone())
+                        }
+                    },
+                    // Handle Orbiting motion type if it exists in your MotionType enum
+                    // For now, just return the stored position
+                    _ => Some(poi.position.clone())
+                }
+            },
+        }
     }
+    
+    // Start the recursive resolution
+    resolve_recursive(
+        containers, pois, poi_states, container_states,
+        entity_id, entity_type, current_time, &mut visited
+    )
 }
 
 impl Vector3 {
@@ -953,13 +1150,15 @@ impl OctreeNode {
     pub fn insert(
         &mut self,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
         poi_states: &HashMap<u32, PoiState>,
         entity_id: u32,
         entity_type: EntityType,
         position: &Vector3,
         max_depth: u32,
-        max_entities: usize
+        max_entities: usize,
+        current_time: f64,
     ) {
         if !self.aabb.contains_point(position) {
             return;
@@ -973,13 +1172,30 @@ impl OctreeNode {
         
         // Otherwise, subdivide if necessary and insert into child nodes
         if self.children.is_none() {
-            self.subdivide(containers, pois, poi_states);
+            self.subdivide(
+                containers,
+                pois,
+                poi_states,
+                container_states,
+                current_time,
+            );
         }
         
         if let Some(ref mut children) = self.children {
             for child in children.iter_mut() {
                 if child.aabb.contains_point(position) {
-                    child.insert(containers, pois, poi_states, entity_id, entity_type, position, max_depth, max_entities);
+                    child.insert(
+                        containers,
+                        container_states,
+                        pois,
+                        poi_states,
+                        entity_id,
+                        entity_type,
+                        position,
+                        max_depth,
+                        max_entities,
+                        current_time,
+                    );
                     return;
                 }
             }
@@ -993,7 +1209,9 @@ impl OctreeNode {
         &mut self, 
         containers: &HashMap<u32, ObjectContainer>, 
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        container_states: &HashMap<u32, ContainerState>,
+        current_time: f64,
     ) {
         let half = self.half_dimension / 2.0;
         let depth = self.depth + 1;
@@ -1040,13 +1258,34 @@ impl OctreeNode {
         let entities = std::mem::replace(&mut self.entities, Vec::new());
     
         for (entity_id, entity_type) in entities {
-            let position = resolve_entity_position(containers, pois, poi_states, entity_id, entity_type);
+            let position =
+                resolve_entity_position(
+                    containers,
+                    pois,
+                    poi_states,
+                    container_states,
+                    entity_id,
+                    entity_type,
+                    current_time,
+                );
             
             if let Some(pos) = position {
                 let mut inserted = false;
                 for child in children.iter_mut() {
                     if child.aabb.contains_point(&pos) {
-                        child.insert(containers, pois, poi_states, entity_id, entity_type, &pos, self.depth + 3, 8);
+                        child.insert(
+                            containers,
+                            container_states,
+                            pois,
+                            poi_states,
+                            entity_id,
+                            entity_type,
+                            &pos,
+                            self.depth + 3,
+                            8,
+                            current_time,
+                        );
+
                         inserted = true;
                         break;
                     }
@@ -1067,8 +1306,10 @@ impl OctreeNode {
         center: &Vector3,
         radius: f64,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) -> Vec<(u32, EntityType)> {
         let mut result = Vec::new();
         
@@ -1086,7 +1327,13 @@ impl OctreeNode {
         // Add entities from this node
         for &(entity_id, entity_type) in &self.entities {
             if let Some(position) = resolve_entity_position(
-                containers, pois, poi_states, entity_id, entity_type
+                containers,
+                pois,
+                poi_states,
+                container_states,
+                entity_id,
+                entity_type,
+                current_time,
             ) {
                 if position.distance(center) <= radius {
                     result.push((entity_id, entity_type));
@@ -1097,7 +1344,15 @@ impl OctreeNode {
         // Recursively query children
         if let Some(ref children) = self.children {
             for child in children.iter() {
-                result.extend(child.query_radius(center, radius, containers, pois, poi_states));
+                result.extend(child.query_radius(
+                    center,
+                    radius,
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    current_time,
+                ));
             }
         }
         
@@ -1119,6 +1374,7 @@ impl OctreeNode {
     pub fn update_entity(
         &mut self,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
         poi_states: &HashMap<u32, PoiState>,
         entity_id: u32,
@@ -1126,6 +1382,7 @@ impl OctreeNode {
         new_position: &Vector3,
         max_depth: u32,
         max_entities: usize,
+        current_time: f64,
     ) -> bool {
         // Check if entity exists in this node
         let entity_index = self.entities.iter().position(|&(id, ty)| id == entity_id && ty == entity_type);
@@ -1133,14 +1390,36 @@ impl OctreeNode {
         if let Some(index) = entity_index {
             let entity = self.entities.remove(index);
             // Re-insert at its new position
-            self.insert(containers, pois, poi_states, entity.0, entity.1, new_position, max_depth, max_entities);
+            self.insert(
+                containers,
+                container_states,
+                pois,
+                poi_states,
+                entity.0,
+                entity.1,
+                new_position,
+                max_depth,
+                max_entities,
+                current_time,
+            );
+
             return true;
         }
         
         // Check children
         if let Some(ref mut children) = self.children {
             for child in children.iter_mut() {
-                if child.update_entity(containers, pois, poi_states, entity_id, entity_type, new_position, max_depth, max_entities) {
+                if child.update_entity(
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    entity_id,
+                    entity_type,
+                    new_position,
+                    max_depth,
+                    max_entities, current_time,
+                ) {
                     return true;
                 }
             }
@@ -1250,8 +1529,10 @@ impl BVHNode {
         center: &Vector3,
         radius: f64,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) -> Vec<(u32, EntityType)> {
         let mut result = Vec::new();
         
@@ -1269,7 +1550,13 @@ impl BVHNode {
         // Add entities from this node
         for &(entity_id, entity_type) in &self.entities {
             if let Some(position) = resolve_entity_position(
-                containers, pois, poi_states, entity_id, entity_type
+                containers,
+                pois,
+                poi_states,
+                container_states,
+                entity_id,
+                entity_type,
+                current_time,
             ) {
                 if position.distance(center) <= radius {
                     result.push((entity_id, entity_type));
@@ -1279,11 +1566,31 @@ impl BVHNode {
         
         // Query children
         if let Some(ref left) = self.left {
-            result.extend(left.query_radius(center, radius, containers, pois, poi_states));
+            result.extend(
+                left.query_radius(
+                    center,
+                    radius,
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    current_time
+                ),
+            );
         }
         
         if let Some(ref right) = self.right {
-            result.extend(right.query_radius(center, radius, containers, pois, poi_states));
+            result.extend(
+                right.query_radius(
+                    center,
+                    radius,
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    current_time
+                ),
+            );
         }
         
         result
@@ -1295,8 +1602,10 @@ impl BVHNode {
         direction: &Vector3,
         max_distance: f64,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) -> Vec<((u32, EntityType), f64)> {
         let mut result = Vec::new();
         
@@ -1308,7 +1617,16 @@ impl BVHNode {
             
             // Check entities in this node
             for &(entity_id, entity_type) in &self.entities {
-                let position_opt = resolve_entity_position(containers, pois, poi_states, entity_id, entity_type);
+                let position_opt =
+                    resolve_entity_position(
+                        containers,
+                        pois,
+                        poi_states,
+                        container_states,
+                        entity_id,
+                        entity_type,
+                        current_time,
+                    );
                 
                 let (position, radius) = match (position_opt, entity_type) {
                     (Some(pos), EntityType::ObjectContainer) => {
@@ -1351,11 +1669,33 @@ impl BVHNode {
             
             // Check children
             if let Some(ref left) = self.left {
-                result.extend(left.ray_intersection(origin, direction, max_distance, containers, pois, poi_states));
+                result.extend(
+                    left.ray_intersection(
+                        origin,
+                        direction,
+                        max_distance,
+                        containers,
+                        container_states,
+                        pois,
+                        poi_states,
+                        current_time,
+                    ),
+                );
             }
             
             if let Some(ref right) = self.right {
-                result.extend(right.ray_intersection(origin, direction, max_distance, containers, pois, poi_states));
+                result.extend(
+                    right.ray_intersection(
+                        origin,
+                        direction,
+                        max_distance,
+                        containers,
+                        container_states,
+                        pois,
+                        poi_states,
+                        current_time,
+                    ),
+                );
             }
         }
         
@@ -1378,18 +1718,31 @@ impl HybridSpatialIndex {
     pub fn insert(
         &mut self,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
         poi_states: &HashMap<u32, PoiState>,
         entity_id: u32,
         entity_type: EntityType,
-        position: &Vector3
+        position: &Vector3,
+        current_time: f64,
     ) {
         // Cache the position
         self.entity_positions.insert((entity_id, entity_type), position.clone());
         
         // Check if there's a high-density region that would benefit from BVH
         // For now, we'll just insert into the octree
-        self.octree_root.insert(containers, pois, poi_states, entity_id, entity_type, position, 8, 10); // Max depth 8, max 10 entities per node
+        self.octree_root.insert(
+            containers,
+            container_states,
+            pois,
+            poi_states,
+            entity_id,
+            entity_type,
+            position,
+            8,
+            10,
+            current_time,
+        ); // Max depth 8, max 10 entities per node
     }
     
     pub fn update_entity_position(
@@ -1398,11 +1751,24 @@ impl HybridSpatialIndex {
         entity_type: EntityType,
         new_position: &Vector3,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) {
         // Update the entity in the main octree
-        self.octree_root.update_entity(containers, pois, poi_states, entity_id, entity_type, new_position, 8, 10);
+        self.octree_root.update_entity(
+            containers,
+            container_states,
+            pois,
+            poi_states,
+            entity_id,
+            entity_type,
+            new_position,
+            8,
+            10,
+            current_time,
+        );
         
         // Update the position cache
         self.entity_positions.insert((entity_id, entity_type), new_position.clone());
@@ -1413,14 +1779,35 @@ impl HybridSpatialIndex {
         center: &Vector3,
         radius: f64,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) -> Vec<(u32, EntityType)> {
-        let mut result = self.octree_root.query_radius(center, radius, containers, pois, poi_states);
+        let mut result =
+            self.octree_root.query_radius(
+                center,
+                radius,
+                containers,
+                container_states,
+                pois,
+                poi_states,
+                current_time,
+            );
         
         // Also query BVH regions
         for bvh in &self.bvh_regions {
-            let bvh_results = bvh.query_radius(center, radius, containers, pois, poi_states);
+            let bvh_results =
+                bvh.query_radius(
+                    center,
+                    radius,
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    current_time,
+                );
+
             result.extend(bvh_results);
         }
         
@@ -1437,8 +1824,10 @@ impl HybridSpatialIndex {
         direction: &Vector3,
         max_distance: f64,
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) -> Vec<((u32, EntityType), f64)> {
         let mut results = Vec::new();
         
@@ -1446,7 +1835,16 @@ impl HybridSpatialIndex {
         let all_entities = self.octree_root.get_all_entities();
         
         for (entity_id, entity_type) in all_entities {
-            let position_opt = resolve_entity_position(containers, pois, poi_states, entity_id, entity_type);
+            let position_opt =
+                resolve_entity_position(
+                    containers,
+                    pois,
+                    poi_states,
+                    container_states,
+                    entity_id,
+                    entity_type,
+                    current_time,
+                );
             
             let (position, radius) = match (position_opt, entity_type) {
                 (Some(pos), EntityType::ObjectContainer) => {
@@ -1489,7 +1887,18 @@ impl HybridSpatialIndex {
         
         // Also cast through BVH regions
         for bvh in &self.bvh_regions {
-            let bvh_results = bvh.ray_intersection(origin, direction, max_distance, containers, pois, poi_states);
+            let bvh_results =
+                bvh.ray_intersection(
+                    origin,
+                    direction,
+                    max_distance,
+                    containers,
+                    container_states,
+                    pois,
+                    poi_states,
+                    current_time,
+                );
+
             results.extend(bvh_results);
         }
         
@@ -1506,8 +1915,10 @@ impl HybridSpatialIndex {
         &mut self, 
         system_size: f64, 
         containers: &HashMap<u32, ObjectContainer>,
+        container_states: &HashMap<u32, ContainerState>,
         pois: &HashMap<u32, PointOfInterest>,
-        poi_states: &HashMap<u32, PoiState>
+        poi_states: &HashMap<u32, PoiState>,
+        current_time: f64,
     ) {
         let center = Vector3::zero(); // Star at the origin
         let half_dimension = system_size / 2.0;
@@ -1520,24 +1931,36 @@ impl HybridSpatialIndex {
         for (id, container) in containers {
             self.insert(
                 containers,
+                container_states,
                 pois,
                 poi_states,
                 *id,
                 EntityType::ObjectContainer,
                 &container.position,
+                current_time,
             );
         }
         
         // Add all POIs
-        for (id, poi) in pois {
-            if let Some(position) = resolve_entity_position(containers, pois, poi_states, *id, EntityType::PointOfInterest) {
+        for (id, _poi) in pois {
+            if let Some(position) = resolve_entity_position(
+                containers,
+                pois,
+                poi_states,
+                container_states,
+                *id,
+                EntityType::PointOfInterest,
+                current_time,
+            ) {
                 self.insert(
                     containers,
+                    container_states,
                     pois,
                     poi_states,
                     *id,
                     EntityType::PointOfInterest,
                     &position,
+                    current_time,
                 );
             }
         }
@@ -1549,7 +1972,7 @@ impl InterstellarNavigationSystem {
         let system_size = 1_000_000_000_000.0; // 1,000,000,000 km (interplanetary scale)
         let spatial_index = HybridSpatialIndex::new(system_size);
         
-        let origin_time = std::time::SystemTime::now()
+        let _origin_time = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs_f64();
@@ -1562,7 +1985,7 @@ impl InterstellarNavigationSystem {
             poi_states: HashMap::new(),
             spatial_index,
             current_time: 0.0, // Start at t=0
-            origin_time, // Jan 1, 2020 reference time
+            _origin_time: 0.0, // Jan 1, 2020 reference time
             last_position_update: 0.0,
             last_index_update: 0.0,
             last_path_update: HashMap::new(),
@@ -1627,11 +2050,13 @@ impl InterstellarNavigationSystem {
             if let Some(position) = self.get_entity_position(id, EntityType::ObjectContainer) {
                 self.spatial_index.insert(
                     &self.containers, 
+                    &self.container_states,
                     &self.pois, 
                     &self.poi_states,
                     id, 
                     EntityType::ObjectContainer, 
-                    &position
+                    &position,
+                    self.current_time,
                 );
             }
         }
@@ -1714,11 +2139,13 @@ impl InterstellarNavigationSystem {
             if let Some(position) = self.get_entity_position(id, EntityType::PointOfInterest) {
                 self.spatial_index.insert(
                     &self.containers, 
+                    &self.container_states,
                     &self.pois, 
                     &self.poi_states,
                     id, 
                     EntityType::PointOfInterest, 
-                    &position
+                    &position,
+                    self.current_time,
                 );
             }
         }
@@ -2009,8 +2436,10 @@ impl InterstellarNavigationSystem {
                     EntityType::ObjectContainer,
                     &container.position,
                     &self.containers,
+                    &self.container_states,
                     &self.pois,
-                    &self.poi_states
+                    &self.poi_states,
+                    self.current_time,
                 );
             }
         }
@@ -2232,8 +2661,10 @@ impl InterstellarNavigationSystem {
                     EntityType::PointOfInterest,
                     &new_position,
                     &self.containers,
+                    &self.container_states,
                     &self.pois,
-                    &self.poi_states
+                    &self.poi_states,
+                    self.current_time,
                 );
             }
         }
@@ -2257,8 +2688,10 @@ impl InterstellarNavigationSystem {
         self.spatial_index.rebuild(
             system_size,
             &self.containers,
+            &self.container_states,
             &self.pois,
-            &self.poi_states
+            &self.poi_states,
+            self.current_time,
         );
         
         // Alternative implementation: Update existing entities in place
@@ -2322,25 +2755,30 @@ impl InterstellarNavigationSystem {
     // Update rebuild_spatial_index method
     pub fn rebuild_spatial_index(&mut self) {
         let system_size = 1_000_000_000_000.0; // 1,000,000,000 km
+
         self.spatial_index.rebuild(
             system_size, 
             &self.containers, 
+            &self.container_states,
             &self.pois, 
-            &self.poi_states
+            &self.poi_states,
+            self.current_time,
         );
+
         self.last_index_update = self.current_time;
     }
 
     // Helper method to get entity position for spatial indexing
     pub fn get_entity_position(&self, entity_id: u32, entity_type: EntityType) -> Option<Vector3> {
-        match entity_type {
-            EntityType::ObjectContainer => {
-                self.containers.get(&entity_id).map(|c| c.position.clone())
-            },
-            EntityType::PointOfInterest => {
-                self.pois.get(&entity_id).map(|p| p.position.clone())
-            },
-        }
+        resolve_entity_position(
+            &self.containers,
+            &self.pois,
+            &self.poi_states,
+            &self.container_states,
+            entity_id,
+            entity_type,
+            self.current_time
+        )
     }
 }
 
@@ -2786,10 +3224,15 @@ impl InterstellarNavigationSystem {
     }
     
     // Calculate the closest approach distance from a line segment to a celestial body
-    fn closest_approach_distance(&self, start: &Vector3, end: &Vector3, container_id: &u32) -> f64 {
+    fn closest_approach_distance(
+        &self,
+        start: &Vector3,
+        end: &Vector3,
+        container_id: &u32,
+    ) -> f64 {
         if let Some(container) = self.containers.get(container_id) {
             let body_center = &container.position;
-            
+
             // Vector from start to end
             let path_vector = end.sub(start);
             let path_length = path_vector.magnitude();
@@ -2920,8 +3363,10 @@ impl InterstellarNavigationSystem {
                 position,
                 50_000_000.0, // 50,000 km radius
                 &self.containers,
+                &self.container_states,
                 &self.pois,
-                &self.poi_states
+                &self.poi_states,
+                self.current_time,
             );
 
         for (id, ty) in nearby_entities {
@@ -3024,25 +3469,25 @@ impl InterstellarNavigationSystem {
         let direction = end.sub(start);
         let distance = direction.magnitude();
         
-        if distance < 1.0 {
-            return true; // Same position
+        if distance < EPSILON {
+            return true; // Same point
         }
         
-        let normalized_dir = direction.scale(1.0 / distance);
-        
-        // Cast ray using modified ray_cast implementation
-        let ray_results = self.spatial_index.ray_cast(
-            start, &normalized_dir, distance, 
-            &self.containers, &self.pois, &self.poi_states
-        );
-        
-        // Check for obstacles
-        for ((id, ty), _) in ray_results {
-            if ty == EntityType::ObjectContainer {
-                if let Some(container) = self.containers.get(&id) {
-                    if container.body_radius > 0.0 {
-                        return false; // Path intersects celestial body
-                    }
+        // Check against all containers
+        for (id, container) in &self.containers {
+            // Only consider objects with significant body radius (planets, moons, etc.)
+            if container.body_radius > 0.0 {
+                // Calculate closest approach to the body's center
+                let closest_distance =
+                    self.closest_approach_distance(
+                        start,
+                        end,
+                        id,
+                    );
+                
+                // If closest approach is less than body radius, there's an obstruction
+                if closest_distance < container.body_radius {
+                    return false; // Path intersects celestial body
                 }
             }
         }
@@ -3186,7 +3631,11 @@ impl InterstellarNavigationSystem {
     }
     
     // Optimize path by reducing number of waypoints
-    pub fn optimize_path(&self, path: &NavigationPath, priority: &str) -> NavigationPath {
+    pub fn optimize_path(
+        &self,
+        path: &NavigationPath,
+        priority: &str,
+    ) -> NavigationPath {
         match priority {
             "distance" => {
                 // Already optimized for distance by A*
@@ -3204,9 +3653,20 @@ impl InterstellarNavigationSystem {
                     let mut furthest_visible = i;
                     
                     for j in (i+2)..path.waypoints.len() {
-                        if self.check_line_of_sight(&path.waypoints[i].position, &path.waypoints[j].position) &&
-                           self.check_altitude_constraints(&path.waypoints[i].position, &path.waypoints[j].position, 
-                                                         self.default_constraints.min_altitude) {
+                        let has_los =
+                            self.check_line_of_sight(
+                                &path.waypoints[i].position,
+                                &path.waypoints[j].position,
+                            );
+
+                        let has_altitude_constraint =
+                            self.check_altitude_constraints(
+                                &path.waypoints[i].position,
+                                &path.waypoints[j].position,
+                                self.default_constraints.min_altitude,
+                            );
+
+                        if has_los && has_altitude_constraint {
                             furthest_visible = j;
                         } else {
                             // Stop at first obstruction
@@ -3224,14 +3684,21 @@ impl InterstellarNavigationSystem {
                 // Recalculate distances, times, etc.
                 let mut total_distance = 0.0;
                 let mut cumulative_time = 0.0;
-                let mut prev_position = optimized_waypoints.first()
-                    .map(|w| w.position.clone())
-                    .unwrap_or_else(|| Vector3::zero());
+
+                let mut prev_position =
+                    optimized_waypoints
+                        .first()
+                        .map(|w| w.position.clone())
+                        .unwrap_or_else(|| Vector3::zero());
+
                 let mut propulsion_changes = Vec::new();
                 let mut los_checks = Vec::new();
-                let mut current_travel_type = optimized_waypoints.first()
-                    .map(|w| w.travel_type)
-                    .unwrap_or(TravelType::Hydrogen);
+
+                let mut current_travel_type =
+                    optimized_waypoints
+                        .first()
+                        .map(|w| w.travel_type)
+                        .unwrap_or(TravelType::Hydrogen);
 
                 propulsion_changes.push((0, current_travel_type));
 
@@ -3249,12 +3716,13 @@ impl InterstellarNavigationSystem {
                     total_distance += distance;
                     
                     // Determine travel type based on distance and constraints
-                    let travel_type = if self.is_quantum_activation_allowed(&prev_position) && 
-                                        distance > self.default_constraints.max_hydrogen_distance {
-                        TravelType::Quantum
-                    } else {
-                        TravelType::Hydrogen
-                    };
+                    let travel_type =
+                        if self.is_quantum_activation_allowed(&prev_position)
+                        && distance > self.default_constraints.max_hydrogen_distance {
+                            TravelType::Quantum
+                        } else {
+                            TravelType::Hydrogen
+                        };
                     
                     if travel_type != current_travel_type {
                         current_travel_type = travel_type;
@@ -3278,7 +3746,12 @@ impl InterstellarNavigationSystem {
                     }
                     
                     // Verify LOS for segment
-                    los_checks.push(self.check_line_of_sight(&prev_position, &current_position));
+                    los_checks.push(
+                        self.check_line_of_sight(
+                            &prev_position,
+                            &current_position,
+                        ),
+                    );
                     
                     // Update for next iteration
                     prev_position = current_position;
@@ -3298,10 +3771,20 @@ impl InterstellarNavigationSystem {
     }
     
     // Check if path satisfies altitude constraints
-    pub fn check_altitude_constraints(&self, start: &Vector3, end: &Vector3, min_altitude: f64) -> bool {
+    pub fn check_altitude_constraints(
+        &self,
+        start: &Vector3,
+        end: &Vector3,
+        min_altitude: f64,
+    ) -> bool {
         for (id, container) in &self.containers {
             if container.body_radius > 0.0 {
-                let closest_approach = self.closest_approach_distance(start, end, id);
+                let closest_approach = self.closest_approach_distance(
+                    start,
+                    end,
+                    id,
+                );
+
                 let minimum_safe_distance = container.body_radius + min_altitude;
                 
                 if closest_approach < minimum_safe_distance {
@@ -3314,10 +3797,14 @@ impl InterstellarNavigationSystem {
     }
     
     // Optimize path for safety by adding bypass points
-    pub fn optimize_path_for_safety(&self, path: &NavigationPath, safety_margin: f64) -> NavigationPath {
+    pub fn optimize_path_for_safety(
+        &self,
+        path: &NavigationPath,
+        safety_margin: f64,
+    ) -> NavigationPath {
         let mut optimized_waypoints = Vec::new();
         let mut checked_segments = Vec::new();
-        
+
         // Add the first waypoint
         if let Some(first) = path.waypoints.first() {
             optimized_waypoints.push(first.clone());
@@ -3334,20 +3821,27 @@ impl InterstellarNavigationSystem {
             
             for (id, container) in &self.containers {
                 if container.body_radius > 0.0 {
-                    let closest_dist = self.closest_approach_distance(&prev.position, &current.position, id);
+                    let closest_dist =
+                        self.closest_approach_distance(
+                            &prev.position,
+                            &current.position,
+                            id,
+                        );
+
                     let safe_distance = container.body_radius + safety_margin;
                     
                     if closest_dist < safe_distance {
                         segment_safe = false;
                         
                         // Find a bypass point
-                        let bypass_point = self.calculate_safety_bypass(
-                            &prev.position, 
-                            &current.position, 
-                            &container.position, 
-                            container.body_radius, 
-                            safety_margin
-                        );
+                        let bypass_point =
+                            self.calculate_safety_bypass(
+                                &prev.position, 
+                                &current.position, 
+                                &container.position, 
+                                container.body_radius, 
+                                safety_margin
+                            );
                         
                         // Generate a temporary ID for the bypass waypoint
                         let bypass_id = 0xFFFFFFFF; // Using max u32 value as temporary ID
@@ -3530,11 +4024,16 @@ impl InterstellarNavigationSystem {
     }
     
     // Calculate great circle distance on a planet's surface
-    pub fn calculate_great_circle_distance(&self, start: &Vector3, end: &Vector3, planet_id: u32) -> f64 {
+    pub fn calculate_great_circle_distance(
+        &self,
+        start: &Vector3,
+        end: &Vector3,
+        planet_id: u32,
+    ) -> f64 {
         if let Some(planet) = self.containers.get(&planet_id) {
             let planet_center = &planet.position;
             let planet_radius = planet.body_radius;
-            
+
             // Convert to spherical coordinates relative to planet center
             let start_relative = start.sub(planet_center);
             let end_relative = end.sub(planet_center);
@@ -3555,7 +4054,12 @@ impl InterstellarNavigationSystem {
     }
     
     // Navigate through dense clusters using potential field approach
-    pub fn navigate_dense_cluster(&self, start: &Vector3, end: &Vector3, safety_distance: f64) -> NavigationPath {
+    pub fn navigate_dense_cluster(
+        &self,
+        start: &Vector3,
+        end: &Vector3,
+        safety_distance: f64,
+    ) -> NavigationPath {
         // Get all entities in the region between start and end
         let midpoint = Vector3::new(
             (start.x + end.x) / 2.0,
@@ -3570,8 +4074,10 @@ impl InterstellarNavigationSystem {
                 &midpoint,
                 search_radius,
                 &self.containers,
+                &self.container_states,
                 &self.pois,
-                &self.poi_states
+                &self.poi_states,
+                self.current_time,
             );
         
         // If region isn't dense, return direct path
@@ -3790,8 +4296,10 @@ impl InterstellarNavigationSystem {
                 position, 
                 search_radius, 
                 &self.containers, 
+                &self.container_states,
                 &self.pois, 
-                &self.poi_states
+                &self.poi_states,
+                self.current_time,
             );
             
             let mut nearest = None;
