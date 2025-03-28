@@ -1,0 +1,14 @@
+[package]
+name = "unforge-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+byteorder = "1.4"
+quick-xml = { version = "0.31", features = ["serialize"] }
+uuid = { version = "1.6", features = ["v4"] }
+clap = { version = "4.4", features = ["derive"] }
+thiserror = "1.0"
+encoding_rs = "0.8"
+chrono = "0.4"
+regex = "1" # Added for pretty printing
