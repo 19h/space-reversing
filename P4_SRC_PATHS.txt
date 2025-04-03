@@ -1,0 +1,2444 @@
+W:/p4-src/
+├── diffusion/
+│   ├── asylum_lib/
+│   │   └── src/
+│   │       └── asylum_lib/
+│   │           ├── oml.cpp
+│   │           ├── oml_node.cpp
+│   │           ├── oml_reader.cpp
+│   │           ├── task_manager.cpp
+│   │           └── memory_buffer.h
+│   ├── file_lib/
+│   │   └── src/
+│   │       └── file_lib/
+│   │           ├── base_file.cpp
+│   │           ├── data_bus_file.cpp
+│   │           └── win32_file.cpp
+│   ├── ooz_lib/
+│   │   └── src/
+│   │       └── ooz_lib/
+│   │           ├── Compiler.cpp
+│   │           ├── Interpreter.cpp
+│   │           ├── Oozcode.cpp
+│   │           ├── PCode.cpp
+│   │           ├── ParseClass.cpp
+│   │           ├── ParseFunction.cpp
+│   │           ├── ParseStruct.cpp
+│   │           ├── ooz_list.cpp
+│   │           ├── ooz_map.cpp
+│   │           ├── ooz_oml.cpp
+│   │           ├── ooz_wrapper_structs.cpp
+│   │           ├── OozString.h
+│   │           └── OozVar.h
+│   └── service_lib/
+│       └── src/
+│           └── service_lib/
+│               ├── diffusion_client.cpp
+│               ├── base_client.cpp
+│               ├── base_diffusion_endpoint.cpp
+│               ├── base_rest_client.cpp
+│               ├── base_service.cpp
+│               ├── diffusion_rest_client.cpp
+│               ├── diffusion_rest_server.cpp
+│               ├── diffusion_service.cpp
+│               ├── direct_connect_manager.cpp
+│               ├── net_client.cpp
+│               ├── net_connection.cpp
+│               ├── net_http_client.cpp
+│               ├── net_http_listener.cpp
+│               ├── net_http_session.cpp
+│               ├── net_https_client.cpp
+│               ├── net_io_service.cpp
+│               ├── ooz_component.cpp
+│               ├── service_config.cpp
+│               ├── tcp_client.cpp
+│               ├── tcp_connection.cpp
+│               ├── tcp_server.cpp
+│               ├── tcp_session.cpp
+│               ├── core_net_client.h
+│               ├── core_net_connection.h
+│               ├── core_net_server.h
+│               ├── core_net_ssl_connection.h
+│               └── tcp_connection.h
+├── CIGNetworkPublic/
+│   └── src/
+│       ├── ArenaGroupNetPlugin.cpp
+│       ├── ServicesAdaptor.cpp
+│       └── ServicesThread.cpp
+├── CIGUniverseCommon/
+│   └── src/
+│       └── GIMEndpoint.cpp
+├── CryEngine/
+│   ├── BinTemp.StarBuild/
+│   │   └── windows_x64_shipping_msvc/
+│   │       └── ClientLauncher/
+│   │           └── Code/
+│   │               └── GameSDK/
+│   │                   └── ClientLauncher/
+│   │                       └── executable/
+│   │                           └── StarCitizen.pdb
+│   └── Code/
+│       ├── CryEngine/
+│       │   ├── CIGAISystem/
+│       │   │   ├── CollisionAvoidance/
+│       │   │   │   ├── CollisionAvoidanceSystem.cpp
+│       │   │   │   └── VehicleCollisionAvoidanceSystem.cpp
+│       │   │   ├── Communication/
+│       │   │   │   ├── CommunicationChannelManager.cpp
+│       │   │   │   └── CommunicationManager.cpp
+│       │   │   ├── Components/
+│       │   │   │   ├── CoverSystemComponent.cpp
+│       │   │   │   └── SubsumptionComponent.cpp
+│       │   │   ├── ContextualResponseSystem/
+│       │   │   │   └── ContextualResponseSystem.cpp
+│       │   │   ├── CoverSystem/
+│       │   │   │   ├── CoverSurfaceComponent.cpp
+│       │   │   │   ├── CoverUser.cpp
+│       │   │   │   └── DynamicCoverSurfaceComponent.cpp
+│       │   │   ├── Module/
+│       │   │   │   └── CIGAISystem.cpp
+│       │   │   ├── MovementSystem/
+│       │   │   │   ├── MovementActor.cpp
+│       │   │   │   ├── MovementBlock_DrivePath.cpp
+│       │   │   │   ├── MovementBlock_FollowPath.cpp
+│       │   │   │   ├── MovementBlock_InstallAgentInCover.cpp
+│       │   │   │   ├── MovementBlock_TurnTowardsPosition.cpp
+│       │   │   │   ├── MovementBlock_UninstallAgentFromCover.cpp
+│       │   │   │   ├── MovementBlock_UseExactPositioningBase.cpp
+│       │   │   │   ├── MovementPlan.cpp
+│       │   │   │   ├── MovementPlanner.cpp
+│       │   │   │   ├── MovementSystem.cpp
+│       │   │   │   └── MovementActor.h
+│       │   │   ├── Navigation/
+│       │   │   │   ├── Helpers/
+│       │   │   │   │   └── NavigationHelpers.cpp
+│       │   │   │   ├── MNM/
+│       │   │   │   │   ├── IslandConnections.cpp
+│       │   │   │   │   ├── MeshGrid.cpp
+│       │   │   │   │   └── PlanetMeshGrid.cpp
+│       │   │   │   ├── NavPath.cpp
+│       │   │   │   ├── NavigationSystem/
+│       │   │   │   │   ├── DesignerNavigationVolume.cpp
+│       │   │   │   │   ├── IslandConnectionsManager.cpp
+│       │   │   │   │   ├── NavigationAnchor.cpp
+│       │   │   │   │   ├── NavigationSystem.cpp
+│       │   │   │   │   ├── NavigationVolume_Editor.cpp
+│       │   │   │   │   ├── OffMeshNavigationManager.cpp
+│       │   │   │   │   ├── PlanetNavigationVolume.cpp
+│       │   │   │   │   └── WorldMonitor.cpp
+│       │   │   │   ├── Pathfinder/
+│       │   │   │   │   ├── Pathfinder.cpp
+│       │   │   │   │   ├── PathfinderAlgorithms.cpp
+│       │   │   │   │   └── PathfinderUtils.cpp
+│       │   │   │   └── SpatialResolver/
+│       │   │   │       ├── AISpatialResolver.cpp
+│       │   │   │       ├── EnvironmentSampler.cpp
+│       │   │   │       ├── FlightPathSearchWorker.cpp
+│       │   │   │       └── PlanetSidePathSearchWorker.cpp
+│       │   │   ├── Perception/
+│       │   │   │   └── AudioMap.cpp
+│       │   │   ├── PostureManager/
+│       │   │   │   └── PostureManager.cpp
+│       │   │   ├── Prediction/
+│       │   │   │   └── BallisticPrediction.cpp
+│       │   │   ├── Shared/
+│       │   │   │   ├── AIUpdateScheduler.cpp
+│       │   │   │   ├── MannequinHelpers.cpp
+│       │   │   │   └── PriorityMap.cpp
+│       │   │   ├── Subsumption/
+│       │   │   │   ├── ConversationSystem/
+│       │   │   │   │   └── SubsumptionConversationEvents.h
+│       │   │   │   ├── Libraries/
+│       │   │   │   │   ├── SubsumptionPlatformLibrary.cpp
+│       │   │   │   │   ├── SubsumptionRoleLibrary.cpp
+│       │   │   │   │   └── SubsumptionXmlFilesLibrary.cpp
+│       │   │   │   ├── SubsumptionActivity.cpp
+│       │   │   │   ├── SubsumptionLoadingUtilities.cpp
+│       │   │   │   ├── SubsumptionManager.cpp
+│       │   │   │   ├── SubsumptionMastergraph.cpp
+│       │   │   │   ├── SubsumptionMissionFunctionLoader.cpp
+│       │   │   │   ├── SubsumptionScheduler.cpp
+│       │   │   │   ├── SubsumptionSubactivity.cpp
+│       │   │   │   ├── SubsumptionSubactivityLoader.cpp
+│       │   │   │   ├── SubsumptionSubactivityLoaderBase.cpp
+│       │   │   │   ├── Tasks/
+│       │   │   │   │   └── AI/
+│       │   │   │   │       └── Animation/
+│       │   │   │   │           ├── SubsumptionTask_Animate.cpp
+│       │   │   │   │           └── SubsumptionTask_Communicate.cpp
+│       │   │   │   ├── GameTimeSimulation.h
+│       │   │   │   ├── SubsumptionEventDispatcher.h
+│       │   │   │   └── SubsumptionFunctionsHandler.h
+│       │   │   ├── TacticalSystem/
+│       │   │   │   ├── TacticalPointSystem/
+│       │   │   │   │   └── TacticalPointSystem.cpp
+│       │   │   │   ├── TacticalQueryEvaluationContext.h
+│       │   │   │   ├── TacticalQueryExecutionSystem.cpp
+│       │   │   │   └── TacticalTargetSystem/
+│       │   │   │       └── TacticalTargetSystem.cpp
+│       │   │   └── TokenSystem/
+│       │   │       └── TokenSystem.cpp
+│       │   ├── CIGAudio/
+│       │   │   ├── Aggregate/
+│       │   │   │   └── CIGAudioAggregateManager.cpp
+│       │   │   ├── CIGAudio.cpp
+│       │   │   ├── Command/
+│       │   │   │   └── CIGAudioCommandSystem.cpp
+│       │   │   ├── Composer/
+│       │   │   │   └── CIGAudioComposer.cpp
+│       │   │   ├── Logic/
+│       │   │   │   └── CIGAudioLogicInstanceManager.cpp
+│       │   │   ├── LogicNode/
+│       │   │   │   └── ReceiveParameter/
+│       │   │   │       └── CIGAudioLogicNodeReceiveParameter.cpp
+│       │   │   └── Node/
+│       │   │       └── CIGAudioNodeManager.cpp
+│       │   ├── CIGCargoSystem/
+│       │   │   └── Core/
+│       │   │       ├── CargoPacking.cpp
+│       │   │       ├── CargoSystem.cpp
+│       │   │       ├── EntityComponentResourceContainer.cpp
+│       │   │       ├── WarehouseManager.cpp
+│       │   │       └── EntityComponentCargoInterface.h
+│       │   ├── CIGMissionSystem/
+│       │   │   ├── ContractBroker/
+│       │   │   │   ├── Contract_def.cpp
+│       │   │   │   └── ContractGenerator.cpp
+│       │   │   ├── DigitalSignage/
+│       │   │   │   └── DigitalSignageComponent.h
+│       │   │   ├── Hostility/
+│       │   │   │   ├── EntityComponentHostility.cpp
+│       │   │   │   └── EntityComponentHostility.h
+│       │   │   ├── Journal/
+│       │   │   │   └── ShopInventoryAlertTracker.h
+│       │   │   ├── LawSystem/
+│       │   │   │   ├── EntityComponentGreenZone.cpp
+│       │   │   │   ├── EntityComponentMonitoredZone.h
+│       │   │   │   ├── LawSystem.cpp
+│       │   │   │   ├── MonitoredZoneManager.cpp
+│       │   │   │   ├── EntityComponentCriminalRecordUIProvider.h
+│       │   │   │   ├── EntityComponentKeypad.h
+│       │   │   │   ├── EntityComponentPrisonSentenceUIProvider.h
+│       │   │   │   ├── JurisdictionRoomExtension.h
+│       │   │   │   ├── LegalRegistrationComponent.h
+│       │   │   │   ├── MonitoredZoneManager.h
+│       │   │   │   ├── PlayerScoresUIProvider.h
+│       │   │   │   └── SecurityNetwork/
+│       │   │   │       └── SecurityNetworkEvents.h
+│       │   │   ├── Mission/
+│       │   │   │   ├── EnvironmentalMissionManager.cpp
+│       │   │   │   ├── MissionEntity.h
+│       │   │   │   ├── MissionFactory.cpp
+│       │   │   │   ├── SCPlayerMissionLog.h
+│       │   │   │   ├── SubsumptionMissionComponent.cpp
+│       │   │   │   ├── SubsumptionMissionLinkComponent.cpp
+│       │   │   │   ├── DeliveryItemPortComponent.h
+│       │   │   │   └── DeliveryLockerComponent.h
+│       │   │   ├── MissionBroker/
+│       │   │   │   └── MissionBroker.cpp
+│       │   │   └── MissionSystem.cpp
+│       │   ├── CIGRoomSystem/
+│       │   │   ├── Core/
+│       │   │   │   ├── EntityComponentRoom.cpp
+│       │   │   │   ├── EntityComponentRoomConnector.cpp
+│       │   │   │   ├── EntityComponentRoomOccupant.cpp
+│       │   │   │   ├── RoomGraph.cpp
+│       │   │   │   ├── RoomSystem.cpp
+│       │   │   │   └── EntityComponentRoom.h
+│       │   │   ├── FireHazard/
+│       │   │   │   ├── EntityComponentFireArea.cpp
+│       │   │   │   ├── EntityFireHazard.cpp
+│       │   │   │   ├── FireAreaDamageTracker.cpp
+│       │   │   │   ├── FireAreaTemperatureBoundsTracker.cpp
+│       │   │   │   ├── FireCluster.cpp
+│       │   │   │   ├── FireHazardDefs.cpp
+│       │   │   │   ├── FireHazardRoomConnector.cpp
+│       │   │   │   ├── FireHazardSystem.cpp
+│       │   │   │   ├── FireHelpers.cpp
+│       │   │   │   ├── FireVolumeListeners.cpp
+│       │   │   │   ├── FireVoxelGrid.cpp
+│       │   │   │   ├── FireVoxelGridEffectsNew.cpp
+│       │   │   │   ├── FireVoxelGridLights.cpp
+│       │   │   │   └── FireVoxelizer.cpp
+│       │   │   └── RoomStates/
+│       │   │       └── EntityComponentAtmosphereContainer.cpp
+│       │   ├── CIGServices/
+│       │   │   ├── CIGServices.cpp
+│       │   │   ├── External/
+│       │   │   │   ├── ../External/EntityGraphDatabase/IEntityGraphDatabase.h
+│       │   │   │   ├── ContractBroker/
+│       │   │   │   │   ├── ContractBrokerExternal.cpp
+│       │   │   │   │   └── ContractBrokerCommon.h
+│       │   │   │   ├── EntityDocument/
+│       │   │   │   │   └── EntityDocumentService.cpp
+│       │   │   │   ├── EntityGraph/
+│       │   │   │   │   └── EntityGraph.cpp
+│       │   │   │   ├── EntityGraphDatabase/
+│       │   │   │   │   ├── EntityGraphQuery.cpp
+│       │   │   │   │   ├── IEntityGraphDatabase.cpp
+│       │   │   │   │   └── MemoryEntityGraphDatabase.cpp
+│       │   │   │   ├── EntityLocation/
+│       │   │   │   │   └── EntityLocation.cpp
+│       │   │   │   ├── Inventory/
+│       │   │   │   │   └── InventoryApi.cpp
+│       │   │   │   ├── LoadoutSnapshot/
+│       │   │   │   │   └── LoadoutSnapshot.cpp
+│       │   │   │   ├── Mission/
+│       │   │   │   │   └── MissionServiceExternal.cpp
+│       │   │   │   ├── MissionTokenWallet/
+│       │   │   │   │   └── MissionTokenWalletExternal.cpp
+│       │   │   │   └── Social/
+│       │   │   │       └── SocialAPIExternal.cpp
+│       │   │   └── GrpcHelper.h
+│       │   ├── CIGTinyMachine/
+│       │   │   ├── Components/
+│       │   │   │   └── TinyMachine_GraphInstanceComponent.cpp
+│       │   │   └── Graph/
+│       │   │       └── TinyMachine_GraphTree.cpp
+│       │   ├── CIGUI/
+│       │   │   ├── BuildingBlocks/
+│       │   │   │   ├── BuildingBlocks_CanvasDecalManager.cpp
+│       │   │   │   ├── BuildingBlocks_CanvasSceneNode.cpp
+│       │   │   │   ├── BuildingBlocks_ListSceneNode.cpp
+│       │   │   │   └── BuildingBlocks_SceneNode.cpp
+│       │   │   ├── Defs/
+│       │   │   │   └── BuildingBlocksWidgets_def.cpp
+│       │   │   ├── EntityComponentUIBindingsConsumer.cpp
+│       │   │   ├── EntityComponentUIBindingsInteractions.cpp
+│       │   │   ├── EntityComponentUIBindingsSubsumption.h
+│       │   │   ├── EntityComponentUIGroundingEffects.cpp
+│       │   │   ├── InputFocusManager.cpp
+│       │   │   ├── Instances/
+│       │   │   │   └── BuildingBlocksInstance.cpp
+│       │   │   ├── PickableObjects/
+│       │   │   │   └── PickableObjectStaticGeometry.cpp
+│       │   │   └── PrimitiveRenderNode.cpp
+│       │   ├── CIGVFX/
+│       │   │   ├── ActorEffects/
+│       │   │   │   ├── ActorEffects.cpp
+│       │   │   │   └── ActorUndergroundEffects.cpp
+│       │   │   ├── EffectSystem/
+│       │   │   │   └── EffectSystem.cpp
+│       │   │   ├── Lightning/
+│       │   │   │   ├── EntityComponentLightningRegion.cpp
+│       │   │   │   ├── LightningBolt.cpp
+│       │   │   │   ├── LightningBoltSpline.cpp
+│       │   │   │   ├── LightningEmitter.cpp
+│       │   │   │   ├── LightningEntityTargetMode.cpp
+│       │   │   │   ├── LightningInternalTargetMode.cpp
+│       │   │   │   ├── LightningLightPool.cpp
+│       │   │   │   ├── LightningStrike.cpp
+│       │   │   │   ├── LightningStrikePool.cpp
+│       │   │   │   └── RoomLightningHandler.cpp
+│       │   │   ├── LocalEffects/
+│       │   │   │   └── LocalEffects.cpp
+│       │   │   ├── Maelstrom/
+│       │   │   │   └── MaelstromEffects.cpp
+│       │   │   ├── MaterialEffects/
+│       │   │   │   ├── AttachedEffectContainer.cpp
+│       │   │   │   ├── MFXAudioEffect.cpp
+│       │   │   │   ├── MFXContainer.cpp
+│       │   │   │   ├── MFXDecalEffect.cpp
+│       │   │   │   ├── MFXFlowGraphEffect.cpp
+│       │   │   │   ├── MFXForceFeedbackFX.cpp
+│       │   │   │   ├── MFXParticleEffect.cpp
+│       │   │   │   ├── MFXRandomEffect.cpp
+│       │   │   │   ├── MaterialEffects.cpp
+│       │   │   │   └── MaterialEffectsCollisionHandler.cpp
+│       │   │   ├── Planetary/
+│       │   │   │   └── PlanetaryEffects_SurfaceEmitters.cpp
+│       │   │   └── ScreenEffects/
+│       │   │       ├── ScreenEffects.cpp
+│       │   │       └── ScreenEffects_Effect.cpp
+│       │   ├── CIGWorldBuilder/
+│       │   │   ├── BiomeBuilder.cpp
+│       │   │   ├── BiomeBuilder_Management.cpp
+│       │   │   ├── BiomeBuilder_Physics.cpp
+│       │   │   ├── BiomeBuilder_SpawnCell.cpp
+│       │   │   ├── BiomeBuilder_Spawning.cpp
+│       │   │   ├── DepthFirstQuadtreeUnitTests.cpp
+│       │   │   ├── ManagedEntitySystem_UnitTests.cpp
+│       │   │   ├── PlanetTree.cpp
+│       │   │   ├── PlanetV5UnitTests.cpp
+│       │   │   ├── SubDivRegion2DUnitTests.cpp
+│       │   │   ├── WorldBuilder.cpp
+│       │   │   ├── WorldBuilderBaseBuilding.cpp
+│       │   │   ├── WorldBuilderEntities.cpp
+│       │   │   ├── WorldBuilderGeometry.cpp
+│       │   │   ├── WorldBuilderHarvestable.cpp
+│       │   │   ├── WorldBuilderPhysics.cpp
+│       │   │   ├── WorldBuilderRivers.cpp
+│       │   │   ├── WorldBuilderRivers_Data.cpp
+│       │   │   ├── WorldBuilderSandbox.cpp
+│       │   │   ├── WorldBuilderSound.cpp
+│       │   │   ├── WorldBuilderStreamer.cpp
+│       │   │   └── WorldBuilderWeather.cpp
+│       │   ├── Cry3DEngine/
+│       │   │   ├── 3DEngineRender.cpp
+│       │   │   ├── 3dEngine.cpp
+│       │   │   ├── AnalyticShadowRenderNode.cpp
+│       │   │   ├── AsyncObjectStreamingManager.cpp
+│       │   │   ├── Brush.cpp
+│       │   │   ├── CGF/
+│       │   │   │   └── CGFLoader.cpp
+│       │   │   ├── ClipVolume.cpp
+│       │   │   ├── CompoundRenderNode.cpp
+│       │   │   ├── DeferredCollisionEvent.cpp
+│       │   │   ├── DeformableNode.cpp
+│       │   │   ├── EmitterManager.cpp
+│       │   │   ├── FogVolumeRenderNode.cpp
+│       │   │   ├── GasCloudRenderNode.cpp
+│       │   │   ├── GasCloudRenderNodeContainer.cpp
+│       │   │   ├── GeomCache.cpp
+│       │   │   ├── GeomCacheDecoder.cpp
+│       │   │   ├── GeomCacheManager.cpp
+│       │   │   ├── GeomCacheMeshManager.cpp
+│       │   │   ├── GeomCacheRenderNode.cpp
+│       │   │   ├── GeomLinkManager.cpp
+│       │   │   ├── GeomObjectRenderNode.cpp
+│       │   │   ├── HoloProjectorVolumeRenderNode.cpp
+│       │   │   ├── JumpTunnel/
+│       │   │   │   └── JumpTunnelSegment.cpp
+│       │   │   ├── LegacyParticleContainer.cpp
+│       │   │   ├── LegacyParticleEmitter.cpp
+│       │   │   ├── LegacyParticleRender.cpp
+│       │   │   ├── LegacyParticleSubEmitter.cpp
+│       │   │   ├── LightRenderNode.cpp
+│       │   │   ├── LightWeightRenderNode.cpp
+│       │   │   ├── MatMan.cpp
+│       │   │   ├── MergedMeshGeometry.cpp
+│       │   │   ├── MergedMeshRenderNode.cpp
+│       │   │   ├── ObjManDrawEntity.cpp
+│       │   │   ├── ObjManStreaming.cpp
+│       │   │   ├── OcclusionCuller_sse2.cpp
+│       │   │   ├── ParticleEffect.cpp
+│       │   │   ├── ParticleEnviron.cpp
+│       │   │   ├── ParticleLibraryReferences.cpp
+│       │   │   ├── ParticleLightPool.cpp
+│       │   │   ├── ParticleParamContainer.cpp
+│       │   │   ├── PhysCallbacks.cpp
+│       │   │   ├── PlanetCubemapManager.cpp
+│       │   │   ├── PlanetOceanPatch.cpp
+│       │   │   ├── PlanetTerrainPatch.cpp
+│       │   │   ├── ProjectileRenderNode.cpp
+│       │   │   ├── QuantumDriveRenderNode.cpp
+│       │   │   ├── RParticleEmitter.cpp
+│       │   │   ├── RParticleFieldNode.cpp
+│       │   │   ├── RenderMeshUtils.cpp
+│       │   │   ├── RenderToTexture/
+│       │   │   │   ├── RenderToTextureManager.cpp
+│       │   │   │   └── RenderToTextureObject.cpp
+│       │   │   ├── ResourceStreaming.cpp
+│       │   │   ├── RopeRenderNode.cpp
+│       │   │   ├── RuntimeCubemapManager.cpp
+│       │   │   ├── ShadowRegionRenderNode.cpp
+│       │   │   ├── ShieldRenderNode.cpp
+│       │   │   ├── SkinRenderObject.cpp
+│       │   │   ├── SkyLightManager.cpp
+│       │   │   ├── StatObjConstr.cpp
+│       │   │   ├── StatObjLoad.cpp
+│       │   │   ├── StatObjLoad_0x900.cpp
+│       │   │   ├── StatObjPhys.cpp
+│       │   │   ├── StatObjRend.cpp
+│       │   │   ├── StatObjStream.cpp
+│       │   │   ├── SunLightRenderNode.cpp
+│       │   │   ├── TimeOfDay.cpp
+│       │   │   ├── TintPalette/
+│       │   │   │   └── TintPaletteManager.cpp
+│       │   │   ├── VisArea.cpp
+│       │   │   ├── VisAreaManager.cpp
+│       │   │   ├── WaterInteractionManager.cpp
+│       │   │   ├── WaterVolumeRenderNode.cpp
+│       │   │   ├── Zone.cpp
+│       │   │   ├── ZonePartition.cpp
+│       │   │   ├── ZonePartition_128bit_simd.cpp
+│       │   │   ├── ZoneSystem.cpp
+│       │   │   ├── ZoneSystem_Areas.cpp
+│       │   │   ├── ZoneSystem_Culling.cpp
+│       │   │   ├── ZoneSystem_Hull.cpp
+│       │   │   └── ZoneSystem_UpdateQueue.cpp
+│       │   ├── CryAction/
+│       │   │   ├── CryAction.cpp
+│       │   │   ├── ActionGame.cpp
+│       │   │   ├── ActionMap.cpp
+│       │   │   ├── ActionMapManager.cpp
+│       │   │   ├── ActorSystem.cpp
+│       │   │   ├── AnimationController/
+│       │   │   │   └── EntityAnimationController.cpp
+│       │   │   ├── BreakableGlassSystem.cpp
+│       │   │   ├── CIGAudio/
+│       │   │   │   ├── CIGAudioComponent.cpp
+│       │   │   │   └── CIGAudioManager.cpp
+│       │   │   ├── Camera/
+│       │   │   │   ├── CameraComponentOverrideController.cpp
+│       │   │   │   ├── CameraEffectsController.cpp
+│       │   │   │   └── CinematicCamera.cpp
+│       │   │   ├── DebugHistory/
+│       │   │   │   └── DebugHistory.cpp
+│       │   │   ├── DistributedLockManager/
+│       │   │   │   └── DistributedLockManager.cpp
+│       │   │   ├── EntityComponentTrackView.cpp
+│       │   │   ├── EntityTraversingTree/
+│       │   │   │   ├── EntityTraversingTreeComponent.cpp
+│       │   │   │   └── EntityTraversingTreeComponent.h
+│       │   │   ├── Environment/
+│       │   │   │   ├── AsteroidCell.cpp
+│       │   │   │   ├── AsteroidField.cpp
+│       │   │   │   ├── AsteroidFieldAsyncQuery.cpp
+│       │   │   │   ├── AsteroidFieldComponent.cpp
+│       │   │   │   ├── AsteroidFieldManager.cpp
+│       │   │   │   ├── AsteroidFieldPhysics.cpp
+│       │   │   │   └── AsteroidFieldVisibility.cpp
+│       │   │   ├── FacialTracking/
+│       │   │   │   ├── FacialTrackingComponent.cpp
+│       │   │   │   └── FacialTrackingSystem.cpp
+│       │   │   ├── FlashUI/
+│       │   │   │   ├── FlashUI.cpp
+│       │   │   │   ├── FlashUIAction.cpp
+│       │   │   │   ├── FlashUIElement.cpp
+│       │   │   │   └── FlashUIEventSystem.cpp
+│       │   │   ├── GeometryInstancer/
+│       │   │   │   ├── GeometryInstancer.cpp
+│       │   │   │   └── GeometryInstancerEncoding.cpp
+│       │   │   ├── GeometryResource/
+│       │   │   │   └── BaseGeometryResource.cpp
+│       │   │   ├── InteractionSystem/
+│       │   │   │   ├── InteractionPoint.cpp
+│       │   │   │   ├── InteractionStateMachine.cpp
+│       │   │   │   └── InteractionSystem.cpp
+│       │   │   ├── ItemPortSystem/
+│       │   │   │   ├── AttachableComponent.cpp
+│       │   │   │   ├── ItemPipe.cpp
+│       │   │   │   ├── ItemPipeSystem.cpp
+│       │   │   │   ├── ItemPort.cpp
+│       │   │   │   ├── ItemPortAttachmentBase.cpp
+│       │   │   │   ├── ItemPortBoneAttachment.cpp
+│       │   │   │   ├── ItemPortContainer.cpp
+│       │   │   │   ├── ItemPortContainer.h
+│       │   │   │   ├── ItemPortFaceAttachment.cpp
+│       │   │   │   ├── ItemPortPrepareEntityCreation.cpp
+│       │   │   │   ├── ItemPortSkinAttachment.cpp
+│       │   │   │   └── ItemPortSystem.cpp
+│       │   │   ├── ItemResource/
+│       │   │   │   ├── EntityComponentResourceNetworkUIProvider.cpp
+│       │   │   │   ├── ItemResourceAudioHandler.cpp
+│       │   │   │   ├── ItemResourceComponent.cpp
+│       │   │   │   ├── ItemResourceHost.cpp
+│       │   │   │   └── ItemResourceNetwork.cpp
+│       │   │   ├── LevelSystem.cpp
+│       │   │   ├── Mannequin/
+│       │   │   │   ├── ActionController.cpp
+│       │   │   │   ├── ActionScope.cpp
+│       │   │   │   ├── AnimationDatabase.cpp
+│       │   │   │   └── Tests/
+│       │   │   │       ├── Test_CRCRef.cpp
+│       │   │   │       └── Test_ProceduralParams.cpp
+│       │   │   ├── MusicSystem/
+│       │   │   │   └── MusicSystem.cpp
+│       │   │   ├── Network/
+│       │   │   │   ├── CET_EntitySystem.cpp
+│       │   │   │   ├── CET_LevelLoading.cpp
+│       │   │   │   ├── CET_NetConfig.cpp
+│       │   │   │   ├── EntityComponentNetwork.cpp
+│       │   │   │   └── EntityComponentNetwork.h
+│       │   │   ├── ObjectContainerPhysicsController.cpp
+│       │   │   ├── PersistentData/
+│       │   │   │   ├── EntitlementEntityCreator.cpp
+│       │   │   │   ├── EntityClassNodeManager.cpp
+│       │   │   │   └── TransactionManager.cpp
+│       │   │   ├── Serialization/
+│       │   │   │   └── XMLCPBin/
+│       │   │   │       └── Writer/
+│       │   │   │           └── XMLCPB_ZLibCompressor.cpp
+│       │   │   ├── Serialized/
+│       │   │   │   ├── SerializedComponent.cpp
+│       │   │   │   └── SerializedProfileMetrics.cpp
+│       │   │   ├── SolarSystem/
+│       │   │   │   ├── SolarSystem.cpp
+│       │   │   │   ├── UniverseHierarchyShardGraph.cpp
+│       │   │   │   └── UniverseHierarchyShardStore.cpp
+│       │   │   ├── Sound/
+│       │   │   │   ├── AudioPassByComponent.cpp
+│       │   │   │   ├── AudioPropagationComponent.cpp
+│       │   │   │   ├── EntityAudioControllerComponent.cpp
+│       │   │   │   └── EntityAudioControllerManager.cpp
+│       │   │   ├── VehicleSystem.cpp
+│       │   │   ├── VehicleSystem/
+│       │   │   │   ├── Vehicle.cpp
+│       │   │   │   ├── VehicleDamages.cpp
+│       │   │   │   ├── VehicleDamagesGroup.cpp
+│       │   │   │   ├── VehicleHelper.cpp
+│       │   │   │   ├── VehicleInteriorManager.cpp
+│       │   │   │   ├── VehiclePartAnimated.cpp
+│       │   │   │   ├── VehiclePartAnimatedJoint.cpp
+│       │   │   │   ├── VehiclePartBase.cpp
+│       │   │   │   └── VehiclePartTread.cpp
+│       │   │   └── ViewSystem/
+│       │   │       └── ViewSystem.cpp
+│       │   ├── CryAnimation/
+│       │   │   ├── Command_Commands.cpp
+│       │   │   ├── FaceRigLogic.cpp
+│       │   │   ├── GroundAlignment.cpp
+│       │   │   ├── UnifiedRig.cpp
+│       │   │   ├── AnimationManager.cpp
+│       │   │   ├── AttachmentManager.cpp
+│       │   │   ├── AttachmentSkin.cpp
+│       │   │   ├── CharacterInstance.cpp
+│       │   │   ├── CharacterManager.cpp
+│       │   │   ├── CharacterManager_Debug.cpp
+│       │   │   ├── DefaultSkeletonAnimSet.cpp
+│       │   │   ├── GlobalAnimationHeaderCAF.cpp
+│       │   │   ├── GlobalAnimationHeaderDBA.cpp
+│       │   │   ├── IKExecutor/
+│       │   │   │   └── ADIKExecutor.cpp
+│       │   │   ├── LoaderCGA.cpp
+│       │   │   ├── PoseModifier/
+│       │   │   │   ├── PoseModifier.cpp
+│       │   │   │   └── PoseModifier.h
+│       │   │   ├── SWVertexAnimation.cpp
+│       │   │   ├── SkeletonAnim.cpp
+│       │   │   ├── SkeletonAnim_BlendMan.cpp
+│       │   │   ├── SkeletonAnim_Commands.cpp
+│       │   │   ├── SkeletonAnim_Queue.cpp
+│       │   │   ├── SkeletonPhysics.cpp
+│       │   │   ├── SkeletonPhysics_AE.cpp
+│       │   │   ├── SkeletonPose_Process.cpp
+│       │   │   ├── Skin.cpp
+│       │   │   ├── SkinMesh.cpp
+│       │   │   └── _Render.cpp
+│       │   ├── CryCIGBackend/
+│       │   │   ├── CIGBroker.cpp
+│       │   │   ├── DGSService.cpp
+│       │   │   ├── AnalyticsServiceAPI.cpp
+│       │   │   ├── ArenaGroupAPI.cpp
+│       │   │   ├── CIGNetwork.cpp
+│       │   │   ├── CryCIGBackend.cpp
+│       │   │   ├── DiffusionAPI.cpp
+│       │   │   ├── DiffusionBridge.cpp
+│       │   │   ├── LocationServicesAPI.cpp
+│       │   │   ├── MetricsService.cpp
+│       │   │   ├── PartyServiceAPI.cpp
+│       │   │   └── StarNetwork.cpp
+│       │   ├── CryCommon/
+│       │   │   ├── ChunkParser_0x900.cpp
+│       │   │   ├── FileIO/
+│       │   │   │   └── CigPath.windows.cpp
+│       │   │   ├── IStatObj.cpp
+│       │   │   ├── Multithreading/
+│       │   │   │   ├── SemaphorePool.cpp
+│       │   │   │   ├── CigCriticalSection.cpp
+│       │   │   │   ├── CigRWLock.cpp
+│       │   │   │   └── Multithread.cpp
+│       │   │   ├── Subsumption/
+│       │   │   │   ├── SubsumptionTask.cpp
+│       │   │   │   ├── IActionArea.h
+│       │   │   │   ├── ISubsumption.h
+│       │   │   │   ├── ISubsumptionFunctionTemplate.h
+│       │   │   │   ├── ISubsumptionXmlFilesLibrary.h
+│       │   │   │   ├── PersonalLogger.cpp
+│       │   │   │   ├── SubsumptionConversationCommonEvents.h
+│       │   │   │   ├── SubsumptionDecoratorTask.h
+│       │   │   │   ├── ISubsumptionTask.h
+│       │   │   │   └── SubsumptionSuperGUID.h
+│       │   │   ├── platform.cpp
+│       │   │   ├── AI/
+│       │   │   │   ├── INavigationVolume.h
+│       │   │   │   └── Subsumption/
+│       │   │   │       └── SubsumptionErrorReport.h
+│       │   │   ├── ActorReviveParams.h
+│       │   │   ├── CIGGenericHandler.h
+│       │   │   ├── ContainerPacking/
+│       │   │   │   └── ContainerPacking.cpp
+│       │   │   ├── Containers/
+│       │   │   │   ├── CigProducerConsumerQueue.h
+│       │   │   │   └── ReverseTagLookupTable.h
+│       │   │   ├── DataCore_def.cpp
+│       │   │   ├── DeferredActionQueue.h
+│       │   │   ├── Defs/
+│       │   │   │   └── ISCCommsComponent_def.inl
+│       │   │   ├── DevTeam.cpp
+│       │   │   ├── Events/
+│       │   │   │   ├── AI/
+│       │   │   │   │   ├── ActionEvents.h
+│       │   │   │   │   ├── AssignmentEvents.h
+│       │   │   │   │   ├── AwarenessEvents.h
+│       │   │   │   │   ├── BehaviorEvents.h
+│       │   │   │   │   ├── CollisionAvoidanceEvents.h
+│       │   │   │   │   ├── CommunicationEvents.h
+│       │   │   │   │   ├── DeliveryRecordEvents.h
+│       │   │   │   │   ├── ListeningEventEvents.h
+│       │   │   │   │   ├── MovementSystemEvents.h
+│       │   │   │   │   ├── NavSplineEvents.h
+│       │   │   │   │   ├── NavigationSystemEvents.h
+│       │   │   │   │   ├── PerceptionEvents.h
+│       │   │   │   │   ├── RangeEvents.h
+│       │   │   │   │   ├── SeatOperatorEvents.h
+│       │   │   │   │   └── SubsumptionEventDispatcherEvent.h
+│       │   │   │   ├── ActionArea/
+│       │   │   │   │   └── ActionAreaExtensionEvents.h
+│       │   │   │   ├── Actor/
+│       │   │   │   │   ├── ControlHostEvents.h
+│       │   │   │   │   ├── LookAheadEvents.h
+│       │   │   │   │   ├── MovableEvents.h
+│       │   │   │   │   ├── Notifications.h
+│       │   │   │   │   └── ResultHostEvents.h
+│       │   │   │   ├── Animation/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── Audio/
+│       │   │   │   │   └── Game.h
+│       │   │   │   ├── BaseBuilding/
+│       │   │   │   │   └── BaseBuildingEvents.h
+│       │   │   │   ├── CombatLogging/
+│       │   │   │   │   └── CombatLoggingEvents.h
+│       │   │   │   ├── CommLink/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── Degradation/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── EA/
+│       │   │   │   │   ├── EAEvents.h
+│       │   │   │   │   ├── EAFrontendEvents.h
+│       │   │   │   │   ├── EAGameModeEvents.h
+│       │   │   │   │   ├── EAGameStateEvents.h
+│       │   │   │   │   ├── EAObjectiveEvents.h
+│       │   │   │   │   ├── EAScoreboardEvents.h
+│       │   │   │   │   └── EATeamEvents.h
+│       │   │   │   ├── ECUS/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── EntityTreeTraversing.h
+│       │   │   │   ├── EnvHazards/
+│       │   │   │   │   └── SolarFlareEvents.h
+│       │   │   │   ├── EnvStates/
+│       │   │   │   │   └── RadiationEmitterEvents.h
+│       │   │   │   ├── FireHazards/
+│       │   │   │   │   ├── Control.h
+│       │   │   │   │   ├── Notifications.h
+│       │   │   │   │   ├── Registration.h
+│       │   │   │   │   └── VolumeListeners.h
+│       │   │   │   ├── FlightData/
+│       │   │   │   │   └── FlightData.h
+│       │   │   │   ├── Geometry/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── HardwareTrackingEvents.h
+│       │   │   │   ├── Health/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── ISC/
+│       │   │   │   │   ├── AIModule.h
+│       │   │   │   │   ├── Base.h
+│       │   │   │   │   ├── Carryables.h
+│       │   │   │   │   ├── Comms.h
+│       │   │   │   │   ├── Coolers.h
+│       │   │   │   │   ├── Crafting/
+│       │   │   │   │   │   └── Legacy/
+│       │   │   │   │   │       └── LegacyCrafting.h
+│       │   │   │   │   ├── Dashboards.h
+│       │   │   │   │   ├── Docking.h
+│       │   │   │   │   ├── Doors.h
+│       │   │   │   │   ├── Flight.h
+│       │   │   │   │   ├── GasTankFillerEvents.h
+│       │   │   │   │   ├── Harvestables.h
+│       │   │   │   │   ├── ItemResource.h
+│       │   │   │   │   ├── Lights.h
+│       │   │   │   │   ├── LoggableTerminal.h
+│       │   │   │   │   ├── Mining.h
+│       │   │   │   │   ├── Power.h
+│       │   │   │   │   ├── RadarFilters.h
+│       │   │   │   │   ├── Radars.h
+│       │   │   │   │   ├── Room.h
+│       │   │   │   │   ├── Salvage.h
+│       │   │   │   │   ├── Scanners.h
+│       │   │   │   │   ├── Seats.h
+│       │   │   │   │   ├── Shields.h
+│       │   │   │   │   ├── Weapons.h
+│       │   │   │   │   └── Wheeled.h
+│       │   │   │   ├── Interaction/
+│       │   │   │   │   └── InteractionStateMachineEvents.h
+│       │   │   │   ├── ItemPort/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── KioskEvents.h
+│       │   │   │   ├── LawSystem/
+│       │   │   │   │   └── LawEvents.h
+│       │   │   │   ├── LoadingPlatformEvents.h
+│       │   │   │   ├── Maelstrom/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── MobiGlasEvents.h
+│       │   │   │   ├── Network/
+│       │   │   │   │   └── NetworkEvents.h
+│       │   │   │   ├── Notification.h
+│       │   │   │   ├── Player/
+│       │   │   │   │   ├── Interactions.h
+│       │   │   │   │   ├── Items.h
+│       │   │   │   │   ├── Notifications.h
+│       │   │   │   │   └── StateMachineEvents.h
+│       │   │   │   ├── PlayerNotificationSystem/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── ServiceEvents/
+│       │   │   │   │   ├── ServiceEvents_Contact.h
+│       │   │   │   │   └── ServiceEvents_Location.h
+│       │   │   │   ├── SignatureSystem/
+│       │   │   │   │   ├── DeltaSignature.h
+│       │   │   │   │   ├── SignatureLocalAmbient.h
+│       │   │   │   │   └── SignatureTokenInvalidate.h
+│       │   │   │   ├── SpawnClosetEvents.h
+│       │   │   │   ├── Tutorial/
+│       │   │   │   │   └── Events.h
+│       │   │   │   ├── UI/
+│       │   │   │   │   ├── BindingsEvents.h
+│       │   │   │   │   ├── BuildingBlocksEvents.h
+│       │   │   │   │   ├── Events.h
+│       │   │   │   │   └── HudEvents.h
+│       │   │   │   ├── UIEvents.h
+│       │   │   │   ├── VFX/
+│       │   │   │   │   ├── EntityEffectSystem.h
+│       │   │   │   │   ├── Events.h
+│       │   │   │   │   └── ParticleEffect.h
+│       │   │   │   ├── Vehicle/
+│       │   │   │   │   ├── Controls.h
+│       │   │   │   │   ├── General.h
+│       │   │   │   │   ├── Items.h
+│       │   │   │   │   ├── Movement.h
+│       │   │   │   │   ├── ShipCoursePredictionEvents.h
+│       │   │   │   │   ├── ShipStateMonitorEvents.h
+│       │   │   │   │   ├── Weapons.h
+│       │   │   │   │   └── Wheeled.h
+│       │   │   │   ├── Vibration/
+│       │   │   │   │   └── Events.h
+│       │   │   │   └── WorldBuilder/
+│       │   │   │       └── Events.h
+│       │   │   ├── GameRulesModules/
+│       │   │   │   ├── IGameRulesPlayerStatsModule.h
+│       │   │   │   ├── IGameRulesSpawningModule.h
+│       │   │   │   └── IGameRulesVictoryConditionsModule.h
+│       │   │   ├── Gen12LegacyParticle.h
+│       │   │   ├── I3DEngine.cpp
+│       │   │   ├── IAITargetableComponent.h
+│       │   │   ├── IAIWeaponComponent.h
+│       │   │   ├── IATCTokenComponent.cpp
+│       │   │   ├── IATCTokenComponent.h
+│       │   │   ├── IAudioInterfacesCommonData.h
+│       │   │   ├── IAudioSystem.h
+│       │   │   ├── ICIGCargoSystem/
+│       │   │   │   ├── IEntityComponentResourceContainer.h
+│       │   │   │   ├── IWarehouseManager.h
+│       │   │   │   └── ResourceContainerUtilities.cpp
+│       │   │   ├── ICIGMissionSystem/
+│       │   │   │   ├── IMissionBrokerInterfaceComponent.h
+│       │   │   │   ├── LawSystem/
+│       │   │   │   │   ├── IGreenZone.h
+│       │   │   │   │   └── ILegalRegistrationComponent.h
+│       │   │   │   ├── ISCPlayerMissionLog.h
+│       │   │   ├── ICIGUI/
+│       │   │   │   ├── IEntityComponentUIBindingsConsumer.h
+│       │   │   │   ├── IEntityComponentUIPrimitiveRenderNode.h
+│       │   │   │   ├── IEntityComponentUIRenderToTexture.h
+│       │   │   │   ├── IEntityComponentUserVariables.h
+│       │   │   │   ├── RenderPrimitives.cpp
+│       │   │   │   └── RuntimeImageTypes.h
+│       │   │   ├── ICIGVFX/
+│       │   │   │   └── EntityEffectSystemLink.cpp
+│       │   │   ├── ICIGWorldBuilder/
+│       │   │   │   └── IProceduralEntity.cpp
+│       │   │   ├── ICryAction/
+│       │   │   │   ├── GeometryResource/
+│       │   │   │   │   └── EntityGeometryResourceParams.cpp
+│       │   │   │   ├── ICryMannequinEvents.h
+│       │   │   │   ├── ICryMannequinTagDefs.cpp
+│       │   │   │   ├── IEntityComponentRestrictedAreaHandler.h
+│       │   │   │   ├── ISCSignatureSystem.h
+│       │   │   │   ├── IItemPortDefinitions.h
+│       │   │   │   ├── ITransactionManager.h
+│       │   │   │   └── VehicleSystem/
+│       │   │   │       └── VehicleDestroyParams.h
+│       │   │   ├── ICryAnimation.h
+│       │   │   ├── IDamageMap.h
+│       │   │   ├── IDebugGUI.h
+│       │   │   ├── IEntitiesGroupComponent.h
+│       │   │   ├── IEntityAnimationController.h
+│       │   │   ├── IEntityAudioControllerComponent.h
+│       │   │   ├── IEntityComponentActorUsable.h
+│       │   │   ├── IEntityComponentHealth.h
+│       │   │   ├── IEntityComponentHostility.h
+│       │   │   ├── IEntityComponentIFCS.h
+│       │   │   ├── IGameDll/
+│       │   │   │   ├── Collectibles/
+│       │   │   │   │   └── ICollectiblesManager.h
+│       │   │   │   ├── IAchievementsManager.h
+│       │   │   │   ├── IAirTrafficControllerDataManager.h
+│       │   │   │   ├── IDeliveryItemPortManager.h
+│       │   │   │   ├── IEntityComponentCargoController.h
+│       │   │   │   ├── IEntityComponentInstancedInteriorManager.h
+│       │   │   │   ├── IEntityComponentMisfire.h
+│       │   │   │   ├── IEntityComponentUIOwner.h
+│       │   │   │   ├── IInventoryContainerComponent.h
+│       │   │   │   ├── ILandingSplineVisualComponent.h
+│       │   │   │   ├── IMagLaunchComponent.h
+│       │   │   │   ├── IPatrolGraph.h
+│       │   │   │   ├── IPlayerGroupManager.h
+│       │   │   │   ├── ISCActorAbilityComponent.h
+│       │   │   │   ├── ISCItemCargoGrid.h
+│       │   │   │   ├── ISCItemSuitHelmet.h
+│       │   │   │   ├── ISCItemVehicleDebris.h
+│       │   │   │   ├── PlayerNotification_def.inl
+│       │   │   │   ├── RadarSystem/
+│       │   │   │   │   └── PingPulse.h
+│       │   │   │   ├── Reputation_def.inl
+│       │   │   │   ├── IDockingAnimatorComponent.h
+│       │   │   │   ├── IEASpawnRezComponent.h
+│       │   │   │   ├── IHandholdComponent.h
+│       │   │   │   └── IWallet.h
+│       │   │   ├── IJobManager_ExtraWorkQueue_64bitPayload.h
+│       │   │   ├── IMovementActor.h
+│       │   │   ├── IMovementSystem.h
+│       │   │   ├── ISCItemDoor.h
+│       │   │   ├── Movie/
+│       │   │   │   └── EntityEvents.h
+│       │   │   ├── NTreeAllocator/
+│       │   │   │   └── TextureAllocatorQuadTree.cpp
+│       │   │   ├── OfflineServiceUtils.cpp
+│       │   │   ├── PersistentSettings.h
+│       │   │   ├── PlayerQTEDefinitions.h
+│       │   │   ├── RayCastQueue.h
+│       │   │   └── Serialized/
+│       │   │       └── SerializedAutoRegister.cpp
+│       │   ├── CryEntitySystem/
+│       │   │   ├── Areas/
+│       │   │   │   └── AreaComponent.cpp
+│       │   │   ├── BreakableManager.cpp
+│       │   │   ├── ComponentSystemCore/
+│       │   │   │   └── EntityComponentUpdateScheduler.cpp
+│       │   │   ├── Entity.cpp
+│       │   │   ├── EntityAudioProxy.cpp
+│       │   │   ├── EntityClass.cpp
+│       │   │   ├── EntityClassRegistry.cpp
+│       │   │   ├── EntityCreationBatch.cpp
+│       │   │   ├── EntityDensityManager.cpp
+│       │   │   ├── EntityObject.cpp
+│       │   │   ├── EntityObjectComponentCharacter.cpp
+│       │   │   ├── EntitySpawnBatch.cpp
+│       │   │   ├── EntitySystem.cpp
+│       │   │   ├── EntitySystem_StateManagement.cpp
+│       │   │   ├── EntityTemperature.cpp
+│       │   │   ├── Entity_AggregateManager.cpp
+│       │   │   ├── Entity_AggregateRadius.cpp
+│       │   │   ├── Entity_Aggregates.cpp
+│       │   │   ├── ExtrapolatePredictor.cpp
+│       │   │   ├── PhysicsEventListener.cpp
+│       │   │   ├── PhysicsProxy.cpp
+│       │   │   ├── PhysicsProxyVariables.cpp
+│       │   │   ├── RenderProxy.cpp
+│       │   │   ├── Streaming/
+│       │   │   │   ├── EntityStreamingManager.cpp
+│       │   │   │   └── EntityTeleportManager.cpp
+│       │   │   ├── TagSystem/
+│       │   │   │   └── TagDatabase.cpp
+│       │   │   └── UnitTests/
+│       │   │       ├── UnitTests_EntityAreas.cpp
+│       │   │       ├── UnitTests_EntitySystem.cpp
+│       │   │       ├── UnitTests_InstanceStreaming.cpp
+│       │   │       └── EntitySystemUnitTesting.h
+│       │   ├── CryInput/
+│       │   │   ├── BaseInput.cpp
+│       │   │   ├── HeadmountedDevice/
+│       │   │   │   └── HeadMountedDevice.cpp
+│       │   │   ├── Joystick.cpp
+│       │   │   ├── Keyboard.cpp
+│       │   │   ├── Mouse.cpp
+│       │   │   ├── NaturalPointInputTrackIR.cpp
+│       │   │   ├── RawMouse.cpp
+│       │   │   ├── TobiiInput.cpp
+│       │   │   └── XInputDevice.cpp
+│       │   ├── CryMovie/
+│       │   │   ├── AnimCameraNode.cpp
+│       │   │   ├── AnimEntityParticleEffectNode.cpp
+│       │   │   ├── AnimEnvironmentNode.cpp
+│       │   │   ├── AnimGeomCacheNode.cpp
+│       │   │   ├── AnimLightGroupNode.cpp
+│       │   │   ├── AnimLightNode.cpp
+│       │   │   ├── AnimNode.cpp
+│       │   │   ├── AnimPostFXNode.cpp
+│       │   │   ├── AnimScreenFaderNode.cpp
+│       │   │   ├── AnimSequence.cpp
+│       │   │   ├── AnimVideoCommsNode.cpp
+│       │   │   ├── AnimWaterVolumeNode.cpp
+│       │   │   ├── CVarNode.cpp
+│       │   │   ├── CameraLensNode.cpp
+│       │   │   ├── CameraNodeTracks/
+│       │   │   │   ├── ComponentLensPresetTrack.cpp
+│       │   │   │   └── HeadCamLimitsTrack.cpp
+│       │   │   ├── CharacterTrack.cpp
+│       │   │   ├── CinematicMusicTrack.cpp
+│       │   │   ├── ColorGradingTrack.cpp
+│       │   │   ├── CommentNode.cpp
+│       │   │   ├── CommentTrack.cpp
+│       │   │   ├── CryMovieUtils.cpp
+│       │   │   ├── CryMovieUtils.h
+│       │   │   ├── DialogueTrack.cpp
+│       │   │   ├── EntityNode.cpp
+│       │   │   ├── EntityNodeTracks/
+│       │   │   │   ├── AudioListenerTrack.cpp
+│       │   │   │   ├── BindingsVariableTracks.cpp
+│       │   │   │   ├── CommsBroadcastTrack.cpp
+│       │   │   │   ├── CommsPriorityTrack.cpp
+│       │   │   │   ├── ComponentParamTracks.cpp
+│       │   │   │   ├── EntityEffectSystemCodeParameterTrack.cpp
+│       │   │   │   ├── PositionTrack.cpp
+│       │   │   │   ├── RotationTrack.cpp
+│       │   │   │   ├── ScaleTrack.cpp
+│       │   │   │   ├── TransformNoiseTrack.cpp
+│       │   │   │   ├── VisibilityTrack.cpp
+│       │   │   │   └── ZoneTrack.cpp
+│       │   │   ├── EventNode.cpp
+│       │   │   ├── EventTrack.cpp
+│       │   │   ├── InterruptibleSectionNode.cpp
+│       │   │   ├── LayerNode.cpp
+│       │   │   ├── LetterboxingTrack.cpp
+│       │   │   ├── LookAtTrack.cpp
+│       │   │   ├── MaterialNode.cpp
+│       │   │   ├── Movie.cpp
+│       │   │   ├── MusicEventTrack.cpp
+│       │   │   ├── MusicWwiseEventTrack.cpp
+│       │   │   ├── SceneNode.cpp
+│       │   │   ├── ScreenEffectTrack.cpp
+│       │   │   ├── ScreenEffectsNode.cpp
+│       │   │   ├── SequenceTrack.cpp
+│       │   │   ├── SoundTrack.cpp
+│       │   │   ├── SplineTrack.cpp
+│       │   │   └── VideoTrack.cpp
+│       │   ├── CryNetwork/
+│       │   │   ├── Gateway/
+│       │   │   │   ├── NetNub.cpp
+│       │   │   │   ├── Packet.cpp
+│       │   │   │   └── PacketTypeMetrics.cpp
+│       │   │   ├── Network.cpp
+│       │   │   ├── Replication/
+│       │   │   │   ├── CET_EntityGraph.cpp
+│       │   │   │   ├── CET_ReplicationModel.cpp
+│       │   │   │   ├── CET_ReplicationView.cpp
+│       │   │   │   ├── CET_ReplicationViewNetworked.cpp
+│       │   │   │   ├── ContextEstablisher.cpp
+│       │   │   │   ├── GameContextProxy.cpp
+│       │   │   │   ├── RMQ/
+│       │   │   │   │   ├── DeliveryNotifier.cpp
+│       │   │   │   │   ├── Reader.cpp
+│       │   │   │   │   ├── Receiver.cpp
+│       │   │   │   │   └── Sender.cpp
+│       │   │   │   ├── ReplicatedEntity.cpp
+│       │   │   │   ├── ReplicatedEntityClassRegistry.cpp
+│       │   │   │   ├── ReplicatedEntityView.cpp
+│       │   │   │   ├── ReplicationLayer.cpp
+│       │   │   │   ├── ReplicationModel.cpp
+│       │   │   │   ├── ReplicationView.cpp
+│       │   │   │   ├── ReplicationViewAsyncSpawns.cpp
+│       │   │   │   ├── ReplicationViewEntityGraph.cpp
+│       │   │   │   ├── ReplicationViewGame.cpp
+│       │   │   │   ├── ReplicationViewNetworked.cpp
+│       │   │   │   ├── SelectiveOCStreamingManager.cpp
+│       │   │   │   └── StreamingBubbleManager.cpp
+│       │   │   ├── Services/
+│       │   │   │   ├── EntityGraphRateLimiter.cpp
+│       │   │   │   ├── EntityGraphService.cpp
+│       │   │   │   ├── EntityGraphServiceRequests.cpp
+│       │   │   │   ├── StarHashService.cpp
+│       │   │   │   └── StarHashTree.cpp
+│       │   │   ├── Socket/
+│       │   │   │   ├── NetAddressResolver.cpp
+│       │   │   │   └── SocketIOManagerSelect.cpp
+│       │   │   ├── UnitTests/
+│       │   │   │   ├── UnitTest_Encryption.cpp
+│       │   │   │   ├── UnitTest_SerializedMetaData.cpp
+│       │   │   │   └── UnitTest_SerializedTypeId.cpp
+│       │   │   └── Utils/
+│       │   │       ├── MinMaxFilter.cpp
+│       │   │       ├── NetGlobalLock.cpp
+│       │   │       └── NetTimer.cpp
+│       │   ├── CryPhysics/
+│       │   │   ├── physicalworld.cpp
+│       │   │   ├── actorentity.cpp
+│       │   │   ├── articulatedentity.cpp
+│       │   │   ├── bitvoxel.cpp
+│       │   │   ├── boolean3d.cpp
+│       │   │   ├── boxprune.cpp
+│       │   │   ├── bvtree.cpp
+│       │   │   ├── clustermesh.cpp
+│       │   │   ├── entity_factory.cpp
+│       │   │   ├── factory.cpp
+│       │   │   ├── fields.cpp
+│       │   │   ├── geoman.cpp
+│       │   │   ├── grid.cpp
+│       │   │   ├── hoverentity.cpp
+│       │   │   ├── localgrid.cpp
+│       │   │   ├── orderedmeshbv.cpp
+│       │   │   ├── orderedmeshgeom.cpp
+│       │   │   ├── particleentity.cpp
+│       │   │   ├── parts.cpp
+│       │   │   ├── physarea.cpp
+│       │   │   ├── physicalentity.cpp
+│       │   │   ├── physicalplaceholder.cpp
+│       │   │   ├── physicalqueue.cpp
+│       │   │   ├── physicalworld.h
+│       │   │   ├── planetentity.cpp
+│       │   │   ├── projman.cpp
+│       │   │   ├── rigidbody.cpp
+│       │   │   ├── rigidentity.cpp
+│       │   │   ├── ropeentity.cpp
+│       │   │   ├── ropeentity_ex.cpp
+│       │   │   ├── rwi.cpp
+│       │   │   ├── softbody_ex.cpp
+│       │   │   ├── softentity.cpp
+│       │   │   ├── softentity_ex.cpp
+│       │   │   ├── spaceshipentity.cpp
+│       │   │   ├── tetrlattice.cpp
+│       │   │   ├── trimesh.cpp
+│       │   │   └── wheeledvehicleentity.cpp
+│       │   ├── CrySoundSystem/
+│       │   │   ├── ATL.cpp
+│       │   │   ├── ATLAudioObject.cpp
+│       │   │   ├── ATLComponents.cpp
+│       │   │   ├── AudioInputImpl_windows.cpp
+│       │   │   ├── AudioProxy.cpp
+│       │   │   ├── AudioSystem.cpp
+│       │   │   └── implementations/
+│       │   │       └── CryAudioImplWwise/
+│       │   │           ├── AudioInputPlugin/
+│       │   │           │   └── AudioInputPlugin.cpp
+│       │   │           ├── CIGAudioValueOutputPlugin/
+│       │   │           │   ├── CIGAudioValueOutputFX.cpp
+│       │   │           │   └── CIGAudioValueOutputFXParams.cpp
+│       │   │           ├── FilePlayerPlugin/
+│       │   │           │   ├── FilePlayerPlugin.cpp
+│       │   │           │   └── FilePlayerPlugin.h
+│       │   │           ├── MultiBandCompressorPlugin/
+│       │   │           │   ├── MultiBandCompressorPlugin.cpp
+│       │   │           │   └── MultiBandCompressorPlugin.h
+│       │   │           ├── SubmixRecorderPlugin/
+│       │   │           │   ├── SubmixRecorderPlugin.cpp
+│       │   │           │   └── SubmixRecorderPlugin.h
+│       │   │           └── VideoDistortionPlugin/
+│       │   │               ├── VideoDistortionPlugin.cpp
+│       │   │               └── VideoDistortionPlugin.h
+│       │   ├── CrySystem/
+│       │   │   ├── CryMemoryManager.cpp
+│       │   │   ├── Analytics/
+│       │   │   │   ├── Analytics.cpp
+│       │   │   │   ├── AnalyticsConnection.cpp
+│       │   │   │   ├── AnalyticsQueue.cpp
+│       │   │   │   └── AnalyticsWithStats.cpp
+│       │   │   ├── AutoDetectSpec.cpp
+│       │   │   ├── CigTrace/
+│       │   │   │   └── CigTraceHandler.cpp
+│       │   │   ├── CryPak.cpp
+│       │   │   ├── DCDatabase.cpp
+│       │   │   ├── DataCore.cpp
+│       │   │   ├── DataCoreSerialize.cpp
+│       │   │   ├── DebugGUI/
+│       │   │   │   ├── CommandBuffer.cpp
+│       │   │   │   └── DebugGUI.cpp
+│       │   │   ├── FileIOWrapper.cpp
+│       │   │   ├── FileManagement/
+│       │   │   │   ├── DataPipeline.cpp
+│       │   │   │   ├── IOScheduler.cpp
+│       │   │   │   ├── P4KSystem.cpp
+│       │   │   │   └── P4KSystem_Encryption.cpp
+│       │   │   ├── HardwareMouse.cpp
+│       │   │   ├── HttpRequest/
+│       │   │   │   └── HttpRequest.cpp
+│       │   │   ├── JobManager/
+│       │   │   │   ├── BackgroundWorker.cpp
+│       │   │   │   └── BatchWorker.cpp
+│       │   │   ├── LZ4Compressor.cpp
+│       │   │   ├── LZ4Decompressor.cpp
+│       │   │   ├── LocalizedStringManager.cpp
+│       │   │   ├── Log.cpp
+│       │   │   ├── MiniGUI/
+│       │   │   │   └── MiniGUI.cpp
+│       │   │   ├── Profile/
+│       │   │   │   └── CigProfile.cpp
+│       │   │   ├── RemoteConsole/
+│       │   │   │   └── RemoteConsole.cpp
+│       │   │   ├── SCObjectContainer.cpp
+│       │   │   ├── SCObjectContainerManager.cpp
+│       │   │   ├── Scaleform/
+│       │   │   │   ├── FlashPlayerInstance.cpp
+│       │   │   │   ├── GRendererXRender.cpp
+│       │   │   │   └── GTextureXRender.cpp
+│       │   │   ├── SessionID/
+│       │   │   │   └── SessionIDManager.cpp
+│       │   │   ├── StreamEngine/
+│       │   │   │   ├── StreamEngine.cpp
+│       │   │   │   └── StreamReadStream.cpp
+│       │   │   ├── System.cpp
+│       │   │   ├── SystemCFG.cpp
+│       │   │   ├── SystemEventDispatcher.cpp
+│       │   │   ├── SystemInit.cpp
+│       │   │   ├── SystemRender.cpp
+│       │   │   ├── SystemWin32.cpp
+│       │   │   ├── Time/
+│       │   │   │   ├── TimeRegression.cpp
+│       │   │   │   ├── TimeTestCases.cpp
+│       │   │   │   └── Timer.cpp
+│       │   │   ├── UnitTestSystem.cpp
+│       │   │   ├── WindowsConsole.cpp
+│       │   │   ├── XConsole.cpp
+│       │   │   ├── XML/
+│       │   │   │   └── XmlUtils.cpp
+│       │   │   ├── ZipDirCache.cpp
+│       │   │   └── ZipDirStructures.cpp
+│       │   ├── CryVideoCapture/
+│       │   │   └── CryVideoCapture.cpp
+│       │   ├── FlowSystem/
+│       │   │   ├── FlowGraph.cpp
+│       │   │   ├── FlowGraph.h
+│       │   │   ├── FlowSystem.cpp
+│       │   │   └── Nodes/
+│       │   │       ├── FlowComponentRequestNodes.cpp
+│       │   │       ├── FlowInputNode.cpp
+│       │   │       └── ../FlowGraph.h
+│       │   └── RenderDll/
+│       │       ├── RenderGen12/
+│       │       │   └── GraphicsPipelines/
+│       │       │       ├── PlanetTerrainHeightMapPreprocessStage.inl
+│       │       │       └── PlanetVolumetricCloudsDeferredStage.inl
+│       │       └── XRenderD3D9/
+│       │           ├── ../Common/
+│       │           │   ├── CachedRenderingParams.cpp
+│       │           │   ├── DamageMap.cpp
+│       │           │   ├── DamageMapManager.cpp
+│       │           │   ├── DamageMapQuadTreeBitMask.cpp
+│       │           │   ├── GasCloud/
+│       │           │   │   └── GasCloudManager.cpp
+│       │           │   ├── HLSLCPPCompatibility.cpp
+│       │           │   ├── LayerBlendManager.cpp
+│       │           │   ├── MeshAggregate.cpp
+│       │           │   ├── RParticleRenderManager.cpp
+│       │           │   ├── RendElements/
+│       │           │   │   └── Gen12RParticleGPUHandler.cpp
+│       │           │   ├── RenderMesh.cpp
+│       │           │   ├── RenderThread.cpp
+│       │           │   ├── Renderer.cpp
+│       │           │   ├── ResourceBufferCPUReadback.cpp
+│       │           │   ├── Shaders/
+│       │           │   │   ├── ShaderCore.cpp
+│       │           │   │   ├── ShaderScript.cpp
+│       │           │   │   └── ShaderTemplate.cpp
+│       │           │   └── Textures/
+│       │           │       ├── BalancedTextureStreamer.cpp
+│       │           │       ├── Texture.cpp
+│       │           │       └── TextureManager.cpp
+│       │           ├── ../RenderGen12/
+│       │           │   ├── DisplaySystem/
+│       │           │   │   ├── D3D11Display.cpp
+│       │           │   │   └── VulkanDisplay.cpp
+│       │           │   ├── GPUDevice/
+│       │           │   │   ├── GPUDevice.cpp
+│       │           │   │   ├── GPUResourceSet.cpp
+│       │           │   │   ├── Legacy/
+│       │           │   │   │   ├── GPUBufferLegacy.cpp
+│       │           │   │   │   ├── GPUDeviceLegacy.cpp
+│       │           │   │   │   ├── GPUDeviceLegacyUtils.cpp
+│       │           │   │   │   ├── GPUPipelineStateLegacy.cpp
+│       │           │   │   │   ├── GPUShaderLegacy.cpp
+│       │           │   │   │   ├── GPUTextureLegacy.cpp
+│       │           │   │   │   └── GPUTextureViewLegacy.cpp
+│       │           │   │   └── Vulkan/
+│       │           │   │       ├── GPUBLASVulkan.cpp
+│       │           │   │       ├── GPUBufferVulkan.cpp
+│       │           │   │       ├── GPUCommandManagerVulkan.cpp
+│       │           │   │       ├── GPUDescriptorVulkan.cpp
+│       │           │   │       ├── GPUDeviceVulkan.cpp
+│       │           │   │       ├── GPUMemoryVulkan.cpp
+│       │           │   │       ├── GPUPipelineStateCacheVulkan.cpp
+│       │           │   │       ├── GPUPipelineStateVulkan.cpp
+│       │           │   │       ├── GPUQueryVulkan.cpp
+│       │           │   │       ├── GPUResourceSetLayoutVulkan.cpp
+│       │           │   │       ├── GPUSamplerVulkan.cpp
+│       │           │   │       ├── GPUShaderVulkan.cpp
+│       │           │   │       ├── GPUSynchronizationVulkan.cpp
+│       │           │   │       ├── GPUTLASVulkan.cpp
+│       │           │   │       ├── GPUTextureViewVulkan.cpp
+│       │           │   │       ├── GPUTextureVulkan.cpp
+│       │           │   │       ├── GPUTransientMemoryAllocatorVulkan.cpp
+│       │           │   │       ├── GPUVulkanQueues.cpp
+│       │           │   │       └── GPUVulkanUtils.cpp
+│       │           │   ├── Gen12Renderer.cpp
+│       │           │   └── GraphicsPipelines/
+│       │           │       ├── ComputeSkinningStage.cpp
+│       │           │       ├── DamageMapStage.cpp
+│       │           │       ├── DeferredPipeline.cpp
+│       │           │       ├── FireStage.cpp
+│       │           │       ├── ForwardStage.cpp
+│       │           │       ├── GBufferStage.cpp
+│       │           │       ├── GasCloudPreprocessStage.cpp
+│       │           │       ├── GasCloudStage.cpp
+│       │           │       ├── MaterialBufferGen.cpp
+│       │           │       ├── ParticleLightAtlasStage.cpp
+│       │           │       ├── PlanetTerrainVirtualCacheStage.cpp
+│       │           │       ├── PostSilhouetteStage.cpp
+│       │           │       ├── PreprocessPipeline.cpp
+│       │           │       ├── ScatteringQueryAnalyticShadows.cpp
+│       │           │       ├── SceneObjects/
+│       │           │       │   ├── DepthPrepassStage_PlanetPatch.cpp
+│       │           │       │   ├── DepthPrepassStage_RenderMeshChunk.cpp
+│       │           │       │   ├── ForwardStage_HDRSky.cpp
+│       │           │       │   ├── ForwardStage_JumpTunnelSegment.cpp
+│       │           │       │   ├── ForwardStage_LegacyParticles.cpp
+│       │           │       │   ├── ForwardStage_LightBeam.cpp
+│       │           │       │   ├── ForwardStage_Particles.cpp
+│       │           │       │   ├── ForwardStage_PlanetPatch.cpp
+│       │           │       │   ├── ForwardStage_Polygons.cpp
+│       │           │       │   ├── ForwardStage_RenderMeshChunk.cpp
+│       │           │       │   ├── ForwardStage_WaterVolumes.cpp
+│       │           │       │   ├── GBufferStage_PlanetPatch.cpp
+│       │           │       │   ├── GBufferStage_ProjectedDecal.cpp
+│       │           │       │   ├── GBufferStage_RenderMeshChunk.cpp
+│       │           │       │   ├── ShadowMapStage_PlanetPatch.cpp
+│       │           │       │   └── ShadowMapStage_RenderMeshChunk.cpp
+│       │           │       ├── UtilPasses/
+│       │           │       │   └── ParallelHelpersPass.cpp
+│       │           │       ├── VolumetricFog.cpp
+│       │           │       ├── WaterBufferStage.cpp
+│       │           │       ├── WaterPrePassStage.cpp
+│       │           │       └── WaterPreprocessStage.cpp
+│       │           ├── CloudDensityQueryManager.cpp
+│       │           ├── D3DDamageMaps.cpp
+│       │           ├── D3DGasCloudManager.cpp
+│       │           ├── D3DRendPipeline.cpp
+│       │           ├── D3DRenderThread.cpp
+│       │           ├── D3DShaders.cpp
+│       │           ├── D3DSystem.cpp
+│       │           ├── DriverD3D.cpp
+│       │           ├── PlanetAtmospherics.cpp
+│       │           ├── PlanetAtmosphericsUnifiedRaymarching.inl
+│       │           ├── PlanetGroundFog.cpp
+│       │           └── PlanetVolumetricClouds.cpp
+│       ├── GameSDK/
+│       │   └── GameDll/
+│       │       ├── Actor.cpp
+│       │       ├── ActorInit.cpp
+│       │       ├── Game.cpp
+│       │       ├── GameRules.cpp
+│       │       ├── GameRulesClientServer.cpp
+│       │       ├── Nodes/
+│       │       │   └── FlowASOPTerminalRequestNodes.cpp
+│       │       ├── SCPlayer.cpp
+│       │       ├── SCPlayerStats.cpp
+│       │       ├── AI/
+│       │       │   ├── Components/
+│       │       │   │   ├── AIFiringStateValidator.cpp
+│       │       │   │   ├── AISeatFlightControllerComponent.cpp
+│       │       │   │   ├── AISeatWeaponControllerComponent.cpp
+│       │       │   │   ├── AISpecialActionComponent.cpp
+│       │       │   │   ├── AISpecialActionComponent.h
+│       │       │   │   ├── AIWeaponComponent.cpp
+│       │       │   │   ├── AIWeaponComponent.h
+│       │       │   │   ├── ActionAreaComponent.cpp
+│       │       │   │   ├── BoidsComponent.cpp
+│       │       │   │   ├── BoidsComponentRules.cpp
+│       │       │   │   ├── EntityPerceptionComponent.cpp
+│       │       │   │   ├── Extensions/
+│       │       │   │   │   ├── ActionAreaExtensionDefines.h
+│       │       │   │   │   ├── AudioObservableExtender.cpp
+│       │       │   │   │   └── LargeObservableExtender.cpp
+│       │       │   │   ├── HearingComponent.cpp
+│       │       │   │   ├── LookComponent.cpp
+│       │       │   │   ├── MovementSystemComponent.cpp
+│       │       │   │   ├── NavigationLinkComponent.cpp
+│       │       │   │   ├── NavigationLinkComponent.h
+│       │       │   │   ├── ObservableComponent.cpp
+│       │       │   │   ├── ProceduralConnectionLinkController.cpp
+│       │       │   │   ├── RangeEventDispatcherComponent.cpp
+│       │       │   │   ├── SCActorCollisionAvoidanceComponent.cpp
+│       │       │   │   ├── SCActorProceduralPOILookController.cpp
+│       │       │   │   ├── TargetSelectorHelper.cpp
+│       │       │   │   ├── VisionComponent.cpp
+│       │       │   │   ├── BoidsComponent.h
+│       │       │   │   ├── BoidsDefinitions.h
+│       │       │   │   ├── LookComponent.h
+│       │       │   │   └── RangeEventDispatcherComponent.h
+│       │       │   ├── GameAISystem.cpp
+│       │       │   ├── Helpers/
+│       │       │   │   ├── AISeatWeapons.cpp
+│       │       │   │   └── AimingAccuracyHelper.cpp
+│       │       │   ├── InvestigationModeHandler.cpp
+│       │       │   ├── Navigation/
+│       │       │   │   ├── AILocomotionMovablePathFollower.cpp
+│       │       │   │   ├── Helpers/
+│       │       │   │   │   └── AILocomotionSplineHelper.cpp
+│       │       │   │   ├── MovementBlocks/
+│       │       │   │   │   ├── FlightBlocks/
+│       │       │   │   │   │   ├── FlightBlock.cpp
+│       │       │   │   │   │   ├── MovementBlock_ApproachPositionWithTangent.cpp
+│       │       │   │   │   │   ├── MovementBlock_BreakAway.cpp
+│       │       │   │   │   │   ├── MovementBlock_EngageCircling.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlyAtOffset.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlyBy.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlySpline.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlySplineTunnel.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlyTo.cpp
+│       │       │   │   │   │   ├── MovementBlock_FlyToVelocityControl.cpp
+│       │       │   │   │   │   ├── MovementBlock_Hover.cpp
+│       │       │   │   │   │   ├── MovementBlock_JoinFormation.cpp
+│       │       │   │   │   │   ├── MovementBlock_Land.cpp
+│       │       │   │   │   │   ├── MovementBlock_LeadFollowOnSpline.cpp
+│       │       │   │   │   │   ├── MovementBlock_LeveledFlightTo.cpp
+│       │       │   │   │   │   ├── MovementBlock_QuantumBoost.cpp
+│       │       │   │   │   │   ├── MovementBlock_QuantumTravel.cpp
+│       │       │   │   │   │   ├── MovementBlock_SmoothTurn.cpp
+│       │       │   │   │   │   ├── MovementBlock_SphereStrafe.cpp
+│       │       │   │   │   │   └── MovementBlock_VehicleFaceTowards.cpp
+│       │       │   │   │   ├── MovementBlock_InstallAgentWithInteraction.cpp
+│       │       │   │   │   ├── MovementBlock_Teleport.cpp
+│       │       │   │   │   ├── MovementBlock_UninstallAgentFromInteraction.cpp
+│       │       │   │   │   └── MovementBlock_UseCustomNavLink.cpp
+│       │       │   │   ├── OffMeshLink.cpp
+│       │       │   │   └── PathFollower.cpp
+│       │       │   ├── Spawning/
+│       │       │   │   ├── SpawnHelperQuantum.cpp
+│       │       │   │   └── SpawnHelperQuantum.h
+│       │       │   ├── Subsumption/
+│       │       │   │   └── Tasks/
+│       │       │   │       ├── Actor/
+│       │       │   │       │   ├── SubsumptionTask_ForceLoadout.cpp
+│       │       │   │       │   ├── SubsumptionTask_OpenQuickAccessWheel.cpp
+│       │       │   │       │   ├── SubsumptionTask_ResetCharacter.cpp
+│       │       │   │       │   └── SubsumptionTask_SetPlayerModel.cpp
+│       │       │   │       ├── Combat/
+│       │       │   │       │   └── SubsumptionTask_MonitorTakeDownTarget.cpp
+│       │       │   │       ├── DoorLocks/
+│       │       │   │       │   └── SubsumptionTask_DoorLocks.cpp
+│       │       │   │       └── PlayerChoice/
+│       │       │   │           └── SubsumptionTask_PlayerChoiceFromMenu.cpp
+│       │       │   ├── Usables/
+│       │       │   │   ├── UsableGroupCoordinator.h
+│       │       │   │   ├── UsableManager.cpp
+│       │       │   │   └── UsableGroup.h
+│       │       │   └── VehicleTacticalLanguageExtender.cpp
+│       │       ├── AILocomotionHelpers.cpp
+│       │       ├── AILocomotionSplineAnimation.cpp
+│       │       ├── AIMovementCoreProcessor.cpp
+│       │       ├── Actor.h
+│       │       ├── Actor/
+│       │       │   ├── SCActorLookAheadComponent.cpp
+│       │       │   ├── SCLocalPlayerTargetTrackingAutoZoomComponent.cpp
+│       │       │   └── WingmanCommands/
+│       │       │       └── SCWingmanController.h
+│       │       ├── ActorAnimHelpers.cpp
+│       │       ├── ActorPoseQueries.cpp
+│       │       ├── ActorPoseQueryManager.cpp
+│       │       ├── ActorPoseQueryStore.h
+│       │       ├── AnimActionAIMovementLocomotion.cpp
+│       │       ├── AnimatedCharacter/
+│       │       │   ├── AnimatedCharacter.cpp
+│       │       │   ├── AnimatedCharacterPPS.cpp
+│       │       │   ├── AnimatedCharacterPPS_Common.cpp
+│       │       │   └── AnimatedCharacterPPS_ParamCalculation.cpp
+│       │       ├── AnimationComponent.cpp
+│       │       ├── AreaTrigger.cpp
+│       │       ├── AreaTrigger.h
+│       │       ├── Audio/
+│       │       │   ├── AudioAllegianceComponent.cpp
+│       │       │   ├── AudioBudgetHelper.cpp
+│       │       │   ├── AudioEnvironmentFeedbackManager.cpp
+│       │       │   ├── AudioGameContextManager.cpp
+│       │       │   ├── AudioOneShotManager.cpp
+│       │       │   ├── AudioTriggerSpot.cpp
+│       │       │   ├── AudioValueOutputManager.cpp
+│       │       │   ├── EntityComponentAudioEnvironmentFeedback.cpp
+│       │       │   ├── EntityComponentAudioEnvironmentFeedbackPoint.cpp
+│       │       │   ├── EntityComponentAudioHitListener.cpp
+│       │       │   ├── EntityComponentGroundVehicleAudio.cpp
+│       │       │   ├── EntityComponentLocalPlayerVisorAudio.cpp
+│       │       │   ├── GameAudioEvents.h
+│       │       │   ├── LocalPlayerAudioEnvironmentComponent.cpp
+│       │       │   ├── LocalPlayerMusicLogicHandlerComponent.cpp
+│       │       │   ├── LocalPlayerWallaSystem.cpp
+│       │       │   ├── PlanetOceanAudioComponent.cpp
+│       │       │   ├── ProceduralPlanetAudioComponent.cpp
+│       │       │   ├── ProceduralPlanetAudioComponentDef.cpp
+│       │       │   ├── ProceduralPlanetAudioComponentDefAlgorithmAveragePosition.cpp
+│       │       │   └── ProceduralPlanetAudioComponentDefAlgorithmClosestObjects.cpp
+│       │       ├── Bullet.cpp
+│       │       ├── CIGGameServices/
+│       │       │   ├── CIGChatService/
+│       │       │   │   └── CIGClientChatService.cpp
+│       │       │   └── CIGContactService/
+│       │       │       └── CIGContactService.cpp
+│       │       ├── CIGObjectDataBank/
+│       │       │   ├── CIGObjectDataBankEvents.h
+│       │       │   ├── DataBankActions.h
+│       │       │   └── NavigationEntries.cpp
+│       │       ├── CIGRadarSystem/
+│       │       │   └── CIGRadarSystem.cpp
+│       │       ├── CameraViews/
+│       │       │   ├── CameraViewFirstPersonBase.cpp
+│       │       │   ├── CameraViewGroup.cpp
+│       │       │   ├── CameraViewManager.cpp
+│       │       │   ├── CameraViewOrbit.cpp
+│       │       │   ├── CameraViewPlayerHead.cpp
+│       │       │   ├── CameraViewPlayerInventory.cpp
+│       │       │   └── CameraViewThirdPersonBase.cpp
+│       │       ├── CharacterCustomizer/
+│       │       │   ├── CharacterCustomizerComponent.cpp
+│       │       │   └── CharacterCustomizerComponent.h
+│       │       ├── ChatManager/
+│       │       │   └── ChatManager.cpp
+│       │       ├── Checkpoints/
+│       │       │   └── CheckpointsManager.cpp
+│       │       ├── Comms/
+│       │       │   └── DistressCommsSignalComponent.h
+│       │       ├── ConversationSystem/
+│       │       │   ├── ConversationSystem.cpp
+│       │       │   └── SCTrackviewInterruptComponent.cpp
+│       │       ├── Defs/
+│       │       │   └── ActorAbilityComponentDef.h
+│       │       ├── EditorGame.cpp
+│       │       ├── Effects/
+│       │       │   └── GameEffectsSystem.cpp
+│       │       ├── EntityComponentBiomeAccumulation.cpp
+│       │       ├── EntityComponentCargoController.h
+│       │       ├── EntityComponentChatProvider.cpp
+│       │       ├── EntityComponentChatProvider.h
+│       │       ├── EntityComponentCommLinkProvider.h
+│       │       ├── EntityComponentEACapturableEntity.h
+│       │       ├── EntityComponentEAPhaseObjective.h
+│       │       ├── EntityComponentEAPlayableAreaController.cpp
+│       │       ├── EntityComponentEASpawnCameraController.h
+│       │       ├── EntityComponentEASpawnLocation.h
+│       │       ├── EntityComponentEATransportController.cpp
+│       │       ├── EntityComponentFuelConnection.cpp
+│       │       ├── EntityComponentHackable.h
+│       │       ├── EntityComponentHeatConnection.cpp
+│       │       ├── EntityComponentHoloField.cpp
+│       │       ├── EntityComponentInstancedInteriorGateway.h
+│       │       ├── EntityComponentKioskInteraction.h
+│       │       ├── EntityComponentLocationManager.h
+│       │       ├── EntityComponentMedBed.cpp
+│       │       ├── EntityComponentMedBed.h
+│       │       ├── EntityComponentMedBedProvider.h
+│       │       ├── EntityComponentMedicalSkeletonUIProvider.h
+│       │       ├── EntityComponentMineable.cpp
+│       │       ├── EntityComponentMiningTransactions.h
+│       │       ├── EntityComponentPlanetKillVolume.cpp
+│       │       ├── EntityComponentPlayerDockingHubController.h
+│       │       ├── EntityComponentPowerConnection.cpp
+│       │       ├── EntityComponentResourceHealthHandler.h
+│       │       ├── EntityComponentRestrictedArea.h
+│       │       ├── EntityComponentRttAspectVehicleBase.cpp
+│       │       ├── EntityComponentRttLiveCameraPreviewManager.h
+│       │       ├── EntityComponentRttLoadoutPreview.h
+│       │       ├── EntityComponentRttPreviewManager.h
+│       │       ├── EntityComponentShipAudio.cpp
+│       │       ├── EntityComponentShipInsuranceProvider.cpp
+│       │       ├── EntityComponentShipListProvider.cpp
+│       │       ├── EntityComponentSimpleRotation.cpp
+│       │       ├── EntityComponentSpawner.h
+│       │       ├── EntityComponentThrusterAudio.cpp
+│       │       ├── EntityComponentUIBuildingBlocks.cpp
+│       │       ├── EntityComponentUIMap.cpp
+│       │       ├── EntityComponentUIOwner.cpp
+│       │       └── EntityComponentVendingMachine.h
+│       │       ├── Environment/
+│       │       │   └── Ledge.cpp
+│       │       ├── FiringRange/
+│       │       │   ├── ArmouryManagerComponent.cpp
+│       │       │   └── ArmouryManagerComponent.h
+│       │       ├── GameInventory/
+│       │       │   ├── InventoryContainerComponent.cpp
+│       │       │   ├── InventoryContainerManager.cpp
+│       │       │   ├── InventoryEvents.h
+│       │       │   └── SCInventoryDisplay.cpp
+│       │       ├── GameLocalizationManager.cpp
+│       │       ├── GameMechanismManager/
+│       │       │   └── GameMechanismManager.cpp
+│       │       ├── GameRules.h
+│       │       ├── GameRulesModules/
+│       │       │   ├── DFM/
+│       │       │   │   └── GameRulesDFMVictoryConditionsLives.h
+│       │       │   ├── EA/
+│       │       │   │   ├── Spawning/
+│       │       │   │   │   └── EASpawnClientEvents.h
+│       │       │   │   └── Network/
+│       │       │   │       └── EASerializedVariable.h
+│       │       │   ├── GameRulesSCDamageHandling.cpp
+│       │       │   └── S42/
+│       │       │       └── GameRulesS42Spawning.cpp
+│       │       ├── GameTypeInfo.cpp
+│       │       ├── GasCloud/
+│       │       │   └── GasCloudLight.cpp
+│       │       ├── Graphics/
+│       │       │   ├── LightFlickerVolumeComponent.cpp
+│       │       │   └── SCDynamicLightingRigComponent.cpp
+│       │       ├── Hacking/
+│       │       │   ├── EntityComponentHackingController.h
+│       │       │   └── HackingBindingsHandler.h
+│       │       ├── Harvestable/
+│       │       │   ├── HarvestableComponent.cpp
+│       │       │   ├── HarvestableHelpers.cpp
+│       │       │   ├── HarvestableProviderComponent.cpp
+│       │       │   ├── LootGenerationDatabase.cpp
+│       │       │   ├── LootGenerationHelpers.cpp
+│       │       │   └── LootGenerationHelpers.h
+│       │       ├── HeadBumpOffset.cpp
+│       │       ├── HeadOverlayOffset.cpp
+│       │       ├── HeadlessClientInput.cpp
+│       │       ├── HealthComponent/
+│       │       │   └── EntityComponentHealth.cpp
+│       │       ├── HintSystem/
+│       │       │   └── HintManager.h
+│       │       ├── HoverPhysicsController.h
+│       │       ├── IFCS/
+│       │       │   ├── EntityComponentGravlev.cpp
+│       │       │   ├── EntityComponentIFCS.cpp
+│       │       │   └── IFCS_Events.h
+│       │       ├── ISCActorResultStateMachine.cpp
+│       │       ├── InstancedInterior/
+│       │       │   ├── EntityComponentInstancedInterior.cpp
+│       │       │   ├── EntityComponentInstancedInteriorManager.h
+│       │       │   ├── InstancedInteriorEvents.h
+│       │       │   ├── InstancedInteriorSystem.cpp
+│       │       │   └── EntityComponentInstancedInterior.h
+│       │       ├── InteractionConditions.cpp
+│       │       ├── ItemComponents/
+│       │       │   ├── ATC/
+│       │       │   │   ├── AirTrafficControllerDataManager.cpp
+│       │       │   │   └── AirTrafficControllerEvents.h
+│       │       │   ├── Aiming/
+│       │       │   │   ├── SCItemAimableController.cpp
+│       │       │   │   ├── SCItemAimableControllerBindings.cpp
+│       │       │   │   └── SCItemAimableEvents.h
+│       │       │   ├── Capacitor/
+│       │       │   │   └── SCItemCapacitorData.h
+│       │       │   ├── DashboardUIController.cpp
+│       │       │   ├── EntityComponentActorMovable.cpp
+│       │       │   ├── EntityComponentActorUsable.cpp
+│       │       │   ├── EntityComponentActorUsable.h
+│       │       │   ├── EntityComponentCarryable.h
+│       │       │   ├── EntityComponentDraggable.h
+│       │       │   ├── EntityComponentLootableContainer.h
+│       │       │   ├── EntityComponentOutfitHanger.cpp
+│       │       │   ├── EntityComponentOutfitHanger.h
+│       │       │   ├── EntityComponentRTTNameTag.h
+│       │       │   ├── EntityComponentRadiationEmitter.cpp
+│       │       │   ├── EntityComponentWeaponMount.cpp
+│       │       │   ├── EntityComponentWeaponMount.h
+│       │       │   ├── FlightController/
+│       │       │   │   └── SCItemFlightControllerDefs.h
+│       │       │   ├── FuelSystem/
+│       │       │   │   ├── FuelControl.h
+│       │       │   │   └── SCItemFuelIntake.cpp
+│       │       │   ├── GameplayTriggers/
+│       │       │   │   └── CheckEntitiesOnActorsLoadoutWithinAreaGameplayTrigger.cpp
+│       │       │   ├── ItemResource/
+│       │       │   │   └── EntityComponentMisfire.cpp
+│       │       │   ├── Modifiers/
+│       │       │   │   ├── EntityComponentAttachableModifier.cpp
+│       │       │   │   └── EntityComponentAttachableModifier.h
+│       │       │   ├── QuantumDrive/
+│       │       │   │   ├── Handlers/
+│       │       │   │   │   └── QuantumEffectHandler.cpp
+│       │       │   │   ├── QuantumDriveSupport.cpp
+│       │       │   │   ├── SCItemQuantumDrive.cpp
+│       │       │   │   ├── SCItemQuantumDrive.h
+│       │       │   │   ├── SCItemQuantumDriveBoost.cpp
+│       │       │   │   ├── SCItemQuantumDriveEvents.h
+│       │       │   │   ├── SCItemQuantumDrive_NEW.cpp
+│       │       │   │   └── SCItemQuantumTargetSelector.cpp
+│       │       │   ├── QuantumEnforcementDevice/
+│       │       │   │   ├── QedVisualGraphController.cpp
+│       │       │   │   ├── SCItemQuantumInterdictionGenerator.cpp
+│       │       │   │   └── SCItemQuantumInterdictionGenerator.h
+│       │       │   ├── Radar/
+│       │       │   │   ├── BlobEffects.cpp
+│       │       │   │   ├── ObstructionOperations/
+│       │       │   │   │   └── UpdateObstructions.cpp
+│       │       │   │   ├── PingEffects.cpp
+│       │       │   │   ├── RadarOperations/
+│       │       │   │   │   ├── DiscoverContacts.cpp
+│       │       │   │   │   ├── DispatchReportToDatabank.cpp
+│       │       │   │   │   ├── ProcessContactType.cpp
+│       │       │   │   │   ├── ProcessDeltaSignature.cpp
+│       │       │   │   │   ├── ProcessHighlights.cpp
+│       │       │   │   │   ├── ProcessHostility.cpp
+│       │       │   │   │   ├── ProcessOcclusion.cpp
+│       │       │   │   │   ├── ProcessPingDetection.cpp
+│       │       │   │   │   ├── ProcessScanDossier.cpp
+│       │       │   │   │   ├── ProcessSignatureAmbients.cpp
+│       │       │   │   │   ├── ProcessSignatureCrossSection.cpp
+│       │       │   │   │   ├── ProcessSignatureDetection.cpp
+│       │       │   │   │   └── ProcessTopology.cpp
+│       │       │   │   ├── PingObject.h
+│       │       │   │   └── RadarBlobCollection.h
+│       │       │   ├── RestrictedAreaATCComponent.h
+│       │       │   ├── SCCommsComponent.cpp
+│       │       │   ├── SCInteractionStateGameplayTriggerComponent.cpp
+│       │       │   ├── SCItemAirlock.cpp
+│       │       │   ├── SCItemBoatController.cpp
+│       │       │   ├── SCItemCargoGrid.cpp
+│       │       │   ├── SCItemCloth.cpp
+│       │       │   ├── SCItemCooler.cpp
+│       │       │   ├── SCItemCoolerController.cpp
+│       │       │   ├── SCItemDockingTube.h
+│       │       │   ├── SCItemDoor.cpp
+│       │       │   ├── SCItemDoor.h
+│       │       │   ├── SCItemEnergyController.cpp
+│       │       │   ├── SCItemEnergyController.h
+│       │       │   ├── SCItemFlightController.cpp
+│       │       │   ├── SCItemGasTank.cpp
+│       │       │   ├── SCItemJumpDrive.cpp
+│       │       │   ├── SCItemJumpThrusterPack.cpp
+│       │       │   ├── SCItemLandingDockController.cpp
+│       │       │   ├── SCItemMiningController.cpp
+│       │       │   ├── SCItemMissileController.cpp
+│       │       │   ├── SCItemNavigation.cpp
+│       │       │   ├── SCItemProximitySensor.h
+│       │       │   ├── SCItemPurchasable.cpp
+│       │       │   ├── SCItemRadarComponent.h
+│       │       │   ├── SCItemRestraint.h
+│       │       │   ├── SCItemSeat.cpp
+│       │       │   ├── SCItemSeat.h
+│       │       │   ├── SCItemShieldEmitter.cpp
+│       │       │   ├── SCItemShieldGenerator.cpp
+│       │       │   ├── SCItemShipComputer.cpp
+│       │       │   ├── SCItemSuitArmor.cpp
+│       │       │   ├── SCItemSuitHelmet.h
+│       │       │   ├── SCItemSuitThrusterPack.cpp
+│       │       │   ├── SCItemSuitThrusterPack.h
+│       │       │   ├── SCItemVehicleLandingGearSystem.cpp
+│       │       │   ├── SCItemWeaponController.cpp
+│       │       │   ├── SCItemWheeledController.cpp
+│       │       │   ├── SCMeleeWeapon.cpp
+│       │       │   ├── TargetSelector/
+│       │       │   │   ├── SCItemTargetSelectorComponent.cpp
+│       │       │   │   └── SCItemTargetSelectorComponentBindings.cpp
+│       │       │   ├── Turrets/
+│       │       │   │   └── SCItemTurretEvents.h
+│       │       │   ├── UI/
+│       │       │   │   ├── HoloDisplay/
+│       │       │   │   │   ├── RadarDisplayProvider.cpp
+│       │       │   │   │   ├── SCItemHoloDisplay.cpp
+│       │       │   │   │   └── StarMapDisplayProvider.cpp
+│       │       │   │   ├── SCItemCommsUIView.cpp
+│       │       │   │   └── mobiGlas/
+│       │       │   │       └── apps/
+│       │       │   │           ├── ContractManagerApp.h
+│       │       │   │           └── JournalApp.h
+│       │       │   ├── Utils/
+│       │       │   │   ├── ShipCoursePredictionEvents.h
+│       │       │   │   └── VehicleAdsEvents.h
+│       │       │   ├── WeaponController/
+│       │       │   │   └── SCItemWeaponControllerEvents.h
+│       │       │   ├── DockingController.h
+│       │       │   ├── EntityComponentPowerSource.h
+│       │       │   ├── LandingController.h
+│       │       │   ├── SCActorAlignmentSlotAreaHelperComponent.h
+│       │       │   ├── SCItemExplosive.h
+│       │       │   ├── SCItemSeatDashboard.h
+│       │       │   └── SCItemVehicleDebris.h
+│       │       ├── ItemControl/
+│       │       │   ├── ItemControllerComponent.cpp
+│       │       │   ├── SCItemControlContext.cpp
+│       │       │   ├── SCItemControllableManager.cpp
+│       │       │   └── SCItemControllableManager.h
+│       │       ├── Jump/
+│       │       │   ├── EntityComponentJumpPointAccess.cpp
+│       │       │   ├── JumpDriveEffectHandler.cpp
+│       │       │   ├── JumpPoint.cpp
+│       │       │   ├── JumpTunnelEffectHandler.cpp
+│       │       │   ├── JumpTunnelHost.cpp
+│       │       │   └── JumpTunnelLightPool.cpp
+│       │       ├── Ladder.cpp
+│       │       ├── LandingArea.h
+│       │       ├── LoadingArea.h
+│       │       ├── LoadingPlatform/
+│       │       │   ├── LoadingPlatformManager.cpp
+│       │       │   ├── BindingsFreightKioskUI.h
+│       │       │   └── EntityComponentFreightElevatorUIProvider.h
+│       │       ├── LocalPlayerInteractorDelegate.cpp
+│       │       ├── MovieSystem/
+│       │       │   └── EntityTracks/
+│       │       │       ├── ActorActionsTrack.cpp
+│       │       │       ├── ActorHealthTrack.cpp
+│       │       │       ├── AimConstraintTrack.cpp
+│       │       │       ├── AttachmentTrack.cpp
+│       │       │       ├── CharacterLODTrack.cpp
+│       │       │       ├── CharacterVisibilityMaskTrack.cpp
+│       │       │       ├── ConsumableTrack.cpp
+│       │       │       ├── EntityEffectSystemTagTriggerTrack.cpp
+│       │       │       ├── FeatherBlendingTrack.cpp
+│       │       │       ├── FrameOfReferenceTrack.cpp
+│       │       │       ├── InteractionTrack.cpp
+│       │       │       ├── LandingGearTrack.cpp
+│       │       │       ├── MannequinTrack.cpp
+│       │       │       ├── MobiGlasTrack.cpp
+│       │       │       ├── MovementRequestTrack.cpp
+│       │       │       ├── OptInEventTrack.cpp
+│       │       │       ├── PhysicsBehaviourTrack.cpp
+│       │       │       ├── PlayerControlTrack.cpp
+│       │       │       ├── PlayerUITrack.cpp
+│       │       │       ├── RDATrack.cpp
+│       │       │       ├── SCItemDisplayScreenTrack.cpp
+│       │       │       ├── SCItemDoorTrack.cpp
+│       │       │       ├── ShipManagementTrack.cpp
+│       │       │       ├── StickyFilterTrack.cpp
+│       │       │       ├── TargetTrack.cpp
+│       │       │       ├── TelevisionScreenTrack.cpp
+│       │       │       ├── TimeBasedSplineTrack.cpp
+│       │       │       ├── TutorialTrack.cpp
+│       │       │       ├── UsableTrack.cpp
+│       │       │       └── WeaponFireTrack.cpp
+│       │       │   └── InterruptPointsTrack.cpp
+│       │       ├── NavPointHierarchy.cpp
+│       │       ├── PersonalThought/
+│       │       │   └── PersonalThoughtEvents.h
+│       │       ├── PlayerAssetManager/
+│       │       │   ├── PlayerAssetManagerProvider.cpp
+│       │       │   └── PlayerAssetManagerProvider.h
+│       │       ├── PlayerGroup/
+│       │       │   ├── PlayerGroupManager.cpp
+│       │       │   └── PlayerGroupServiceStandalone.h
+│       │       ├── PlayerInput.cpp
+│       │       ├── PlayerInventoryManager/
+│       │       │   └── PlayerInventoryManager.cpp
+│       │       ├── PlayerMovementController.cpp
+│       │       ├── PlayerNotificationSystem/
+│       │       │   └── PlayerNotificationBannerManager.h
+│       │       ├── PlayerStateAction.cpp
+│       │       ├── PlayerTrade/
+│       │       │   ├── EntityComponentPlayerTradeInterface.h
+│       │       │   └── EntityComponentPlayerTradeProvider.h
+│       │       ├── PooledResourceManager.cpp
+│       │       ├── Projectile.cpp
+│       │       ├── ProjectileManager.cpp
+│       │       ├── ProjectileSpawnerEntity.cpp
+│       │       ├── ProjectileUtils.cpp
+│       │       ├── Recording/
+│       │       │   ├── CombatLogging.cpp
+│       │       │   ├── EntityComponentMovementRecording.cpp
+│       │       │   ├── EntityComponentMovementRecording.h
+│       │       │   └── CombatLoggingEvents.h
+│       │       ├── Reputation/
+│       │       │   ├── ReputationManager.cpp
+│       │       │   ├── SinglePlayer/
+│       │       │   │   └── ReputationStandaloneService.cpp
+│       │       │   └── EntityComponentReputationProvider.h
+│       │       ├── RespawnLoadoutImpl.h
+│       │       ├── RestrictedAreaBoundaryMeshComponent.cpp
+│       │       ├── RestrictedAreaBoundaryMeshComponent.h
+│       │       ├── RestrictedAreaComponent.h
+│       │       ├── RestrictedAreaPatchComponent.h
+│       │       └── RestrictedAreaSplineComponent.h
+│       │       ├── SCActorAbilityComponent.h
+│       │       ├── SCActorActionHandlerComponent.cpp
+│       │       ├── SCActorActionHandlerData.cpp
+│       │       ├── SCActorAnimationComponent.cpp
+│       │       ├── SCActorAnimationComponentEvents.h
+│       │       ├── SCActorBreathingComponent.cpp
+│       │       ├── SCActorBreathingHelperComponent.h
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateActive.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateActiveRoot.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateAmmoRepool.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateAnimationControlled.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateAttachedWeaponDeployment.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateConsume.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateEventLootingInteraction.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateFirstSelect.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateFixOverheat.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateHack.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateIdle.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateInactive.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateInspect.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemDrop.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemDropSwap.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemEquip.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemFire.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemHolster.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemMode.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemPlaceReady.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemPrimingItem.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemReload.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemSwap.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemThrowReady.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemThrowV2.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemUnequip.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemUnholster.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateItemUnprimingItem.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateMelee.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateMeleeBlock.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateMisfire.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateMobiGlas.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateOpenCloseContainer.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StatePlace.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StatePlayerAnimatedInteraction.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateRoot.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateScanning.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateSelfTarget.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateSelfTarget_ItemFire.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateTake.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateVisorWipe.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateWalkToPlace.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateWeaponAuxiliaryAction.cpp
+│       │       ├── SCActorControlStateAdditiveHierarchy_StateZoom.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateBodyDragging.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateDownedEnter.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateDownedRevive.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateFall.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateForceReactionStagger.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateIncapacitated.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateJump.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateLadder.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateLand.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateMovable.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateSyncedMeleeAttack.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateUnderground.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateUsableAssist.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateWeaponMount.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateZeroGEVA.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateZeroGEVA_v2.cpp
+│       │       ├── SCActorControlStateBaseAIHierarchy_StateZeroGravity.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateActiveRoot.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateAnimationControlled.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateBaseIdle.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateBeingRestrained.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateBeingTakenDown.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateBodyDragged.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateBodyDragging.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateCrouch.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDead.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDematerialize.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDodge.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDownedEnter.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDownedRevive.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateDrivenRagdollFall.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateFall.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateFloppyRagdollFall.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateFly.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateForceReactionStagger.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateGround.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateGroundIdle.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateInactiveRoot.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateIncapacitated.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateJump.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLadder.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLadderDodge.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLand.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLedge.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedEntity.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedHosted.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedInteractiveUsable.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedOperatorSeat.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedRoot.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedTransported.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateLinkedUsable.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateMovable.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateMovementRoot.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateOffHandInteraction.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateProne.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateRagdollFall.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateRagdollStandUp.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateRestrain.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateRevive.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateRoot.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateSlide.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateSpectate.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateStaging.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateStand.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateSwim.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateSyncedMeleeAttack.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateSyncedTeleport.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTakeDown.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTryOn.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTryOnAnimated.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTryOnAutoTurn.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTryOnControlledTurn.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateTryOnInspect.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateUsableAssist.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateWeaponMount.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGEVA.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGEVA_v2.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGHandholdTraversal.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGLaunch.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGOffHandInteraction.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGSurfaceTraversal.cpp
+│       │       ├── SCActorControlStateBaseHierarchy_StateZeroGravity.cpp
+│       │       ├── SCActorControlStateBaseIdle.cpp
+│       │       ├── SCActorControlStateEVA.cpp
+│       │       ├── SCActorControlStateEVA_v2.cpp
+│       │       ├── SCActorControlStateForceReactions.cpp
+│       │       ├── SCActorControlStateHostComponent.cpp
+│       │       ├── SCActorControlStateLadder.cpp
+│       │       ├── SCActorControlStateLadderDodge.cpp
+│       │       ├── SCActorControlStateLean.cpp
+│       │       ├── SCActorControlStateLedge.cpp
+│       │       ├── SCActorControlStatePlayerShadowHierarchy_StateShadow.cpp
+│       │       ├── SCActorControlStatePrePlacedDeadBodyHierarchy_StateBodyDragged.cpp
+│       │       ├── SCActorControlStatePrePlacedDeadBodyHierarchy_StateDead.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateAnimationControlled.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateDead.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateFall.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateGround.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateIdle.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateJump.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateLand.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateMalfunctioning.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateRoot.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateStaticFiringMode.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateTransporting.cpp
+│       │       ├── SCActorControlStateTransportHierarchy_StateZeroGravity.cpp
+│       │       ├── SCActorControlStateUsable.cpp
+│       │       ├── SCActorControlStateUtils.cpp
+│       │       ├── SCActorControlStateZeroGSurfaceTraversal.cpp
+│       │       ├── SCActorExternalForceResponseComponent.cpp
+│       │       ├── SCActorExternalForceResponseComponentEvents.h
+│       │       ├── SCActorFloorRaycastHelper.cpp
+│       │       ├── SCActorFoleyComponent.cpp
+│       │       ├── SCActorGForceComponent.cpp
+│       │       ├── SCActorGotoCVars.cpp
+│       │       ├── SCActorHeldEntityController.cpp
+│       │       ├── SCActorInteractorComponent.cpp
+│       │       ├── SCActorPhysicsController.cpp
+│       │       ├── SCActorProceduralRecoilComponent.cpp
+│       │       ├── SCActorResultOverlayStateAI.cpp
+│       │       ├── SCActorResultOverlayStateLean.cpp
+│       │       ├── SCActorResultStanceStateMachine.cpp
+│       │       ├── SCActorResultStateGround.cpp
+│       │       ├── SCActorResultStateHostComponent.cpp
+│       │       ├── SCActorResultStateRemoteMovementProcessor.cpp
+│       │       ├── SCActorResultStateUnderground.cpp
+│       │       ├── SCActorResultStateWeaponMount.cpp
+│       │       ├── SCActorRotationComponent.cpp
+│       │       ├── SCActorSpatialAwarenessComponent.cpp
+│       │       ├── SCActorStaminaComponent.cpp
+│       │       ├── SCActorStaminaComponent.h
+│       │       ├── SCActorStateData.cpp
+│       │       ├── SCActorStatusComponent.cpp
+│       │       ├── SCActorStatus_Environment.cpp
+│       │       ├── SCActorViewComponent.cpp
+│       │       ├── SCActorViewComponentEvents.h
+│       │       ├── SCActorWaterTestProxy.cpp
+│       │       ├── SCBodyHealthComponent.cpp
+│       │       ├── SCElectronicAccessPlayerComponent.h
+│       │       ├── SCLocalPlayerAudioComponent.cpp
+│       │       ├── SCLocalPlayerChoiceComponent.cpp
+│       │       ├── SCLocalPlayerChoiceComponent.h
+│       │       ├── SCLocalPlayerChoiceInteraction.cpp
+│       │       ├── SCLocalPlayerComponent.cpp
+│       │       ├── SCLocalPlayerMarkerTrackerComponent.h
+│       │       ├── SCLocalPlayerNotifications.cpp
+│       │       ├── SCLocalPlayerUIComponent.h
+│       │       ├── SCPlayerPUSpawningComponent.h
+│       │       ├── SCPlayerUINetworkComponent.cpp
+│       │       ├── SaveAndLoad/
+│       │       │   ├── SaveGlobalData.cpp
+│       │       │   └── SaveManager.cpp
+│       │       ├── Shop/
+│       │       │   ├── EntityComponentCommodityUIProvider.cpp
+│       │       │   ├── EntityComponentShop.cpp
+│       │       │   ├── EntityComponentShop.h
+│       │       │   ├── ShopInventory.cpp
+│       │       │   ├── ShopInventoryItem.cpp
+│       │       │   └── ShopManager.cpp
+│       │       ├── SignatureSystem/
+│       │       │   └── SCSignatureSystem.h
+│       │       ├── SpawnCloset/
+│       │       │   ├── EntityComponentSpawnCloset.cpp
+│       │       │   ├── EntityComponentSpawnClosetArea.cpp
+│       │       │   ├── SpawnClosetManager.cpp
+│       │       │   └── EntityComponentSpawnClosetArea.h
+│       │       ├── Stereo3D/
+│       │       │   └── StereoFramework.cpp
+│       │       ├── Stopwatch/
+│       │       │   └── StopwatchEvents.h
+│       │       ├── TransitSystem/
+│       │       │   ├── SCTransitCarriage.cpp
+│       │       │   ├── SCTransitEvents.h
+│       │       │   └── SCTransitManager.cpp
+│       │       ├── TriggerConditions/
+│       │       │   ├── TriggerCondition.cpp
+│       │       │   ├── TriggerConditionData.cpp
+│       │       │   ├── TriggerConditionsManager.cpp
+│       │       │   ├── TriggerSubConditionActionArea.cpp
+│       │       │   ├── TriggerSubConditionAngle.cpp
+│       │       │   ├── TriggerSubConditionDistance.cpp
+│       │       │   ├── TriggerSubConditionFocus.cpp
+│       │       │   ├── TriggerSubConditionITOption.cpp
+│       │       │   ├── TriggerSubConditionInteraction.cpp
+│       │       │   ├── TriggerSubConditionInteractionState.cpp
+│       │       │   ├── TriggerSubConditionInterruptTimer.cpp
+│       │       │   ├── TriggerSubConditionMobiGlas.cpp
+│       │       │   ├── TriggerSubConditionNumberOfInterrupts.cpp
+│       │       │   ├── TriggerSubConditionPlayerAction.cpp
+│       │       │   ├── TriggerSubConditionS42Stats.cpp
+│       │       │   ├── TriggerSubConditionTimer.cpp
+│       │       │   ├── TriggerSubConditionUsable.cpp
+│       │       │   └── TriggerSubconditionEntityReference.cpp
+│       │       ├── UI/
+│       │       │   ├── Frontend/
+│       │       │   │   └── FrontendControllerProviderSQ42.h
+│       │       │   ├── GlobalGameUI/
+│       │       │   │   └── GlobalGameUI.cpp
+│       │       │   ├── HUD/
+│       │       │   │   ├── BaseDockingSlot.cpp
+│       │       │   │   ├── Components/
+│       │       │   │   │   ├── BaseDockComponentContextComponent.cpp
+│       │       │   │   │   ├── FlashDockingStationContextComponent.cpp
+│       │       │   │   │   ├── NotificationsContextComponent.cpp
+│       │       │   │   │   └── PlayerDockContextComponent.cpp
+│       │       │   │   ├── DockItems/
+│       │       │   │   │   ├── MarkerAR/
+│       │       │   │   │   │   ├── BaseMarkerARDockItem.cpp
+│       │       │   │   │   │   └── SCObjectDataBankEntryMarker.cpp
+│       │       │   │   │   └── ShipSelectorConsole/
+│       │       │   │   │       └── ShipInformationDockItem.cpp
+│       │       │   │   └── Fields/
+│       │       │   │       └── SCItem/
+│       │       │   │           └── SCItemBaseFields.cpp
+│       │       │   ├── InnerThought/
+│       │       │   │   └── InnerThought.cpp
+│       │       │   ├── Map/
+│       │       │   │   ├── MapDisplayGalacticMap.cpp
+│       │       │   │   ├── MapDisplayInteriorMap.cpp
+│       │       │   │   ├── MapDisplaySpaceMap.cpp
+│       │       │   │   ├── MapDisplayStarMap.cpp
+│       │       │   │   └── MapEvents.h
+│       │       │   ├── MarkerTracking/
+│       │       │   │   ├── EntityComponentARMarkerTracking.h
+│       │       │   │   └── MarkerTrackingVolumeEvents.h
+│       │       │   ├── PlayerUI2D/
+│       │       │   │   └── MarkerARTracker/
+│       │       │   │       └── Trackers/
+│       │       │   │           └── ObjectDataBankEntryTracker.cpp
+│       │       │   ├── SharedComponents/
+│       │       │   │   └── UiControllerContextComponent.cpp
+│       │       │   ├── WorldDisplay/
+│       │       │   │   ├── DataProviders/
+│       │       │   │   │   └── DataBankDataProvider.cpp
+│       │       │   │   ├── Environment/
+│       │       │   │   │   ├── WorldDisplayEnvironmentGalacticPlane.cpp
+│       │       │   │   │   ├── WorldDisplayEnvironmentLocalEntity.cpp
+│       │       │   │   │   └── WorldDisplayEnvironmentMesh.cpp
+│       │       │   │   └── WorldDisplayBase.cpp
+│       │       │   ├── mobiGlas/
+│       │       │   │   └── DockComponents/
+│       │       │   │       └── LauncherDockContextComponent.cpp
+│       │       │   └── VehicleEditor/
+│       │       │       └── VehicleEditorTerminalController.h
+│       │       ├── UsableTacticalPointSystem.cpp
+│       │       ├── Utility/
+│       │       │   ├── ActorCoLocoUtils.cpp
+│       │       │   ├── ActorCoLocoUtils.h
+│       │       │   ├── EntityAnimationAlignmentHelper.cpp
+│       │       │   ├── RestraintUtils.cpp
+│       │       │   ├── SCActorTakeDownUtils.cpp
+│       │       │   └── ThrowableUtils.cpp
+│       │       ├── VehicleHUDMessagingComponent.h
+│       │       ├── VehicleMovementArcadeWheeled.cpp
+│       │       ├── VehicleMovementBase.cpp
+│       │       ├── VehicleMovementBoat.cpp
+│       │       ├── VehicleMovementTrackWheeled.cpp
+│       │       ├── VehicleMovementWheeledBase.cpp
+│       │       ├── VehicleMovementWheeledBaseImpl.cpp
+│       │       ├── Vibration/
+│       │       │   ├── EntityComponentVibration.cpp
+│       │       │   └── EntityComponentVibrationVehicle.cpp
+│       │       ├── VisorSystems/
+│       │       │   └── LocalPlayerControlHints.cpp
+│       │       ├── Weapon/
+│       │       │   ├── Actions/
+│       │       │   │   ├── ChargeDrain/
+│       │       │   │   │   └── WeaponActionFireChargeDrain.cpp
+│       │       │   │   ├── Extinguisher/
+│       │       │   │   │   └── WeaponActionFireExtinguisher.cpp
+│       │       │   │   ├── Healing/
+│       │       │   │   │   └── WeaponHealingBeamUI.h
+│       │       │   │   ├── Salvage/
+│       │       │   │   │   └── WeaponActionFireSalvageRepair.cpp
+│       │       │   │   ├── TractorBeam/
+│       │       │   │   │   ├── WeaponActionFireTractorBeam.cpp
+│       │       │   │   │   └── WeaponTractorBeamAttachableUtils.cpp
+│       │       │   │   ├── WeaponActionAimSimple.cpp
+│       │       │   │   ├── WeaponActionCondition.cpp
+│       │       │   │   ├── WeaponActionDynamicCondition.cpp
+│       │       │   │   ├── WeaponActionFireBeam.cpp
+│       │       │   │   ├── WeaponActionFireBurst.cpp
+│       │       │   │   ├── WeaponActionFireCharged.cpp
+│       │       │   │   ├── WeaponActionFireHealingBeam.cpp
+│       │       │   │   ├── WeaponActionFireRapid.cpp
+│       │       │   │   ├── WeaponActionFireSingle.cpp
+│       │       │   │   ├── WeaponActionGatheringBeam.cpp
+│       │       │   │   ├── WeaponActionGrapple.cpp
+│       │       │   │   ├── WeaponActionLockOn.cpp
+│       │       │   │   ├── WeaponActionSequence.cpp
+│       │       │   │   ├── WeaponActionToggle.cpp
+│       │       │   │   └── WeaponActionUtils.cpp
+│       │       │   ├── AmmoContainerComponent.cpp
+│       │       │   ├── CrosshairUI.cpp
+│       │       │   ├── ExplosiveOrdnance/
+│       │       │   │   ├── EntityComponentExplosiveOrdnance.cpp
+│       │       │   │   ├── ExplosiveOrdnanceDebugHelpers.cpp
+│       │       │   │   └── SCItemBomb.cpp
+│       │       │   ├── Launcher/
+│       │       │   │   └── ProjectileLauncher.cpp
+│       │       │   ├── Missile/
+│       │       │   │   └── SCItemMissile.cpp
+│       │       │   ├── Network/
+│       │       │   │   ├── WeaponCommandBuffer.cpp
+│       │       │   │   └── WeaponStateBuilder.cpp
+│       │       │   ├── SCItemMissileRack.cpp
+│       │       │   ├── SCItemWeaponComponent.cpp
+│       │       │   ├── SCItemWeaponComponent.h
+│       │       │   ├── SCItemWeaponRegenPoolComponent.cpp
+│       │       │   ├── Targeting/
+│       │       │   │   └── TargetingUtils.cpp
+│       │       │   ├── TriggerableDevices/
+│       │       │   │   └── Behaviors/
+│       │       │   │       ├── TriggerableDevicesBehaviorActorStatus.cpp
+│       │       │   │       ├── TriggerableDevicesBehaviorDetach.cpp
+│       │       │   │       ├── TriggerableDevicesBehaviorExplosion.cpp
+│       │       │   │       └── TriggerableDevicesBehaviorUnprime.cpp
+│       │       │   ├── WeaponAimedAtHelper.cpp
+│       │       │   ├── WeaponBeamGroup.cpp
+│       │       │   ├── WeaponConnectionController.cpp
+│       │       │   ├── WeaponReloadUtils.h
+│       │       │   ├── WeaponResourceController.cpp
+│       │       │   ├── WeaponSightHelper.cpp
+│       │       │   ├── WeaponUtils.cpp
+│       │       │   ├── WeaponVisualController.cpp
+│       │       │   ├── CrosshairUI.h
+│       │       │   └── WeaponAttachmentUI.h
+│       │       ├── WeaponLeanOffset.cpp
+│       │       ├── WeaponSystem.cpp
+│       │       └── WheeledPhysicsController.h
+│       └── SDKs/
+│           ├── Optick/
+│           │   └── 1.3.1/
+│           │       └── src/
+│           │           └── optick_core.cpp
+│           ├── boost-devel/
+│           │   └── 1.84.0/
+│           │       └── boost/
+│           │           ├── asio/
+│           │           │   ├── buffers_iterator.hpp
+│           │           │   ├── detail/
+│           │           │   │   ├── hash_map.hpp
+│           │           │   │   ├── resolver_service.hpp
+│           │           │   │   ├── win_iocp_socket_accept_op.hpp
+│           │           │   │   ├── win_iocp_socket_connect_op.hpp
+│           │           │   │   ├── win_iocp_socket_recv_op.hpp
+│           │           │   │   ├── win_iocp_socket_send_op.hpp
+│           │           │   │   └── win_iocp_socket_service.hpp
+│           │           │   ├── ip/
+│           │           │   │   ├── basic_resolver.hpp
+│           │           │   │   └── impl/
+│           │           │   │       └── host_name.ipp
+│           │           │   └── ssl/
+│           │           │       └── detail/
+│           │           │           └── impl/
+│           │           │               └── engine.ipp
+│           │           └── random/
+│           │               ├── discrete_distribution.hpp
+│           │               └── uniform_int_distribution.hpp
+│           └── grpc/
+│               └── 1.49.2/
+│                   └── include/
+│                       ├── google/
+│                       │   └── protobuf/
+│                       │       ├── map_field.h
+│                       │       ├── map_field_inl.h
+│                       │       └── repeated_ptr_field.h
+│                       └── grpcpp/
+│                           └── impl/
+│                               └── codegen/
+│                                   ├── async_stream.h
+│                                   ├── async_unary_call.h
+│                                   ├── call_op_set.h
+│                                   ├── callback_common.h
+│                                   ├── client_callback.h
+│                                   ├── client_interceptor.h
+│                                   ├── completion_queue.h
+│                                   ├── grpc_library.h
+│                                   ├── interceptor_common.h
+│                                   ├── proto_buffer_reader.h
+│                                   ├── proto_buffer_writer.h
+│                                   ├── proto_utils.h
+│                                   ├── server_interceptor.h
+│                                   └── sync_stream.h
+```
+
+***
+
+**Project Structure 2: `C:/dvs/p4/build/sw/devrel/libdev/NGX/core/rel_tot/`**
+
+```
+C:/dvs/p4/build/sw/devrel/libdev/NGX/core/rel_tot/
+└── source/
+    ├── common/
+    │   ├── common_lib.cpp
+    │   └── util-log.cpp
+    └── lib/
+        ├── nvsdk_ngx_d3d11_lib.cpp
+        ├── nvsdk_ngx_lib_windows.cpp
+        └── nvsdk_ngx_vulkan_lib.cpp
+```
+
+***
+
+**Project Structure 3: `C:/Jenkins/ws/wwise_v2021.1/`**
+
+```
+C:/Jenkins/ws/wwise_v2021.1/
+└── Wwise/
+    ├── Partners/
+    │   ├── McDSP/
+    │   │   ├── Common/
+    │   │   │   └── SoundEngine/
+    │   │   │       └── PooledMemoryAllocator.cpp
+    │   │   ├── McDSPFutzBox/
+    │   │   │   └── SoundEnginePlugin/
+    │   │   │       ├── McDSPFutzBoxFX.cpp
+    │   │   │       └── McDSPFutzBoxFXParams.cpp
+    │   │   └── McDSPLimiter/
+    │   │       └── SoundEnginePlugin/
+    │   │           ├── DSP/
+    │   │           │   ├── LimiterProcessMonoFloatImpl.cpp
+    │   │           │   ├── LimiterProcessMultiChannelFloatImpl.cpp
+    │   │           │   ├── LimiterProcessStereoFloatImpl.cpp
+    │   │           │   ├── LimiterProcessSurround71FloatImpl.cpp
+    │   │           │   └── LimiterProcessSurroundFloatImpl.cpp
+    │   │           ├── McDSPLimiterFX.cpp
+    │   │           └── McDSPLimiterFXParams.cpp
+    │   └── iZotope/
+    │       └── Trash_Console/
+    │           ├── Delay/
+    │           │   └── Wwise/
+    │           │       └── AudioEngineFX/
+    │           │           ├── iZTrashDelayFX.cpp
+    │           │           └── iZTrashDelayFXParams.cpp
+    │           └── Filter/
+    │               └── Wwise/
+    │                   └── AudioEngineFX/
+    │                       ├── iZTrashFiltersFX.cpp
+    │                       └── iZTrashFiltersFXParams.cpp
+    └── SDK/
+        ├── samples/
+        │   └── Plugins/
+        │       ├── AkAudioInput/
+        │       │   └── Sources/
+        │       │       └── AudioEngineFX/
+        │       │           ├── AkFXSrcAudioInput.cpp
+        │       │           └── AkFXSrcAudioInputParams.cpp
+        │       ├── AkDelay/
+        │       │   └── Sources/
+        │       │       └── AudioEngineFX/
+        │       │           ├── AkDelayFX.cpp
+        │       │           └── AkDelayFXParams.cpp
+        │       ├── AkSineTone/
+        │       │   └── Sources/
+        │       │       └── AudioEngineFX/
+        │       │           ├── AkFXSrcSine.cpp
+        │       │           └── AkFXSrcSineParams.cpp
+        │       └── AkToneGenerator/
+        │           └── Sources/
+        │               └── AudioEngineFX/
+        │                   ├── AkToneGen.cpp
+        │                   └── AkToneGenParams.cpp
+        └── source/
+            └── SoundEngine/
+                ├── AkAudiolib/
+                │   ├── Common/
+                │   │   ├── AkSinkBase.cpp
+                │   │   ├── AkSinkPluginParams.cpp
+                │   │   ├── AkSystemOutputMeta.cpp
+                │   │   └── AkVBAP.cpp
+                │   └── Win32/
+                │       └── AkSinkCoreAudio.cpp
+                └── Plugins/
+                    ├── Common/
+                    │   ├── AkDelayPitchShift.cpp
+                    │   ├── AkMultiBandEQ.cpp
+                    │   ├── AkPhaseVocoder.cpp
+                    │   ├── AkResamplingPhaseVocoder.cpp
+                    │   ├── CircularBuffer.cpp
+                    │   ├── ConvolutionEngine/
+                    │   │   ├── AkHalfPrecisionConvolutionEngine.cpp
+                    │   │   └── AkPartitionedConvolutionEngine.cpp
+                    │   ├── FreqWindow.cpp
+                    │   └── TimeWindow.cpp
+                    ├── Effects/
+                    │   ├── AkCompressor/
+                    │   │   ├── AkCompressorFX.cpp
+                    │   │   └── AkCompressorFXParams.cpp
+                    │   ├── AkConvolutionReverb/
+                    │   │   ├── AkConvolutionReverbFX.cpp
+                    │   │   └── AkConvolutionReverbFXParams.cpp
+                    │   ├── AkExpander/
+                    │   │   ├── AkExpanderFX.cpp
+                    │   │   └── AkExpanderFXParams.cpp
+                    │   ├── AkFDNReverb/
+                    │   │   ├── AkFDNReverbFX.cpp
+                    │   │   └── AkFDNReverbFXParams.cpp
+                    │   ├── AkFlanger/
+                    │   │   ├── AkFlangerFX.cpp
+                    │   │   └── AkFlangerFXParams.cpp
+                    │   ├── AkGain/
+                    │   │   ├── AkGainFX.cpp
+                    │   │   └── AkGainFXParams.cpp
+                    │   ├── AkGuitarDistortion/
+                    │   │   ├── AkGuitarDistortionFX.cpp
+                    │   │   └── AkGuitarDistortionFXParams.cpp
+                    │   ├── AkHarmonizer/
+                    │   │   ├── AkHarmonizerFX.cpp
+                    │   │   └── AkHarmonizerFXParams.cpp
+                    │   ├── AkMeter/
+                    │   │   ├── AkMeterFX.cpp
+                    │   │   ├── AkMeterFXParams.cpp
+                    │   │   └── AkMeterManager.cpp
+                    │   ├── AkParametricEQ/
+                    │   │   ├── AkParametricEQFX.cpp
+                    │   │   └── AkParametricEQFXParams.cpp
+                    │   ├── AkPeakLimiter/
+                    │   │   ├── AkPeakLimiterFX.cpp
+                    │   │   └── AkPeakLimiterFXParams.cpp
+                    │   ├── AkPitchShifter/
+                    │   │   ├── AkPitchShifterFX.cpp
+                    │   │   └── AkPitchShifterFXParams.cpp
+                    │   ├── AkRecorder/
+                    │   │   ├── AkRecorderFX.cpp
+                    │   │   ├── AkRecorderFXParams.cpp
+                    │   │   └── AkRecorderManager.cpp
+                    │   ├── AkRoomVerb/
+                    │   │   ├── AkRoomVerbFX.cpp
+                    │   │   ├── AkRoomVerbFXParams.cpp
+                    │   │   └── ERUnitDual.cpp
+                    │   ├── AkStereoDelay/
+                    │   │   ├── AkStereoDelayFX.cpp
+                    │   │   └── AkStereoDelayFXParams.cpp
+                    │   ├── AkTimeStretch/
+                    │   │   ├── AkTimeStretchFX.cpp
+                    │   │   └── AkTimeStretchFXParams.cpp
+                    │   ├── AkTremolo/
+                    │   │   ├── AkTremoloFX.cpp
+                    │   │   └── AkTremoloFXParams.cpp
+                    │   ├── Common/
+                    │   │   ├── AllpassFilter.cpp
+                    │   │   ├── DelayLine.cpp
+                    │   │   ├── DelayLineLight.cpp
+                    │   │   └── UniComb.cpp
+                    │   └── MasteringSuite/
+                    │       ├── ChannelContext.cpp
+                    │       ├── MasteringSuiteFX.cpp
+                    │       └── MasteringSuiteFXParams.cpp
+                    ├── Sinks/
+                    │   └── AkMotionSink/
+                    │       ├── Register.cpp
+                    │       └── Win32/
+                    │           ├── AkDirectInputRumbleSink.cpp
+                    │           ├── AkQuadAudioHapticsSink.cpp
+                    │           ├── AkRumbleSink.cpp
+                    │           ├── AkScePadRumbleSink.cpp
+                    │           └── AkXInputRumbleSink.cpp
+                    └── Sources/
+                        ├── AkMotionGenerator/
+                        │   └── AkMotionGenerator.cpp
+                        ├── AkSilenceSource/
+                        │   └── AkFXSrcSilence.cpp
+                        └── AkSynthOne/
+                            ├── AkSynthOne.cpp
+                            └── AkSynthOneParams.cpp
