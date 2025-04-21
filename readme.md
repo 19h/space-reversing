@@ -322,3 +322,61 @@ In short, *Star Citizen*’s toolchain trajectory illustrates a maturing AAA pip
 * **Platform‑conformant tooling** (CET/CET, huge‑page compliance, secure module loading).
 
 Teams and researchers who re‑gear along those vectors retain clear analytical supremacy even as binary complexity and defensive posture keep climbing.
+
+---
+
+### Pattern crib‑sheet for live scanning & hooks
+*for folks who live in IDA, not PowerPoint*
+
+> **Heads‑up:** Binary churn is relentless—some signatures below will eventually rot.
+> When a pattern fails to resolve, stop brute‑scanning and look at what the bytes were *doing*: identify the prologue, the RIP‑relative load, the comparison, etc., then craft a broader search around that behavior.
+> Also think twice before patching routines with a forest of cross‑references; the higher the xref count, the greater the collateral damage if you get the hook wrong.
+
+| # | Hex pattern (spaces ignored) | Core mnemonic(s) | Hook target | Why we care / typical patch |
+|---|------------------------------|------------------|-------------|-----------------------------|
+| 1 | `48 89 5C 24 10 48 89 6C 24 18 56 48 83 EC 20 33 DB 49` | `MOV [rsp+10h], rbx` … | **Object factory entry** | Prologue that saves RBX; landing here gives you the top of the allocation/constructor wrapper—ideal for a straight call or a detour. |
+| 2 | `E8 ?? ?? ?? ?? 48 8D 4C 24 ?? E8 ?? ?? ?? ?? 84 C0 74 ?? 48 8B 4C 24 ?? 48 8D 54 24 ?? 49 23 CE 45 33 C0` | `CALL rel32` | **Render‑proxy getter** | First `E8` jumps into the visual component fetch; grab the full chain and you’re sitting inside the universal “give me my CRenderProxy” thunk. |
+| 3 | `0F BF 81 E4 00 00 00 3B` | `MOVSX ?, word [rcx+0E4h]` | **Phys→logic bridge** | Loads a 16‑bit handle from a physics object; great pivot for walking back to the owning gameplay entity. |
+| 4 | `E8 ?? ?? ?? ?? C5 7B 10 4C 24 ?? C5 FB 10 7C 24 ?? C5 7B` | `CALL rel32` | **Bone matrix fetch** | Hot path that spits out a bone transform—perfect to hijack animation or add custom hit‑tests. |
+| 5 | `E8 ?? ?? ?? ?? 45 84 FF 0F 84 ?? ?? ?? ?? 48 8D 4B` | `CALL rel32` | **Local bounds (AABB)** | Fills the model’s AABB; patch for custom culling or hitbox viz. |
+| 6 | `48 89 5C 24 10 57 48 83 EC 20 8B DA E8` | `MOV [rsp+10h], rbx` … | **Character render‑proxy** | Same idea as #1, but for animated meshes—hook to swap skins or mess with LOD. |
+| 7 | `E8 ?? ?? ?? ?? C5 FA 5F FE` | `CALL rel32` | **Local‑player tick** | Movement update. Patch for speed‑hack, noclip, whatever. |
+| 8 | `E8 ?? ?? ?? ?? 40 F6 C7 04 74 08 48 8B CB` | `CALL rel32` | **Quantum‑drive check** | Verifies warp readiness; today we just piggy‑back the higher‑level update, but the sig still works for direct hacks. |
+| 9 | `C5 FA 10 05 ?? ?? ?? ?? C5 FA 59 91` | `VMOVSS xmm0,[rip+imm32]` | **Weapon overheat const** | RIP‑rel load of heat‑per‑shot. Patch the float at the target addr, not the code. |
+| 10 | `E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? C5 FA 59 0D` | `CALL rel32` | **Spread calculator** | Two stacked calls frame the ballistic spread math—nuke outer one to laser‑beam everything. |
+| 11 | `48 8B C4 48 81 EC ?? ?? ?? ?? C5 FA 10 2D ?? ?? ?? ?? C5 F8 29 70 ?? 49 B8` | `MOV rax,rsp` | **Spaceship main‑loop** | Very first op of the ship tick; prime real estate for per‑frame telemetry or flight overrides. |
+| 12 | `89 44 24 24 8B 44 24 24 48 8B 4C` | `MOV [rsp+24h], eax` | **Signature range update** | Writes freshly computed detection range; clamp or boost to taste. |
+| 13 | `48 8B C4 C5 FA 11 48 ?? 53 57 41` | `MOV rax,rsp` + `VMOVSS` | **Boost‑charge update** | Early float spill inside the afterburner recharge—hook for infinite boost. |
+| 14 | `C7 02 00 00 80 3F C7 42 04 00 00 80 3F C7 42 08 00 00 80 3F` | `MOV dword […],1.0f` | **Boost‑multiplier init** | Triple write of 1.0f; change any to go past 100 %. |
+| 15 | `C5 FA 10 80 ?? 04 00 00 C4 C1 78 2E` | `VMOVSS xmm0,[rax+???]` | **Ship max‑vel read** | Pulls top‑speed scalar—overwrite or detour to uncap. |
+| 16 | `E8 ?? ?? ?? ?? 4C 8B CE 48 8D 54 24 ?? 4D` | `CALL rel32` | **Thrust‑delay filter** | Interpolates thrust for sfx; NOP to kill throttle lag. |
+| 17 | `E8 ?? ?? ?? ?? 48 85 C0 74 18 44 8B 4C` | `CALL rel32` | **Entity lookup** | Central ID→ptr resolver; wrap to spawn or spoof entities. |
+| 18 | `C5 FA 10 41 0C …` | `VMOVSS xmm0,[r9+0Ch]` | **Damage bucket** | Loads specific damage type; multiply, cap or null‑it. |
+| 19 | `BA ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 85 C0` | `MOV edx,imm32` | **Crash‑dump flag** | Sets 0xA000‑like flags before the “set crash‑dump” call—NOP to silence minidumps. |
+| 20 | `C5 A2 59 3D ?? ?? ?? ?? C5 DA` | `VMULSS …, [rip+imm32]` | **ROF multiplier** | RIP‑rel scalar; tweak to crank or tame fire rate. |
+| 21 | *same bytes as #9* | `VMOVSS` | **Backup overheat const** | Second copy—patch both here and #9. |
+| 22 | `41 83 BF ?? ?? ?? ?? ?? 0F 85 96 00 00 00 41 0F B6 87` | `CMP [r15+1128h],imm8` | **Instant‑warp gate** | Compares quantum‑state vs `EJUMP_INPROGRESS`; NOP the check, jump any time. |
+| 23 | `C5 EB 58 E9 C5 CB 59 C6` | `VADDSD xmm5,xmm2,xmm1` | **Thrust add** | Double‑prec add in flight model—NOP to lift hard speed cap. |
+| 24 | `48 89 BB 60 0A 00 00` | `MOV [rbx+0A60h],rbp` | **Warp‑calibration write** | Writes progress; NOP to skip the countdown. |
+| 25 | `C5 7A 5F CE` | `VMAXSS xmm9,xmm0,xmm6` | **Shield dmg clamp** | Chooses max(a,b) to cap damage—NOP for full damage passthrough. |
+| 26 | `C4 C1 7B 11 86 40 03 00 00` | `VMOVSD [r14+340h],xmm0` | **EVA pos write (X)** | Axis‑specific EVA pos; blank for “plane‑walker” noclip. |
+| 27 | `41 89 86 48 03 00 00` | `MOV [r14+348h],eax` | **EVA int write (Y)** | Companion to #26—kills bbox checks mid‑EVA. |
+| 28 | `C5 FB 58 A0 D0 01 00 00` | `VADDSD xmm4,xmm0,[rax+1D0h]` | **No‑clip collide (Y)** | Part of tri‑axis collision add; NOP to ignore. |
+| 29 | `C5 F3 58 98 C8 01 00 00` | `VADDSD xmm3,xmm1,[rax+1C8h]` | **No‑clip collide (Z)** | Second axis. |
+| 30 | `C5 FB 58 90 C0 01 00 00` | `VADDSD xmm2,xmm0,[rax+1C0h]` | **No‑clip collide (X)** | Third axis. |
+| 31 | `89 88 F4 00 00 00 48 8B 84` | `MOV [rax+0F4h],ecx` → `MOV rax,[rsp+…]` | **Ship ammo counter** | Weapon stores new round count here—NOP or redirect for true infinite ammo. |
+| 32 | `C5 FA 11 3F 80 78 2A 00` | `VMOVSS [rdi],xmm7` → `CMP byte [rax+2Ah],00` | **Health store** | Persists health float then checks status byte—force‑write `100.0f` for zombie mode. |
+| 33 | `C4 C1 7A 10 8E E4 04 00 00` | `VMOVSS xmm1,[r14+4E4h]` | **Movement speed scalar** | Pulls current speed from player struct; override before the read or detour after for speed‑hack. |
+
+---
+
+**Workflow refresher**
+
+1. **Scan** the loaded module with these sigs (wildcards `??` respected).
+2. **Resolve**: if the sig is in‑function, back‑up to the prologue; if it’s a const, trace the RIP‑rel displacement.
+3. **Patch**:
+   * Data reads (#9, #20, #21) → change the underlying float.
+   * Gate checks (#22–#25) → NOP‑slide.
+   * Function entries (#1, #4, #11, …) → detour trampoline.
+
+Re‑diff every build—CIG loves shuffling prologues and alignment.
