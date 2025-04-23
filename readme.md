@@ -657,3 +657,206 @@ While DataCore has proven stable, vigilance is required regarding potential futu
     | `FieldInfo` Expansion (e.g., `typeHash`)       | `sizeof(FieldInfo)` != 40; parser over/under-reads.          | Parse dynamically based on known member offsets. Check for trailing data after `defaultValue`. Use runtime size checks.                         |
     | Mandatory CET / Enhanced CFG Enforcement       | Classic hooks/trampolines may crash or be blocked by OS/HW.  | Use CET-aware hooking frameworks. Ensure injected code uses `endbr64`. Update CFG valid target bitmap if needed. Prioritize data-only techniques. |
     | PE Containerization (e.g., PEBox)              | Direct module mapping based on filename fails.               | Develop parsers for the container format. Extract or virtually map inner PE modules, then apply known DataCore offsets relative to module bases. |
+
+## DataCore -- Enum registry architecture
+
+### 1.  Architectural Overview
+Star Citizen’s run-time “DataCore” forms a type registry in which every enumerated type (“enum”) is materialised as two nested **red–black trees**:
+
+1. **Central Registry Tree** – maps **enum *type* names** → metadata record
+2. **Per-Enum Value Tree** – maps **enum *member* names** → `int32_t` value
+
+Both maps are classic `_Tree_node<_Mytree>` lay-outs produced by MSVC’s STL (post-VS2015 x64 ABI). Consequently, each node consists of three pointer links (`_Left / _Parent / _Right`), a `char Color`, and an in-place `std::pair<K,V>` payload that begins 0x20 bytes from the node base.
+Memory is owned exclusively by DataCore; zero external references to STL iterators are kept, permitting free reclamation during `atexit` teardown.
+
+```
+                      ┌──────────────────────┐
+                      │     EnumRegistry     │   (§4)
+                      │   ────────────────   │
+     Global          →│ pHeaderNode (sent)   │────┐
+  DataCore ptr        │ size                 │    │
+                      └──────────────────────┘    │
+                                                  ▼
+                                  (Red–Black, EnumRegistryNode* (§4.2))
+```
+
+---
+
+### 2.  Fundamental String Representation (“ManagedString”)
+
+All textual keys live in a proprietary small-metadata heap object wrapped around a classical C-string.
+
+| Offset | Type        | Meaning                                  |
+|--------|-------------|------------------------------------------|
+| 0x00   | `uint32_t`  | `length` (utf-8 code units, *no* NUL)    |
+| 0x04   | `uint32_t`  | `capacity` (bytes excl. NUL)             |
+| 0x08   | `char[]`    | `stringData` **← user‐facing pointer**   |
+
+*Implementation notes*
+
+* Allocation = `length + 9` bytes; byte 8 is reserved for the terminator.
+* Freeing subtracts 8 bytes to obtain the true base and hands it to the custom allocator.
+* Copy semantics: the **central type registry node** takes ownership via *move*; the **per-enum value node** takes ownership via *copy*.
+
+```c
+typedef struct ManagedStringMetadata {
+    uint32_t len;      // 0x00
+    uint32_t cap;      // 0x04
+} ManagedStringMetadata;
+
+typedef struct ManagedStringLayout {
+    ManagedStringMetadata meta;
+    char data[];       // 0x08
+} ManagedStringLayout;
+```
+
+---
+
+### 3.  Per-Enum Value Map
+
+Each enum owns exactly one `EnumValueMap` header that in turn roots a red–black tree of `EnumValueMapNode` elements.
+
+#### 3.1  `EnumValueMap` (control block, 16 B)
+
+| Offset | Type                             |
+|--------|----------------------------------|
+| 0x00   | `EnumValueMapNode *pHeaderNode`  |
+| 0x08   | `uint64_t size`                  |
+
+#### 3.2  `EnumValueMapNode` (tree node, 0x30 B)
+
+| Off | Type                 | Purpose                                         |
+|-----|----------------------|-------------------------------------------------|
+| 0x00| `EnumValueMapNode*`  | `_Left`                                         |
+| 0x08| `EnumValueMapNode*`  | `_Parent`                                       |
+| 0x10| `EnumValueMapNode*`  | `_Right`                                        |
+| 0x18| `uint8_t`            | `Color` (0 = red, 1 = black)                    |
+| 0x19| **padding 7B**       |                                                 |
+| 0x20| `char*`              | **Key** → `ManagedStringLayout::data`           |
+| 0x28| `int32_t`            | **Value** (enum constant)                       |
+| 0x2C| **padding 4B**       |                                                 |
+
+---
+
+### 4.  Central Enum Registry
+
+The global registry is a second red–black tree whose payload is a metadata triple
+`(typeName, typeCode, EnumValueMap*)`.
+
+#### 4.1  `EnumRegistry` (control block, 16 B)
+
+| Offset | Type                       |
+|--------|----------------------------|
+| 0x00   | `EnumRegistryNode* head`   |
+| 0x08   | `uint64_t size`            |
+
+#### 4.2  `EnumRegistryNode` (0x38 B)
+
+| Off | Type                   | Purpose                                                |
+|-----|------------------------|--------------------------------------------------------|
+| 0x00| `EnumRegistryNode*`    | `_Left`                                                |
+| 0x08| `EnumRegistryNode*`    | `_Parent`                                              |
+| 0x10| `EnumRegistryNode*`    | `_Right`                                               |
+| 0x18| `uint8_t`              | `Color`                                                |
+| 0x19| **padding 7B**         |                                                        |
+| 0x20| `char*`                | **Key** → enum *type-name* string                      |
+| 0x28| `uint64_t`             | **typeCode** (empirically `4` for enums)               |
+| 0x30| `EnumValueMap*`        | **pValueMap** (pointer to §3.1 control block)          |
+
+---
+
+### 5.  Algorithms
+
+#### 5.1  Lazy Initialisation – Single Enum
+
+1. **Guard flag** in `.data` section prevents re-entry.
+2. Create temporary `ManagedString`s for every `(name,value)` pair.
+3. For each pair:
+   * Search value-tree by string comparison.
+   * If absent ⇒ allocate 0x30 B node, copy key string (deep copy), set `enumValue`.
+   * Insert via MSVC’s `_Rb_tree_insert_and_rebalance`.
+4. Destroy temporary strings.
+5. Register `atexit` callback that walks the value-tree post-order, frees nodes then descriptor.
+6. Return pointer to the freshly populated `EnumValueMap`.
+
+#### 5.2  Central Registry Registration
+
+1. Obtain registry pointer from global interface (engine object vtable + 0x240).
+2. Ensure step 5.1 has been executed to obtain `EnumValueMap*`.
+3. Build one temporary `ManagedString` containing the **enum type name**.
+4. Lookup/insert into registry tree (same red–black insert). On *insert* the string pointer is **moved** into the node.
+5. Write `typeCode = 4` and `pValueMap` into the node’s 0x28/0x30 fields.
+6. Destroy temporary string (no ownership leak).
+
+#### 5.3  Lookup Operations (at run-time)
+
+* **Enum type by name**: binary search in registry tree → returns `EnumValueMap*`.
+* **Enum member by name**: second-level search inside the map’s value tree.
+Both searches execute `strcmp` on the `stringData` region of `ManagedString`, thus pointer equality is **never** assumed.
+
+#### 5.4  Dump / Traversal Strategy
+
+In-order successor logic:
+
+```c
+EnumNode* nextNode(EnumNode* n, EnumNode* head) {
+    if (n->_Right != head)
+        return leftmost(n->_Right, head);
+    while (n == n->_Parent->_Right)
+        n = n->_Parent;
+    return n->_Parent;
+}
+```
+
+where `leftmost(x)` descends `_Left` until sentinel.
+Traversal is guaranteed O(n) with no recursion.
+
+---
+
+### 6.  Memory Management
+
+| Resource                 | Allocation                    | Deallocation (atexit)    |
+|--------------------------|-------------------------------|--------------------------|
+| `ManagedString`          | `alloc(len+9)`                | `free(ptr – 8)`          |
+| Tree nodes (both kinds)  | `alloc(0x30 / 0x38)`          | `free(node)`             |
+| Control blocks           | Static or heap via allocator  | `free(block)`            |
+
+Allocator is a thin wrapper over the engine’s global `MemoryMgr`, delivering 16-byte aligned blocks and segmentation tracking for leak detection. No STL `new/delete` are used.
+
+---
+
+### 7.  Thread Safety & Order of Destruction
+
+* Initialisers rely on static-local guards → zero-cost after first call.
+* Internal inserts are **not** protected by locks; the calling game code serialises initialisation during module load.
+* Tear-down order follows C/C++ `atexit` FIFO: each enum map is destroyed before the registry node that references it, preventing dangling pointers.
+
+---
+
+### 8.  Practical Re-use Guidelines
+
+1. Walk trees using MSVC offsets (`L=0x0, P=0x8, R=0x10, V=0x20`).
+2. First child is `head->_Left`; sentinel node is `head` itself.
+3. To get every `(name,value)` pair:
+   ```c
+   for (n = head->_Left; n != head; n = nextNode(n, head)) {
+       const char* name = *(char**)(n + 0x20);
+       int32_t     val  = *(int32_t*)(n + 0x28);
+   }
+   ```
+4. Type → map resolution is likewise a two-level traversal starting from the registry control block embedded in `DataCore + 0x120`.
+
+---
+
+### 9.  Summary Diagram
+
+```
+        EnumRegistry                     EnumValueMap
+┌──────┐ 0x00 pHeader ─┐           ┌──────┐ 0x00 pHeader ─┐
+│Ctrl  │               │           │Ctrl  │               │
+│Blk   │ 0x08 size     │           │Blk   │ 0x08 size     │
+└──────┘               ▼           └──────┘               ▼
+          (red–black tree)                      (red–black tree)
+          key = type name                       key = member name
+          val = {typeCode, Map*}                val = int32_t
+```
