@@ -1,6 +1,7 @@
+// vtable slot 31: Get relative position from camera
 // frida-script.js
 //
-// Frida script to mirror the game’s C++ entity system in idiomatic JavaScript,
+// Frida script to mirror the game's C++ entity system in idiomatic JavaScript,
 // providing rich, object-oriented wrappers around native memory structures.
 
 "use strict";
@@ -19,11 +20,28 @@ function readCString(ptr) {
 }
 
 // Helper to call a virtual method by vtable index
-function callVFunc(thisPtr, index, returnType, argTypes, args = []) {
-    const vtable = thisPtr.readPointer();
-    const fnPtr = vtable.add(index * PTR_SIZE).readPointer();
-    const fn = new NativeFunction(fnPtr, returnType, ["pointer", ...argTypes]);
-    return fn(thisPtr, ...args);
+function callVFunc(thisPtr, index, returnType, argTypes, args = [], name = null) {
+    try {
+        if (thisPtr.isNull()) {
+            throw new Error("Null pointer passed to callVFunc");
+        }
+        
+        const vtable = thisPtr.readPointer();
+        if (vtable.isNull()) {
+            throw new Error("Null vtable pointer");
+        }
+        
+        const fnPtr = vtable.add(index * PTR_SIZE).readPointer();
+        if (fnPtr.isNull()) {
+            throw new Error(`Null function pointer at vtable index ${index}`);
+        }
+        
+        const fn = new NativeFunction(fnPtr, returnType, ["pointer", ...argTypes]);
+        return fn(thisPtr, ...args);
+    } catch (e) {
+        console.log(`callVFunc error at index ${index}${name ? ` (${name})` : ''}: ${e.message}`);
+        throw e;
+    }
 }
 
 // Vector3 struct
@@ -58,7 +76,77 @@ class CEntityClass {
     }
 }
 
-// Wrapper for CEntity (size: 0xA10)
+// Wrapper for CZone (size: 0x513D0)
+class CZone {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // vtable slot 0: Scalar deleting destructor
+    destroy() {
+        callVFunc(this.ptr, 0, "void", []);
+    }
+
+    // vtable slot 1: Next - advances to the next zone in linked list
+    next() {
+        const nextPtr = callVFunc(this.ptr, 1, "pointer", []);
+        return nextPtr.isNull() ? null : new CZone(nextPtr);
+    }
+
+    // vtable slot 31: Get relative position from camera
+    getRelativePosition(camPosVec) {
+        const outRel = Memory.alloc(24); // 3 doubles (24 bytes)
+
+        // Create a native array from the camera position vector
+        const nativeCamPos = Memory.alloc(24);
+        nativeCamPos.writeDouble(camPosVec[0]);
+        nativeCamPos.add(8).writeDouble(camPosVec[1]);
+        nativeCamPos.add(16).writeDouble(camPosVec[2]);
+
+        callVFunc(this.ptr, 31, "void", ["pointer", "pointer"], [outRel, nativeCamPos]);
+
+        return {
+            x: outRel.readDouble(),
+            y: outRel.add(8).readDouble(),
+            z: outRel.add(16).readDouble()
+        };
+    }
+
+    // vtable slot 62: Get zone name
+    getName() {
+        const namePtr = callVFunc(this.ptr, 62, "pointer", []);
+        return readCString(namePtr);
+    }
+
+    get name() {
+        return this.getName();
+    }
+}
+
+// Wrapper for CZoneSystem (size: 0x108)
+class CZoneSystem {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // vtable slot 0: Scalar deleting destructor
+    destroy() {
+        callVFunc(this.ptr, 0, "void", []);
+    }
+
+    // vtable slot 1: Scalar (non-deleting) destructor
+    destructor() {
+        callVFunc(this.ptr, 1, "void", []);
+    }
+
+    // vtable slot 13: GetFirstZone
+    getFirstZone() {
+        const ptr = callVFunc(this.ptr, 13, "pointer", []);
+        return ptr.isNull() ? null : new CZone(extractLower48(ptr));
+    }
+}
+
+// Wrapper for CEntity (size: 0x02B8)
 class CEntity {
     constructor(ptr) {
         this.ptr = ptr;
@@ -74,38 +162,135 @@ class CEntity {
         return this.ptr.add(0x10).readS64();
     }
 
-    // c_entity_class_ at 0x20 (CEntityClass*)
+    // entity_class_ at 0x20 (CEntityClass*)
     get entityClassPtr() {
         const raw = this.ptr.add(0x20).readPointer();
         return extractLower48(raw);
     }
+
     get entityClass() {
         const clsPtr = this.entityClassPtr;
         return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
     }
 
-    // world-local position doubles at offsets 0xF0, 0xF8, 0x100
-    get worldPos() {
-        const x = this.ptr.add(0xf0).readDouble();
-        const y = this.ptr.add(0xf8).readDouble();
-        const z = this.ptr.add(0x100).readDouble();
+    // x_local_pos_, y_local_pos_, z_local_pos_ at offsets 0xF8, 0x100, 0x108
+    get zonePos() {
+        const x = this.ptr.add(0xF8).readDouble();
+        const y = this.ptr.add(0x100).readDouble();
+        const z = this.ptr.add(0x108).readDouble();
         return new DVec3(x, y, z);
     }
 
-    // name_ at 0x290 (const char*)
+    // name_ at 0x298 (const char*)
     get name() {
-        const namePtr = this.ptr.add(0x290).readPointer();
+        const namePtr = this.ptr.add(0x298).readPointer();
         return readCString(namePtr);
     }
 
-    // zone_ at 0x2A8 (CZone*)
-    get zonePtr() {
-        return this.ptr.add(0x2a8).readPointer();
+    // zone_ at 0x2B0 (CZone*)
+    get zoneFromMemory() {
+        const ptr = this.ptr.add(0x2B0).readPointer();
+        return ptr.isNull() ? null : new CZone(extractLower48(ptr));
+    }
+
+    // Preferred zone getter using virtual function
+    get zone() {
+        return this.getZone();
     }
 
     // Virtual slot 0 => Function0
     function0() {
-        callVFunc(this.ptr, 0, "void", []);
+        callVFunc(this.ptr, 0, "void", [], 'function0');
+    }
+
+    // vfunc 6: Set entity flags using OR operation
+    setFlagsOR(mask, which) {
+        callVFunc(this.ptr, 6, "void", ["uint32", "uint32"], [mask, which], 'setFlagsOR');
+    }
+
+    // vfunc 7: Alias of setFlagsOR or alternative flag bank
+    setFlagsORAlternative(mask, which) {
+        callVFunc(this.ptr, 7, "void", ["uint32", "uint32"], [mask, which], 'setFlagsORAlternative');
+    }
+
+    // vfunc 40: Get count of child entities
+    getChildCount() {
+        return callVFunc(this.ptr, 40, "int", [], 'getChildCount');
+    }
+
+    // vfunc 41: Get child entity at index
+    getChild(index) {
+        const outChild = Memory.alloc(PTR_SIZE);
+        callVFunc(this.ptr, 41, "void", ["uint32", "pointer"], [index, outChild], 'getChild');
+        const childPtr = outChild.readPointer();
+        return childPtr.isNull() ? null : new CEntity(childPtr);
+    }
+
+    // vfunc 42: Get parent entity
+    getParent() {
+        const outParent = Memory.alloc(PTR_SIZE);
+        callVFunc(this.ptr, 42, "void", ["pointer"], [outParent], 'getParent');
+        const parentPtr = outParent.readPointer();
+        return parentPtr.isNull() ? null : new CEntity(parentPtr);
+    }
+
+    // vfunc 78: Get local position
+    getLocalPos(flags = 0) {
+        const outPos = Memory.alloc(24); // sizeof(Vec3)
+        callVFunc(this.ptr, 78, "void", ["pointer", "uint32"], [outPos, flags], 'getLocalPos');
+        const x = outPos.readDouble();
+        const y = outPos.add(8).readDouble();
+        const z = outPos.add(16).readDouble();
+        return new DVec3(x, y, z);
+    }
+
+    get localPos() {
+        return this.getLocalPos(0);
+    }
+
+    // vfunc 89: Get world position (based on C++ offset 0x2C8)
+    getWorldPos(flags = 0) {
+        try {
+            const outPos = Memory.alloc(24); // sizeof(Vec3)
+            callVFunc(this.ptr, 89, "void", ["pointer", "uint32"], [outPos, flags], 'getWorldPos');
+            const x = outPos.readDouble();
+            const y = outPos.add(8).readDouble();
+            const z = outPos.add(16).readDouble();
+            return new DVec3(x, y, z);
+        } catch (e) {
+            console.log(`getWorldPos failed: ${e.message}`);
+            // Fallback to reading from memory offsets
+            return this.zonePos;
+        }
+    }
+
+    get worldPos() {
+        return this.getWorldPos(0);
+    }
+
+    // vfunc 103: Get component by type ID
+    getComponentByTypeID(typeId) {
+        const outHandle = Memory.alloc(PTR_SIZE);
+        callVFunc(this.ptr, 103, "void", ["int16", "pointer"], [typeId, outHandle], 'getComponentByTypeID');
+        const compPtr = outHandle.readPointer();
+        return compPtr.isNull() ? null : compPtr; // Return raw pointer, would need component wrapper
+    }
+
+    // vfunc 199: Get zone this entity is in
+    getZone() {
+        const ptr = callVFunc(this.ptr, 199, "pointer", [], 'getZone');
+        return ptr.isNull() ? null : new CZone(ptr);
+    }
+
+    // vfunc 203: Get zone hosted by this entity
+    get hostedZone() {
+        const ptr = callVFunc(this.ptr, 203, "pointer", [], 'hostedZone');
+        return ptr.isNull() ? null : new CZone(ptr);
+    }
+
+    // vfunc 206: Set local transform
+    setLocalTransform(targetZone, transform, flags) {
+        callVFunc(this.ptr, 206, "void", ["pointer", "pointer", "uint32"], [targetZone, transform, flags], 'setLocalTransform');
     }
 }
 
@@ -113,6 +298,7 @@ class CEntity {
 class CEntityArray {
     constructor(ptr) {
         this.ptr = ptr;
+        console.log(this.ptr);
     }
 
     // max_size_ at 0x00
@@ -170,21 +356,21 @@ class CEntityClassRegistry {
     }
 }
 
-// Wrapper for CEntitySystem (size: 0x6E0)
+// Wrapper for CEntitySystem (size: 0x8A0)
 class CEntitySystem {
     constructor(ptr) {
         this.ptr = ptr;
     }
 
-    // Direct memory for entity_array_ at offset 0x0118
+    // Direct memory for entity_array_ at offset 0x148
     get entityArray() {
-        const arrPtr = this.ptr.add(0x0118);
+        const arrPtr = this.ptr.add(0x148);
         return new CEntityArray(arrPtr);
     }
 
-    // entity_class_registry_ at 0x06D8
+    // entity_class_registry_ at 0x898
     get classRegistry() {
-        const registryPtr = this.ptr.add(0x06d8).readPointer();
+        const registryPtr = this.ptr.add(0x898).readPointer();
         return new CEntityClassRegistry(registryPtr);
     }
 
@@ -198,6 +384,118 @@ class CEntitySystem {
     getClassByName(name) {
         return this.classRegistry.findClass(name);
     }
+
+    // Virtual method to remove an entity by ID
+    removeEntity(entityID) {
+        // Convert the entity ID to a handle
+        if (typeof entityID === 'number') {
+            const handle = new UInt64(entityID);
+            // Call the native RemoveEntity function at 0x1468FC730
+            const fnRemoveEntity = new NativeFunction(
+                Process.getModuleByName(null).base.add(0x1468FC730),
+                'bool',
+                ['pointer', 'uint64'],
+                { scheduling: 'exclusive' }
+            );
+            return fnRemoveEntity(this.ptr, handle);
+        }
+        return false;
+    }
+
+    // Virtual method to delete an entity by handle
+    deleteEntity(entityHandle) {
+        if (!entityHandle) return false;
+
+        // Prepare the handle pointer
+        const handlePtr = Memory.alloc(8);
+        handlePtr.writeU64(entityHandle instanceof UInt64 ? entityHandle : new UInt64(entityHandle));
+
+        // Call the native DeleteEntity function at 0x1468CA580
+        const fnDeleteEntity = new NativeFunction(
+            Process.getModuleByName(null).base.add(0x1468CA580),
+            'double',
+            ['pointer', 'pointer'],
+            { scheduling: 'exclusive' }
+        );
+        return fnDeleteEntity(this.ptr, handlePtr);
+    }
+}
+
+class CRenderer {
+    constructor(ptr) {
+        this.ptr = ptr;
+        console.log(ptr);
+    }
+
+    // ProjectToScreen implementation - vtable slot 67
+    projectToScreen(pos, resolution = { x: 1920.0, y: 1080.0 }, isPlayerViewportRelative = false) {
+        // Allocate memory for output Vector3
+        const outVec = Memory.alloc(4 * 3); // 3 floats (x, y, z)
+        const outX = outVec;
+        const outY = outVec.add(4);
+        const outZ = outVec.add(8);
+
+        // Call the native ProjectToScreen function (vtable slot 67)
+        const result = callVFunc(
+            this.ptr,
+            66,
+            "bool",
+            ["double", "double", "double", "pointer", "pointer", "pointer", "bool", "int64"],
+            [pos.x, pos.y, pos.z, outX, outY, outZ, isPlayerViewportRelative ? 1 : 0, 0]
+        );
+
+        if (result) {
+            // Read output values
+            const x = outX.readFloat() * (resolution.x * 0.01);
+            const y = outY.readFloat() * (resolution.y * 0.01);
+            const z = outZ.readFloat();
+
+            // Return if z > 0 (in front of camera)
+            if (z > 0.0) {
+                return { x, y, z, success: true };
+            }
+        }
+
+        return { x: 0, y: 0, z: 0, success: false };
+    }
+}
+
+class CSystem {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // Camera world position as Vector3
+    get cameraWorldPos() {
+        return new DVec3(
+            this.ptr.add(0x40).readDouble(),
+            this.ptr.add(0x60).readDouble(),
+            this.ptr.add(0x80).readDouble()
+        );
+    }
+
+    // Camera forward vector
+    get cameraForward() {
+        return new DVec3(
+            this.ptr.add(0x30).readDouble(),
+            this.ptr.add(0x50).readDouble(),
+            this.ptr.add(0x70).readDouble()
+        );
+    }
+
+    // Camera up vector
+    get cameraUp() {
+        return new DVec3(
+            this.ptr.add(0x38).readDouble(),
+            this.ptr.add(0x58).readDouble(),
+            this.ptr.add(0x78).readDouble()
+        );
+    }
+
+    // Internal FOV (X-axis)
+    get internalXFOV() {
+        return this.ptr.add(0x118).readFloat();
+    }
 }
 
 // Wrapper for global environment GEnv (size: 0x440)
@@ -206,99 +504,384 @@ class GEnv {
         this.ptr = ptr;
     }
 
-    // c_entity_system_ at 0x00A0
+    // game_ at 0x98
+    get game() {
+        const ptr = this.ptr.add(0x98).readPointer();
+        return ptr.isNull() ? null : new CGame(ptr);
+    }
+
+    // entity_system_ at 0x00A0
     get entitySystem() {
         const sysPtr = this.ptr.add(0x00a0).readPointer();
         return sysPtr.isNull() ? null : new CEntitySystem(sysPtr);
+    }
+
+    // system_ at 0xC0
+    get cSystem() {
+        const ptr = this.ptr.add(0xc0).readPointer();
+        return ptr.isNull() ? null : new CSystem(ptr);
+    }
+
+    // renderer_ at 0xF8
+    get cRenderer() {
+        const ptr = this.ptr.add(0xf8).readPointer();
+        return ptr.isNull() ? null : new CRenderer(ptr);
+    }
+
+    get cZoneSystem() {
+        const ptr = this.ptr.add(0x8).readPointer();
+        return ptr.isNull() ? null : new CZoneSystem(ptr);
+    }
+}
+
+// Wrapper for CGame
+class CGame {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // player_ at 0xC08
+    get player() {
+        const ptr = this.ptr.add(0xC08).readPointer();
+        return ptr.isNull() ? null : new CSCPlayer(ptr);
+    }
+}
+
+// Wrapper for CSCPlayer
+class CSCPlayer {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // owning_entity_ at 0x08
+    get owningEntity() {
+        const ptr = this.ptr.add(0x08).readPointer();
+        return ptr.isNull() ? null : new CEntity(ptr);
+    }
+
+    // name_ at 0x3E8
+    get name() {
+        const namePtr = this.ptr.add(0x3E8).readPointer();
+        return readCString(namePtr);
     }
 }
 
 // === Main polling loop ===
 
 // Replace with the actual static address of GEnv
-const GENV_ADDR = Process.enumerateModulesSync()[0].base.add("0x981D200");
+const GENV_ADDR = Process.enumerateModulesSync()[0].base.add("0x9B4FBE0");
 const gEnv = new GEnv(GENV_ADDR);
 
 console.log("[*] Frida Entity System bridge initialized.");
 
 const run = () => {
+    const cr = gEnv.cRenderer;
+
+    console.log(cr);
+
+    if (!cr) {
+        console.log("[!] cRenderer not yet available");
+        return;
+    }
+
     const es = gEnv.entitySystem;
     if (!es) {
         console.log("[!] entity_system not yet available");
         return;
     }
 
+    console.log("[*] Looking up Player class...");
+
+    const playerClass = es.getClassByName("Player");
+
+    if (!playerClass) {
+        console.log("    [!] Could not find Player class");
+        return;
+    }
+
+     console.log(`    → Player class at ${playerClass.ptr}`);
+
     console.log("[*] Enumerating all entities...");
     const allEntities = es.entityArray.toArray();
     //console.log(allEntities);
     console.log(`    → Found ${allEntities.length} entities`);
 
-    console.log("[*] Looking up Player class...");
-    const playerClass = es.getClassByName("Player");
-    if (!playerClass) {
-        console.log("    [!] Could not find Player class");
-        return;
+    const entityClasses = new Map();
+
+    for (const ent of allEntities) {
+        try {
+            const cls = ent.entityClass;
+            if (!cls) continue;
+            const cls_name = cls.name;
+            entityClasses.set(cls_name, cls);
+        } catch {}
     }
-    console.log(`    → Player class at ${playerClass.ptr}`);
+
+    console.log(`    → Found ${entityClasses.size} entity classes`);
+
+    const entityClassesSorted = Array.from(entityClasses.keys()).sort();
+
+    for (const cls of entityClassesSorted) {
+        console.log(`        [→ ${cls}]`);
+    }
+
+    const actorClasses = [
+//        ...Array.from(entityClasses.values()).filter(cls => cls.name.startsWith("NPC_") || cls.name.startsWith("PU_")).map(cls => cls.name),
+        'Player'
+    ];
+
+    console.log(actorClasses);
+
+    const actorClassPtrs = actorClasses.map(cls => entityClasses.get(cls)?.ptr).filter(ptr => ptr);
 
     console.log("[*] Filtering Player entities...");
     const players = allEntities.filter((ent) => {
         try {
             const cls = ent.entityClass;
-            return cls && cls.ptr.equals(playerClass.ptr);
-        } catch (e) {
-            return false;
-        }
+
+            for (const ptr of actorClassPtrs) {
+                if (cls.ptr.equals(ptr)) {
+                    return true;
+                }
+            }
+        } catch (e) {}
+
+        return false;
     });
 
     console.log(`    → Found ${players.length} Player entities`);
     for (const p of players) {
         const pos = p.worldPos;
+        const proj = cr.projectToScreen(pos);
+
         console.log(
-            `        [${p.ptr}] [ID ${p.id}] ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)})`,
+            `        [${p.ptr}] [ID ${p.id}] ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}) : ${proj.x.toFixed(2)}, ${proj.y.toFixed(2)}, ${proj.z.toFixed(2)})`,
         );
-    }
+   }
 };
 
-const dump = () => {
-    const es = gEnv.entitySystem;
-    if (!es) {
-        console.log("[!] entity_system not yet available");
-        return;
+// Global exception handler to prevent script crashes
+Process.setExceptionHandler((exception) => {
+    console.log("=== EXCEPTION CAUGHT ===");
+    console.log(`Name: ${exception.name}`);
+    console.log(`Message: ${exception.message}`);
+    console.log(`Type: ${exception.type}`);
+    console.log(`Address: ${exception.address}`);
+
+    // Log stack trace if available
+    if (exception.stack) {
+        console.log("Stack trace:");
+        console.log(exception.stack);
     }
 
-    console.log("[*] Enumerating all entities...");
-    const allEntities = es.entityArray.toArray();
-    //console.log(allEntities);
-    console.log(`    → Found ${allEntities.length} entities`);
-
-    const x = [];
-
-    const filterRgx = /.*?(ObjectContainer|Audio|Light|NavPoint|Rotation|AreaBox).*?/;
-
-    for (const e of allEntities) {
-        try {
-            const pos = e.worldPos;
-            const className = e.entityClass.name;
-
-            if (!pos) continue;
-            if ((pos.x + pos.y + pos.z) > 2000) continue;
-            if (filterRgx.test(className)) continue;
-
-            x.push([e.entityClass.name, e.id, e.name, e.flags, pos]);
-        } catch (e) {
-        }
+    // Log memory access details for memory-related exceptions
+    if (exception.memory) {
+        console.log(`Memory operation: ${exception.memory.operation}`);
+        console.log(`Memory address: ${exception.memory.address}`);
     }
 
-    // dump to filtered entities
-    const file = new File("entities.json", "w");
-    file.write(JSON.stringify(x, null, 4));
-    file.close();
+    console.log("========================");
 
-    console.log(`[*] Wrote ${x.length} entities`);
-};
+    // Return true to indicate we've handled the exception
+    return true;
+});
 
 rpc.exports.run = run;
-rpc.exports.dump = dump;
 
-// Keep the script running
+// Helper to search for entities by regex pattern on class names
+function findEntitiesByClassNamePattern(pattern) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return [];
+    }
+
+    const regex = new RegExp(pattern);
+    const allEntities = entitySystem.entityArray.toArray();
+
+    return allEntities.filter(entity => {
+        try {
+            const entityClass = entity.entityClass;
+            if (!entityClass) return false;
+
+            const className = entityClass.name;
+            return regex.test(className);
+        } catch (e) {
+            return false;
+        }
+    });
+}
+
+// Utility to calculate distance between entity and camera
+function calculateDistance(entity) {
+    try {
+        const pos = entity.worldPos;
+        const cameraPos = gEnv.cSystem ? gEnv.cSystem.cameraWorldPos : null;
+
+        if (!cameraPos) return Infinity;
+
+        // Calculate Euclidean distance between entity and camera
+        const dx = pos.x - cameraPos.x;
+        const dy = pos.y - cameraPos.y;
+        const dz = pos.z - cameraPos.z;
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    } catch (e) {
+        return Infinity;
+    }
+}
+
+// Utility to calculate angles between camera and entity
+function calculateAngles(entity) {
+    try {
+        const pos = entity.worldPos;
+        const cSystem = gEnv.cSystem;
+        if (!cSystem) return { yaw: 0, pitch: 0 };
+
+        const cameraPos = cSystem.cameraWorldPos;
+        const cameraForward = cSystem.cameraForward;
+
+        // Vector from camera to entity
+        const toEntity = {
+            x: pos.x - cameraPos.x,
+            y: pos.y - cameraPos.y,
+            z: pos.z - cameraPos.z
+        };
+
+        // Normalize vector
+        const len = Math.sqrt(toEntity.x*toEntity.x + toEntity.y*toEntity.y + toEntity.z*toEntity.z);
+        if (len === 0) return { yaw: 0, pitch: 0 };
+
+        toEntity.x /= len;
+        toEntity.y /= len;
+        toEntity.z /= len;
+
+        // Calculate yaw (horizontal angle)
+        // Project both vectors onto XY plane
+        const forward2D = Math.sqrt(cameraForward.x*cameraForward.x + cameraForward.y*cameraForward.y);
+        const entity2D = Math.sqrt(toEntity.x*toEntity.x + toEntity.y*toEntity.y);
+
+        let yaw = 0;
+        if (forward2D > 0 && entity2D > 0) {
+            // Calculate angle using atan2
+            const camAngle = Math.atan2(cameraForward.y, cameraForward.x);
+            const entityAngle = Math.atan2(toEntity.y, toEntity.x);
+            yaw = (entityAngle - camAngle) * 180 / Math.PI;
+
+            // Normalize to [-180, 180]
+            while (yaw > 180) yaw -= 360;
+            while (yaw < -180) yaw += 360;
+        }
+
+        // Calculate pitch (vertical angle)
+        const pitch = Math.asin(toEntity.z) * 180 / Math.PI - Math.asin(cameraForward.z) * 180 / Math.PI;
+
+        return { yaw, pitch };
+    } catch (e) {
+        return { yaw: 0, pitch: 0 };
+    }
+}
+
+// Search for entities by exact class name
+function findEntitiesByClassName(className) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return [];
+    }
+
+    const allEntities = entitySystem.entityArray.toArray();
+
+    return allEntities.filter(entity => {
+        try {
+            const entityClass = entity.entityClass;
+            if (!entityClass) return false;
+            return entityClass.name === className;
+        } catch (e) {
+            return false;
+        }
+    });
+}
+
+// Utility to print entity information with distance and angles
+function printEntityInfoWithAngles(entity, distance, angles) {
+    try {
+        const worldPos = entity.worldPos;
+        const className = entity.entityClass ? entity.entityClass.name : "<unknown-class>";
+        const name = entity.name || "<no-name>";
+        const zone = entity.zone;
+        const zoneName = zone ? zone.name : "<no-zone>";
+
+        console.log(
+            `[${entity.ptr}] [ID ${entity.id}] Class: ${className} Name: ${name}\n` +
+            `  Zone: ${zoneName}\n` +
+            `  World Position: (${worldPos.x.toFixed(2)}, ${worldPos.y.toFixed(2)}, ${worldPos.z.toFixed(2)})\n` +
+            `  Distance: ${distance.toFixed(2)}m\n` +
+            `  Angles: Yaw=${angles.yaw.toFixed(1)}° Pitch=${angles.pitch.toFixed(1)}°`
+        );
+    } catch (e) {
+        console.log(`Error printing entity info: ${e}`);
+    }
+}
+
+// Export as RPC method
+rpc.exports.findByClassName = function(pattern) {
+    const entities = findEntitiesByClassNamePattern(pattern);
+    console.log(`[*] Found ${entities.length} entities matching pattern: ${pattern}`);
+
+    // Calculate distances and sort entities by distance
+    const entitiesWithDistance = entities.map(entity => {
+        const distance = calculateDistance(entity);
+        return { entity, distance };
+    });
+
+    // Sort by distance (closest first)
+    entitiesWithDistance.sort((a, b) => a.distance - b.distance);
+
+    // Print sorted entities
+    entitiesWithDistance.slice(0, 100).forEach(item => {
+        printEntityInfo(item.entity, item.distance);
+    });
+
+    return entities.length;
+};
+
+// New RPC method to search by exact class name with distance and angles
+rpc.exports.findByExactClassName = function(className) {
+    const entities = findEntitiesByClassName(className);
+    console.log(`[*] Found ${entities.length} entities with class: ${className}`);
+
+    // Calculate distances and angles for each entity
+    const entitiesWithMetrics = entities.map(entity => {
+        const distance = calculateDistance(entity);
+        const angles = calculateAngles(entity);
+        return { entity, distance, angles };
+    });
+
+    // Sort by distance (closest first)
+    entitiesWithMetrics.sort((a, b) => a.distance - b.distance);
+
+    // Print sorted entities with full metrics
+    entitiesWithMetrics.forEach(item => {
+        printEntityInfoWithAngles(item.entity, item.distance, item.angles);
+    });
+
+    return {
+        count: entities.length,
+        entities: entitiesWithMetrics.map(item => {
+            const worldPos = item.entity.worldPos;
+            return {
+                ptr: item.entity.ptr.toString(),
+                id: item.entity.id,
+                name: item.entity.name || "<no-name>",
+                distance: item.distance,
+                yaw: item.angles.yaw,
+                pitch: item.angles.pitch,
+                worldPos: {
+                    x: worldPos.x,
+                    y: worldPos.y,
+                    z: worldPos.z
+                }
+            };
+        })
+    };
+};
