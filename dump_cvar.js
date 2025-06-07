@@ -10,7 +10,7 @@ class CVarManager {
     constructor(moduleName = "StarCitizen.exe") {
         // --- Configuration ---
         this.moduleName = moduleName;
-        this.g_pCVarManagerOffset = ptr("0x980F190");
+        this.g_pCVarManagerOffset = ptr("0x981A190");
         this.enumCVarsVTableOffset = 0x180; // 384 (Returns list of name pointers)
         this.findCVarVTableOffset = 0x48;  // 72  (Confirmed: Finds ICVar* by name)
 
@@ -182,6 +182,8 @@ class CVarManager {
 
         try {
             const valuePtr = nativeGetStringValue(pICVar);
+            console.log(valuePtr, name);
+
             // Handle the case where GetStringValue returns the static buffer
             // We need to read it immediately before another call overwrites it.
             // A more robust solution might involve intercepting/hooking, but this works for simple gets.
@@ -365,7 +367,7 @@ class CVarManager {
     }
 
     /**
-     * Dumps all non-VF_NODUMP CVars to the console or returns as an object.
+     * Dumps all CVars to the console or returns as an object, including VF_NODUMP CVars.
      * @param {boolean} logToConsole - If true, logs to console. If false, returns an object.
      * @returns {object | void} An object mapping CVar names to values if logToConsole is false.
      */
@@ -378,8 +380,9 @@ class CVarManager {
 
         if (logToConsole) console.log(`\n--- CVar Dump (${names.length} total CVars found) ---`);
         let cvarDump = {};
+        let nodumpCvars = {};
         let dumpedCount = 0;
-        let skippedCount = 0;
+        let nodumpCount = 0;
         let errorCount = 0;
 
         for (const name of names) {
@@ -390,10 +393,24 @@ class CVarManager {
                     continue;
                 }
 
-                if ((flags & this.FLAGS.VF_NODUMP) === 0) {
-                    const value = this.getValue(name); // Use internal getValue
-                    if (value !== null) {
-                        const flagsString = this.flagsToString(flags);
+                const value = this.getValue(name); // Use internal getValue
+                if (value !== null) {
+                    const flagsString = this.flagsToString(flags);
+                    
+                    if ((flags & this.FLAGS.VF_NODUMP) !== 0) {
+                        // This is a NODUMP cvar - collect it separately
+                        if (logToConsole) {
+                            // We'll log these later in their own section
+                        } else {
+                            nodumpCvars[name] = {
+                                value: value,
+                                flags: flags,
+                                flagsString: flagsString
+                            };
+                        }
+                        nodumpCount++;
+                    } else {
+                        // Regular cvar
                         if (logToConsole) {
                             console.log(`${name} = ${value} [Flags: 0x${flags.toString(16)} (${flagsString})]`);
                         } else {
@@ -404,14 +421,12 @@ class CVarManager {
                             };
                         }
                         dumpedCount++;
-                    } else {
-                        if (logToConsole) {
-                            console.log(`${name} = [ERROR READING VALUE] [Flags: 0x${flags.toString(16)} (${this.flagsToString(flags)})]`);
-                        }
-                        errorCount++;
                     }
                 } else {
-                    skippedCount++;
+                    if (logToConsole) {
+                        console.log(`${name} = [ERROR READING VALUE] [Flags: 0x${flags.toString(16)} (${this.flagsToString(flags)})]`);
+                    }
+                    errorCount++;
                 }
             } catch(e) {
                 console.warn(`[?] Error processing CVar "${name}" during dump: ${e.message}`);
@@ -419,83 +434,87 @@ class CVarManager {
             }
         }
 
+        // Log the NODUMP cvars in their own section
+        if (logToConsole && nodumpCount > 0) {
+            console.log(`\n--- Hidden CVars (VF_NODUMP) ---`);
+            for (const name of names) {
+                try {
+                    const flags = this.getFlags(name);
+                    if (flags !== null && (flags & this.FLAGS.VF_NODUMP) !== 0) {
+                        const value = this.getValue(name);
+                        if (value !== null) {
+                            console.log(`${name} = ${value} [Flags: 0x${flags.toString(16)} (${this.flagsToString(flags)})]`);
+                        }
+                    }
+                } catch(e) {
+                    // Already counted in error count
+                }
+            }
+        }
+
         console.log(`\n--- Dump Complete ---`);
-        console.log(`[*] CVars Dumped: ${dumpedCount}`);
-        console.log(`[*] CVars Skipped (VF_NODUMP): ${skippedCount}`);
+        console.log(`[*] Regular CVars Dumped: ${dumpedCount}`);
+        console.log(`[*] Hidden CVars (VF_NODUMP): ${nodumpCount}`);
         console.log(`[*] Errors: ${errorCount}`);
 
         if (!logToConsole) {
-            return cvarDump;
+            return {
+                regular: cvarDump,
+                hidden: nodumpCvars
+            };
         }
     }
 }
 
-// --- Example Usage ---
 try {
-    // Ensure you are attached to the process before creating an instance
     const cvarMgr = new CVarManager();
-
-    // Get a specific value
-    const fov = cvarMgr.getValue("cl_fov");
-    console.log(`\n[Example] cl_fov = ${fov}`);
-
-    // Get flags for a CVar
-    const fovFlags = cvarMgr.getFlags("cl_fov");
-    if (fovFlags !== null) {
-        console.log(`[Example] cl_fov flags: 0x${fovFlags.toString(16)} (${cvarMgr.flagsToString(fovFlags)})`);
-    }
-
-    // --- Example of Setting Value ---
-    console.log("\n[Example] Attempting to set w_BiomeBuilder_ShowDebugInfo...");
-    const nameToTest = "w_BiomeBuilder_ShowDebugInfo";
-    const oldValue = cvarMgr.getValue(nameToTest);
-    const newValue = "1"; // Use a string
-    console.log(`[Example] Current value of ${nameToTest}: "${oldValue}"`);
-
-    if (cvarMgr.setValue(nameToTest, newValue)) {
-        const updatedValue = cvarMgr.getValue(nameToTest);
-        console.log(`[Example] ${nameToTest} new value: "${updatedValue}"`);
-        if (updatedValue === newValue) {
-            console.log("[Example] SUCCESS: Value seems to have been set correctly!");
-        } else {
-            console.error("[Example] FAILURE: Value changed, but not to the expected value.");
-        }
-        // Set it back
-        console.log(`[Example] Setting ${nameToTest} back to "${oldValue}"...`);
-        cvarMgr.setValue(nameToTest, oldValue);
-        console.log(`[Example] ${nameToTest} restored value: "${cvarMgr.getValue(nameToTest)}"`);
-    } else {
-        console.log(`[Example] Failed to set ${nameToTest}.`);
-    }
-
-    // --- Example of Setting Flags (Use with extreme caution!) ---
-    console.log("\n[Example] Attempting to set flags for cl_fov...");
-    const flagCVar = "cl_fov";
-    const oldFlags = cvarMgr.getFlags(flagCVar);
-    if (oldFlags !== null) {
-        // Example: Try adding VF_CHEAT (flag value 2)
-        const newFlags = oldFlags | cvarMgr.FLAGS.VF_CHEAT;
-        console.log(`[Example] Current flags for ${flagCVar}: ${cvarMgr.flagsToString(oldFlags)} (0x${oldFlags.toString(16)})`);
-        if (cvarMgr.setFlags(flagCVar, newFlags)) {
-             const updatedFlags = cvarMgr.getFlags(flagCVar);
-             console.log(`[Example] ${flagCVar} new flags: ${cvarMgr.flagsToString(updatedFlags)} (0x${updatedFlags.toString(16)})`);
-             if (updatedFlags === newFlags) {
-                 console.log("[Example] SUCCESS: Flags seem to have been set correctly!");
-             } else {
-                 console.error("[Example] FAILURE: Flags changed, but not to the expected value.");
-             }
-             // Set it back
-             console.log(`[Example] Setting ${flagCVar} flags back...`);
-             cvarMgr.setFlags(flagCVar, oldFlags);
-             console.log(`[Example] ${flagCVar} restored flags: ${cvarMgr.flagsToString(cvarMgr.getFlags(flagCVar))}`);
-        } else {
-            console.log(`[Example] Failed to set flags for ${flagCVar}.`);
-        }
-    }
 
     // Dump all CVars to console
     cvarMgr.dump();
 
+    const tryFlipFlagNeg = (cvarName, flag) => {
+        let currentFlags = cvarMgr.getFlags(cvarName);
+    
+        if (!currentFlags) {
+            console.log(`${cvarName} not found`);
+            return;
+        }
+    
+        let readonly = 0x8;
+        cvarMgr.setFlags(cvarName, currentFlags & ~flag);
+    }
+
+    const tryFlipFlagPos = (cvarName, flag) => {
+        let currentFlags = cvarMgr.getFlags(cvarName);
+        
+        if (!currentFlags) {
+            console.log(`${cvarName} not found`);
+            return;
+        }
+        
+        let readonly = 0x8;
+        cvarMgr.setFlags(cvarName, currentFlags | readonly);
+    }
+    
+    const process = (varName, value) => {
+        tryFlipFlagNeg(varName, cvarMgr.FLAGS.VF_READONLY);
+        tryFlipFlagNeg(varName, cvarMgr.FLAGS.VF_BADGECHECK);
+        tryFlipFlagNeg(varName, cvarMgr.FLAGS.VF_NET_SYNCED);
+        cvarMgr.setValue(varName, value);
+        tryFlipFlagPos(varName, cvarMgr.FLAGS.VF_READONLY);
+    };
+
+    process("pl_corpse.disableDropHeldItemOnDeath", "2");
+    process("pl_corpse.disableLandingZoneRescue", "1");
+    process("pl_corpse.enableDelayedRespawnEntitlement", "1");
+    process("pl_corpse.enableItemRecoveryFlow", "2");
+    process("pl_corpse.keepAllItems", "1");
+    process("pl_corpse.keepMobiGlas", "1");
+    process("pl_corpse.maxCorpsesPerPlayer", "10");
+    process("sys_skipInactiveSleep", "1");
+    process("ai_MovementSystemDebugDraw", "1");
+    process("debugGUI_enable", "1");
+    process("ea_player.log", "1");
 } catch (e) {
     console.error(`[!] Initialization failed: ${e.message}`);
 }
