@@ -25,17 +25,17 @@ function callVFunc(thisPtr, index, returnType, argTypes, args = [], name = null)
         if (thisPtr.isNull()) {
             throw new Error("Null pointer passed to callVFunc");
         }
-        
+
         const vtable = thisPtr.readPointer();
         if (vtable.isNull()) {
             throw new Error("Null vtable pointer");
         }
-        
+
         const fnPtr = vtable.add(index * PTR_SIZE).readPointer();
         if (fnPtr.isNull()) {
             throw new Error(`Null function pointer at vtable index ${index}`);
         }
-        
+
         const fn = new NativeFunction(fnPtr, returnType, ["pointer", ...argTypes]);
         return fn(thisPtr, ...args);
     } catch (e) {
@@ -345,6 +345,7 @@ class CEntityClassRegistry {
     findClass(name) {
         // allocate native CString
         const nameBuf = Memory.allocUtf8String(name);
+        console.log('findClass');
         const clsPtr = callVFunc(
             this.ptr,
             4,
@@ -353,6 +354,185 @@ class CEntityClassRegistry {
             [nameBuf],
         );
         return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
+    }
+
+    /**
+     * Helper function to safely read a C-style string from a NativePointer.
+     * Returns a placeholder string if the pointer is null or if reading fails.
+     * @param {NativePointer} ptr Pointer to the C-string.
+     * @returns {string} The read string or a placeholder.
+     */
+    readSafeCString(ptr) {
+        if (!ptr || ptr.isNull()) {
+            return "[Null String Pointer]";
+        }
+        try {
+            const str = ptr.readCString();
+            // readCString can return null if the string is empty or contains invalid sequences
+            return str === null ? "[Null or Empty String Content]" : str;
+        } catch (e) {
+            return `[${ptr} - Read Error: ${e.message}]`;
+        }
+    }
+
+    /**
+     * Performs an in-order traversal of a Red-Black Tree (typically std::map's internal structure).
+     * @param {NativePointer} nodePtr Current node being visited.
+     * @param {NativePointer} headPtr Pointer to the map's head/sentinel node.
+     * @param {function(string, NativePointer, NativePointer)} callback Called for each valid data-holding node with (className, classPtr, nodePtr).
+     */
+    traverseRBTree(nodePtr, headPtr, callback) {
+        // Base case: current node is null, or it's the head/sentinel node itself.
+        // The head node's _Isnil flag is true and it doesn't represent actual data.
+        if (nodePtr.isNull() || nodePtr.equals(headPtr)) {
+            return;
+        }
+
+        // Standard MSVC std::map node structure offsets (for PTR_SIZE=8, x64):
+        // 0x00 (_Left):  Left child pointer
+        // 0x08 (_Parent): Parent node pointer
+        // 0x10 (_Right): Right child pointer
+        // 0x18 (_Color): char/byte for RB tree color
+        // 0x19 (_Isnil): bool/byte, true if head or NIL leaf
+        // ---padding to align _Myval---
+        // 0x20 (_Myval): std::pair<const Key, Value>
+        //      0x20 (_Myval.first): Key (e.g., pointer to a string object for class name)
+        //      0x28 (_Myval.second): Value (e.g., CEntityClass* pointer)
+
+        const isNilFlagOffset = (3 * PTR_SIZE) + 1; // Offset 0x19 for _Isnil flag
+        const isNil = nodePtr.add(isNilFlagOffset).readU8();
+        if (isNil !== 0) { // If _Isnil is true (typically 1), this node doesn't hold user data.
+            return;
+        }
+
+        // Traverse left subtree
+        const leftChildOffset = 0 * PTR_SIZE;
+        const leftChild = nodePtr.add(leftChildOffset).readPointer();
+        this.traverseRBTree(leftChild, headPtr, callback);
+
+        // Process current node: extract key (class name) and value (class pointer)
+        const keyFieldOffset = 4 * PTR_SIZE; // Offset 0x20 for _Myval.first
+        const stringObjectPtr = nodePtr.add(keyFieldOffset).readPointer();
+
+        let className = "[Invalid Key StringObj Ptr]";
+        if (stringObjectPtr && !stringObjectPtr.isNull()) {
+            // Assuming the string object (KeyType) contains the char* at its own offset 0.
+            // This is common for simple string wrappers or std::string's _Ptr.
+            const classNameCharsPtr = stringObjectPtr;
+            className = this.readSafeCString(classNameCharsPtr);
+        } else {
+            className = "[Null Key StringObj Ptr]";
+        }
+
+        const valueFieldOffset = 5 * PTR_SIZE; // Offset 0x28 for _Myval.second
+        const valueClassPtr = nodePtr.add(valueFieldOffset).readPointer();
+
+        // Invoke the callback with the extracted information
+        callback(className, valueClassPtr, nodePtr);
+
+        // Traverse right subtree
+        const rightChildOffset = 2 * PTR_SIZE;
+        const rightChild = nodePtr.add(rightChildOffset).readPointer();
+        this.traverseRBTree(rightChild, headPtr, callback);
+    }
+
+    // Function to get all registered classes from the registry
+    getAllRegisteredClasses() {
+        console.log("Retrieving all registered entity classes...");
+        console.log(`Target: ${Process.arch}, Pointer Size: ${PTR_SIZE} bytes.`);
+
+        try {
+            console.log(`CEntityClassRegistry instance address: ${this.ptr}`);
+
+            // The std::map for classes (e.g., m_classesByName) is at offset 0x30 in CEntityClassRegistry.
+            // This offset points to the std::map object itself.
+            const mapObjectInRegistryOffset = 0x30;
+            const mapObjectPtr = this.ptr.add(mapObjectInRegistryOffset); // Address of the std::map object
+
+            // In std::map, the first member is typically the _Tree object.
+            // In _Tree, the first member is _Myhead (pointer to head/sentinel node).
+            const mapHeadNodePtr = mapObjectPtr.readPointer(); // mapObjectPtr + 0 -> _Mytree._Myhead
+            if (mapHeadNodePtr.isNull()) {
+                console.error("Error: Map's _Head node pointer (at map_obj_addr+0) is NULL.");
+                return [];
+            }
+            console.log(`Map _Head node address: ${mapHeadNodePtr}`);
+
+            // The second member of _Tree is _Mysize (size_t).
+            const mapSize = mapObjectPtr.add(PTR_SIZE).readULong(); // mapObjectPtr + PTR_SIZE -> _Mytree._Mysize
+            console.log(`Map size reported by std::map object: ${mapSize}`);
+
+            if (mapSize === 0) {
+                console.log("Class registry map is empty (size is 0). No classes to retrieve.");
+                return [];
+            }
+
+            // The actual root of the Red-Black tree is _Head->_Parent.
+            // _Parent is at offset 0x08 (1 * PTR_SIZE) from any node pointer.
+            const parentOffsetInNode = 1 * PTR_SIZE;
+            const treeRootPtr = mapHeadNodePtr.add(parentOffsetInNode).readPointer();
+            if (treeRootPtr.isNull()) {
+                console.error("Error: Tree root pointer (_Head->_Parent) is NULL. Map might be malformed or empty in an unusual way.");
+                return [];
+            }
+            console.log(`Tree root node address: ${treeRootPtr}`);
+
+            // Sanity check: if root is head, map is empty. (Should be covered by mapSize check)
+            if (treeRootPtr.equals(mapHeadNodePtr)) {
+                console.log("Informational: Tree root points to head node, indicating an empty map.");
+                if (mapSize.toUInt32() !== 0) {
+                     console.warn(`Warning: Root is head, but map size is ${mapSize}. This is inconsistent.`);
+                }
+                return []; // Already handled by mapSize check, but good for robustness.
+            }
+
+            const classes = [];
+            this.traverseRBTree(treeRootPtr, mapHeadNodePtr, (className, classPtr) => {
+                const classInst = new CEntityClass(classPtr);
+                classes.push({
+                    name: className,
+                    ptr: classPtr,
+                    flags: classInst.flags,
+                    instance: classInst
+                });
+            });
+
+            if (classes.length !== mapSize) {
+                console.warn(`Warning: Number of traversed classes (${classes.length}) does not match map's reported size (${mapSize}). Traversal might be incomplete or map structure assumptions might be slightly off.`);
+            } else {
+                console.log(`Successfully retrieved ${classes.length} classes.`);
+            }
+
+            return classes;
+
+        } catch (e) {
+            console.error(`Critical Error during class retrieval: ${e.message}`);
+            if (e.stack) {
+                console.error("Stack Trace:\n" + e.stack);
+            }
+            return [];
+        }
+    }
+
+    // Function to print all registered classes
+    dumpAllRegisteredClasses() {
+        const classes = this.getAllRegisteredClasses();
+
+        if (classes.length === 0) {
+            console.log("No classes to dump.");
+            return;
+        }
+
+        console.log("\nRegistered Entity Classes (Format: No. \"Name\": PointerToClass):");
+        console.log("-----------------------------------------------------------------");
+
+        classes.forEach((classInfo, index) => {
+            const classCount = index + 1;
+            console.log(`${classCount.toString().padStart(3, ' ')}. "${classInfo.name}": ${classInfo.flags} @ ${classInfo.ptr}`);
+        });
+
+        console.log("-----------------------------------------------------------------");
+        console.log(`Successfully dumped ${classes.length} classes.`);
     }
 }
 
@@ -385,39 +565,69 @@ class CEntitySystem {
         return this.classRegistry.findClass(name);
     }
 
-    // Virtual method to remove an entity by ID
-    removeEntity(entityID) {
-        // Convert the entity ID to a handle
-        if (typeof entityID === 'number') {
-            const handle = new UInt64(entityID);
-            // Call the native RemoveEntity function at 0x1468FC730
-            const fnRemoveEntity = new NativeFunction(
-                Process.getModuleByName(null).base.add(0x1468FC730),
-                'bool',
-                ['pointer', 'uint64'],
-                { scheduling: 'exclusive' }
-            );
-            return fnRemoveEntity(this.ptr, handle);
-        }
-        return false;
+    // Direct call to spawn entity function at RVA 0x6B65BC0
+    spawnEntity(entityParams) {
+        // Calculate the absolute address from the module base + RVA
+        const moduleBase = Process.enumerateModulesSync()[0].base;
+        const spawnFuncAddr = moduleBase.add(0x6B65BC0);
+
+        // Create native function directly
+        const spawnFunc = new NativeFunction(spawnFuncAddr, "bool", ["pointer", "pointer"]);
+
+        // Call with this pointer and entityParams
+        return spawnFunc(this.ptr, entityParams);
     }
 
-    // Virtual method to delete an entity by handle
-    deleteEntity(entityHandle) {
-        if (!entityHandle) return false;
+    // Helper method to create and spawn an entity by class name
+    createEntity(className, spawnParams = {}) {
+        try {
+            // Get the entity class
+            const entityClass = this.getClassByName(className);
+            if (!entityClass) {
+                console.log(`[!] Could not find entity class: ${className}`);
+                return null;
+            }
 
-        // Prepare the handle pointer
-        const handlePtr = Memory.alloc(8);
-        handlePtr.writeU64(entityHandle instanceof UInt64 ? entityHandle : new UInt64(entityHandle));
+            // Allocate memory for spawn parameters structure
+            const paramsPtr = Memory.alloc(0x200);
+            paramsPtr.writeByteArray(new Array(0x200).fill(0));
 
-        // Call the native DeleteEntity function at 0x1468CA580
-        const fnDeleteEntity = new NativeFunction(
-            Process.getModuleByName(null).base.add(0x1468CA580),
-            'double',
-            ['pointer', 'pointer'],
-            { scheduling: 'exclusive' }
-        );
-        return fnDeleteEntity(this.ptr, handlePtr);
+            // Set entity class pointer at offset 0x00
+            paramsPtr.writePointer(entityClass.ptr);
+
+            // Set parent entity at offset 0x13 * 8 = 0x98 (based on the check in decompiled code)
+            if (spawnParams.parent) {
+                paramsPtr.add(0x98).writePointer(spawnParams.parent);
+                // Also set at offset 0x8 * 8 = 0x40 (zone/context field)
+                paramsPtr.add(0x40).writePointer(spawnParams.parent);
+            }
+
+            // Set entity name at offset 0x17 * 8 = 0xB8
+            if (spawnParams.name) {
+                const namePtr = Memory.allocUtf8String(spawnParams.name);
+                paramsPtr.add(0xB8).writePointer(namePtr);
+            }
+
+            // Set flags at offset 0x18 * 8 = 0xC0
+            if (spawnParams.flags !== undefined) {
+                paramsPtr.add(0xC0).writeU64(spawnParams.flags);
+            }
+
+            // Call the spawn function
+            const success = this.spawnEntity(paramsPtr);
+
+            if (success) {
+                console.log(`[+] Successfully spawned entity of class: ${className}`);
+                return true;
+            } else {
+                console.log(`[!] Failed to spawn entity of class: ${className}`);
+                return false;
+            }
+
+        } catch (e) {
+            console.log(`[!] Error creating entity: ${e.message}`);
+            return false;
+        }
     }
 }
 
@@ -574,36 +784,17 @@ const gEnv = new GEnv(GENV_ADDR);
 
 console.log("[*] Frida Entity System bridge initialized.");
 
+rpc.exports.getGEnv = () => gEnv;
+
 const run = () => {
-    const cr = gEnv.cRenderer;
-
-    console.log(cr);
-
-    if (!cr) {
-        console.log("[!] cRenderer not yet available");
-        return;
-    }
-
     const es = gEnv.entitySystem;
     if (!es) {
         console.log("[!] entity_system not yet available");
         return;
     }
 
-    console.log("[*] Looking up Player class...");
-
-    const playerClass = es.getClassByName("Player");
-
-    if (!playerClass) {
-        console.log("    [!] Could not find Player class");
-        return;
-    }
-
-     console.log(`    → Player class at ${playerClass.ptr}`);
-
     console.log("[*] Enumerating all entities...");
     const allEntities = es.entityArray.toArray();
-    //console.log(allEntities);
     console.log(`    → Found ${allEntities.length} entities`);
 
     const entityClasses = new Map();
@@ -624,10 +815,42 @@ const run = () => {
     for (const cls of entityClassesSorted) {
         console.log(`        [→ ${cls}]`);
     }
+};
+
+const listPlayers = () => {
+    const cr = gEnv.cRenderer;
+
+    console.log(cr);
+
+    if (!cr) {
+        console.log("[!] cRenderer not yet available");
+        return;
+    }
+
+    const es = gEnv.entitySystem;
+    if (!es) {
+        console.log("[!] entity_system not yet available");
+        return;
+    }
+
+    console.log("[*] Enumerating all entities...");
+    const allEntities = es.entityArray.toArray();
+    console.log(`    → Found ${allEntities.length} entities`);
+
+    const entityClasses = new Map();
+
+    for (const ent of allEntities) {
+        try {
+            const cls = ent.entityClass;
+            if (!cls) continue;
+            const cls_name = cls.name;
+            entityClasses.set(cls_name, cls);
+        } catch {}
+    }
 
     const actorClasses = [
-//        ...Array.from(entityClasses.values()).filter(cls => cls.name.startsWith("NPC_") || cls.name.startsWith("PU_")).map(cls => cls.name),
-        'Player'
+        'Player',
+        'PlayerCorpse'
     ];
 
     console.log(actorClasses);
@@ -653,9 +876,11 @@ const run = () => {
     for (const p of players) {
         const pos = p.worldPos;
         const proj = cr.projectToScreen(pos);
+        const className = p.entityClass ? p.entityClass.name : "<unknown>";
+        const isCorpse = className === 'PlayerCorpse';
 
         console.log(
-            `        [${p.ptr}] [ID ${p.id}] ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}) : ${proj.x.toFixed(2)}, ${proj.y.toFixed(2)}, ${proj.z.toFixed(2)})`,
+            `        [${p.ptr}] [ID ${p.id}] ${isCorpse ? 'CORPSE' : 'ALIVE'} ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}) : ${proj.x.toFixed(2)}, ${proj.y.toFixed(2)}, ${proj.z.toFixed(2)})`,
         );
    }
 };
@@ -687,6 +912,7 @@ Process.setExceptionHandler((exception) => {
 });
 
 rpc.exports.run = run;
+rpc.exports.listPlayers = listPlayers;
 
 // Helper to search for entities by regex pattern on class names
 function findEntitiesByClassNamePattern(pattern) {
@@ -781,6 +1007,33 @@ function calculateAngles(entity) {
     }
 }
 
+// Utility to format direction relative to player
+function formatRelativeDirection(angles) {
+    const { yaw, pitch } = angles;
+
+    // Format horizontal direction
+    let horizontalDirection = "";
+    if (Math.abs(yaw) < 1) {
+        horizontalDirection = "directly ahead";
+    } else if (yaw > 0) {
+        horizontalDirection = `${Math.abs(yaw).toFixed(1)}° right`;
+    } else {
+        horizontalDirection = `${Math.abs(yaw).toFixed(1)}° left`;
+    }
+
+    // Format vertical direction
+    let verticalDirection = "";
+    if (Math.abs(pitch) < 1) {
+        verticalDirection = "level";
+    } else if (pitch > 0) {
+        verticalDirection = `${Math.abs(pitch).toFixed(1)}° up`;
+    } else {
+        verticalDirection = `${Math.abs(pitch).toFixed(1)}° down`;
+    }
+
+    return `${horizontalDirection}, ${verticalDirection}`;
+}
+
 // Search for entities by exact class name
 function findEntitiesByClassName(className) {
     const entitySystem = gEnv.entitySystem;
@@ -810,13 +1063,15 @@ function printEntityInfoWithAngles(entity, distance, angles) {
         const name = entity.name || "<no-name>";
         const zone = entity.zone;
         const zoneName = zone ? zone.name : "<no-zone>";
+        const direction = formatRelativeDirection(angles);
 
         console.log(
             `[${entity.ptr}] [ID ${entity.id}] Class: ${className} Name: ${name}\n` +
             `  Zone: ${zoneName}\n` +
             `  World Position: (${worldPos.x.toFixed(2)}, ${worldPos.y.toFixed(2)}, ${worldPos.z.toFixed(2)})\n` +
             `  Distance: ${distance.toFixed(2)}m\n` +
-            `  Angles: Yaw=${angles.yaw.toFixed(1)}° Pitch=${angles.pitch.toFixed(1)}°`
+            `  Direction: ${direction}\n` +
+            `  Raw Angles: Yaw=${angles.yaw.toFixed(1)}° Pitch=${angles.pitch.toFixed(1)}°`
         );
     } catch (e) {
         console.log(`Error printing entity info: ${e}`);
@@ -876,6 +1131,7 @@ rpc.exports.findByExactClassName = function(className) {
                 distance: item.distance,
                 yaw: item.angles.yaw,
                 pitch: item.angles.pitch,
+                direction: formatRelativeDirection(item.angles),
                 worldPos: {
                     x: worldPos.x,
                     y: worldPos.y,
@@ -884,4 +1140,394 @@ rpc.exports.findByExactClassName = function(className) {
             };
         })
     };
+};
+
+// RPC method to get class pointer by name
+rpc.exports.getClassPointer = function(className) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return null;
+    }
+
+    try {
+        const entityClass = entitySystem.getClassByName(className);
+        if (!entityClass) {
+            console.log(`[!] Class '${className}' not found`);
+            return null;
+        }
+
+        console.log(`[*] Found class '${className}' at pointer: ${entityClass.ptr}`);
+        return entityClass.ptr.toString();
+    } catch (e) {
+        console.log(`[!] Error finding class '${className}': ${e.message}`);
+        return null;
+    }
+};
+
+// RPC method to replace entity class types
+rpc.exports.replaceEntityClassType = function(fromClassName, toClassName) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        // Get the source class pointer
+        const fromClass = entitySystem.getClassByName(fromClassName);
+        if (!fromClass) {
+            console.log(`[!] Source class '${fromClassName}' not found`);
+            return { success: false, error: `Source class '${fromClassName}' not found` };
+        }
+
+        // Get the target class pointer
+        const toClass = entitySystem.getClassByName(toClassName);
+        if (!toClass) {
+            console.log(`[!] Target class '${toClassName}' not found`);
+            return { success: false, error: `Target class '${toClassName}' not found` };
+        }
+
+        console.log(`[*] Replacing entities from class '${fromClassName}' (${fromClass.ptr}) to '${toClassName}' (${toClass.ptr})`);
+
+        // Find all entities with the source class type
+        const allEntities = entitySystem.entityArray.toArray();
+        const matchingEntities = allEntities.filter(entity => {
+            try {
+                const entityClass = entity.entityClass;
+                if (!entityClass) return false;
+                return entityClass.ptr.equals(fromClass.ptr);
+            } catch (e) {
+                return false;
+            }
+        });
+
+        console.log(`[*] Found ${matchingEntities.length} entities with class '${fromClassName}'`);
+
+        let successCount = 0;
+        let errorCount = 0;
+
+        // Replace the class pointer for each matching entity
+        for (const entity of matchingEntities) {
+            try {
+                // Get world position and calculate distance before making changes
+                const worldPos = entity.worldPos;
+                const distance = calculateDistance(entity);
+
+                // Write the new class pointer to the entity_class_ field at offset 0x20
+                entity.ptr.add(0x20).writePointer(toClass.ptr);
+                successCount++;
+                console.log(`[+] Successfully changed class for entity ${entity.ptr} (ID: ${entity.id}) at position (${worldPos.x.toFixed(2)}, ${worldPos.y.toFixed(2)}, ${worldPos.z.toFixed(2)}) distance: ${distance.toFixed(2)}m`);
+            } catch (e) {
+                errorCount++;
+                console.log(`[!] Failed to change class for entity ${entity.ptr}: ${e.message}`);
+            }
+        }
+
+        const result = {
+            success: true,
+            fromClass: fromClassName,
+            toClass: toClassName,
+            totalFound: matchingEntities.length,
+            successCount: successCount,
+            errorCount: errorCount
+        };
+
+        console.log(`[*] Class replacement complete: ${successCount} successful, ${errorCount} failed`);
+        return result;
+
+    } catch (e) {
+        console.log(`[!] Error during class replacement: ${e.message}`);
+        return { success: false, error: e.message };
+    }
+};
+
+// RPC method to replace entity class types using regex pattern
+rpc.exports.replaceEntityClassTypeRegex = function(fromClassRegex, toClassName) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        // Compile the regex pattern
+        const regex = new RegExp(fromClassRegex);
+        console.log(`[*] Compiled regex pattern: ${fromClassRegex}`);
+
+        // Get the target class pointer
+        const toClass = entitySystem.getClassByName(toClassName);
+        if (!toClass) {
+            console.log(`[!] Target class '${toClassName}' not found`);
+            return { success: false, error: `Target class '${toClassName}' not found` };
+        }
+
+        console.log(`[*] Target class '${toClassName}' found at ${toClass.ptr}`);
+
+        // Find all entities and filter by regex pattern
+        const allEntities = entitySystem.entityArray.toArray();
+        const matchingEntities = [];
+        const matchedClassNames = new Set();
+
+        for (const entity of allEntities) {
+            try {
+                const entityClass = entity.entityClass;
+                if (!entityClass) continue;
+
+                const className = entityClass.name;
+                if (regex.test(className)) {
+                    matchingEntities.push(entity);
+                    matchedClassNames.add(className);
+                }
+            } catch (e) {
+                // Skip entities that can't be processed
+            }
+        }
+
+        console.log(`[*] Found ${matchingEntities.length} entities matching pattern '${fromClassRegex}'`);
+        console.log(`[*] Matched class names: ${Array.from(matchedClassNames).join(', ')}`);
+
+        let successCount = 0;
+        let errorCount = 0;
+        const processedClasses = {};
+
+        // Replace the class pointer for each matching entity
+        for (const entity of matchingEntities) {
+            try {
+                const originalClassName = entity.entityClass.name;
+
+                // Write the new class pointer to the entity_class_ field at offset 0x20
+                entity.ptr.add(0x20).writePointer(toClass.ptr);
+                successCount++;
+
+                // Track processed classes for reporting
+                if (!processedClasses[originalClassName]) {
+                    processedClasses[originalClassName] = 0;
+                }
+                processedClasses[originalClassName]++;
+
+                console.log(`[+] Successfully changed class for entity ${entity.ptr} (ID: ${entity.id}) from '${originalClassName}' to '${toClassName}'`);
+            } catch (e) {
+                errorCount++;
+                console.log(`[!] Failed to change class for entity ${entity.ptr}: ${e.message}`);
+            }
+        }
+
+        const result = {
+            success: true,
+            fromClassRegex: fromClassRegex,
+            toClass: toClassName,
+            matchedClassNames: Array.from(matchedClassNames),
+            processedClasses: processedClasses,
+            totalFound: matchingEntities.length,
+            successCount: successCount,
+            errorCount: errorCount
+        };
+
+        console.log(`[*] Regex class replacement complete: ${successCount} successful, ${errorCount} failed`);
+        console.log(`[*] Processed classes breakdown:`, processedClasses);
+        return result;
+
+    } catch (e) {
+        console.log(`[!] Error during regex class replacement: ${e.message}`);
+        return { success: false, error: e.message };
+    }
+};
+
+// RPC method to spawn an entity by class name
+rpc.exports.spawnEntityByClass = function(className, options = {}) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        // Default spawn parameters
+        const spawnParams = {
+            name: options.name || `Spawned_${className}_${Date.now()}`,
+            flags: options.flags || 0,
+            zone: options.zone || null,
+            parent: options.parent || null,
+            ...options
+        };
+
+        console.log(`[*] Attempting to spawn entity of class '${className}' with params:`, spawnParams);
+
+        const result = entitySystem.createEntity(className, spawnParams);
+
+        if (result) {
+            console.log(`[+] Successfully spawned entity of class '${className}'`);
+            return {
+                success: true,
+                className: className,
+                spawnParams: spawnParams
+            };
+        } else {
+            console.log(`[!] Failed to spawn entity of class '${className}'`);
+            return {
+                success: false,
+                error: "Spawn function returned false",
+                className: className
+            };
+        }
+
+    } catch (e) {
+        console.log(`[!] Error spawning entity of class '${className}': ${e.message}`);
+        return {
+            success: false,
+            error: e.message,
+            className: className
+        };
+    }
+};
+
+rpc.exports.makeCorpsesLootable = () => rpc.exports.replaceEntityClassType("PlayerCorpse", "PU_Pilots-Human-Criminal-Gunner_Light");
+
+// RPC method to replace a single entity's class type by pointer
+rpc.exports.replaceEntityClass = function(entityPtr, newClassName) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        // Parse the entity pointer
+        const entityPointer = ptr(entityPtr);
+        if (entityPointer.isNull()) {
+            console.log("[!] Invalid entity pointer provided");
+            return { success: false, error: "Invalid entity pointer" };
+        }
+
+        // Get the target class
+        const newClass = entitySystem.getClassByName(newClassName);
+        if (!newClass) {
+            console.log(`[!] Target class '${newClassName}' not found`);
+            return { success: false, error: `Target class '${newClassName}' not found` };
+        }
+
+        // Create entity wrapper to get current info
+        const entity = new CEntity(entityPointer);
+        const originalClass = entity.entityClass;
+        const originalClassName = originalClass ? originalClass.name : "<unknown>";
+
+        console.log(`[*] Replacing entity ${entityPtr} class from '${originalClassName}' to '${newClassName}'`);
+
+        // Get position info for logging
+        const worldPos = entity.worldPos;
+        const distance = calculateDistance(entity);
+
+        // Write the new class pointer to the entity_class_ field at offset 0x20
+        entity.ptr.add(0x20).writePointer(newClass.ptr);
+
+        console.log(`[+] Successfully changed class for entity ${entityPtr} (ID: ${entity.id}) from '${originalClassName}' to '${newClassName}'`);
+        console.log(`    Position: (${worldPos.x.toFixed(2)}, ${worldPos.y.toFixed(2)}, ${worldPos.z.toFixed(2)}) Distance: ${distance.toFixed(2)}m`);
+
+        return {
+            success: true,
+            entityPtr: entityPtr,
+            originalClass: originalClassName,
+            newClass: newClassName,
+            entityId: entity.id,
+            position: {
+                x: worldPos.x,
+                y: worldPos.y,
+                z: worldPos.z
+            },
+            distance: distance
+        };
+
+    } catch (e) {
+        console.log(`[!] Error replacing entity class: ${e.message}`);
+        return { success: false, error: e.message };
+    }
+};
+
+// RPC method to list all entities within a specific distance, sorted by distance
+rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    const cSystem = gEnv.cSystem;
+    if (!cSystem) {
+        console.log("[!] Camera system not available");
+        return { success: false, error: "Camera system not available" };
+    }
+
+    try {
+        console.log(`[*] Searching for entities within ${maxDistance}m range...`);
+
+        const allEntities = entitySystem.entityArray.toArray();
+        const entitiesInRange = [];
+
+        // Filter entities by distance and collect metrics
+        for (const entity of allEntities) {
+            try {
+                const distance = calculateDistance(entity);
+                if (distance <= maxDistance && !(distance >= 1.7 && distance <= 7.9)) {
+                    const angles = calculateAngles(entity);
+                    const worldPos = entity.worldPos;
+                    const className = entity.entityClass ? entity.entityClass.name : "<unknown>";
+                    const name = entity.name || "<no-name>";
+
+                    entitiesInRange.push({
+                        entity: entity,
+                        distance: distance,
+                        angles: angles,
+                        worldPos: worldPos,
+                        className: className,
+                        name: name
+                    });
+                }
+            } catch (e) {
+                // Skip entities that can't be processed
+            }
+        }
+
+        // Sort by distance (closest first)
+        entitiesInRange.sort((a, b) => a.distance - b.distance);
+
+        console.log(`[*] Found ${entitiesInRange.length} entities within ${maxDistance}m range`);
+
+        // Print detailed information for each entity
+        entitiesInRange.forEach((item, index) => {
+            const direction = formatRelativeDirection(item.angles);
+            console.log(
+                `${(index + 1).toString().padStart(3, ' ')}. [${item.entity.ptr}] [ID ${item.entity.id}] Class: ${item.className}\n` +
+                `     Name: ${item.name}\n` +
+                `     Position: (${item.worldPos.x.toFixed(2)}, ${item.worldPos.y.toFixed(2)}, ${item.worldPos.z.toFixed(2)})\n` +
+                `     Distance: ${item.distance.toFixed(2)}m | Direction: ${direction}`
+            );
+        });
+
+        // Return structured data
+        return {
+            success: true,
+            maxDistance: maxDistance,
+            totalFound: entitiesInRange.length,
+            entities: entitiesInRange.map(item => ({
+                ptr: item.entity.ptr.toString(),
+                id: item.entity.id,
+                className: item.className,
+                name: item.name,
+                distance: item.distance,
+                yaw: item.angles.yaw,
+                pitch: item.angles.pitch,
+                direction: formatRelativeDirection(item.angles),
+                worldPos: {
+                    x: item.worldPos.x,
+                    y: item.worldPos.y,
+                    z: item.worldPos.z
+                }
+            }))
+        };
+
+    } catch (e) {
+        console.log(`[!] Error listing entities in range: ${e.message}`);
+        return { success: false, error: e.message };
+    }
 };
