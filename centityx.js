@@ -1,5 +1,5 @@
-// vtable slot 31: Get relative position from camera
-// frida-script.js
+//centityx.js
+
 //
 // Frida script to mirror the game's C++ entity system in idiomatic JavaScript,
 // providing rich, object-oriented wrappers around native memory structures.
@@ -146,6 +146,118 @@ class CZoneSystem {
     }
 }
 
+class CEngineComponentScheduler {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // Virtual slot 0: Scalar deleting destructor
+    destroy() {
+        callVFunc(this.ptr, 0, "void", []);
+    }
+
+    // Virtual slot 1: Destructor
+    destructor() {
+        callVFunc(this.ptr, 1, "void", []);
+    }
+
+    // Virtual slot 2: GetComponentIdByName
+    // Signature: void* GetComponentIdByName(uint16_t* component_id, const char* component_name)
+    getComponentIdByName(componentName) {
+        try {
+            // Allocate memory for output component_id (uint16_t)
+            const componentIdPtr = Memory.alloc(2);
+
+            // Allocate native string for component name
+            const componentNamePtr = Memory.allocUtf8String(componentName);
+
+            // Call virtual function at index 2
+            const result = callVFunc(
+                this.ptr,
+                2,
+                "pointer",
+                ["pointer", "pointer"],
+                [componentIdPtr, componentNamePtr],
+                'getComponentIdByName'
+            );
+
+            // Read the component ID from allocated memory
+            const componentId = componentIdPtr.readU16();
+
+            // Return both the result pointer and the component ID
+            return {
+                success: !result.isNull(),
+                componentId: componentId,
+                resultPtr: result
+            };
+        } catch (e) {
+            console.log(`[!] Error in getComponentIdByName: ${e.message}`);
+            return {
+                success: false,
+                componentId: 0,
+                resultPtr: NULL
+            };
+        }
+    }
+}
+
+class EntityComponent {
+    constructor(ptr, componentName) {
+        this.ptr = ptr;
+        this.componentName = componentName;
+    }
+
+    // Common component functionality
+    get owningEntity() {
+        const entityPtr = this.ptr.add(0x08).readPointer();
+        return entityPtr.isNull() ? null : new CEntity(entityPtr);
+    }
+}
+
+class IComponentRender {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // Method to call the native AddGlowForSlot function
+    addGlow(glowParams, glowStyle = 0, slotIndex = -1) {
+        const addGlowFuncAddr = Module.findBaseAddress("StarCitizen.exe").add(0x6A7D230);
+        const addGlowFunc = new NativeFunction(addGlowFuncAddr, 'char', ['pointer', 'pointer', 'uint32', 'uint32']);
+
+        // Allocate memory for the GlowParams struct
+        const glowParamsPtr = Memory.alloc(16);
+        glowParamsPtr.writeU8(glowParams.type || 1);
+        glowParamsPtr.add(4).writeFloat(glowParams.r || 1.0);
+        glowParamsPtr.add(8).writeFloat(glowParams.g || 1.0);
+        glowParamsPtr.add(12).writeFloat(glowParams.b || 1.0);
+
+        const nativeSlotIndex = (slotIndex === -1) ? 0xFFFFFFFF : slotIndex;
+
+        return addGlowFunc(this.ptr, glowParamsPtr, glowStyle, nativeSlotIndex);
+    }
+}
+
+class CRenderProxy {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // render_handle_ at offset 0x8
+    get renderHandlePtr() {
+        return this.ptr.add(0x8);
+    }
+
+    get renderHandle() {
+        return this.renderHandlePtr.readPointer();
+    }
+
+    // component_render sub-object at offset 0x78
+    get componentRender() {
+        const subObjectPtr = this.ptr.add(0x78);
+        return new IComponentRender(subObjectPtr);
+    }
+}
+
 // Wrapper for CEntity (size: 0x02B8)
 class CEntity {
     constructor(ptr) {
@@ -171,6 +283,15 @@ class CEntity {
     get entityClass() {
         const clsPtr = this.entityClassPtr;
         return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
+    }
+
+    // render_handle_ at 0x1E0
+    get renderHandlePtr() {
+        return this.ptr.add(0x1E0);
+    }
+
+    get renderHandle() {
+        return this.renderHandlePtr.readPointer();
     }
 
     // x_local_pos_, y_local_pos_, z_local_pos_ at offsets 0xF8, 0x100, 0x108
@@ -211,6 +332,11 @@ class CEntity {
     // vfunc 7: Alias of setFlagsOR or alternative flag bank
     setFlagsORAlternative(mask, which) {
         callVFunc(this.ptr, 7, "void", ["uint32", "uint32"], [mask, which], 'setFlagsORAlternative');
+    }
+
+    // vfunc 11: IsHiddenOrDestroyed
+    isHiddenOrDestroyed() {
+        return callVFunc(this.ptr, 11, "bool", [], 'isHiddenOrDestroyed');
     }
 
     // vfunc 40: Get count of child entities
@@ -268,12 +394,111 @@ class CEntity {
         return this.getWorldPos(0);
     }
 
-    // vfunc 103: Get component by type ID
-    getComponentByTypeID(typeId) {
-        const outHandle = Memory.alloc(PTR_SIZE);
-        callVFunc(this.ptr, 103, "void", ["int16", "pointer"], [typeId, outHandle], 'getComponentByTypeID');
-        const compPtr = outHandle.readPointer();
-        return compPtr.isNull() ? null : compPtr; // Return raw pointer, would need component wrapper
+    // Virtual slot 104: GetComponentAddrById
+    // Signature: uintptr_t* GetComponentAddrById(uintptr_t* component_addr, uint16_t* component_id)
+    getComponentAddrById(componentId) {
+        try {
+            // Allocate memory for output component address (pointer size)
+            const componentAddrPtr = Memory.alloc(PTR_SIZE);
+
+            // Allocate memory for component ID parameter
+            const componentIdPtr = Memory.alloc(2);
+            componentIdPtr.writeU16(componentId);
+
+            // Call virtual function at index 104
+            const result = callVFunc(
+                this.ptr,
+                104,
+                "pointer",
+                ["pointer", "pointer"],
+                [componentAddrPtr, componentIdPtr],
+                'getComponentAddrById'
+            );
+
+            // Read the component address from output parameter
+            const componentAddr = componentAddrPtr.readPointer();
+
+            return {
+                success: !result.isNull(),
+                componentPtr: componentAddr,
+                resultPtr: result
+            };
+        } catch (e) {
+            console.log(`[!] Error in getComponentAddrById: ${e.message}`);
+            return {
+                success: false,
+                componentPtr: NULL,
+                resultPtr: NULL
+            };
+        }
+    }
+
+    // High-level convenience method for component retrieval by name
+    getComponentByName(componentName) {
+        try {
+            // Access the engine component scheduler via GEnv
+            const scheduler = gEnv.engineComponentScheduler;
+            if (!scheduler) {
+                console.log("[!] Engine component scheduler not available");
+                return null;
+            }
+
+            // Resolve component name to ID
+            const idResult = scheduler.getComponentIdByName(componentName);
+            if (!idResult.success || idResult.componentId === 0) {
+                console.log(`[!] Failed to resolve component name '${componentName}' to ID`);
+                return null;
+            }
+
+            console.log(`[*] Resolved component '${componentName}' to ID: 0x${idResult.componentId.toString(16)}`);
+
+            // Retrieve component pointer using resolved ID
+            const componentResult = this.getComponentAddrById(idResult.componentId);
+            if (!componentResult.success || componentResult.componentPtr.isNull()) {
+                console.log(`[!] Failed to retrieve component with ID 0x${idResult.componentId.toString(16)}`);
+                return null;
+            }
+
+            console.log(`[*] Retrieved component '${componentName}' at address: ${componentResult.componentPtr}`);
+            return componentResult.componentPtr;
+        } catch (e) {
+            console.log(`[!] Error in getComponentByName: ${e.message}`);
+            return null;
+        }
+    }
+
+    get renderProxy() {
+        const ptr = this.getComponentByName("RenderProxy");
+        return ptr.isNull() ? null : new CRenderProxy(ptr);
+    }
+
+    // NEW: High-level method to add a glow effect
+    addGlow(glowParams = { r: 1.0, g: 0.0, b: 0.0 }, slotIndex = -1, glowStyle = 0) {
+        try {
+            const pRenderProxy = this.renderProxy;
+            if (!pRenderProxy) {
+                // console.log(`[!] Entity ${this.ptr} has no RenderProxy component.`);
+                return;
+            }
+
+            // Perform the game's safety checks
+            const isHandleValidFunc = new NativeFunction(Module.findBaseAddress("StarCitizen.exe").add(0x30EC00), 'bool', ['pointer']);
+            if (!isHandleValidFunc(pRenderProxy.renderHandlePtr)) {
+                // console.log(`[!] Entity ${this.ptr} has an invalid render handle.`);
+                return;
+            }
+
+            if (this.isHiddenOrDestroyed()) {
+                // console.log(`[!] Entity ${this.ptr} is hidden or being destroyed.`);
+                return;
+            }
+
+            // If checks pass, call the glow function on the sub-object
+            pRenderProxy.componentRender.addGlow(glowParams, glowStyle, slotIndex);
+
+        } catch (e) {
+            console.log(`[!] Error in addGlow for entity ${this.ptr}: ${e.message}`);
+        }
     }
 
     // vfunc 199: Get zone this entity is in
@@ -726,6 +951,12 @@ class GEnv {
         return sysPtr.isNull() ? null : new CEntitySystem(sysPtr);
     }
 
+    // engine_component_scheduler_ at 0x00A8
+    get engineComponentScheduler() {
+        const ptr = this.ptr.add(0x00A8).readPointer();
+        return ptr.isNull() ? null : new CEngineComponentScheduler(ptr);
+    }
+
     // system_ at 0xC0
     get cSystem() {
         const ptr = this.ptr.add(0xc0).readPointer();
@@ -1061,13 +1292,10 @@ function printEntityInfoWithAngles(entity, distance, angles) {
         const worldPos = entity.worldPos;
         const className = entity.entityClass ? entity.entityClass.name : "<unknown-class>";
         const name = entity.name || "<no-name>";
-        const zone = entity.zone;
-        const zoneName = zone ? zone.name : "<no-zone>";
         const direction = formatRelativeDirection(angles);
 
         console.log(
             `[${entity.ptr}] [ID ${entity.id}] Class: ${className} Name: ${name}\n` +
-            `  Zone: ${zoneName}\n` +
             `  World Position: (${worldPos.x.toFixed(2)}, ${worldPos.y.toFixed(2)}, ${worldPos.z.toFixed(2)})\n` +
             `  Distance: ${distance.toFixed(2)}m\n` +
             `  Direction: ${direction}\n` +
@@ -1075,6 +1303,7 @@ function printEntityInfoWithAngles(entity, distance, angles) {
         );
     } catch (e) {
         console.log(`Error printing entity info: ${e}`);
+        console.log(e.stack);
     }
 }
 
@@ -1083,21 +1312,41 @@ rpc.exports.findByClassName = function(pattern) {
     const entities = findEntitiesByClassNamePattern(pattern);
     console.log(`[*] Found ${entities.length} entities matching pattern: ${pattern}`);
 
-    // Calculate distances and sort entities by distance
-    const entitiesWithDistance = entities.map(entity => {
+    // Calculate distances and angles for each entity
+    const entitiesWithMetrics = entities.map(entity => {
         const distance = calculateDistance(entity);
-        return { entity, distance };
+        const angles = calculateAngles(entity);
+        return { entity, distance, angles };
     });
 
     // Sort by distance (closest first)
-    entitiesWithDistance.sort((a, b) => a.distance - b.distance);
+    entitiesWithMetrics.sort((a, b) => a.distance - b.distance);
 
-    // Print sorted entities
-    entitiesWithDistance.slice(0, 100).forEach(item => {
-        printEntityInfo(item.entity, item.distance);
+    // Print sorted entities with full metrics
+    entitiesWithMetrics.slice(0, 100).forEach(item => {
+        printEntityInfoWithAngles(item.entity, item.distance, item.angles);
     });
 
-    return entities.length;
+    return {
+        count: entities.length,
+        entities: entitiesWithMetrics.slice(0, 100).map(item => {
+            const worldPos = item.entity.worldPos;
+            return {
+                ptr: item.entity.ptr.toString(),
+                id: item.entity.id,
+                name: item.entity.name || "<no-name>",
+                distance: item.distance,
+                yaw: item.angles.yaw,
+                pitch: item.angles.pitch,
+                direction: formatRelativeDirection(item.angles),
+                worldPos: {
+                    x: worldPos.x,
+                    y: worldPos.y,
+                    z: worldPos.z
+                }
+            };
+        })
+    };
 };
 
 // New RPC method to search by exact class name with distance and angles
@@ -1531,3 +1780,276 @@ rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
         return { success: false, error: e.message };
     }
 };
+
+rpc.exports.getEntityComponentData = function(entityPtr, componentName) {
+    try {
+        const entity = new CEntity(ptr(entityPtr));
+        const componentPtr = entity.getComponentByName(componentName);
+
+        if (!componentPtr || componentPtr.isNull()) {
+            return {
+                success: false,
+                error: `Component '${componentName}' not found on entity`
+            };
+        }
+
+        const component = createComponentWrapper(componentPtr, componentName);
+
+        // Extract component-specific data based on type
+        const componentData = {
+            name: componentName,
+            ptr: componentPtr.toString(),
+            owningEntity: component.owningEntity ? component.owningEntity.ptr.toString() : "null"
+        };
+
+        // Add type-specific data
+        if (component instanceof CEntityComponentInventory) {
+            componentData.maxMicroSCU = component.maxMicroSCU;
+            componentData.currentMicroSCU = component.currentMicroSCU;
+        }
+
+        return {
+            success: true,
+            entityPtr: entityPtr,
+            component: componentData
+        };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+};
+
+// RPC method to resolve component name to ID
+rpc.exports.resolveComponentNameToId = function(componentName) {
+    try {
+        const scheduler = gEnv.engineComponentScheduler;
+
+        if (!scheduler) {
+            return { success: false, error: "Engine component scheduler not available" };
+        }
+
+        const result = scheduler.getComponentIdByName(componentName);
+
+        return {
+            success: result.success,
+            componentName: componentName,
+            componentId: result.componentId,
+            componentIdHex: `0x${result.componentId.toString(16)}`
+        };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+};
+
+// RPC method to add glow effect to entities matching regex pattern
+rpc.exports.addGlowToEntitiesRegex = function(classNameRegex, glowParams = { r: 1.0, g: 1.0, b: 0.0 }, glowId = 3) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        // Compile the regex pattern
+        const regex = new RegExp(classNameRegex);
+        console.log(`[*] Compiled regex pattern: ${classNameRegex}`);
+
+        // Find all entities and filter by regex pattern
+        const allEntities = entitySystem.entityArray.toArray();
+        const matchingEntities = [];
+        const matchedClassNames = new Set();
+
+        for (const entity of allEntities) {
+            try {
+                const entityClass = entity.entityClass;
+                if (!entityClass) continue;
+
+                const className = entityClass.name;
+                if (regex.test(className)) {
+                    matchingEntities.push(entity);
+                    matchedClassNames.add(className);
+                }
+            } catch (e) {
+                // Skip entities that can't be processed
+            }
+        }
+
+        console.log(`[*] Found ${matchingEntities.length} entities matching pattern '${classNameRegex}'`);
+        console.log(`[*] Matched class names: ${Array.from(matchedClassNames).join(', ')}`);
+
+        let successCount = 0;
+        let errorCount = 0;
+        const processedClasses = {};
+
+        // Add glow effect to each matching entity
+        for (const entity of matchingEntities) {
+            try {
+                const className = entity.entityClass.name;
+                const distance = calculateDistance(entity);
+
+                // Add glow effect using the entity's addGlow method
+                entity.addGlow(glowParams, -1, glowId);
+                successCount++;
+
+                // Track processed classes for reporting
+                if (!processedClasses[className]) {
+                    processedClasses[className] = 0;
+                }
+                processedClasses[className]++;
+
+                console.log(`[+] Added glow to entity ${entity.ptr} (ID: ${entity.id}) class '${className}' at distance ${distance.toFixed(2)}m`);
+            } catch (e) {
+                errorCount++;
+                console.log(`[!] Failed to add glow to entity ${entity.ptr}: ${e.message}`);
+            }
+        }
+
+        const result = {
+            success: true,
+            classNameRegex: classNameRegex,
+            glowParams: glowParams,
+            glowId: glowId,
+            matchedClassNames: Array.from(matchedClassNames),
+            processedClasses: processedClasses,
+            totalFound: matchingEntities.length,
+            successCount: successCount,
+            errorCount: errorCount
+        };
+
+        console.log(`[*] Glow effect application complete: ${successCount} successful, ${errorCount} failed`);
+        console.log(`[*] Processed classes breakdown:`, processedClasses);
+        return result;
+
+    } catch (e) {
+        console.log(`[!] Error adding glow to entities: ${e.message}`);
+        return { success: false, error: e.message };
+    }
+};
+
+// Frida hook for add_glow_effect function at 0x14038DCA0
+const hookAddGlowEffect = () => {
+    try {
+        const moduleBase = Process.enumerateModulesSync()[0].base;
+        const addGlowEffectAddr = moduleBase.add(0x38DCA0);
+
+        console.log(`[*] Hooking add_glow_effect at: ${addGlowEffectAddr}`);
+
+        Interceptor.attach(addGlowEffectAddr, {
+            onEnter: function(args) {
+                this.pGlowObject = args[0];
+                this.pGlowConfig = args[1];
+                this.glowId = args[2].toInt32();
+
+                let output = `[HOOK] add_glow_effect called:\n`;
+                output += `  p_glow_object: ${this.pGlowObject}\n`;
+                output += `  p_glow_config: ${this.pGlowConfig}\n`;
+                output += `  glow_id: ${this.glowId}\n`;
+
+                // Read glow config data if pointer is valid
+                if (this.pGlowConfig && !this.pGlowConfig.isNull()) {
+                    try {
+                        // Assuming glow config contains RGB values as first 3 bytes
+                        const r = this.pGlowConfig.readU8();
+                        const g = this.pGlowConfig.add(1).readU8();
+                        const b = this.pGlowConfig.add(2).readU8();
+                        output += `  glow_config RGB: (${r}, ${g}, ${b})\n`;
+                    } catch (e) {
+                        output += `  glow_config: [Unable to read: ${e.message}]\n`;
+                    }
+                }
+
+                // Print stack trace
+                output += `  Stack trace:\n`;
+                Thread.backtrace(this.context, Backtracer.ACCURATE)
+                    .map(DebugSymbol.fromAddress)
+                    .forEach((symbol, index) => {
+                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
+                    });
+
+                console.log(output);
+            },
+
+            onLeave: function(retval) {
+                console.log(`[HOOK] add_glow_effect returned: ${retval}`);
+            }
+        });
+
+        console.log("[*] add_glow_effect hook installed successfully");
+
+    } catch (e) {
+        console.log(`[!] Failed to hook add_glow_effect: ${e.message}`);
+    }
+};
+
+// RPC export to enable/disable the hook
+rpc.exports.hookAddGlowEffect = hookAddGlowEffect;
+
+// Frida hook for function at 0x4C8900
+const hookSub1404C8900 = () => {
+    try {
+        const moduleBase = Process.enumerateModulesSync()[0].base;
+        const funcAddr = moduleBase.add(0x4C8900);
+
+        console.log(`[*] Hooking sub_1404C8900 at: ${funcAddr}`);
+
+        Interceptor.attach(funcAddr, {
+            onEnter: function(args) {
+                this.a1 = args[0];
+                this.a2 = args[1];
+                this.a3 = args[2];
+
+                let output = `[HOOK] sub_1404C8900 called:\n`;
+                output += `  a1: ${this.a1}\n`;
+                output += `  a2 (QWORD*): ${this.a2}\n`;
+                output += `  a3 (char**): ${this.a3}\n`;
+
+                // Try to read the QWORD value if a2 is valid
+                if (this.a2 && !this.a2.isNull()) {
+                    try {
+                        const qwordValue = this.a2.readU64();
+                        output += `  *a2 (QWORD value): 0x${qwordValue.toString(16)}\n`;
+                    } catch (e) {
+                        output += `  *a2: [Unable to read: ${e.message}]\n`;
+                    }
+                }
+
+                // Try to read the char* pointer if a3 is valid
+                if (this.a3 && !this.a3.isNull()) {
+                    try {
+                        const charPtr = this.a3.readPointer();
+                        if (charPtr && !charPtr.isNull()) {
+                            const stringValue = charPtr.readCString();
+                            output += `  *a3 (char*): "${stringValue || '[empty/null string]'}"\n`;
+                        } else {
+                            output += `  *a3 (char*): [null pointer]\n`;
+                        }
+                    } catch (e) {
+                        output += `  *a3: [Unable to read: ${e.message}]\n`;
+                    }
+                }
+
+                // Print stack trace
+                output += `  Stack trace:\n`;
+                Thread.backtrace(this.context, Backtracer.ACCURATE)
+                    .map(DebugSymbol.fromAddress)
+                    .slice(0, 10) // Limit to first 10 frames
+                    .forEach((symbol, index) => {
+                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
+                    });
+
+                console.log(output);
+            },
+
+            onLeave: function(retval) {
+                console.log(`[HOOK] sub_1404C8900 returned: ${retval.toInt32()} (char)`);
+            }
+        });
+
+        console.log("[*] sub_1404C8900 hook installed successfully");
+
+    } catch (e) {
+        console.log(`[!] Failed to hook sub_1404C8900: ${e.message}`);
+    }
+};
+
+// RPC export to enable the hook
+rpc.exports.hookSub1404C8900 = hookSub1404C8900;
