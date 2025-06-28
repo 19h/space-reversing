@@ -2,7 +2,7 @@
 // Base address of the program is 0x140000000
 
 const baseAddress = ptr('0x140000000');
-const functionOffset = ptr('0x6675AD0');
+const functionOffset = ptr('0x66E5AB0');
 const functionAddress = baseAddress.add(functionOffset);
 
 console.log('[+] Target function address: ' + functionAddress);
@@ -15,7 +15,7 @@ const entityTracker = new Map();
 function isPointerValid(pointer) {
     if (pointer === null || pointer === undefined) return false;
     if (pointer.isNull()) return false;
-    
+
     try {
         // Check if address is within a valid memory range
         const range = Process.findRangeByAddress(pointer);
@@ -31,13 +31,13 @@ function printEntityStats() {
         // Make a copy of entries to avoid concurrent modification issues
         const entries = Array.from(entityTracker.entries());
         const entityCount = entries.length;
-        
+
         console.log('\n╔═══════════════════════════════════════════════════════════════════════════════╗');
         console.log(`║ ENTITY STATISTICS                                     Total Entities: ${entityCount.toString().padStart(5)} ║`);
         console.log('╠═══════════════════╦═══════════════════╦═══════════════════╦═══════════════════╣');
         console.log('║ Entity Pointer    ║ Position X        ║ Position Y        ║ Position Z        ║');
         console.log('╠═══════════════════╬═══════════════════╬═══════════════════╬═══════════════════╣');
-        
+
         if (entityCount === 0) {
             console.log('║ No entities tracked                                                         ║');
         } else {
@@ -51,7 +51,7 @@ function printEntityStats() {
                         entityTracker.delete(ptrStr);
                         continue;
                     }
-                    
+
                     const data = entity.data;
                     if (data && data.spatial && data.spatial.position) {
                         const pos = data.spatial.position;
@@ -65,7 +65,7 @@ function printEntityStats() {
                 }
             }
         }
-        
+
         console.log('╚═══════════════════╩═══════════════════╩═══════════════════╩═══════════════════╝');
     } catch (e) {
         console.error(`[!] Error generating statistics table: ${e.message}`);
@@ -77,19 +77,19 @@ function cleanupExpiredEntities() {
     try {
         const now = Date.now();
         let expiredCount = 0;
-        
+
         // Use for...of with keys() to avoid concurrent modification issues
         for (const ptrStr of Array.from(entityTracker.keys())) {
             try {
                 const entity = entityTracker.get(ptrStr);
-                
+
                 // Check timestamp expiration
                 if (now - entity.timestamp > 2000) {
                     entityTracker.delete(ptrStr);
                     expiredCount++;
                     continue;
                 }
-                
+
                 // Validate pointer still valid
                 const entityPtr = ptr(ptrStr);
                 if (!isPointerValid(entityPtr)) {
@@ -102,7 +102,7 @@ function cleanupExpiredEntities() {
                 expiredCount++;
             }
         }
-        
+
         if (expiredCount > 0) {
             console.log(`[*] Removed ${expiredCount} expired or invalid entities`);
         }
@@ -120,10 +120,10 @@ try {
             printEntityStats();
         } catch (e) {
             console.error(`[!] Unhandled exception in stats interval: ${e.message}`);
-            
+
             // If critical error, disable stats collection to prevent crashes
-            if (e.message.includes("access violation") || 
-                e.message.includes("segmentation fault") || 
+            if (e.message.includes("access violation") ||
+                e.message.includes("segmentation fault") ||
                 e.message.includes("cannot read")) {
                 console.error("[!] Fatal error detected, disabling stats interval");
                 clearInterval(statInterval);
@@ -141,14 +141,14 @@ function readEntityFields(actorEntityPtr) {
         console.error("[!] Null actorEntity pointer detected");
         return null;
     }
-    
+
     // Architecture-specific constants
     const PTR_SIZE = Process.pointerSize;
     const QWORD_SIZE = 8;
     const DWORD_SIZE = 4;
     const WORD_SIZE = 2;
     const BYTE_SIZE = 1;
-    
+
     try {
         // Create result object with nested structure for organized data access
         const result = {
@@ -171,14 +171,14 @@ function readEntityFields(actorEntityPtr) {
                 memAddresses: {}
             }
         };
-        
+
         // Store base address for debug purposes
         result._debug.memAddresses.actorEntity = actorEntityPtr;
-        
+
         // ---- Core Entity Identification ----
         result.core.vtable = actorEntityPtr.readPointer();
         result.core.entityId = actorEntityPtr.add(0x0008).readU64();
-        
+
         // ---- Process Dynamic Entity List ----
         // Calculate effective address of pEntities field (offset 0x2848 from actorEntity base)
         //const pEntitiesPtr = actorEntityPtr.add(0x2848).readPointer();
@@ -188,11 +188,11 @@ function readEntityFields(actorEntityPtr) {
         //    // Read entity list containers
         //    result.references.entitiesEndPtr = actorEntityPtr.add(0x2856).readPointer();
         //    result.references.entitiesCapacityPtr = actorEntityPtr.add(0x2864).readPointer();
-        //    
+        //
         //    // Perform first-level indirection to resolve IPhysicalEntity* from array
         //    const physEntityPtr = pEntitiesPtr.readPointer();
         //    result._debug.memAddresses.physEntity = physEntityPtr;
-        //    
+        //
         //    if (!physEntityPtr.isNull() && Process.findRangeByAddress(physEntityPtr)) {
         //        // Extract critical physical entity fields
         //        result.references.physEntity = {
@@ -203,7 +203,7 @@ function readEntityFields(actorEntityPtr) {
         //        };
         //    }
         //}
-        
+
         // ---- Spatial Data ----
         // World bounds (AABB)
         result.spatial.worldBounds = {
@@ -218,14 +218,14 @@ function readEntityFields(actorEntityPtr) {
                 z: actorEntityPtr.add(0x0038).readDouble()
             }
         };
-        
+
         // Position vector (as doubles for precision)
         result.spatial.position = {
             x: actorEntityPtr.add(0x01C0).readDouble(),
             y: actorEntityPtr.add(0x01C8).readDouble(),
             z: actorEntityPtr.add(0x01D0).readDouble()
         };
-        
+
         // Orientation quaternion
         result.spatial.orientation = {
             x: actorEntityPtr.add(0x01D8).readFloat(),
@@ -233,16 +233,16 @@ function readEntityFields(actorEntityPtr) {
             z: actorEntityPtr.add(0x01E0).readFloat(),
             w: actorEntityPtr.add(0x01E4).readFloat()
         };
-        
+
         // Scale factor (uniform scale)
         result.spatial.scale = actorEntityPtr.add(0x01E8).readFloat();
-        
+
         // Grid cell coordinates (spatial partitioning)
         result.spatial.gridCell = {
             x: actorEntityPtr.add(0x0236).readS16(),
             y: actorEntityPtr.add(0x0238).readS16()
         };
-        
+
         // ---- Kinematic State ----
         // Linear velocity vector
         result.kinematic.linearVelocity = {
@@ -250,31 +250,31 @@ function readEntityFields(actorEntityPtr) {
             y: actorEntityPtr.add(0x03C4).readFloat(),
             z: actorEntityPtr.add(0x03C8).readFloat()
         };
-        
+
         // Previous/cached velocity
         result.kinematic.cachedVelocity = {
             x: actorEntityPtr.add(0x03CC).readFloat(),
             y: actorEntityPtr.add(0x03D0).readFloat(),
             z: actorEntityPtr.add(0x03D4).readFloat()
         };
-        
+
         // Angular velocity vector
         result.kinematic.angularVelocity = {
             x: actorEntityPtr.add(0x03D8).readFloat(),
             y: actorEntityPtr.add(0x03DC).readFloat(),
             z: actorEntityPtr.add(0x03E0).readFloat()
         };
-        
+
         // Angular speed (magnitude of angular velocity)
         result.kinematic.angularSpeed = actorEntityPtr.add(0x03E4).readFloat();
-        
+
         // External acceleration (gravity, etc.)
         result.kinematic.externalAcceleration = {
             x: actorEntityPtr.add(0x03F0).readFloat(),
             y: actorEntityPtr.add(0x03F4).readFloat(),
             z: actorEntityPtr.add(0x03F8).readFloat()
         };
-        
+
         // ---- Physical Properties ----
         // Inertia tensor (diagonal matrix)
         result.physical.inertiaTensor = {
@@ -282,24 +282,24 @@ function readEntityFields(actorEntityPtr) {
             yy: actorEntityPtr.add(0x047C).readFloat(),
             zz: actorEntityPtr.add(0x0480).readFloat()
         };
-        
+
         // Mass properties
         result.physical.mass = actorEntityPtr.add(0x0488).readFloat();
         result.physical.invMass = actorEntityPtr.add(0x0484).readFloat();
-        
+
         // Physics simulation parameters
         result.physical.sleepSpeedThreshold = actorEntityPtr.add(0x0490).readFloat();
         result.physical.maxTimeStep = actorEntityPtr.add(0x049C).readFloat();
         result.physical.dampingRatio = actorEntityPtr.add(0x04A0).readFloat();
         result.physical.frictionCoeff = actorEntityPtr.add(0x04B4).readFloat();
         result.physical.restitutionCoeff = actorEntityPtr.add(0x04B8).readFloat();
-        
+
         // ---- State Flags and Runtime Status ----
         result.state.flags = actorEntityPtr.add(0x0520).readU32();
         result.state.stateFlags = actorEntityPtr.add(0x2416).readU16();
         result.state.simulationFlags = actorEntityPtr.add(0x2418).readU8();
         result.state.contactFlags = actorEntityPtr.add(0x2419).readU8();
-        
+
         // Decompose state flags for easier analysis
         result.state.flagsAnalysis = {
             isDisabled: (result.state.flags & 0x20) !== 0,
@@ -307,7 +307,7 @@ function readEntityFields(actorEntityPtr) {
             isAutoSleep: (result.state.flags & 0x80) !== 0,
             isSleeping: (result.state.flags & 0x100) !== 0
         };
-        
+
         // Decompose simulation flags
         result.state.simulationFlagsAnalysis = {
             inCollision: (result.state.simulationFlags & 0x01) !== 0,
@@ -317,10 +317,10 @@ function readEntityFields(actorEntityPtr) {
             velocityModified: (result.state.simulationFlags & 0x10) !== 0,
             positionModified: (result.state.simulationFlags & 0x40) !== 0
         };
-        
+
         // ---- Collision Data ----
         result.collision.physicalEntityType = actorEntityPtr.add(0x0244).readU32();
-        
+
         // Collision filter
         result.collision.collisionFilter = {
             physicalFlags: actorEntityPtr.add(0x0524).readU16(),
@@ -328,32 +328,32 @@ function readEntityFields(actorEntityPtr) {
             flagsGroupDst: actorEntityPtr.add(0x0530).readU8(),
             flagsGroupSrc: actorEntityPtr.add(0x0531).readU8()
         };
-        
+
         // Latest contact point
         result.collision.contactPoint = {
             x: actorEntityPtr.add(0x0950).readFloat(),
             y: actorEntityPtr.add(0x0954).readFloat(),
             z: actorEntityPtr.add(0x0958).readFloat()
         };
-        
+
         // ---- Entity References ----
         const pOwnerEntityPtr = actorEntityPtr.add(0x0184).readPointer();
         result.references.ownerEntityPtr = pOwnerEntityPtr;
         result.references.hasOwner = !pOwnerEntityPtr.isNull() && Process.findRangeByAddress(pOwnerEntityPtr);
-        
+
         const pConstraintEntityPtr = actorEntityPtr.add(0x2552).readPointer();
         result.references.constraintEntityPtr = pConstraintEntityPtr;
         result.references.hasConstraint = !pConstraintEntityPtr.isNull() && Process.findRangeByAddress(pConstraintEntityPtr);
-        
+
         const pPhysWorldPtr = actorEntityPtr.add(0x0704).readPointer();
         result.references.physWorldPtr = pPhysWorldPtr;
-        
+
         // Read component subsystem pointers
         result.references.components = {
             hasFoliageInteraction: !actorEntityPtr.add(0x1624).readPointer().isNull(),
             hasWaterInteraction: !actorEntityPtr.add(0x1784).readPointer().isNull()
         };
-        
+
         return result;
     } catch (e) {
         // Exception handler for access violations (EXCEPTION_ACCESS_VIOLATION)
@@ -374,10 +374,10 @@ Interceptor.attach(functionAddress, {
     onEnter: function(args) {
         try {
             const entityPtr = args[0];
-            
+
             // Fast validity check only - no memory reads
             if (entityPtr === null || entityPtr.isNull()) return;
-            
+
             console.log(
                 JSON.stringify(
                     readEntityFields(
@@ -408,16 +408,16 @@ Interceptor.attach(functionAddress, {
 function processEntityQueue() {
     // Prevent concurrent processing
     if (processingActive || pendingEntities.length === 0) return;
-    
+
     processingActive = true;
-    
+
     try {
         // Dequeue a single entity to minimize processing time
         const entity = pendingEntities.shift();
         const ptrStr = entity.ptr.toString();
 
         console.log(-1);
-        
+
         // Execute memory reads asynchronously and non-blocking
         setTimeout(function() {
             try {
@@ -457,20 +457,20 @@ const queueProcessorInterval = setInterval(processEntityQueue, QUEUE_PROCESSING_
 //         onEnter: function(args) {
 //             try {
 //                 this.entityPtr = args[0];
-                
+
 //                 // Skip null pointers or invalid pointers
 //                 if (!isPointerValid(this.entityPtr)) {
 //                     return;
 //                 }
-                
+
 //                 // Extract entity data with memory safety
 //                 const entityData = readEntityFields(this.entityPtr);
-                
+
 //                 // Store entity in tracker with current timestamp if valid
 //                 if (entityData !== null) {
 //                     const ptrStr = this.entityPtr.toString();
 //                     const existingEntry = entityTracker.get(ptrStr);
-                    
+
 //                     if (existingEntry) {
 //                         // Update existing entry with new data but keep same timestamp
 //                         entityTracker.set(ptrStr, {
@@ -492,7 +492,7 @@ const queueProcessorInterval = setInterval(processEntityQueue, QUEUE_PROCESSING_
 //                 console.error(`[!] Exception in onEnter hook: ${e.message}`);
 //             }
 //         },
-        
+
 //         onLeave: function(retval) {
 //             // Intentionally left minimal to avoid additional hooks
 //             // that could cause instability
