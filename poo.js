@@ -46,7 +46,7 @@ function sendPlayerCoordinates(posX, posY, posZ) {
         Module.getExportByName("winhttp.dll", "WinHttpCloseHandle"),
         "int", ["pointer"]
     );
-    
+
     // Functions for reading the response.
     var WinHttpQueryDataAvailable = new NativeFunction(
         Module.getExportByName("winhttp.dll", "WinHttpQueryDataAvailable"),
@@ -105,11 +105,11 @@ function sendPlayerCoordinates(posX, posY, posZ) {
     do {
         dwSize.writeU32(0);
         dwDownloaded.writeU32(0);
-        
+
         // Query the available data.
         WinHttpQueryDataAvailable(hRequest, dwSize);
         var dataSize = dwSize.readU32();
-        
+
         if (dataSize === 0) {
             break;
         }
@@ -117,7 +117,7 @@ function sendPlayerCoordinates(posX, posY, posZ) {
         // Read the available data.
         WinHttpReadData(hRequest, responseBuffer, Math.min(dataSize, 4096), dwDownloaded);
         var bytesRead = dwDownloaded.readU32();
-        
+
         if (bytesRead > 0) {
             responseData += responseBuffer.readCString();
         }
@@ -181,7 +181,7 @@ const target_fn_prt = main_base_ptr.add(0x70033f0);
 
 // Interceptor attached to the target function.
 Interceptor.attach(target_fn_prt, {
-    onEnter: function(args) {        
+    onEnter: function(args) {
         const format = args[3].readCString();
         const isCamDir = false; // format.startsWith("CamDir:");
         const isZone = format.startsWith("Zone:");
@@ -202,7 +202,7 @@ Interceptor.attach(target_fn_prt, {
             const posX = args[5].readCString();
             const posY = args[6].readCString();
             const posZ = args[7].readCString();
-            
+
             // Track zone for on-foot detection
             const currentTime = Date.now();
             if (currentTime - lastIterationTime > ITERATION_TIMEOUT) {
@@ -212,10 +212,10 @@ Interceptor.attach(target_fn_prt, {
                 zoneStack.clear();
             }
             lastIterationTime = currentTime;
-            
+
             if (zoneID) {
                 zoneStack.add(zoneID);
-                
+
                 // If this is a ship zone, store the ship model
                 if (zoneStack.size === 4) {
                     shipModel = zoneID;
@@ -244,7 +244,7 @@ Interceptor.attach(target_fn_prt, {
 
                 // Pack the coordinates into a single comma-separated string.
                 var coordStr = cleanX + "," + cleanY + "," + cleanZ;
-                
+
                 console.log(`Spawning thread for coordinates: ${coordStr} (onFoot: ${onFoot}, ship: ${shipModel || "none"})`);
 
                 // Allocate native memory for the coordinate string.
