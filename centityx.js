@@ -1,5 +1,3 @@
-//centityx.js
-
 //
 // Frida script to mirror the game's C++ entity system in idiomatic JavaScript,
 // providing rich, object-oriented wrappers around native memory structures.
@@ -36,7 +34,10 @@ function callVFunc(thisPtr, index, returnType, argTypes, args = [], name = null)
             throw new Error(`Null function pointer at vtable index ${index}`);
         }
 
+        console.log(`Calling ${fnPtr} (${name}) at index ${index} with args ${args.join(', ')}`);
+
         const fn = new NativeFunction(fnPtr, returnType, ["pointer", ...argTypes]);
+        // console.log(fnPtr, name); // Uncomment for debugging vfunc calls
         return fn(thisPtr, ...args);
     } catch (e) {
         console.log(`callVFunc error at index ${index}${name ? ` (${name})` : ''}: ${e.message}`);
@@ -90,7 +91,7 @@ class CZone {
     // vtable slot 1: Next - advances to the next zone in linked list
     next() {
         const nextPtr = callVFunc(this.ptr, 1, "pointer", []);
-        return nextPtr.isNull() ? null : new CZone(nextPtr);
+        return nextPtr.isNull() ? null : new CZone(extractLower48(nextPtr));
     }
 
     // vtable slot 31: Get relative position from camera
@@ -123,6 +124,407 @@ class CZone {
     }
 }
 
+// Wrapper for CPhysicalWorld
+class CPhysicalWorld {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // Virtual slot 130: GetRelativeTransform
+    // Signature: double* GetRelativeTransform(double* result, __int64 a3, __int64 a4, int n0x3F800000, char a6)
+    getRelativeTransform(fromGrid = null, toGrid = null, scale = 0x3F800000, lockFlag = false) {
+        try {
+            // Allocate output buffer for 7 doubles (transform result)
+            const resultPtr = Memory.alloc(7 * 8);
+
+            // Use default grid (this.ptr + 0xB40) if not specified
+            const fromGridPtr = fromGrid ? fromGrid : this.ptr.add(0xB40);
+            const toGridPtr = toGrid ? toGrid : this.ptr.add(0xB40);
+
+            // Call virtual function at vtable slot 130
+            callVFunc(
+                this.ptr,
+                130,
+                "pointer",
+                ["pointer", "pointer", "pointer", "int", "char"],
+                [resultPtr, fromGridPtr, toGridPtr, scale, lockFlag ? 1 : 0],
+                'getRelativeTransform'
+            );
+
+            // Read the 7-element transform result
+            return {
+                quat: {
+                    x: resultPtr.readDouble(),
+                    y: resultPtr.add(8).readDouble(),
+                    z: resultPtr.add(16).readDouble(),
+                    w: resultPtr.add(24).readDouble()
+                },
+                translation: {
+                    x: resultPtr.add(32).readDouble(),
+                    y: resultPtr.add(40).readDouble(),
+                    z: resultPtr.add(48).readDouble()
+                }
+            };
+        } catch (e) {
+            console.log(`[!] Error in getRelativeTransform: ${e.message}`);
+            return {
+                quat: { x: 0, y: 0, z: 0, w: 1 },
+                translation: { x: 0, y: 0, z: 0 }
+            };
+        }
+    }
+
+    // Virtual slot 131: GetRelativeVelocityTransform
+    // Signature: double* GetRelativeVelocityTransform(double* result, __int64* a3, double* a4, __int64* a5, double* a6, char a7)
+    getRelativeVelocityTransform(fromGrid = null, fromVel = null, toGrid = null, toVel = null, lockFlag = false) {
+        try {
+            // Allocate output buffer for 7 doubles (velocity transform result)
+            const resultPtr = Memory.alloc(7 * 8);
+
+            // Use default grid (this.ptr + 0xB40) if not specified
+            const fromGridPtr = fromGrid ? fromGrid : this.ptr.add(0xB40);
+            const toGridPtr = toGrid ? toGrid : this.ptr.add(0xB40);
+
+            // Allocate velocity vectors if provided
+            let fromVelPtr = ptr(0);
+            let toVelPtr = ptr(0);
+
+            if (fromVel && Array.isArray(fromVel) && fromVel.length >= 3) {
+                fromVelPtr = Memory.alloc(24);
+                fromVelPtr.writeDouble(fromVel[0]);
+                fromVelPtr.add(8).writeDouble(fromVel[1]);
+                fromVelPtr.add(16).writeDouble(fromVel[2]);
+            }
+
+            if (toVel && Array.isArray(toVel) && toVel.length >= 3) {
+                toVelPtr = Memory.alloc(24);
+                toVelPtr.writeDouble(toVel[0]);
+                toVelPtr.add(8).writeDouble(toVel[1]);
+                toVelPtr.add(16).writeDouble(toVel[2]);
+            }
+
+            // Call virtual function at vtable slot 131
+            callVFunc(
+                this.ptr,
+                131,
+                "pointer",
+                ["pointer", "pointer", "pointer", "pointer", "pointer", "char"],
+                [resultPtr, fromGridPtr, fromVelPtr, toGridPtr, toVelPtr, lockFlag ? 1 : 0],
+                'getRelativeVelocityTransform'
+            );
+
+            // Read the 7-element velocity transform result
+            return {
+                quat: {
+                    x: resultPtr.readDouble(),
+                    y: resultPtr.add(8).readDouble(),
+                    z: resultPtr.add(16).readDouble(),
+                    w: resultPtr.add(24).readDouble()
+                },
+                angularVelocity: {
+                    x: resultPtr.add(32).readDouble(),
+                    y: resultPtr.add(40).readDouble(),
+                    z: resultPtr.add(48).readDouble()
+                }
+            };
+        } catch (e) {
+            console.log(`[!] Error in getRelativeVelocityTransform: ${e.message}`);
+            return {
+                quat: { x: 0, y: 0, z: 0, w: 1 },
+                angularVelocity: { x: 0, y: 0, z: 0 }
+            };
+        }
+    }
+}
+
+// Wrapper for CPhysicalEntity
+class CPhysicalEntity {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    get owningEntity() {
+        const owningEntityPtr = this.ptr.add(0xc0).readPointer();
+        return owningEntityPtr.isNull() ? null : new CEntity(owningEntityPtr);
+    }
+
+    // m_lockUpdate at offset 0xC8
+    get lockUpdate() {
+        return this.ptr.add(0xC8).readS64();
+    }
+
+    // m_pName at offset 0xD0
+    get name() {
+        const namePtr = this.ptr.add(0xD0).readPointer();
+        return readCString(namePtr);
+    }
+
+    // m_nParts at offset 0x290
+    get nParts() {
+        return this.ptr.add(0x290).readS32();
+    }
+
+    // m_pWorld at offset 0x2C0
+    get world() {
+        const worldPtr = this.ptr.add(0x2C0).readPointer();
+        return worldPtr.isNull() ? null : new CPhysicalWorld(worldPtr);
+    }
+
+    // Virtual slot 41: GetWorldTransform (at offset 328)
+    getWorldTransform() {
+        try {
+            // Allocate memory for output transform (7 doubles for quaternion + translation)
+            const resultPtr = Memory.alloc(7 * 8);
+
+            // Read transform data from memory offsets as shown in decompiled code
+            const v9 = Memory.alloc(4 * 8); // 4 doubles array
+
+            // Read from offsets as per decompiled code
+            v9.writeFloat(this.ptr.add(0x1D8).readFloat());          // v9[0]
+            v9.add(4).writeFloat(this.ptr.add(0x1DC).readFloat());   // v9[1]
+            v9.add(8).writeFloat(this.ptr.add(0x1E0).readFloat());   // v9[2]
+            v9.add(12).writeFloat(this.ptr.add(0x1E4).readFloat());  // v9[3]
+
+            // Read v10 (128-bit value from offset 0x1C0)
+            const v10 = Memory.alloc(16);
+            const v10_data = this.ptr.add(0x1C0).readByteArray(16);
+            v10.writeByteArray(v10_data);
+
+            // Read v11 and v12
+            const v11 = this.ptr.add(0x1D0).readDouble();
+            const v12 = this.ptr.add(0x200).readFloat();
+
+            // Call virtual function at vtable slot 41 (offset 328)
+            callVFunc(
+                this.ptr,
+                41,
+                "pointer",
+                ["pointer", "pointer", "pointer", "pointer"],
+                [v9, resultPtr, ptr(0), ptr(0)],
+                'getWorldTransform'
+            );
+
+            // Read the 7-element transform result
+            return {
+                quat: {
+                    x: resultPtr.readDouble(),
+                    y: resultPtr.add(8).readDouble(),
+                    z: resultPtr.add(16).readDouble(),
+                    w: resultPtr.add(24).readDouble()
+                },
+                translation: {
+                    x: resultPtr.add(32).readDouble(),
+                    y: resultPtr.add(40).readDouble(),
+                    z: resultPtr.add(48).readDouble()
+                }
+            };
+        } catch (e) {
+            console.log(`[!] Error in getWorldTransform: ${e.message}`);
+            return {
+                quat: { x: 0, y: 0, z: 0, w: 1 },
+                translation: { x: 0, y: 0, z: 0 }
+            };
+        }
+    }
+
+    // Virtual slot 43: WriteToObjFile (at offset 344)
+    writeToObjFile(fileName) {
+        try {
+            // Allocate native string for filename
+            const fileNamePtr = Memory.allocUtf8String(fileName);
+
+            // Call virtual function at vtable slot 43 (offset 344)
+            const result = callVFunc(
+                this.ptr,
+                43,
+                "int",
+                ["pointer", "pointer"],
+                [fileNamePtr, ptr(1)],
+                'writeToObjFile'
+            );
+
+            return result;
+        } catch (e) {
+            console.log(`[!] Error in writeToObjFile: ${e.message}`);
+            return 0;
+        }
+    }
+
+    // Virtual slot 18: GetEntityId
+    getEntityId() {
+        try {
+            // Allocate memory for output entity ID (8 bytes)
+            const entityIdPtr = Memory.alloc(8);
+            entityIdPtr.writeU64(0);
+
+            // Call virtual function at vtable slot 18 (offset 144)
+            const result = callVFunc(
+                this.ptr,
+                18,
+                "pointer",
+                ["pointer"],
+                [entityIdPtr],
+                'getEntityId'
+            );
+
+            // Read the entity ID from output parameter
+            const entityId = entityIdPtr.readU64();
+
+            return {
+                success: !result.isNull(),
+                entityId: entityId,
+                resultPtr: result
+            };
+        } catch (e) {
+            console.log(`[!] Error in getEntityId: ${e.message}`);
+            return {
+                success: false,
+                entityId: 0,
+                resultPtr: NULL
+            };
+        }
+    }
+}
+
+// Wrapper for CRigidEntity (inherits from CPhysicalEntity)
+class CRigidEntity extends CPhysicalEntity {
+    constructor(ptr) {
+        super(ptr);
+    }
+
+    // Position components at offsets 0x628, 0x630, 0x638
+    get position() {
+        const x = this.ptr.add(0x628).readDouble();
+        const y = this.ptr.add(0x630).readDouble();
+        const z = this.ptr.add(0x638).readDouble();
+        return new DVec3(x, y, z);
+    }
+
+    get posX() {
+        return this.ptr.add(0x628).readDouble();
+    }
+
+    get posY() {
+        return this.ptr.add(0x630).readDouble();
+    }
+
+    get posZ() {
+        return this.ptr.add(0x638).readDouble();
+    }
+
+    // m_mass at offset 0x6B8
+    get mass() {
+        return this.ptr.add(0x6B8).readDouble();
+    }
+
+    // Velocity components at offsets 0x848, 0x84C, 0x850
+    get velocity() {
+        const x = this.ptr.add(0x848).readFloat();
+        const y = this.ptr.add(0x84C).readFloat();
+        const z = this.ptr.add(0x850).readFloat();
+        return new DVec3(x, y, z);
+    }
+
+    get velX() {
+        return this.ptr.add(0x848).readFloat();
+    }
+
+    get velY() {
+        return this.ptr.add(0x84C).readFloat();
+    }
+
+    get velZ() {
+        return this.ptr.add(0x850).readFloat();
+    }
+
+    // Network state members
+    get netState() {
+        const netStatePtr = this.ptr.add(0x8E8).readPointer();
+        return netStatePtr.isNull() ? null : netStatePtr;
+    }
+
+    get netDesiredStateLock() {
+        return this.ptr.add(0x8F0).readS64();
+    }
+
+    get isNetStateDirty() {
+        return this.ptr.add(0x94C).readU8() !== 0;
+    }
+
+    get hasNetworkAuthority() {
+        return this.ptr.add(0x94D).readU8() !== 0;
+    }
+
+    get isRemote() {
+        return this.ptr.add(0x94E).readU8() !== 0;
+    }
+
+    // Setters for velocity components
+    setVelX(value) {
+        this.ptr.add(0x848).writeFloat(value);
+    }
+
+    setVelY(value) {
+        this.ptr.add(0x84C).writeFloat(value);
+    }
+
+    setVelZ(value) {
+        this.ptr.add(0x850).writeFloat(value);
+    }
+
+    setVelocity(x, y, z) {
+        this.setVelX(x);
+        this.setVelY(y);
+        this.setVelZ(z);
+    }
+
+    // Setters for position components
+    setPosX(value) {
+        this.ptr.add(0x628).writeDouble(value);
+    }
+
+    setPosY(value) {
+        this.ptr.add(0x630).writeDouble(value);
+    }
+
+    setPosZ(value) {
+        this.ptr.add(0x638).writeDouble(value);
+    }
+
+    setPosition(x, y, z) {
+        this.setPosX(x);
+        this.setPosY(y);
+        this.setPosZ(z);
+    }
+
+    // Setter for mass
+    setMass(value) {
+        this.ptr.add(0x6B8).writeDouble(value);
+    }
+
+    setNetworkAuthority(value) {
+        console.log(this.ptr.add(0x94D));
+        this.ptr.add(0x94D).writeU8(value);
+    }
+
+    detach() {
+        // Set network state skip flag
+        this.ptr.add(0x94D).writeU8(1);
+        this.ptr.add(0x94E).writeU8(1);
+
+        //// Set client authoritative flag (OR with 0x40000000)
+        //const currentFlags = this.ptr.add(0x08).readU32();
+        //this.ptr.add(0x08).writeU32(currentFlags | 0x40000000);
+
+        // Set authority timer
+        this.ptr.add(0x950).writeFloat(9999.0);
+    }
+
+    registerForRecompute() {
+        return (new NativeFunction(ptr('0x146930530'), 'void', ['pointer', 'pointer']))(this.ptr.add(0x2c0).readPointer(), this.ptr);
+    }
+}
+
 // Wrapper for CZoneSystem (size: 0x108)
 class CZoneSystem {
     constructor(ptr) {
@@ -140,8 +542,8 @@ class CZoneSystem {
     }
 
     // vtable slot 13: GetFirstZone
-    getFirstZone() {
-        const ptr = callVFunc(this.ptr, 13, "pointer", []);
+    getZone(idx=0) {
+        const ptr = callVFunc(this.ptr, 13, "pointer", ['int']);
         return ptr.isNull() ? null : new CZone(extractLower48(ptr));
     }
 }
@@ -221,7 +623,8 @@ class IComponentRender {
 
     // Method to call the native AddGlowForSlot function
     addGlow(glowParams, glowStyle = 0, slotIndex = -1) {
-        const addGlowFuncAddr = Module.findBaseAddress("StarCitizen.exe").add(0x6A7D230);
+        // UPDATED: Address from StarCitizenFunctions.hpp (FunctionOffsets::CRenderProxy__AddGlowForSlot)
+        const addGlowFuncAddr = Module.findBaseAddress("StarCitizen.exe").add(0x69CB6D0);
         const addGlowFunc = new NativeFunction(addGlowFuncAddr, 'char', ['pointer', 'pointer', 'uint32', 'uint32']);
 
         // Allocate memory for the GlowParams struct
@@ -234,6 +637,66 @@ class IComponentRender {
         const nativeSlotIndex = (slotIndex === -1) ? 0xFFFFFFFF : slotIndex;
 
         return addGlowFunc(this.ptr, glowParamsPtr, glowStyle, nativeSlotIndex);
+    }
+}
+
+class Actor {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    get actor_action_handler() {
+        return this.ptr.add(ptr(0x270)).readPointer();
+    }
+
+    get actor_stats() {
+        return this.actor_action_handler.add(ptr(0x6F70));
+    }
+
+    get q() {
+        const actor_stats = this.actor_stats;
+        return callVFunc(actor_stats, 7, "float", [], []);
+    }
+
+    get p() {
+        const actor_stats = this.actor_stats;
+        return callVFunc(actor_stats, 8, "int", [], []);
+    }
+
+    get z() {
+        const actor_stats = this.actor_stats;
+        return callVFunc(actor_stats, 10, "char", [], []);
+    }
+
+    get x() {
+        const actor_stats = this.actor_stats;
+        return callVFunc(actor_stats, 11, "bool", [], []);
+    }
+
+    get y() {
+        const actor_stats = this.actor_stats;
+        return callVFunc(actor_stats, 12, "bool", [], []);
+    }
+}
+
+class CHealthComponent {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    get is_dead() {
+        return this.ptr.add(ptr(0x05C0)).readU8();
+    }
+
+    get is_incapacitated() {
+        return this.ptr.add(ptr(0x06E0)).readU8();
+    }
+
+    get actor() {
+        // UPDATED: Offset for parent_actor_ from CSCBodyHealthComponent is 0x270
+        const actor_ptr = this.ptr.add(ptr(0x0270)).readPointer();
+
+        return actor_ptr.isNull() ? null : new Actor(actor_ptr);
     }
 }
 
@@ -258,7 +721,7 @@ class CRenderProxy {
     }
 }
 
-// Wrapper for CEntity (size: 0x02B8)
+// Wrapper for CEntity (size: 0x04F0)
 class CEntity {
     constructor(ptr) {
         this.ptr = ptr;
@@ -285,32 +748,36 @@ class CEntity {
         return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
     }
 
-    // render_handle_ at 0x1E0
-    get renderHandlePtr() {
-        return this.ptr.add(0x1E0);
-    }
+    // // render_handle_ at 0x1E0 - COMMENTED OUT: This offset is likely incorrect for the current version.
+    // // Use the `get renderProxy()` method to access the render proxy component instead.
+    // get renderHandlePtr() {
+    //     return this.ptr.add(0x1E0);
+    // }
+    //
+    // get renderHandle() {
+    //     return this.renderHandlePtr.readPointer();
+    // }
 
-    get renderHandle() {
-        return this.renderHandlePtr.readPointer();
-    }
-
-    // x_local_pos_, y_local_pos_, z_local_pos_ at offsets 0xF8, 0x100, 0x108
+    // x_local_pos_, y_local_pos_, z_local_pos_
     get zonePos() {
-        const x = this.ptr.add(0xF8).readDouble();
-        const y = this.ptr.add(0x100).readDouble();
-        const z = this.ptr.add(0x108).readDouble();
+        // UPDATED: Offsets from CEntity in StarCitizenClasses.hpp
+        const x = this.ptr.add(0x00F0).readDouble();
+        const y = this.ptr.add(0x00F8).readDouble();
+        const z = this.ptr.add(0x0100).readDouble();
         return new DVec3(x, y, z);
     }
 
-    // name_ at 0x298 (const char*)
+    // name_ at 0x290 (const char*)
     get name() {
-        const namePtr = this.ptr.add(0x298).readPointer();
+        // UPDATED: Offset from CEntity in StarCitizenClasses.hpp
+        const namePtr = this.ptr.add(0x0290).readPointer();
         return readCString(namePtr);
     }
 
-    // zone_ at 0x2B0 (CZone*)
+    // zone_ at 0x2A8 (CZone*)
     get zoneFromMemory() {
-        const ptr = this.ptr.add(0x2B0).readPointer();
+        // UPDATED: Offset from CEntity in StarCitizenClasses.hpp
+        const ptr = this.ptr.add(0x02A8).readPointer();
         return ptr.isNull() ? null : new CZone(extractLower48(ptr));
     }
 
@@ -374,7 +841,7 @@ class CEntity {
         return this.getLocalPos(0);
     }
 
-    // vfunc 89: Get world position (based on C++ offset 0x2C8)
+    // vfunc 89: Get world position
     getWorldPos(flags = 0) {
         try {
             const outPos = Memory.alloc(24); // sizeof(Vec3)
@@ -445,22 +912,22 @@ class CEntity {
 
             // Resolve component name to ID
             const idResult = scheduler.getComponentIdByName(componentName);
-            if (!idResult.success || idResult.componentId === 0) {
-                console.log(`[!] Failed to resolve component name '${componentName}' to ID`);
+            if (!idResult.success || idResult.componentId === 0xFFFF) {
+                // console.log(`[!] Failed to resolve component name '${componentName}' to ID`);
                 return null;
             }
 
-            console.log(`[*] Resolved component '${componentName}' to ID: 0x${idResult.componentId.toString(16)}`);
+            // console.log(`[*] Resolved component '${componentName}' to ID: 0x${idResult.componentId.toString(16)}`);
 
             // Retrieve component pointer using resolved ID
             const componentResult = this.getComponentAddrById(idResult.componentId);
             if (!componentResult.success || componentResult.componentPtr.isNull()) {
-                console.log(`[!] Failed to retrieve component with ID 0x${idResult.componentId.toString(16)}`);
+                // console.log(`[!] Failed to retrieve component with ID 0x${idResult.componentId.toString(16)}`);
                 return null;
             }
 
-            console.log(`[*] Retrieved component '${componentName}' at address: ${componentResult.componentPtr}`);
-            return componentResult.componentPtr;
+            // console.log(`[*] Retrieved component '${componentName}' at address: ${componentResult.componentPtr}`);
+            return extractLower48(componentResult.componentPtr);
         } catch (e) {
             console.log(`[!] Error in getComponentByName: ${e.message}`);
             return null;
@@ -468,7 +935,7 @@ class CEntity {
     }
 
     get renderProxy() {
-        const ptr = this.getComponentByName("RenderProxy");
+        const ptr = this.getComponentByName("CRenderProxy");
         return ptr.isNull() ? null : new CRenderProxy(ptr);
     }
 
@@ -503,13 +970,13 @@ class CEntity {
 
     // vfunc 199: Get zone this entity is in
     getZone() {
-        const ptr = callVFunc(this.ptr, 199, "pointer", [], 'getZone');
+        const ptr = callVFunc(this.ptr, 201, "pointer", [], [], 'getZone');
         return ptr.isNull() ? null : new CZone(ptr);
     }
 
     // vfunc 203: Get zone hosted by this entity
     get hostedZone() {
-        const ptr = callVFunc(this.ptr, 203, "pointer", [], 'hostedZone');
+        const ptr = callVFunc(this.ptr, 205, "pointer", [], [], 'hostedZone');
         return ptr.isNull() ? null : new CZone(ptr);
     }
 
@@ -517,13 +984,23 @@ class CEntity {
     setLocalTransform(targetZone, transform, flags) {
         callVFunc(this.ptr, 206, "void", ["pointer", "pointer", "uint32"], [targetZone, transform, flags], 'setLocalTransform');
     }
+
+    get health_component() {
+        let comp_ptr = ptr(0);
+
+        try {
+            comp_ptr = ptr(this.getComponentByName('CSCBodyHealthComponent'));
+        } catch (e) {}
+
+        return comp_ptr.isNull() ? null : new CHealthComponent(comp_ptr);
+    }
+
 }
 
 // Wrapper for CEntityArray<T> where T = CEntity*
 class CEntityArray {
     constructor(ptr) {
         this.ptr = ptr;
-        console.log(this.ptr);
     }
 
     // max_size_ at 0x00
@@ -570,7 +1047,6 @@ class CEntityClassRegistry {
     findClass(name) {
         // allocate native CString
         const nameBuf = Memory.allocUtf8String(name);
-        console.log('findClass');
         const clsPtr = callVFunc(
             this.ptr,
             4,
@@ -578,7 +1054,7 @@ class CEntityClassRegistry {
             ["pointer"],
             [nameBuf],
         );
-        return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
+        return clsPtr.isNull() ? null : new CEntityClass(extractLower48(clsPtr));
     }
 
     /**
@@ -620,9 +1096,8 @@ class CEntityClassRegistry {
         // 0x18 (_Color): char/byte for RB tree color
         // 0x19 (_Isnil): bool/byte, true if head or NIL leaf
         // ---padding to align _Myval---
-        // 0x20 (_Myval): std::pair<const Key, Value>
-        //      0x20 (_Myval.first): Key (e.g., pointer to a string object for class name)
-        //      0x28 (_Myval.second): Value (e.g., CEntityClass* pointer)
+        // 0x20 (_Key): Key (e.g., const char*)
+        // 0x28 (_Value): Value (e.g., CEntityClass* pointer)
 
         const isNilFlagOffset = (3 * PTR_SIZE) + 1; // Offset 0x19 for _Isnil flag
         const isNil = nodePtr.add(isNilFlagOffset).readU8();
@@ -636,20 +1111,11 @@ class CEntityClassRegistry {
         this.traverseRBTree(leftChild, headPtr, callback);
 
         // Process current node: extract key (class name) and value (class pointer)
-        const keyFieldOffset = 4 * PTR_SIZE; // Offset 0x20 for _Myval.first
-        const stringObjectPtr = nodePtr.add(keyFieldOffset).readPointer();
+        const keyFieldOffset = 4 * PTR_SIZE; // Offset 0x20 for _Key
+        const classNameCharsPtr = nodePtr.add(keyFieldOffset).readPointer();
+        const className = this.readSafeCString(classNameCharsPtr);
 
-        let className = "[Invalid Key StringObj Ptr]";
-        if (stringObjectPtr && !stringObjectPtr.isNull()) {
-            // Assuming the string object (KeyType) contains the char* at its own offset 0.
-            // This is common for simple string wrappers or std::string's _Ptr.
-            const classNameCharsPtr = stringObjectPtr;
-            className = this.readSafeCString(classNameCharsPtr);
-        } else {
-            className = "[Null Key StringObj Ptr]";
-        }
-
-        const valueFieldOffset = 5 * PTR_SIZE; // Offset 0x28 for _Myval.second
+        const valueFieldOffset = 5 * PTR_SIZE; // Offset 0x28 for _Value
         const valueClassPtr = nodePtr.add(valueFieldOffset).readPointer();
 
         // Invoke the callback with the extracted information
@@ -669,25 +1135,23 @@ class CEntityClassRegistry {
         try {
             console.log(`CEntityClassRegistry instance address: ${this.ptr}`);
 
-            // The std::map for classes (e.g., m_classesByName) is at offset 0x30 in CEntityClassRegistry.
-            // This offset points to the std::map object itself.
-            const mapObjectInRegistryOffset = 0x30;
-            const mapObjectPtr = this.ptr.add(mapObjectInRegistryOffset); // Address of the std::map object
-
-            // In std::map, the first member is typically the _Tree object.
-            // In _Tree, the first member is _Myhead (pointer to head/sentinel node).
-            const mapHeadNodePtr = mapObjectPtr.readPointer(); // mapObjectPtr + 0 -> _Mytree._Myhead
+            // UPDATED: Logic to find the map's head and size based on C++ code.
+            // The pointer to the head node of the std::map's internal tree is at offset 0x28.
+            const headNodePtrOffset = 0x28;
+            const mapHeadNodePtrPtr = this.ptr.add(headNodePtrOffset); // Address of the pointer to the head node
+            const mapHeadNodePtr = mapHeadNodePtrPtr.readPointer(); // The actual head node pointer
             if (mapHeadNodePtr.isNull()) {
-                console.error("Error: Map's _Head node pointer (at map_obj_addr+0) is NULL.");
+                console.error("Error: Map's _Head node pointer (at registry_addr+0x28) is NULL.");
                 return [];
             }
             console.log(`Map _Head node address: ${mapHeadNodePtr}`);
 
-            // The second member of _Tree is _Mysize (size_t).
-            const mapSize = mapObjectPtr.add(PTR_SIZE).readULong(); // mapObjectPtr + PTR_SIZE -> _Mytree._Mysize
+            // The size of the map is typically stored right after the head pointer in MSVC std::map's _Tree.
+            const mapSizeOffset = headNodePtrOffset + PTR_SIZE; // 0x28 + 0x8 = 0x30
+            const mapSize = this.ptr.add(mapSizeOffset).readULong();
             console.log(`Map size reported by std::map object: ${mapSize}`);
 
-            if (mapSize === 0) {
+            if (mapSize.toUInt32() === 0) {
                 console.log("Class registry map is empty (size is 0). No classes to retrieve.");
                 return [];
             }
@@ -702,15 +1166,6 @@ class CEntityClassRegistry {
             }
             console.log(`Tree root node address: ${treeRootPtr}`);
 
-            // Sanity check: if root is head, map is empty. (Should be covered by mapSize check)
-            if (treeRootPtr.equals(mapHeadNodePtr)) {
-                console.log("Informational: Tree root points to head node, indicating an empty map.");
-                if (mapSize.toUInt32() !== 0) {
-                     console.warn(`Warning: Root is head, but map size is ${mapSize}. This is inconsistent.`);
-                }
-                return []; // Already handled by mapSize check, but good for robustness.
-            }
-
             const classes = [];
             this.traverseRBTree(treeRootPtr, mapHeadNodePtr, (className, classPtr) => {
                 const classInst = new CEntityClass(classPtr);
@@ -722,7 +1177,7 @@ class CEntityClassRegistry {
                 });
             });
 
-            if (classes.length !== mapSize) {
+            if (classes.length !== mapSize.toUInt32()) {
                 console.warn(`Warning: Number of traversed classes (${classes.length}) does not match map's reported size (${mapSize}). Traversal might be incomplete or map structure assumptions might be slightly off.`);
             } else {
                 console.log(`Successfully retrieved ${classes.length} classes.`);
@@ -751,7 +1206,7 @@ class CEntityClassRegistry {
         console.log("\nRegistered Entity Classes (Format: No. \"Name\": PointerToClass):");
         console.log("-----------------------------------------------------------------");
 
-        classes.forEach((classInfo, index) => {
+        classes.sort((a, b) => a.name.localeCompare(b.name)).forEach((classInfo, index) => {
             const classCount = index + 1;
             console.log(`${classCount.toString().padStart(3, ' ')}. "${classInfo.name}": ${classInfo.flags} @ ${classInfo.ptr}`);
         });
@@ -761,21 +1216,23 @@ class CEntityClassRegistry {
     }
 }
 
-// Wrapper for CEntitySystem (size: 0x8A0)
+// Wrapper for CEntitySystem (size: 0x06E0)
 class CEntitySystem {
     constructor(ptr) {
         this.ptr = ptr;
     }
 
-    // Direct memory for entity_array_ at offset 0x148
+    // entity_array_ at offset 0x0118
     get entityArray() {
-        const arrPtr = this.ptr.add(0x148);
+        // UPDATED: Offset from CEntitySystem in StarCitizenClasses.hpp
+        const arrPtr = this.ptr.add(0x0118);
         return new CEntityArray(arrPtr);
     }
 
-    // entity_class_registry_ at 0x898
+    // entity_class_registry_ at 0x06D8
     get classRegistry() {
-        const registryPtr = this.ptr.add(0x898).readPointer();
+        // UPDATED: Offset from CEntitySystem in StarCitizenClasses.hpp
+        const registryPtr = this.ptr.add(0x06D8).readPointer();
         return new CEntityClassRegistry(registryPtr);
     }
 
@@ -790,11 +1247,11 @@ class CEntitySystem {
         return this.classRegistry.findClass(name);
     }
 
-    // Direct call to spawn entity function at RVA 0x6B65BC0
+    // Direct call to spawn entity function (CreateEntityOfType)
     spawnEntity(entityParams) {
-        // Calculate the absolute address from the module base + RVA
+        // UPDATED: RVA from FunctionOffsets::CreateEntityOfType
         const moduleBase = Process.enumerateModulesSync()[0].base;
-        const spawnFuncAddr = moduleBase.add(0x6B65BC0);
+        const spawnFuncAddr = moduleBase.add(0x65F5EC0);
 
         // Create native function directly
         const spawnFunc = new NativeFunction(spawnFuncAddr, "bool", ["pointer", "pointer"]);
@@ -859,10 +1316,9 @@ class CEntitySystem {
 class CRenderer {
     constructor(ptr) {
         this.ptr = ptr;
-        console.log(ptr);
     }
 
-    // ProjectToScreen implementation - vtable slot 67
+    // ProjectToScreen implementation - vtable slot 66
     projectToScreen(pos, resolution = { x: 1920.0, y: 1080.0 }, isPlayerViewportRelative = false) {
         // Allocate memory for output Vector3
         const outVec = Memory.alloc(4 * 3); // 3 floats (x, y, z)
@@ -870,7 +1326,9 @@ class CRenderer {
         const outY = outVec.add(4);
         const outZ = outVec.add(8);
 
-        // Call the native ProjectToScreen function (vtable slot 67)
+        // Call the native ProjectToScreen function (vtable slot 66)
+        // NOTE: C++ uses a direct address, but vtable call is kept for script consistency.
+        // The direct address is StarCitizen.exe + 0x97AB20
         const result = callVFunc(
             this.ptr,
             66,
@@ -881,8 +1339,8 @@ class CRenderer {
 
         if (result) {
             // Read output values
-            const x = outX.readFloat() * (resolution.x * 0.01);
-            const y = outY.readFloat() * (resolution.y * 0.01);
+            const x = outX.readFloat() * (resolution.x);
+            const y = outY.readFloat() * (resolution.y);
             const z = outZ.readFloat();
 
             // Return if z > 0 (in front of camera)
@@ -981,9 +1439,10 @@ class CGame {
         this.ptr = ptr;
     }
 
-    // player_ at 0xC08
+    // player_ at 0x0C00
     get player() {
-        const ptr = this.ptr.add(0xC08).readPointer();
+        // UPDATED: Offset from CGame in StarCitizenClasses.hpp
+        const ptr = this.ptr.add(0x0C00).readPointer();
         return ptr.isNull() ? null : new CSCPlayer(ptr);
     }
 }
@@ -1010,7 +1469,7 @@ class CSCPlayer {
 // === Main polling loop ===
 
 // Replace with the actual static address of GEnv
-const GENV_ADDR = Process.enumerateModulesSync()[0].base.add("0x9B4FBE0");
+const GENV_ADDR = Process.enumerateModulesSync()[0].base.add("0x9A0A270");
 const gEnv = new GEnv(GENV_ADDR);
 
 console.log("[*] Frida Entity System bridge initialized.");
@@ -1051,8 +1510,6 @@ const run = () => {
 const listPlayers = () => {
     const cr = gEnv.cRenderer;
 
-    console.log(cr);
-
     if (!cr) {
         console.log("[!] cRenderer not yet available");
         return;
@@ -1084,14 +1541,13 @@ const listPlayers = () => {
         'PlayerCorpse'
     ];
 
-    console.log(actorClasses);
-
     const actorClassPtrs = actorClasses.map(cls => entityClasses.get(cls)?.ptr).filter(ptr => ptr);
 
     console.log("[*] Filtering Player entities...");
     const players = allEntities.filter((ent) => {
         try {
             const cls = ent.entityClass;
+            if (!cls) return false;
 
             for (const ptr of actorClassPtrs) {
                 if (cls.ptr.equals(ptr)) {
@@ -1111,36 +1567,89 @@ const listPlayers = () => {
         const isCorpse = className === 'PlayerCorpse';
 
         console.log(
-            `        [${p.ptr}] [ID ${p.id}] ${isCorpse ? 'CORPSE' : 'ALIVE'} ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}) : ${proj.x.toFixed(2)}, ${proj.y.toFixed(2)}, ${proj.z.toFixed(2)})`,
+            `        [${p.ptr}] [ID ${p.id}] ${isCorpse ? 'CORPSE' : 'ALIVE'} ${p.name || "<no-name>"} @ (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}) : Screen(${proj.x.toFixed(2)}, ${proj.y.toFixed(2)}, ${proj.z.toFixed(2)})`,
         );
    }
 };
 
-// Global exception handler to prevent script crashes
-Process.setExceptionHandler((exception) => {
-    console.log("=== EXCEPTION CAUGHT ===");
-    console.log(`Name: ${exception.name}`);
-    console.log(`Message: ${exception.message}`);
-    console.log(`Type: ${exception.type}`);
-    console.log(`Address: ${exception.address}`);
+// // Global exception handler to prevent script crashes
+// Process.setExceptionHandler((exception) => {
+//     console.log("=== EXCEPTION CAUGHT ===");
+//     console.log(`Type: ${exception.type}`);
+//     console.log(`Address: ${exception.address}`);
 
-    // Log stack trace if available
-    if (exception.stack) {
-        console.log("Stack trace:");
-        console.log(exception.stack);
-    }
+//     // Log CPU context information
+//     if (exception.context) {
+//         console.log("CPU Context:");
+//         try {
+//             // Log common registers based on architecture
+//             if (Process.arch === 'x64') {
+//                 console.log(`  RAX: ${exception.context.rax}`);
+//                 console.log(`  RBX: ${exception.context.rbx}`);
+//                 console.log(`  RCX: ${exception.context.rcx}`);
+//                 console.log(`  RDX: ${exception.context.rdx}`);
+//                 console.log(`  RSP: ${exception.context.rsp}`);
+//                 console.log(`  RBP: ${exception.context.rbp}`);
+//                 console.log(`  RIP: ${exception.context.rip}`);
+//             } else if (Process.arch === 'arm64') {
+//                 console.log(`  X0: ${exception.context.x0}`);
+//                 console.log(`  X1: ${exception.context.x1}`);
+//                 console.log(`  SP: ${exception.context.sp}`);
+//                 console.log(`  PC: ${exception.context.pc}`);
+//             }
+//         } catch (e) {
+//             console.log(`  Context read error: ${e.message}`);
+//         }
+//     }
 
-    // Log memory access details for memory-related exceptions
-    if (exception.memory) {
-        console.log(`Memory operation: ${exception.memory.operation}`);
-        console.log(`Memory address: ${exception.memory.address}`);
-    }
+//     // Log memory access details for memory-related exceptions
+//     if (exception.memory) {
+//         console.log("Memory Access Details:");
+//         console.log(`  Operation: ${exception.memory.operation}`);
+//         console.log(`  Address: ${exception.memory.address}`);
 
-    console.log("========================");
+//         // Try to provide more context about the memory region
+//         try {
+//             const ranges = Process.enumerateRanges({ protection: 'r--', coalesce: false });
+//             const faultRange = ranges.find(range =>
+//                 exception.memory.address.compare(range.base) >= 0 &&
+//                 exception.memory.address.compare(range.base.add(range.size)) < 0
+//             );
 
-    // Return true to indicate we've handled the exception
-    return true;
-});
+//             if (faultRange) {
+//                 console.log(`  Memory region: ${faultRange.base}-${faultRange.base.add(faultRange.size)} (${faultRange.protection})`);
+//                 if (faultRange.file) {
+//                     console.log(`  File mapping: ${faultRange.file.path} (offset: ${faultRange.file.offset})`);
+//                 }
+//             } else {
+//                 console.log(`  Memory region: Not found in mapped ranges`);
+//             }
+//         } catch (e) {
+//             console.log(`  Memory region lookup failed: ${e.message}`);
+//         }
+//     }
+
+//     // Log stack trace with more detail
+//     console.log("Stack Trace:");
+//     try {
+//         const stackTrace = Thread.backtrace(exception.context, Backtracer.ACCURATE);
+//         stackTrace.slice(0, 10).forEach((address, index) => {
+//             const symbol = DebugSymbol.fromAddress(address);
+//             const moduleName = Process.getModuleByAddress(address)?.name || "unknown";
+//             console.log(`  ${index.toString().padStart(2, ' ')}: ${address} ${symbol.name || '<unknown>'} (${moduleName})`);
+//         });
+//     } catch (e) {
+//         console.log(`  Stack trace generation failed: ${e.message}`);
+//     }
+
+//     // Log native context address for advanced debugging
+//     console.log(`Native context: ${exception.nativeContext}`);
+
+//     console.log("========================");
+
+//     // Return true to indicate we've handled the exception
+//     return true;
+// });
 
 rpc.exports.run = run;
 rpc.exports.listPlayers = listPlayers;
@@ -1306,7 +1815,6 @@ function printEntityInfoWithAngles(entity, distance, angles) {
         console.log(e.stack);
     }
 }
-
 // Export as RPC method
 rpc.exports.findByClassName = function(pattern) {
     const entities = findEntitiesByClassNamePattern(pattern);
@@ -1331,6 +1839,7 @@ rpc.exports.findByClassName = function(pattern) {
         count: entities.length,
         entities: entitiesWithMetrics.slice(0, 100).map(item => {
             const worldPos = item.entity.worldPos;
+            const zonePos = item.entity.zonePos;
             return {
                 ptr: item.entity.ptr.toString(),
                 id: item.entity.id,
@@ -1343,6 +1852,11 @@ rpc.exports.findByClassName = function(pattern) {
                     x: worldPos.x,
                     y: worldPos.y,
                     z: worldPos.z
+                },
+                zonePos: {
+                    x: zonePos.x,
+                    y: zonePos.y,
+                    z: zonePos.z
                 }
             };
         })
@@ -1373,6 +1887,7 @@ rpc.exports.findByExactClassName = function(className) {
         count: entities.length,
         entities: entitiesWithMetrics.map(item => {
             const worldPos = item.entity.worldPos;
+            const zonePos = item.entity.zonePos;
             return {
                 ptr: item.entity.ptr.toString(),
                 id: item.entity.id,
@@ -1385,6 +1900,11 @@ rpc.exports.findByExactClassName = function(className) {
                     x: worldPos.x,
                     y: worldPos.y,
                     z: worldPos.z
+                },
+                zonePos: {
+                    x: zonePos.x,
+                    y: zonePos.y,
+                    z: zonePos.z
                 }
             };
         })
@@ -2053,3 +2573,115 @@ const hookSub1404C8900 = () => {
 
 // RPC export to enable the hook
 rpc.exports.hookSub1404C8900 = hookSub1404C8900;
+
+// Frida hook for CRigidEntity::ApplyStateFromNetwork function
+const hookApplyStateFromNetwork = () => {
+    try {
+        const moduleBase = Process.enumerateModulesSync()[0].base;
+
+        // You'll need to replace this with the actual RVA for CRigidEntity::ApplyStateFromNetwork
+        // This is a placeholder - find the actual address from your analysis
+        const funcAddr = moduleBase.add(0x6782C30);
+
+        console.log(`[*] Hooking CRigidEntity::ApplyStateFromNetwork at: ${funcAddr}`);
+
+        Interceptor.attach(funcAddr, {
+            onEnter: function(args) {
+                this.a1 = args[0]; // _QWORD *a1 (CRigidEntity*)
+                this.a2 = args[1]; // __int64 a2
+
+                let output = `[HOOK] CRigidEntity::ApplyStateFromNetwork called:\n`;
+                output += `  a1 (CRigidEntity*): ${this.a1}\n`;
+                output += `  a2 (__int64): ${this.a2} (0x${this.a2.toString(16)})\n`;
+
+                // Dump interesting fields from a1 (CRigidEntity)
+                if (this.a1 && !this.a1.isNull()) {
+                    try {
+                        // a1[0x41] & 0x40000000 check
+                        const flagsAt0x41 = this.a1.add(0x41 * 8).readU64();
+                        output += `  a1[0x41] (flags): 0x${flagsAt0x41.toString(16)}\n`;
+                        output += `  a1[0x41] & 0x40000000: ${(flagsAt0x41.toNumber() & 0x40000000) !== 0}\n`;
+
+                        // *((_BYTE *)a1 + 0x94E) check
+                        const byteAt0x94E = this.a1.add(0x94E).readU8();
+                        output += `  *((_BYTE *)a1 + 0x94E): ${byteAt0x94E}\n`;
+
+                        // *((float *)a1 + 0x252) check
+                        const floatAt0x252 = this.a1.add(0x252 * 4).readFloat();
+                        output += `  *((float *)a1 + 0x252): ${floatAt0x252}\n`;
+
+                        // *((unsigned __int8 *)a1 + 0x94D) check
+                        const byteAt0x94D = this.a1.add(0x94D).readU8();
+                        output += `  *((unsigned __int8 *)a1 + 0x94D): ${byteAt0x94D}\n`;
+
+                        // a1[0x11D] check
+                        const qwordAt0x11D = this.a1.add(0x11D * 8).readU64();
+                        output += `  a1[0x11D]: 0x${qwordAt0x11D.toString(16)}\n`;
+
+                        // Lock field at a1 + 0x11E
+                        const lockField = this.a1.add(0x11E * 8).readU64();
+                        output += `  a1[0x11E] (m_netDesiredStateLock): 0x${lockField.toString(16)}\n`;
+
+                    } catch (e) {
+                        output += `  [Error reading a1 fields: ${e.message}]\n`;
+                    }
+                }
+
+                // Print stack trace
+                output += `  Stack trace:\n`;
+                Thread.backtrace(this.context, Backtracer.ACCURATE)
+                    .map(DebugSymbol.fromAddress)
+                    .slice(0, 8) // Limit to first 8 frames
+                    .forEach((symbol, index) => {
+                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
+                    });
+
+                console.log(output);
+            },
+
+            onLeave: function(retval) {
+                console.log(`[HOOK] CRigidEntity::ApplyStateFromNetwork returned: 0x${retval.toString(16)} (${retval})`);
+            }
+        });
+
+        console.log("[*] CRigidEntity::ApplyStateFromNetwork hook installed successfully");
+
+    } catch (e) {
+        console.log(`[!] Failed to hook CRigidEntity::ApplyStateFromNetwork: ${e.message}`);
+    }
+};
+
+// RPC export to enable the hook
+rpc.exports.hookApplyStateFromNetwork = hookApplyStateFromNetwork;
+
+var networkStateIgnorePtrs = [];
+
+try {
+    const moduleBase = Process.enumerateModulesSync()[0].base;
+
+    // You'll need to replace this with the actual RVA for CRigidEntity::ApplyStateFromNetwork
+    // This is a placeholder - find the actual address from your analysis
+    const funcAddr = moduleBase.add(0x6782C30);
+
+    console.log(`[*] Hooking CRigidEntity::ApplyStateFromNetwork at: ${funcAddr}`);
+
+    Interceptor.replace(funcAddr, new NativeCallback(function(args0, args1) {
+        const a1 = args0; // _QWORD *a1 (CRigidEntity*)
+        const a2 = args1; // __int64 a2
+
+        for (let i = 0; i < networkStateIgnorePtrs.length; i++) {
+            if (a2.equals(networkStateIgnorePtrs[i])) {
+                console.log(`[INFO] Ignoring network state update for entity ${a1}`);
+                return; // Return early if ignoring
+            }
+        }
+
+        // Call original function if not ignoring
+        const originalFunc = new NativeFunction(funcAddr, 'pointer', ['pointer', 'pointer']);
+        return originalFunc(a1, a2);
+    }, 'pointer', ['pointer', 'pointer']));
+
+    console.log("[*] CRigidEntity::ApplyStateFromNetwork hook installed successfully");
+} catch (e) {
+    console.log(`[!] Failed to hook CRigidEntity::ApplyStateFromNetwork: ${e.message}`);
+}
