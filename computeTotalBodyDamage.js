@@ -16,16 +16,25 @@ function hookFunction() {
     // Define the raw byte pattern for the six SSE instructions + RET
     const pattern    = 'C5 FA 10 41 ?? C5 FA 58 49 ?? C5 F2 58 51 ?? C5 EA 58 59 ?? C5 E2 58 41 ?? C5 FA 58 41 ?? C3';
 
+    const module = Process.getModuleByName(moduleName);
+
     // Find executable code ranges in the module
-    const ranges = Module.enumerateRangesSync({ protection: 'r-x', module: moduleName });
+    const ranges = module.enumerateRangesSync('r--');
+    
     let funcAddr = null;
 
     // Scan each range for the byte pattern
     for (const range of ranges) {
-        const matches = Memory.scanSync(range.base, range.size, pattern);
-        if (matches.length > 0) {
-            funcAddr = matches[0].address;
-            break;
+        try {
+            const matches = Memory.scanSync(range.base, range.size, pattern);
+    
+            if (matches.length > 0) {
+                funcAddr = matches[0].address;
+                break;
+            }
+        } catch (e) {
+            console.error(`Error scanning range: ${e.message}`);
+            // Continue with next range if there's an error
         }
     }
 
@@ -75,11 +84,23 @@ function hookFunction() {
         },
 
         onLeave: function(retval) {
+            retval.replace(ptr('0x0'));
+
             console.log('[+] Leave computeTotalBodyDamage');
+            
+            if (retval.equals(0)) {
+                console.log(`    xmm0 (totalDamage returned) = ${retval}`);
+                return;
+            } 
+
+            if (retval.compare(1_000_000) === -1) {
+                console.log(`    xmm0 (totalDamage returned) = ${retval}`);
+                return;
+            }
 
             // Assembly returns in XMM0 low lane
             // .toFloat() reads the low 32 bits
-            const totalDamage = retval.toFloat();
+            const totalDamage = retval.readFloat();
             console.log(`    xmm0 (totalDamage returned) = ${totalDamage}`);
 
             // Verify by summing in JS
@@ -94,6 +115,4 @@ function hookFunction() {
     });
 }
 
-rpc.exports = {
-    init: hookFunction
-};
+hookFunction();
