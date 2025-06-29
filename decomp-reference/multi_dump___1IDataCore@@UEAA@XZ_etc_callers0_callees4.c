@@ -1,0 +1,19077 @@
+------------------------- OLD VERSION START -------------------------
+
+// Start Functions:
+//   - 0x15131B200 (??1IDataCore@@UEAA@XZ)
+//   - 0x15131B290 (?GetRecord@IDataCore@@EEAAPEBUIDataCoreRecordWrapper@@I@Z)
+//   - 0x15131B2B0 (??_GIDataCore@@UEAAPEAXI@Z)
+//   - 0x15131B2F0 (??$GetValFromAttrib@_K@DataCoreHelper@@YA_KVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x15131B390 (??0DataCoreRecordWrapper@@QEAA@PEAUIDataCoreStructure@@V?$CryStringT@D@@1@Z)
+//   - 0x15131B470 (CrySock::MakeSocketNonBlocking)
+//   - 0x15131B4A0 (?LoadStringA@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x15131B530 (??0CDataCore@@QEAA@XZ)
+//   - 0x15131B660 (??_GCDataCore@@UEAAPEAXI@Z)
+//   - 0x15131B6A0 (??1CDataCore@@UEAA@XZ)
+//   - 0x15131B9D0 (?Initialize@CDataCore@@UEAA_NXZ)
+//   - 0x15131C900 (?LoadRecord@CDataCore@@AEAA_NPEBD@Z)
+//   - 0x15131C960 (?ReloadRecord@CDataCore@@AEAA_NPEBD0_N@Z)
+//   - 0x15131D350 (?LoadRecordDeprecated@CDataCore@@UEAA?AVXmlNodeRef@@PEBD@Z)
+//   - 0x15131D410 (?Shutdown@CDataCore@@UEAAXXZ)
+//   - 0x15131D420 (?DFFileLoader@CDataCore@@CA_NPEBDPEAX@Z)
+//   - 0x15131D4D0 (?DFFileSizer@CDataCore@@CAIPEBD@Z)
+//   - 0x15131D540 (?ScanFolder@CDataCore@@AEAAXPEBD0AEAV?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@@Z)
+//   - 0x15131E230 (?OnLogMessage@CDataCore@@CA_NIPEBD@Z)
+//   - 0x15131E270 (?RegisterStruct@CDataCore@@UEAAXPEBDPEAUIRecordCreator@@QEAUCDataCoreField@@_K0@Z)
+//   - 0x15131E380 (?GetRecordNamesForSchema@CDataCore@@UEAA?AU?$DynArray@PEBDHU?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@@@PEBD@Z)
+//   - 0x15131E4B0 (?GenerateNameHash@CDataCore@@AEAAIPEBD@Z)
+//   - 0x15131E670 (?LoadStruct@CDataCore@@EEAAPEBUIDataCoreStructure@@PEAU2@PEBD11VXmlNodeRef@@_N@Z)
+//   - 0x15131ED80 (?LoadFields@CDataCore@@AEAAXVXmlNodeRef@@PEBD1PEAUIDataCoreStructure@@AEAUSDataCoreStruct@@1@Z)
+//   - 0x1513213E0 (?ResolveRefs@CDataCore@@AEAAXXZ)
+//   - 0x151321530 (?ResolveWeakPtrs@CDataCore@@AEAAXPEBD@Z)
+//   - 0x1513217E0 (?InheritsFrom@CDataCore@@EEAA_NPEBD0@Z)
+//   - 0x151321980 (?NetUpdate@CDataCore@@UEAAXXZ)
+//   - 0x151322AC0 (??A?$map@IPEAUIDataCoreRecordWrapper@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAUIDataCoreRecordWrapper@@@std@@@3@@std@@QEAAAEAPEAUIDataCoreRecordWrapper@@AEBI@Z)
+//   - 0x151322B50 (??A?$map@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@@std@@QEAAAEAUSDataCoreStruct@@$$QEAV?$CryStringT@D@@@Z)
+//   - 0x151322C40 (??A?$map@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@@std@@QEAAAEAUUrlToStruct@CDataCore@@$$QEAV?$CryStringT@D@@@Z)
+//   - 0x151322D30 (?push_back@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@QEAAX$$QEAUUnresolvedRef@CDataCore@@@Z)
+//   - 0x151322DD0 (?resize@?$DataCoreArray@UDataCoreRecordRefBase@@@@AEAAX_K@Z)
+//   - 0x151322E70 (?resize@?$DataCoreArray@UIDataCoreStructPtrBase@@@@AEAAX_K@Z)
+//   - 0x151322F50 (?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@0@Z)
+//   - 0x151323050 (?_Reserve@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@IEAAX_K@Z)
+//   - 0x1513230E0 (?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@@Z)
+//   - 0x151323440 (?_Reallocate@?$vector@UUnresolvedWeakPtr@CDataCore@@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@@std@@IEAAX_K@Z)
+//   - 0x151323510 (?_Erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@Z)
+//   - 0x151323580 (??$LoadArray@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151323710 (??$LoadArray@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x1513238B0 (??$LoadArray@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151323A50 (??$LoadArray@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151323BF0 (??$LoadArray@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151323D80 (??$LoadArray@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151323F20 (??$LoadArray@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x1513240C0 (??$LoadArray@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324260 (??$LoadArray@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x1513243F0 (??$LoadArray@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324580 (??$LoadArray@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324710 (??$LoadArray@V?$CryStringT@D@@@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324A40 (??$LoadAtomic@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324AE0 (??$LoadAtomic@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324B80 (??$LoadAtomic@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324C20 (??$LoadAtomic@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324CC0 (??$LoadAtomic@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324D60 (??$LoadAtomic@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324E00 (??$LoadAtomic@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324EA0 (??$LoadAtomic@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324F40 (??$LoadAtomic@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151324FE0 (??$LoadAtomic@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151325080 (??$LoadAtomic@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z)
+//   - 0x151325120 (?resize@?$DataCoreArray@_N@@AEAAX_K@Z)
+//   - 0x1513251B0 (?resize@?$DataCoreArray@G@@AEAAX_K@Z)
+//   - 0x151325250 (?resize@?$DataCoreArray@M@@AEAAX_K@Z)
+//   - 0x1513252F0 (?resize@?$DataCoreArray@_J@@AEAAX_K@Z)
+//   - 0x151325390 (?resize@?$DataCoreArray@V?$CryStringT@D@@@@AEAAX_K@Z)
+//   - 0x151325480 (??$GetValFromAttrib@D@DataCoreHelper@@YADVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x151325520 (??$GetValFromAttrib@F@DataCoreHelper@@YAFVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x1513255B0 (??$GetValFromAttrib@H@DataCoreHelper@@YAHVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x151325640 (??$GetValFromAttrib@_J@DataCoreHelper@@YA_JVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x1513256E0 (??$GetValFromAttrib@E@DataCoreHelper@@YAEVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x151325780 (??$GetValFromAttrib@G@DataCoreHelper@@YAGVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x151325810 (??$GetValFromAttrib@I@DataCoreHelper@@YAIVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x1513258A0 (??$GetValFromAttrib@M@DataCoreHelper@@YAMVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x151325940 (??$GetValFromAttrib@N@DataCoreHelper@@YANVXmlNodeRef@@V?$CryStringT@D@@@Z)
+//   - 0x1513259E0 (??$GetValFromAttrib@_N@DataCoreHelper@@YA_NVXmlNodeRef@@V?$CryStringT@D@@@Z)
+// Caller Depth: 0
+// Callee/Ref Depth: 4
+// Total Functions Found: 194
+// ------------------------------------------------------------
+
+// --- Function: ?CryFatalError@@YAXPEBDZZ (0x150230630) ---
+void CryFatalError(const char *format, ...)
+{
+  int v1; // eax
+  int n0x1000; // eax
+  char szBuffer[4104]; // [rsp+20h] [rbp-1008h] BYREF
+  va_list ArgList; // [rsp+1038h] [rbp+10h] BYREF
+
+  va_start(ArgList, format);
+  if ( gEnv.pSystem )
+  {
+    n0x1000 = vsnprintf(szBuffer, (unsigned int)(v1 - 40), format, ArgList);
+    if ( n0x1000 == -1 || (unsigned __int64)n0x1000 >= 0x1000 )
+      szBuffer[4095] = 0;
+    gEnv.pSystem->FatalError(gEnv.pSystem, "%s", szBuffer);
+  }
+}
+
+// --- End Function: ?CryFatalError@@YAXPEBDZZ (0x150230630) ---
+
+// --- Function: ?Init@_CryMemoryManagerPoolHelper@@SAXXZ (0x150235B60) ---
+void (__fastcall *_CryMemoryManagerPoolHelper::Init())(void **pIMemoryManager)
+{
+  void (__fastcall *CryGetIMemoryManagerInterface_1)(void **); // rax
+
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+  {
+    _CryMemoryManagerPoolHelper::m_bInitialized = 1;
+    _CryMemoryManagerPoolHelper::allocatedMemory = 0LL;
+    _CryMemoryManagerPoolHelper::freedMemory = 0LL;
+    _CryMemoryManagerPoolHelper::requestedMemory = 0LL;
+    _CryMemoryManagerPoolHelper::numAllocations = 0;
+    _CryMemoryManagerPoolHelper::_CryMalloc = (void *(__fastcall *)(unsigned __int64, unsigned __int64 *, unsigned __int64))CryMalloc;
+    _CryMemoryManagerPoolHelper::_CryRealloc = (void *(__fastcall *)(void *, unsigned __int64, unsigned __int64 *, unsigned __int64 *, unsigned __int64))CryRealloc;
+    _CryMemoryManagerPoolHelper::_CryFree = (unsigned __int64 (__fastcall *)(void *, unsigned __int64))CryFree;
+    _CryMemoryManagerPoolHelper::_CryGetMemSize = (unsigned __int64 (__fastcall *)(void *, unsigned __int64))CryGetMemSize;
+    _CryMemoryManagerPoolHelper::_CryCrtMalloc = (void *(__fastcall *)(unsigned __int64))CrySystemCrtMalloc;
+    _CryMemoryManagerPoolHelper::_CryCrtRealloc = (void *(__fastcall *)(void *, unsigned __int64))CrySystemCrtRealloc;
+    _CryMemoryManagerPoolHelper::_CryCrtFree = CrySystemCrtFree;
+    _CryMemoryManagerPoolHelper::_CryCrtSize = (unsigned __int64 (__fastcall *)(void *))CrySystemCrtSize;
+    CryGetIMemoryManagerInterface_1 = CryGetIMemoryManagerInterface;
+    _CryMemoryManagerPoolHelper::_CryGetIMemoryManagerInterface = CryGetIMemoryManagerInterface;
+  }
+  return CryGetIMemoryManagerInterface_1;
+}
+
+// --- End Function: ?Init@_CryMemoryManagerPoolHelper@@SAXXZ (0x150235B60) ---
+
+// --- Function: ?custom_xml_malloc@?A0x30fbcf58@@YAPEAX_K@Z (0x150235C20) ---
+void *__fastcall `anonymous namespace'::custom_xml_malloc(unsigned __int64 nSize)
+{
+  void *result; // rax
+  unsigned __int64 v3; // [rsp+38h] [rbp+10h] BYREF
+
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  result = _CryMemoryManagerPoolHelper::_CryMalloc(nSize, &v3, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v3);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, nSize);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  return result;
+}
+
+// --- End Function: ?custom_xml_malloc@?A0x30fbcf58@@YAPEAX_K@Z (0x150235C20) ---
+
+// --- Function: CryModuleMemalign (0x150235D10) ---
+void *__fastcall CryModuleMemalign(unsigned __int64 size, unsigned __int64 alignment)
+{
+  void *result; // rax
+  unsigned __int64 v5; // [rsp+40h] [rbp+18h] BYREF
+
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  result = _CryMemoryManagerPoolHelper::_CryMalloc(size, &v5, alignment);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v5);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, size);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  return result;
+}
+
+// --- End Function: CryModuleMemalign (0x150235D10) ---
+
+// --- Function: ??0?$CryStringT@D@@QEAA@PEBD@Z (0x15023E530) ---
+void __fastcall CryStringT<char>::CryStringT<char>(CryStringT<char> *this, char *str)
+{
+  unsigned __int64 nLen; // rbx
+
+  this->m_str = (char *)&Count;
+  if ( str )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( str[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(this, nLen);
+      if ( this->m_str != str )
+        memcpy_0(this->m_str, str, nLen);
+    }
+  }
+}
+
+// --- End Function: ??0?$CryStringT@D@@QEAA@PEBD@Z (0x15023E530) ---
+
+// --- Function: ??1SInputContributorDef@CMusicSystem@@QEAA@XZ (0x15023E5E0) ---
+void __fastcall CMusicSystem::SInputContributorDef::~SInputContributorDef(
+        std::pair<CryStringT<char>,std::locale *> *this)
+{
+  char *m_str; // rcx
+  int v2; // eax
+  int *v3; // rcx
+  int v4; // eax
+
+  m_str = this->first.m_str;
+  v2 = *((_DWORD *)m_str - 3);
+  v3 = (int *)(m_str - 12);
+  if ( v2 >= 0 )
+  {
+    v4 = v2 - 1;
+    *v3 = v4;
+    if ( v4 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v3[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v3, 0LL));
+    }
+  }
+}
+
+// --- End Function: ??1SInputContributorDef@CMusicSystem@@QEAA@XZ (0x15023E5E0) ---
+
+// --- Function: ?clear@?$CryStringT@D@@QEAAXXZ (0x15023E630) ---
+void __fastcall CryStringT<char>::clear(CryStringT<char> *this)
+{
+  char *m_str; // rcx
+  int *v3; // rcx
+  int v4; // eax
+
+  m_str = this->m_str;
+  if ( *((_DWORD *)m_str - 2) )
+  {
+    v3 = (int *)(m_str - 12);
+    if ( *v3 < 0 )
+    {
+      CryStringT<char>::resize(this, 0LL, 32);
+    }
+    else
+    {
+      v4 = *v3 - 1;
+      *v3 = v4;
+      if ( v4 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v3[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v3, 0LL));
+      }
+      this->m_str = (char *)&Count;
+    }
+  }
+}
+
+// --- End Function: ?clear@?$CryStringT@D@@QEAAXXZ (0x15023E630) ---
+
+// --- Function: ?reserve@?$CryStringT@D@@QEAAX_K@Z (0x15023E6B0) ---
+void __fastcall CryStringT<char>::reserve(CryStringT<char> *this, unsigned __int64 nCount)
+{
+  char *m_str; // rcx
+  unsigned __int64 nCount_1; // r8
+  int *v5; // rbx
+  int v6; // eax
+  CryStringT<char>::StrHeader *pData; // rbx
+
+  m_str = this->m_str;
+  nCount_1 = *((int *)m_str - 1);
+  if ( nCount <= nCount_1 )
+  {
+    if ( !nCount && *((_DWORD *)m_str - 2) != (_DWORD)nCount_1 )
+    {
+      pData = (CryStringT<char>::StrHeader *)(m_str - 12);
+      CryStringT<char>::_AllocData(this, *((int *)m_str - 2));
+      if ( (CryStringT<char>::StrHeader *)this->m_str != &pData[1] )
+        memcpy_0(this->m_str, &pData[1], pData->nLength);
+      CryStringT<char>::_FreeData(pData);
+    }
+  }
+  else
+  {
+    v5 = (int *)(m_str - 12);
+    CryStringT<char>::_AllocData(this, nCount);
+    if ( (int *)this->m_str != v5 + 3 )
+      memcpy_0(this->m_str, v5 + 3, v5[1]);
+    *((_DWORD *)this->m_str - 2) = v5[1];
+    this->m_str[v5[1]] = 0;
+    if ( *v5 >= 0 )
+    {
+      v6 = *v5 - 1;
+      *v5 = v6;
+      if ( v6 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v5[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v5, 0LL));
+      }
+    }
+  }
+}
+
+// --- End Function: ?reserve@?$CryStringT@D@@QEAAX_K@Z (0x15023E6B0) ---
+
+// --- Function: ?resize@?$CryStringT@D@@QEAAX_KD@Z (0x15023E790) ---
+void __fastcall CryStringT<char>::resize(CryStringT<char> *this, unsigned __int64 nCount, char _Ch)
+{
+  unsigned __int64 nCount_1; // rax
+
+  CryStringT<char>::_MakeUnique(this);
+  nCount_1 = *((int *)this->m_str - 2);
+  if ( nCount <= nCount_1 )
+  {
+    if ( nCount < nCount_1 )
+    {
+      *((_DWORD *)this->m_str - 2) = nCount;
+      this->m_str[*((int *)this->m_str - 2)] = 0;
+    }
+  }
+  else
+  {
+    CryStringT<char>::append(this, nCount - nCount_1, _Ch);
+  }
+}
+
+// --- End Function: ?resize@?$CryStringT@D@@QEAAX_KD@Z (0x15023E790) ---
+
+// --- Function: ??A?$CryStringT@D@@QEAAAEAD_K@Z (0x15023E880) ---
+char *__fastcall CryStringT<char>::operator[](CryStringT<char> *this, unsigned __int64 index)
+{
+  char *v4; // rbx
+  int v5; // eax
+
+  v4 = this->m_str - 12;
+  if ( *(int *)v4 > 1 )
+  {
+    CryStringT<char>::_AllocData(this, *((int *)this->m_str - 2));
+    if ( this->m_str != v4 + 12 )
+      memcpy_0(this->m_str, v4 + 12, *((int *)v4 + 1));
+    if ( *(int *)v4 >= 0 )
+    {
+      v5 = *(_DWORD *)v4 - 1;
+      *(_DWORD *)v4 = v5;
+      if ( v5 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v4 + 2);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v4, 0LL));
+      }
+    }
+  }
+  return &this->m_str[index];
+}
+
+// --- End Function: ??A?$CryStringT@D@@QEAAAEAD_K@Z (0x15023E880) ---
+
+// --- Function: ??$?HD@@YA?AV?$CryStringT@D@@AEBV0@PEBD@Z (0x15023F4C0) ---
+CryStringT<char> *__fastcall operator+<char>(CryStringT<char> *result, const CryStringT<char> *str1, char *str2)
+{
+  char *m_str; // r8
+  unsigned __int64 nLen; // r8
+
+  m_str = str1->m_str;
+  if ( *((int *)str1->m_str - 3) < 0 )
+  {
+    result->m_str = (char *)&Count;
+  }
+  else
+  {
+    result->m_str = m_str;
+    ++*((_DWORD *)m_str - 3);
+  }
+  if ( str2 )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( str2[nLen] );
+  }
+  else
+  {
+    nLen = 0LL;
+  }
+  CryStringT<char>::_ConcatenateInPlace(result, str2, nLen);
+  return result;
+}
+
+// --- End Function: ??$?HD@@YA?AV?$CryStringT@D@@AEBV0@PEBD@Z (0x15023F4C0) ---
+
+// --- Function: ?append@?$CryStringT@D@@QEAAAEAV1@_KD@Z (0x150242270) ---
+CryStringT<char> *__fastcall CryStringT<char>::append(CryStringT<char> *this, size_t nCount, char _Ch)
+{
+  char *m_str; // rcx
+  int *v7; // rdi
+  __int64 v8; // r14
+  int v10; // eax
+
+  if ( !nCount )
+    return this;
+  m_str = this->m_str;
+  v7 = (int *)(m_str - 12);
+  if ( *((int *)m_str - 3) > 1 || (v8 = *((int *)m_str - 2), v8 + nCount > *((int *)m_str - 1)) )
+  {
+    CryStringT<char>::_AllocData(this, nCount + *((int *)m_str - 2));
+    if ( (int *)this->m_str != v7 + 3 )
+      memcpy_0(this->m_str, v7 + 3, v7[1]);
+    memset_0(&this->m_str[v7[1]], _Ch, nCount);
+    if ( *v7 >= 0 )
+    {
+      v10 = *v7 - 1;
+      *v7 = v10;
+      if ( v10 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+      }
+    }
+  }
+  else
+  {
+    memset_0(&m_str[v8], _Ch, nCount);
+    *((_DWORD *)this->m_str - 2) = v8 + nCount;
+    this->m_str[*((int *)this->m_str - 2)] = 0;
+  }
+  return this;
+}
+
+// --- End Function: ?append@?$CryStringT@D@@QEAAAEAV1@_KD@Z (0x150242270) ---
+
+// --- Function: ?_AllocData@?$CryStringT@D@@IEAAX_K@Z (0x150242480) ---
+void __fastcall CryStringT<char>::_AllocData(CryStringT<char> *this, unsigned __int64 nLen)
+{
+  unsigned __int64 v4; // rsi
+  char *v5; // rax
+  unsigned __int64 v6; // [rsp+38h] [rbp+10h] BYREF
+
+  if ( nLen )
+  {
+    v4 = nLen + 13;
+    if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+      _CryMemoryManagerPoolHelper::Init();
+    v5 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v4, &v6, 0LL);
+    _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+    _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v4);
+    _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v4;
+    *(_DWORD *)v5 = 1;
+    this->m_str = v5 + 12;
+    *((_DWORD *)v5 + 1) = nLen;
+    *((_DWORD *)v5 + 2) = nLen;
+    this->m_str[nLen] = 0;
+  }
+  else
+  {
+    this->m_str = (char *)&Count;
+  }
+}
+
+// --- End Function: ?_AllocData@?$CryStringT@D@@IEAAX_K@Z (0x150242480) ---
+
+// --- Function: ?_FreeData@?$CryStringT@D@@KAXPEAUStrHeader@1@@Z (0x150242530) ---
+void __fastcall CryStringT<char>::_FreeData(CryStringT<char>::StrHeader *pData)
+{
+  int nRefCount; // eax
+
+  if ( pData->nRefCount >= 0 )
+  {
+    nRefCount = pData->nRefCount - 1;
+    pData->nRefCount = nRefCount;
+    if ( nRefCount <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - pData->nAllocSize;
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(pData, 0LL));
+    }
+  }
+}
+
+// --- End Function: ?_FreeData@?$CryStringT@D@@KAXPEAUStrHeader@1@@Z (0x150242530) ---
+
+// --- Function: ?_Free@?$CryStringT@D@@IEAAXXZ (0x150242570) ---
+void __fastcall CryStringT<char>::_Free(CryStringT<char> *this)
+{
+  char *v2; // rcx
+  int v3; // eax
+
+  v2 = this->m_str - 12;
+  if ( *(int *)v2 >= 0 )
+  {
+    v3 = *(_DWORD *)v2 - 1;
+    *(_DWORD *)v2 = v3;
+    if ( v3 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v2 + 2);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v2, 0LL));
+    }
+    this->m_str = (char *)&Count;
+  }
+}
+
+// --- End Function: ?_Free@?$CryStringT@D@@IEAAXXZ (0x150242570) ---
+
+// --- Function: ?_ConcatenateInPlace@?$CryStringT@D@@IEAAXPEBD_K@Z (0x1502425D0) ---
+void __fastcall CryStringT<char>::_ConcatenateInPlace(CryStringT<char> *this, char *sStr, size_t nLen)
+{
+  char *m_str; // rdx
+  char *v5; // rbx
+  int nLen_1; // edi
+  __int64 v8; // rcx
+  char *sStr_1; // rcx
+  int v10; // eax
+
+  if ( nLen )
+  {
+    m_str = this->m_str;
+    v5 = this->m_str - 12;
+    nLen_1 = nLen;
+    if ( *(int *)v5 > 1 || (v8 = *((int *)m_str - 2), v8 + nLen > *((int *)m_str - 1)) )
+    {
+      CryStringT<char>::_Concatenate(this, m_str, *((int *)m_str - 2), sStr, nLen);
+      if ( *(int *)v5 >= 0 )
+      {
+        v10 = *(_DWORD *)v5 - 1;
+        *(_DWORD *)v5 = v10;
+        if ( v10 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v5 + 2);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v5, 0LL));
+        }
+      }
+    }
+    else
+    {
+      sStr_1 = &m_str[v8];
+      if ( sStr_1 != sStr )
+        memcpy_0(sStr_1, sStr, nLen);
+      *((_DWORD *)this->m_str - 2) += nLen_1;
+      this->m_str[*((int *)this->m_str - 2)] = 0;
+    }
+  }
+}
+
+// --- End Function: ?_ConcatenateInPlace@?$CryStringT@D@@IEAAXPEBD_K@Z (0x1502425D0) ---
+
+// --- Function: ?_Assign@?$CryStringT@D@@IEAAXPEBD_K@Z (0x1502426A0) ---
+void __fastcall CryStringT<char>::_Assign(CryStringT<char> *this, char *sStr, unsigned __int64 nLen)
+{
+  char *m_str; // rax
+  int v6; // r8d
+  char *v7; // rcx
+
+  m_str = this->m_str;
+  v6 = *((_DWORD *)this->m_str - 3);
+  v7 = this->m_str - 12;
+  if ( v6 > 1 || nLen > *((int *)m_str - 1) )
+  {
+    if ( v6 >= 0 )
+    {
+      *(_DWORD *)v7 = v6 - 1;
+      if ( v6 - 1 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v7 + 2);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+      }
+      this->m_str = (char *)&Count;
+    }
+    CryStringT<char>::_AllocData(this, nLen);
+  }
+  if ( this->m_str != sStr )
+    memcpy_0(this->m_str, sStr, nLen);
+  *((_DWORD *)this->m_str - 2) = nLen;
+  this->m_str[nLen] = 0;
+}
+
+// --- End Function: ?_Assign@?$CryStringT@D@@IEAAXPEBD_K@Z (0x1502426A0) ---
+
+// --- Function: ?_MakeUnique@?$CryStringT@D@@IEAAXXZ (0x150242750) ---
+void __fastcall CryStringT<char>::_MakeUnique(CryStringT<char> *this)
+{
+  char *m_str; // rbx
+  int v3; // eax
+  int v4; // eax
+
+  m_str = this->m_str;
+  v3 = *((_DWORD *)this->m_str - 3);
+  if ( v3 > 1 )
+  {
+    if ( v3 >= 0 )
+    {
+      v4 = v3 - 1;
+      *((_DWORD *)m_str - 3) = v4;
+      if ( v4 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(m_str - 12, 0LL));
+      }
+      this->m_str = (char *)&Count;
+    }
+    CryStringT<char>::_AllocData(this, *((int *)m_str - 2));
+    if ( this->m_str != m_str )
+      memcpy_0(this->m_str, m_str, *((_DWORD *)m_str - 2) + 1);
+  }
+}
+
+// --- End Function: ?_MakeUnique@?$CryStringT@D@@IEAAXXZ (0x150242750) ---
+
+// --- Function: ?_Concatenate@?$CryStringT@D@@IEAAXPEBD_K01@Z (0x150243230) ---
+void __fastcall CryStringT<char>::_Concatenate(
+        CryStringT<char> *this,
+        char *sStr1,
+        size_t nLen1,
+        char *sStr2,
+        size_t nLen2)
+{
+  unsigned __int64 n8; // rdx
+  char *sStr2_1; // rcx
+
+  n8 = nLen1 + nLen2;
+  if ( 2 * nLen1 > nLen1 + nLen2 )
+    n8 = 2 * nLen1;
+  if ( n8 )
+  {
+    if ( n8 < 8 )
+      n8 = 8LL;
+    CryStringT<char>::_AllocData(this, n8);
+    if ( this->m_str != sStr1 )
+      memcpy_0(this->m_str, sStr1, nLen1);
+    sStr2_1 = &this->m_str[nLen1];
+    if ( sStr2_1 != sStr2 )
+      memcpy_0(sStr2_1, sStr2, nLen2);
+    *((_DWORD *)this->m_str - 2) = nLen1 + nLen2;
+    this->m_str[nLen1 + nLen2] = 0;
+  }
+}
+
+// --- End Function: ?_Concatenate@?$CryStringT@D@@IEAAXPEBD_K01@Z (0x150243230) ---
+
+// --- Function: ?_Reallocate@?$vector@PEAVCTweakMenu@@V?$allocator@PEAVCTweakMenu@@@std@@@std@@IEAAX_K@Z (0x150244630) ---
+void __fastcall std::vector<CTweakMenu *>::_Reallocate(
+        std::vector<IObjectConstructor *> *this,
+        unsigned __int64 _Count)
+{
+  IObjectConstructor **_Myfirst; // rbx
+  signed __int64 v5; // rsi
+
+  if ( _Count )
+    _Myfirst = std::_Allocate<CListenerSet<IVehicleEventListener *>::ListenerRecord>(
+                 _Count,
+                 (IObjectConstructor **)_Count);
+  else
+    _Myfirst = 0LL;
+  try
+  {
+    memmove(_Myfirst, this->_Myfirst, 8 * (this->_Mylast - this->_Myfirst));
+  }
+  catch ( ... )
+  {
+    if ( _Myfirst )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Myfirst, 0LL));
+    throw;
+  }
+  v5 = this->_Mylast - this->_Myfirst;
+  if ( this->_Myfirst )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(this->_Myfirst, 0LL));
+  this->_Myend = &_Myfirst[_Count];
+  this->_Mylast = &_Myfirst[v5];
+  this->_Myfirst = _Myfirst;
+}
+
+// --- End Function: ?_Reallocate@?$vector@PEAVCTweakMenu@@V?$allocator@PEAVCTweakMenu@@@std@@@std@@IEAAX_K@Z (0x150244630) ---
+
+// --- Function: ??$_Allocate@UListenerRecord@?$CListenerSet@PEAUIVehicleEventListener@@@@@std@@YAPEAUListenerRecord@?$CListenerSet@PEAUIVehicleEventListener@@@@_KPEAU12@@Z (0x150245540) ---
+IObjectConstructor **__fastcall std::_Allocate<CListenerSet<IVehicleEventListener *>::ListenerRecord>(
+        unsigned __int64 _Count,
+        IObjectConstructor **a2)
+{
+  unsigned __int64 v2; // rbx
+  IObjectConstructor **result; // rax
+  unsigned __int64 v4; // [rsp+30h] [rbp+8h] BYREF
+
+  if ( _Count > 0x1FFFFFFFFFFFFFFFLL )
+    goto LABEL_5;
+  v2 = 8 * _Count;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  result = (IObjectConstructor **)_CryMemoryManagerPoolHelper::_CryMalloc(v2, &v4, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v4);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v2);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  if ( !result )
+  {
+LABEL_5:
+    std::_Xbad_alloc();
+    __debugbreak();
+  }
+  return result;
+}
+
+// --- End Function: ??$_Allocate@UListenerRecord@?$CListenerSet@PEAUIVehicleEventListener@@@@@std@@YAPEAUListenerRecord@?$CListenerSet@PEAUIVehicleEventListener@@@@_KPEAU12@@Z (0x150245540) ---
+
+// --- Function: ?_Erase@?$_Tree@V?$_Tmap_traits@PEAUIEntityClass@@UclassMemData@@U?$less@PEAUIEntityClass@@@std@@V?$allocator@U?$pair@QEAUIEntityClass@@UclassMemData@@@std@@@4@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@QEAUIEntityClass@@UclassMemData@@@std@@PEAX@2@@Z (0x15024DC40) ---
+void __fastcall std::_Tree<std::_Tmap_traits<IEntityClass *,classMemData,std::less<IEntityClass *>,std::allocator<std::pair<IEntityClass * const,classMemData>>,0>>::_Erase(
+        std::_Tree<std::_Tmap_traits<StringHash,SubsumptionActivity *,std::less<StringHash>,std::allocator<std::pair<StringHash const ,SubsumptionActivity *> >,0> > *this,
+        std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Rootnode)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Rootnode_1; // rdi
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *i; // rbx
+
+  _Rootnode_1 = _Rootnode;
+  for ( i = _Rootnode; !i->_Isnil; _Rootnode_1 = i )
+  {
+    std::_Tree<std::_Tmap_traits<IEntityClass *,classMemData,std::less<IEntityClass *>,std::allocator<std::pair<IEntityClass * const,classMemData>>,0>>::_Erase(
+      this,
+      i->_Right);
+    i = i->_Left;
+    if ( _Rootnode_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Rootnode_1, 0LL));
+  }
+}
+
+// --- End Function: ?_Erase@?$_Tree@V?$_Tmap_traits@PEAUIEntityClass@@UclassMemData@@U?$less@PEAUIEntityClass@@@std@@V?$allocator@U?$pair@QEAUIEntityClass@@UclassMemData@@@std@@@4@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@QEAUIEntityClass@@UclassMemData@@@std@@PEAX@2@@Z (0x15024DC40) ---
+
+// --- Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@PEAX@2@XZ (0x15024DCB0) ---
+std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *__fastcall std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const,CDialogScript *>>>::_Buyheadnode(
+        std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const ,SubactivityTaskData *>> > *this,
+        SubsumptionEvent *_Count)
+{
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Left; // rax
+
+  _Left = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)std::_Allocate<std::_List_node<CNavPath::SDebugSphere,void *>>(
+                                                                                   1uLL,
+                                                                                   _Count);
+  try
+  {
+    if ( _Left )
+      _Left->_Left = _Left;
+    if ( _Left != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-8LL )
+      _Left->_Parent = _Left;
+    if ( _Left != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-16LL )
+      _Left->_Right = _Left;
+  }
+  catch ( ... )
+  {
+    if ( _Left )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Left, 0LL));
+    throw;
+  }
+  *(_WORD *)&_Left->_Color = 257;
+  return _Left;
+}
+
+// --- End Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAVCDialogScript@@@std@@PEAX@2@XZ (0x15024DCB0) ---
+
+// --- Function: ??$_Allocate@U?$_List_node@USDebugSphere@CNavPath@@PEAX@std@@@std@@YAPEAU?$_List_node@USDebugSphere@CNavPath@@PEAX@0@_KPEAU10@@Z (0x15024E070) ---
+SubsumptionEvent *__fastcall std::_Allocate<std::_List_node<CNavPath::SDebugSphere,void *>>(
+        unsigned __int64 _Count,
+        SubsumptionEvent *a2)
+{
+  unsigned __int64 v2; // rbx
+  SubsumptionEvent *result; // rax
+  unsigned __int64 v4; // [rsp+30h] [rbp+8h] BYREF
+
+  if ( _Count > 0x555555555555555LL )
+    goto LABEL_5;
+  v2 = 48 * _Count;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  result = (SubsumptionEvent *)_CryMemoryManagerPoolHelper::_CryMalloc(v2, &v4, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v4);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v2);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  if ( !result )
+  {
+LABEL_5:
+    std::_Xbad_alloc();
+    __debugbreak();
+  }
+  return result;
+}
+
+// --- End Function: ??$_Allocate@U?$_List_node@USDebugSphere@CNavPath@@PEAX@std@@@std@@YAPEAU?$_List_node@USDebugSphere@CNavPath@@PEAX@0@_KPEAU10@@Z (0x15024E070) ---
+
+// --- Function: ?_Buynode0@?$_Tree_buy@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@V?$allocator@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@PEAX@2@XZ (0x15024E900) ---
+std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *__fastcall std::_Tree_buy<std::pair<SDialogResponseDef const * const,SDialogResponseData>>::_Buynode0(
+        std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *this,
+        SubsumptionEvent *_Count)
+{
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *result; // rax
+
+  result = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)std::_Allocate<std::_List_node<CNavPath::SDebugSphere,void *>>(
+                                                                                    1uLL,
+                                                                                    _Count);
+  try
+  {
+    if ( result )
+      result->_Left = this->_Myhead;
+    if ( result != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-8LL )
+      result->_Parent = this->_Myhead;
+    if ( result != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-16LL )
+      result->_Right = this->_Myhead;
+  }
+  catch ( ... )
+  {
+    if ( result )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(result, 0LL));
+    throw;
+  }
+  return result;
+}
+
+// --- End Function: ?_Buynode0@?$_Tree_buy@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@V?$allocator@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@QEBUSDialogResponseDef@@USDialogResponseData@@@std@@PEAX@2@XZ (0x15024E900) ---
+
+// --- Function: ??$_Insert_at@AEAU?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IPEAVCTargetTrackGroup@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAX@1@AEAU?$pair@$$CBIPEAVCTargetTrackGroup@@@1@1@Z (0x15024EE30) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *__fastcall std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+        std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *result,
+        bool _Addleft,
+        std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Wherenode,
+        std::pair<int const ,SubactivityTaskData *> *_Node,
+        std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Addleft_0)
+{
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Addleft_1; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Parent; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent; // r8
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Left; // rdx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Right; // rdx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_1; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_2; // rdx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Left; // r8
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Right_1; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_3; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Left_1; // rdx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Right_2; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_4; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_5; // rcx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Parent_6; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *v27; // rax
+
+  Mysize = this->_Mysize;
+  if ( Mysize >= 0x555555555555554LL )
+  {
+    if ( _Addleft_0 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Addleft_0, 0LL));
+    std::_Xlength_error("map/set<T> too long");
+  }
+  this->_Mysize = Mysize + 1;
+  _Addleft_0->_Parent = _Wherenode;
+  if ( _Wherenode == this->_Myhead )
+  {
+    this->_Myhead->_Parent = _Addleft_0;
+    this->_Myhead->_Left = _Addleft_0;
+    Myhead = this->_Myhead;
+LABEL_11:
+    Myhead->_Right = _Addleft_0;
+    goto LABEL_12;
+  }
+  if ( !_Addleft )
+  {
+    _Wherenode->_Right = _Addleft_0;
+    Myhead = this->_Myhead;
+    if ( _Wherenode != this->_Myhead->_Right )
+      goto LABEL_12;
+    goto LABEL_11;
+  }
+  _Wherenode->_Left = _Addleft_0;
+  if ( _Wherenode == this->_Myhead->_Left )
+    this->_Myhead->_Left = _Addleft_0;
+LABEL_12:
+  _Addleft_1 = _Addleft_0;
+  while ( !_Addleft_1->_Parent->_Color )
+  {
+    Parent = _Addleft_1->_Parent;
+    _Parent = Parent->_Parent;
+    Left = _Parent->_Left;
+    if ( Parent == _Parent->_Left )
+    {
+      Right = _Parent->_Right;
+      if ( Right->_Color )
+      {
+        if ( _Addleft_1 == Parent->_Right )
+        {
+          _Right = Parent->_Right;
+          _Addleft_1 = _Addleft_1->_Parent;
+          Parent->_Right = _Right->_Left;
+          if ( !_Right->_Left->_Isnil )
+            _Right->_Left->_Parent = Parent;
+          _Right->_Parent = Parent->_Parent;
+          if ( Parent == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Right;
+          }
+          else
+          {
+            _Parent_1 = Parent->_Parent;
+            if ( _Addleft_1 == _Parent_1->_Left )
+              _Parent_1->_Left = _Right;
+            else
+              _Parent_1->_Right = _Right;
+          }
+          _Right->_Left = _Addleft_1;
+          _Addleft_1->_Parent = _Right;
+        }
+        _Addleft_1->_Parent->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Parent_2 = _Addleft_1->_Parent->_Parent;
+        _Left = _Parent_2->_Left;
+        _Parent_2->_Left = _Parent_2->_Left->_Right;
+        _Right_1 = _Left->_Right;
+        if ( !_Right_1->_Isnil )
+          _Right_1->_Parent = _Parent_2;
+        _Left->_Parent = _Parent_2->_Parent;
+        if ( _Parent_2 == this->_Myhead->_Parent )
+        {
+          this->_Myhead->_Parent = _Left;
+          _Left->_Right = _Parent_2;
+        }
+        else
+        {
+          _Parent_3 = _Parent_2->_Parent;
+          if ( _Parent_2 == _Parent_3->_Right )
+            _Parent_3->_Right = _Left;
+          else
+            _Parent_3->_Left = _Left;
+          _Left->_Right = _Parent_2;
+        }
+LABEL_52:
+        _Parent_2->_Parent = _Left;
+        continue;
+      }
+      Parent->_Color = 1;
+      Right->_Color = 1;
+      _Addleft_1->_Parent->_Parent->_Color = 0;
+      _Addleft_1 = _Addleft_1->_Parent->_Parent;
+    }
+    else
+    {
+      if ( Left->_Color )
+      {
+        if ( _Addleft_1 == Parent->_Left )
+        {
+          _Left_1 = Parent->_Left;
+          _Addleft_1 = _Addleft_1->_Parent;
+          Parent->_Left = Parent->_Left->_Right;
+          _Right_2 = _Left_1->_Right;
+          if ( !_Right_2->_Isnil )
+            _Right_2->_Parent = _Addleft_1;
+          _Left_1->_Parent = _Addleft_1->_Parent;
+          if ( _Addleft_1 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left_1;
+          }
+          else
+          {
+            _Parent_4 = _Addleft_1->_Parent;
+            if ( _Addleft_1 == _Parent_4->_Right )
+              _Parent_4->_Right = _Left_1;
+            else
+              _Parent_4->_Left = _Left_1;
+          }
+          _Left_1->_Right = _Addleft_1;
+          _Addleft_1->_Parent = _Left_1;
+        }
+        _Addleft_1->_Parent->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Parent_2 = _Addleft_1->_Parent->_Parent;
+        _Left = _Parent_2->_Right;
+        _Parent_2->_Right = _Left->_Left;
+        if ( !_Left->_Left->_Isnil )
+          _Left->_Left->_Parent = _Parent_2;
+        _Left->_Parent = _Parent_2->_Parent;
+        if ( _Parent_2 == this->_Myhead->_Parent )
+        {
+          this->_Myhead->_Parent = _Left;
+        }
+        else
+        {
+          _Parent_5 = _Parent_2->_Parent;
+          if ( _Parent_2 == _Parent_5->_Left )
+            _Parent_5->_Left = _Left;
+          else
+            _Parent_5->_Right = _Left;
+        }
+        _Left->_Left = _Parent_2;
+        goto LABEL_52;
+      }
+      Parent->_Color = 1;
+      Left->_Color = 1;
+      _Addleft_1->_Parent->_Parent->_Color = 0;
+      _Addleft_1 = _Addleft_1->_Parent->_Parent;
+    }
+  }
+  _Myhead = this->_Myhead;
+  result->_Ptr = _Addleft_0;
+  _Parent_6 = _Myhead->_Parent;
+  v27 = result;
+  _Parent_6->_Color = 1;
+  return v27;
+}
+
+// --- End Function: ??$_Insert_at@AEAU?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IPEAVCTargetTrackGroup@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrackGroup@@@std@@PEAX@1@AEAU?$pair@$$CBIPEAVCTargetTrackGroup@@@1@1@Z (0x15024EE30) ---
+
+// --- Function: ?Format@?$CryStringT@D@@QEAAAEAV1@PEBDZZ (0x1502504E0) ---
+CryStringT<char> *CryStringT<char>::Format(CryStringT<char> *this, const char *format, ...)
+{
+  int nCount; // eax
+  size_t BufferCount; // rbx
+  va_list ArgList; // [rsp+50h] [rbp+18h] BYREF
+
+  va_start(ArgList, format);
+  nCount = _vscprintf(format, ArgList);
+  if ( nCount < 0 )
+    nCount = 0;
+  BufferCount = nCount;
+  CryStringT<char>::resize(this, nCount, 32);
+  vsnprintf(this->m_str, BufferCount, format, ArgList);
+  return this;
+}
+
+// --- End Function: ?Format@?$CryStringT@D@@QEAAAEAV1@PEBDZZ (0x1502504E0) ---
+
+// --- Function: ?CryLogAlways@@YAXPEBDZZ (0x15025A560) ---
+void CryLogAlways(const char *format, ...)
+{
+  va_list va; // [rsp+58h] [rbp+18h] BYREF
+
+  va_start(va, format);
+  if ( gEnv.pSystem )
+  {
+    if ( gEnv.pLog )
+      gEnv.pLog->LogV(gEnv.pLog, eAlways, format, va);
+  }
+}
+
+// --- End Function: ?CryLogAlways@@YAXPEBDZZ (0x15025A560) ---
+
+// --- Function: ?_Reserve@?$vector@PEAVCRadarQuery@@V?$allocator@PEAVCRadarQuery@@@std@@@std@@IEAAX_K@Z (0x150262050) ---
+void __fastcall std::vector<CRadarQuery *>::_Reserve(
+        std::vector<TActual<TS_TurretDefault> *,std::allocator<TActual<TS_TurretDefault> *> > *this,
+        unsigned __int64 _Count)
+{
+  TActual<TS_TurretDefault> **Mylast; // r8
+  __int64 v3; // r8
+  unsigned __int64 _Count_2; // r8
+  unsigned __int64 v5; // rdx
+  unsigned __int64 _Count_1; // rdx
+
+  Mylast = this->_Mylast;
+  if ( !(this->_Myend - Mylast) )
+  {
+    v3 = Mylast - this->_Myfirst;
+    if ( v3 == 0x1FFFFFFFFFFFFFFFLL )
+      std::_Xlength_error("vector<T> too long");
+    _Count_2 = v3 + 1;
+    v5 = this->_Myend - this->_Myfirst;
+    if ( 0x1FFFFFFFFFFFFFFFLL - (v5 >> 1) >= v5 )
+    {
+      _Count_1 = (v5 >> 1) + v5;
+      if ( _Count_1 < _Count_2 )
+        _Count_1 = _Count_2;
+    }
+    else
+    {
+      _Count_1 = 0LL;
+      if ( _Count_2 )
+        _Count_1 = _Count_2;
+    }
+    std::vector<CTweakMenu *>::_Reallocate((std::vector<IObjectConstructor *> *)this, _Count_1);
+  }
+}
+
+// --- End Function: ?_Reserve@?$vector@PEAVCRadarQuery@@V?$allocator@PEAVCRadarQuery@@@std@@@std@@IEAAX_K@Z (0x150262050) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@VEntityId@@HU?$less@VEntityId@@@std@@V?$allocator@U?$pair@$$CBVEntityId@@H@std@@@3@$00@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBVEntityId@@H@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBVEntityId@@H@std@@@std@@@std@@@2@0@Z (0x150262550) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *__fastcall std::_Tree<std::_Tmap_traits<EntityId,int,std::less<EntityId>,std::allocator<std::pair<EntityId const,int>>,1>>::erase(
+        std::_Tree<std::_Tmap_traits<StringHash,SubsumptionActivity *,std::less<StringHash>,std::allocator<std::pair<StringHash const ,SubsumptionActivity *> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > _First,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > _Last)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Myhead; // rdx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Left; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *v9; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Ptr_1; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *j; // rcx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *i; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > resulta; // [rsp+30h] [rbp+8h] BYREF
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Ptr; // [rsp+40h] [rbp+18h]
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Ptr; // [rsp+48h] [rbp+20h]
+
+  Ptr = _Last._Ptr;
+  _Ptr = _First._Ptr;
+  Myhead = this->_Myhead;
+  if ( _First._Ptr == this->_Myhead->_Left && _Last._Ptr == Myhead )
+  {
+    std::_Tree<std::_Tmap_traits<IEntityClass *,classMemData,std::less<IEntityClass *>,std::allocator<std::pair<IEntityClass * const,classMemData>>,0>>::_Erase(
+      this,
+      Myhead->_Parent);
+    this->_Myhead->_Parent = this->_Myhead;
+    this->_Myhead->_Left = this->_Myhead;
+    this->_Myhead->_Right = this->_Myhead;
+    _Myhead = this->_Myhead;
+    this->_Mysize = 0LL;
+    Left = _Myhead->_Left;
+    v9 = result;
+    result->_Ptr = Left;
+  }
+  else
+  {
+    if ( _First._Ptr != _Last._Ptr )
+    {
+      do
+      {
+        _Ptr_1 = _First._Ptr;
+        if ( !_First._Ptr->_Isnil )
+        {
+          Right = _First._Ptr->_Right;
+          if ( Right->_Isnil )
+          {
+            for ( i = _First._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+            {
+              if ( _First._Ptr != i->_Right )
+                break;
+              _Ptr = i;
+              _First._Ptr = i;
+            }
+            _Ptr = i;
+          }
+          else
+          {
+            for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+              Right = j;
+            _Ptr = Right;
+          }
+        }
+        std::_Tree<std::_Tmap_traits<unsigned int,IStatObj *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,IStatObj *>>,0>>::erase(
+          this,
+          &resulta,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > >)_Ptr_1);
+        _First._Ptr = _Ptr;
+      }
+      while ( _Ptr != Ptr );
+    }
+    result->_Ptr = _First._Ptr;
+    return result;
+  }
+  return v9;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@VEntityId@@HU?$less@VEntityId@@@std@@V?$allocator@U?$pair@$$CBVEntityId@@H@std@@@3@$00@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBVEntityId@@H@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBVEntityId@@H@std@@@std@@@std@@@2@0@Z (0x150262550) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@IPEAUIStatObj@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAUIStatObj@@@std@@@3@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAUIStatObj@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAUIStatObj@@@std@@@std@@@std@@@2@@Z (0x150262910) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *__fastcall std::_Tree<std::_Tmap_traits<unsigned int,IStatObj *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,IStatObj *>>,0>>::erase(
+        std::_Tree<std::_Tmap_traits<StringHash,SubsumptionActivity *,std::less<StringHash>,std::allocator<std::pair<StringHash const ,SubsumptionActivity *> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > _Where)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Ptr; // r14
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Right; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *j; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *i; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Right; // rdi
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Parent; // rbx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *k; // rcx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Left; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Myhead; // rdx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Right_1; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *m; // rcx
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *_Parent; // rax
+  char Color; // cl
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Left; // rcx
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *Ptr; // [rsp+50h] [rbp+18h]
+
+  Ptr = _Where._Ptr;
+  _Ptr = _Where._Ptr;
+  if ( !_Where._Ptr->_Isnil )
+  {
+    Right = _Where._Ptr->_Right;
+    if ( Right->_Isnil )
+    {
+      for ( i = _Where._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+      {
+        if ( _Where._Ptr != i->_Right )
+          break;
+        _Where._Ptr = i;
+      }
+      _Where._Ptr = i;
+      Ptr = i;
+    }
+    else
+    {
+      _Where._Ptr = _Where._Ptr->_Right;
+      for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+        _Where._Ptr = j;
+      Ptr = _Where._Ptr;
+    }
+  }
+  if ( _Ptr->_Left->_Isnil )
+  {
+    _Right = _Ptr->_Right;
+LABEL_15:
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent;
+    if ( this->_Myhead->_Parent == _Ptr )
+    {
+      this->_Myhead->_Parent = _Right;
+    }
+    else if ( (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent->_Left == _Ptr )
+    {
+      Parent->_Left = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    }
+    else
+    {
+      Parent->_Right = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    }
+    if ( this->_Myhead->_Left == _Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        k = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent;
+      }
+      else
+      {
+        Left = _Right->_Left;
+        for ( k = _Right; !Left->_Isnil; Left = Left->_Left )
+          k = Left;
+      }
+      this->_Myhead->_Left = k;
+    }
+    Myhead = this->_Myhead;
+    if ( this->_Myhead->_Right == _Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        Myhead->_Right = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent;
+      }
+      else
+      {
+        _Right_1 = _Right->_Right;
+        for ( m = _Right; !_Right_1->_Isnil; _Right_1 = _Right_1->_Right )
+          m = _Right_1;
+        Myhead->_Right = m;
+      }
+    }
+    goto LABEL_45;
+  }
+  if ( _Ptr->_Right->_Isnil )
+  {
+    _Right = _Ptr->_Left;
+    goto LABEL_15;
+  }
+  _Right = _Where._Ptr->_Right;
+  if ( _Where._Ptr == _Ptr )
+    goto LABEL_15;
+  _Ptr->_Left->_Parent = _Where._Ptr;
+  _Where._Ptr->_Left = _Ptr->_Left;
+  if ( _Where._Ptr == _Ptr->_Right )
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr;
+  }
+  else
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent;
+    Parent->_Left = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    _Where._Ptr->_Right = _Ptr->_Right;
+    _Ptr->_Right->_Parent = _Where._Ptr;
+  }
+  if ( this->_Myhead->_Parent == _Ptr )
+  {
+    this->_Myhead->_Parent = _Where._Ptr;
+  }
+  else
+  {
+    _Parent = (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > *)_Ptr->_Parent;
+    if ( _Parent->_Ptr == _Ptr )
+      _Parent->_Ptr = _Where._Ptr;
+    else
+      _Parent[2]._Ptr = _Where._Ptr;
+  }
+  _Where._Ptr->_Parent = _Ptr->_Parent;
+  Color = _Where._Ptr->_Color;
+  _Where._Ptr->_Color = _Ptr->_Color;
+  _Ptr->_Color = Color;
+LABEL_45:
+  if ( _Ptr->_Color == 1 )
+  {
+    for ( ; _Right != this->_Myhead->_Parent; Parent = Parent->_Parent )
+    {
+      if ( _Right->_Color != 1 )
+        break;
+      _Left = Parent->_Left;
+      if ( _Right == (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent->_Left )
+      {
+        _Left = Parent->_Right;
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          _Left = Parent->_Right;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Left->_Color != 1 || _Left->_Right->_Color != 1 )
+        {
+          if ( _Left->_Right->_Color == 1 )
+          {
+            _Left->_Left->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+              (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+              _Left);
+            _Left = Parent->_Right;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Right->_Color = 1;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          break;
+        }
+      }
+      else
+      {
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          _Left = Parent->_Left;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Right->_Color != 1 || _Left->_Left->_Color != 1 )
+        {
+          if ( _Left->_Left->_Color == 1 )
+          {
+            _Left->_Right->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+              (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+              _Left);
+            _Left = Parent->_Left;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Left->_Color = 1;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          break;
+        }
+      }
+      _Left->_Color = 0;
+LABEL_63:
+      _Right = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)Parent;
+    }
+    _Right->_Color = 1;
+  }
+  _InterlockedExchangeAdd64(
+    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+    _CryMemoryManagerPoolHelper::_CryFree(_Ptr, 0LL));
+  Mysize = this->_Mysize;
+  if ( Mysize )
+    this->_Mysize = Mysize - 1;
+  result->_Ptr = Ptr;
+  return result;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@IPEAUIStatObj@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAUIStatObj@@@std@@@3@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAUIStatObj@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAUIStatObj@@@std@@@std@@@std@@@2@@Z (0x150262910) ---
+
+// --- Function: ?_Lrotate@?$_Tree@V?$_Tset_traits@PEAVIterator@CAllNodesContainer@@U?$less@PEAVIterator@CAllNodesContainer@@@std@@V?$allocator@PEAVIterator@CAllNodesContainer@@@4@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@PEAVIterator@CAllNodesContainer@@PEAX@2@@Z (0x150262CB0) ---
+void __fastcall std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+        std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *this,
+        std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Wherenode)
+{
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Right; // r8
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Parent; // rax
+
+  Right = _Wherenode->_Right;
+  _Wherenode->_Right = Right->_Left;
+  if ( !Right->_Left->_Isnil )
+    Right->_Left->_Parent = _Wherenode;
+  Right->_Parent = _Wherenode->_Parent;
+  if ( _Wherenode == this->_Myhead->_Parent )
+  {
+    this->_Myhead->_Parent = Right;
+    Right->_Left = _Wherenode;
+    _Wherenode->_Parent = Right;
+  }
+  else
+  {
+    Parent = _Wherenode->_Parent;
+    if ( _Wherenode == Parent->_Left )
+      Parent->_Left = Right;
+    else
+      Parent->_Right = Right;
+    Right->_Left = _Wherenode;
+    _Wherenode->_Parent = Right;
+  }
+}
+
+// --- End Function: ?_Lrotate@?$_Tree@V?$_Tset_traits@PEAVIterator@CAllNodesContainer@@U?$less@PEAVIterator@CAllNodesContainer@@@std@@V?$allocator@PEAVIterator@CAllNodesContainer@@@4@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@PEAVIterator@CAllNodesContainer@@PEAX@2@@Z (0x150262CB0) ---
+
+// --- Function: ?_Rrotate@?$_Tree@V?$_Tset_traits@PEAUSmartObjectHelper@@U?$less@PEAUSmartObjectHelper@@@std@@V?$allocator@PEAUSmartObjectHelper@@@3@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@PEAUSmartObjectHelper@@PEAX@2@@Z (0x150262D10) ---
+void __fastcall std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+        std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *this,
+        std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Wherenode)
+{
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Left; // r8
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Right; // rax
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Parent; // rax
+
+  Left = _Wherenode->_Left;
+  _Wherenode->_Left = _Wherenode->_Left->_Right;
+  Right = Left->_Right;
+  if ( !Right->_Isnil )
+    Right->_Parent = _Wherenode;
+  Left->_Parent = _Wherenode->_Parent;
+  if ( _Wherenode == this->_Myhead->_Parent )
+  {
+    this->_Myhead->_Parent = Left;
+    Left->_Right = _Wherenode;
+    _Wherenode->_Parent = Left;
+  }
+  else
+  {
+    Parent = _Wherenode->_Parent;
+    if ( _Wherenode == Parent->_Right )
+      Parent->_Right = Left;
+    else
+      Parent->_Left = Left;
+    Left->_Right = _Wherenode;
+    _Wherenode->_Parent = Left;
+  }
+}
+
+// --- End Function: ?_Rrotate@?$_Tree@V?$_Tset_traits@PEAUSmartObjectHelper@@U?$less@PEAUSmartObjectHelper@@@std@@V?$allocator@PEAUSmartObjectHelper@@@3@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@PEAUSmartObjectHelper@@PEAX@2@@Z (0x150262D10) ---
+
+// --- Function: ??$_Allocate@VSelectionTreeNode@@@std@@YAPEAVSelectionTreeNode@@_KPEAV1@@Z (0x150262F50) ---
+std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *__fastcall std::_Allocate<SelectionTreeNode>(
+        unsigned __int64 _Count,
+        std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *a2)
+{
+  unsigned __int64 v2; // rbx
+  std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *result; // rax
+  unsigned __int64 v4; // [rsp+30h] [rbp+8h] BYREF
+
+  if ( _Count > 0x38E38E38E38E38ELL )
+    goto LABEL_5;
+  v2 = 72 * _Count;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  result = (std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *)_CryMemoryManagerPoolHelper::_CryMalloc(v2, &v4, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v4);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v2);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  if ( !result )
+  {
+LABEL_5:
+    std::_Xbad_alloc();
+    __debugbreak();
+  }
+  return result;
+}
+
+// --- End Function: ??$_Allocate@VSelectionTreeNode@@@std@@YAPEAVSelectionTreeNode@@_KPEAV1@@Z (0x150262F50) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@U?$less_stricmp@V?$CryStringT@D@@@stl@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@@std@@@2@0@Z (0x15027B690) ---
+std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,IConsoleArgumentAutoComplete *,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,IConsoleArgumentAutoComplete *>>,0>>::erase(
+        std::_Tree<std::_Tset_traits<CryStringT<char>,CLocalizedStringsManager::less_strcmp,std::allocator<CryStringT<char> >,0> > *this,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > _First,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > _Last)
+{
+  std::_Tree_node<CryStringT<char>,void *> *Myhead; // rdx
+  std::_Tree_node<CryStringT<char>,void *> *_Myhead; // rax
+  std::_Tree_node<CryStringT<char>,void *> *Left; // rcx
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *v9; // rax
+  std::_Tree_node<CryStringT<char>,void *> *_Ptr_1; // rax
+  std::_Tree_node<CryStringT<char>,void *> *Right; // rdx
+  std::_Tree_node<CryStringT<char>,void *> *j; // rcx
+  std::_Tree_node<CryStringT<char>,void *> *i; // rcx
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > resulta; // [rsp+30h] [rbp+8h] BYREF
+  std::_Tree_node<CryStringT<char>,void *> *_Ptr; // [rsp+40h] [rbp+18h]
+  std::_Tree_node<CryStringT<char>,void *> *Ptr; // [rsp+48h] [rbp+20h]
+
+  Ptr = _Last._Ptr;
+  _Ptr = _First._Ptr;
+  Myhead = this->_Myhead;
+  if ( _First._Ptr == this->_Myhead->_Left && _Last._Ptr == Myhead )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,0>>::_Erase(
+      this,
+      Myhead->_Parent);
+    this->_Myhead->_Parent = this->_Myhead;
+    this->_Myhead->_Left = this->_Myhead;
+    this->_Myhead->_Right = this->_Myhead;
+    _Myhead = this->_Myhead;
+    this->_Mysize = 0LL;
+    Left = _Myhead->_Left;
+    v9 = result;
+    result->_Ptr = Left;
+  }
+  else
+  {
+    if ( _First._Ptr != _Last._Ptr )
+    {
+      do
+      {
+        _Ptr_1 = _First._Ptr;
+        if ( !_First._Ptr->_Isnil )
+        {
+          Right = _First._Ptr->_Right;
+          if ( Right->_Isnil )
+          {
+            for ( i = _First._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+            {
+              if ( _First._Ptr != i->_Right )
+                break;
+              _Ptr = i;
+              _First._Ptr = i;
+            }
+            _Ptr = i;
+          }
+          else
+          {
+            for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+              Right = j;
+            _Ptr = Right;
+          }
+        }
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CCryPakFindData::FileDesc,CIStringOrder,std::allocator<std::pair<CryStringT<char> const,CCryPakFindData::FileDesc>>,0>>::erase(
+          this,
+          &resulta,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > >)_Ptr_1);
+        _First._Ptr = _Ptr;
+      }
+      while ( _Ptr != Ptr );
+    }
+    result->_Ptr = _First._Ptr;
+    return result;
+  }
+  return v9;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@U?$less_stricmp@V?$CryStringT@D@@@stl@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUIConsoleArgumentAutoComplete@@@std@@@std@@@std@@@2@0@Z (0x15027B690) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UFileDesc@CCryPakFindData@@UCIStringOrder@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@@std@@@2@@Z (0x15027B790) ---
+std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CCryPakFindData::FileDesc,CIStringOrder,std::allocator<std::pair<CryStringT<char> const,CCryPakFindData::FileDesc>>,0>>::erase(
+        std::_Tree<std::_Tset_traits<CryStringT<char>,CLocalizedStringsManager::less_strcmp,std::allocator<CryStringT<char> >,0> > *this,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > _Where)
+{
+  std::_Tree_node<CryStringT<char>,void *> *_Ptr; // r14
+  std::_Tree_node<CryStringT<char>,void *> *Right; // rax
+  std::_Tree_node<CryStringT<char>,void *> *j; // rax
+  std::_Tree_node<CryStringT<char>,void *> *i; // rax
+  std::_Tree_node<CryStringT<char>,void *> *_Right; // rdi
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Parent; // rbx
+  std::_Tree_node<CryStringT<char>,void *> *k; // rcx
+  std::_Tree_node<CryStringT<char>,void *> *Left; // rax
+  std::_Tree_node<CryStringT<char>,void *> *Myhead; // rdx
+  std::_Tree_node<CryStringT<char>,void *> *_Right_1; // rax
+  std::_Tree_node<CryStringT<char>,void *> *m; // rcx
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *_Parent; // rax
+  char Color; // cl
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Left; // rcx
+  char *m_str; // rcx
+  int v20; // eax
+  int *v21; // rcx
+  int v22; // eax
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<CryStringT<char>,void *> *Ptr; // [rsp+50h] [rbp+18h]
+
+  Ptr = _Where._Ptr;
+  _Ptr = _Where._Ptr;
+  if ( !_Where._Ptr->_Isnil )
+  {
+    Right = _Where._Ptr->_Right;
+    if ( Right->_Isnil )
+    {
+      for ( i = _Where._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+      {
+        if ( _Where._Ptr != i->_Right )
+          break;
+        _Where._Ptr = i;
+      }
+      _Where._Ptr = i;
+      Ptr = i;
+    }
+    else
+    {
+      _Where._Ptr = _Where._Ptr->_Right;
+      for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+        _Where._Ptr = j;
+      Ptr = _Where._Ptr;
+    }
+  }
+  if ( _Ptr->_Left->_Isnil )
+  {
+    _Right = _Ptr->_Right;
+LABEL_15:
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = (std::_Tree_node<CryStringT<char>,void *> *)Parent;
+    if ( this->_Myhead->_Parent == _Ptr )
+    {
+      this->_Myhead->_Parent = _Right;
+    }
+    else if ( (std::_Tree_node<CryStringT<char>,void *> *)Parent->_Left == _Ptr )
+    {
+      Parent->_Left = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    }
+    else
+    {
+      Parent->_Right = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    }
+    if ( this->_Myhead->_Left == _Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        k = (std::_Tree_node<CryStringT<char>,void *> *)Parent;
+      }
+      else
+      {
+        Left = _Right->_Left;
+        for ( k = _Right; !Left->_Isnil; Left = Left->_Left )
+          k = Left;
+      }
+      this->_Myhead->_Left = k;
+    }
+    Myhead = this->_Myhead;
+    if ( this->_Myhead->_Right == _Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        Myhead->_Right = (std::_Tree_node<CryStringT<char>,void *> *)Parent;
+      }
+      else
+      {
+        _Right_1 = _Right->_Right;
+        for ( m = _Right; !_Right_1->_Isnil; _Right_1 = _Right_1->_Right )
+          m = _Right_1;
+        Myhead->_Right = m;
+      }
+    }
+    goto LABEL_45;
+  }
+  if ( _Ptr->_Right->_Isnil )
+  {
+    _Right = _Ptr->_Left;
+    goto LABEL_15;
+  }
+  _Right = _Where._Ptr->_Right;
+  if ( _Where._Ptr == _Ptr )
+    goto LABEL_15;
+  _Ptr->_Left->_Parent = _Where._Ptr;
+  _Where._Ptr->_Left = _Ptr->_Left;
+  if ( _Where._Ptr == _Ptr->_Right )
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr;
+  }
+  else
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = (std::_Tree_node<CryStringT<char>,void *> *)Parent;
+    Parent->_Left = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Right;
+    _Where._Ptr->_Right = _Ptr->_Right;
+    _Ptr->_Right->_Parent = _Where._Ptr;
+  }
+  if ( this->_Myhead->_Parent == _Ptr )
+  {
+    this->_Myhead->_Parent = _Where._Ptr;
+  }
+  else
+  {
+    _Parent = (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > *)_Ptr->_Parent;
+    if ( _Parent->_Ptr == _Ptr )
+      _Parent->_Ptr = _Where._Ptr;
+    else
+      _Parent[2]._Ptr = _Where._Ptr;
+  }
+  _Where._Ptr->_Parent = _Ptr->_Parent;
+  Color = _Where._Ptr->_Color;
+  _Where._Ptr->_Color = _Ptr->_Color;
+  _Ptr->_Color = Color;
+LABEL_45:
+  if ( _Ptr->_Color == 1 )
+  {
+    for ( ; _Right != this->_Myhead->_Parent; Parent = Parent->_Parent )
+    {
+      if ( _Right->_Color != 1 )
+        break;
+      _Left = Parent->_Left;
+      if ( _Right == (std::_Tree_node<CryStringT<char>,void *> *)Parent->_Left )
+      {
+        _Left = Parent->_Right;
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          _Left = Parent->_Right;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Left->_Color != 1 || _Left->_Right->_Color != 1 )
+        {
+          if ( _Left->_Right->_Color == 1 )
+          {
+            _Left->_Left->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+              (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+              _Left);
+            _Left = Parent->_Right;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Right->_Color = 1;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          break;
+        }
+      }
+      else
+      {
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          _Left = Parent->_Left;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Right->_Color != 1 || _Left->_Left->_Color != 1 )
+        {
+          if ( _Left->_Left->_Color == 1 )
+          {
+            _Left->_Right->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+              (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+              _Left);
+            _Left = Parent->_Left;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Left->_Color = 1;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)this,
+            Parent);
+          break;
+        }
+      }
+      _Left->_Color = 0;
+LABEL_63:
+      _Right = (std::_Tree_node<CryStringT<char>,void *> *)Parent;
+    }
+    _Right->_Color = 1;
+  }
+  m_str = _Ptr->_Myval.m_str;
+  v20 = *((_DWORD *)m_str - 3);
+  v21 = (int *)(m_str - 12);
+  if ( v20 >= 0 )
+  {
+    v22 = v20 - 1;
+    *v21 = v22;
+    if ( v22 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v21[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v21, 0LL));
+    }
+  }
+  _InterlockedExchangeAdd64(
+    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+    _CryMemoryManagerPoolHelper::_CryFree(_Ptr, 0LL));
+  Mysize = this->_Mysize;
+  if ( Mysize )
+    this->_Mysize = Mysize - 1;
+  result->_Ptr = Ptr;
+  return result;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UFileDesc@CCryPakFindData@@UCIStringOrder@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UFileDesc@CCryPakFindData@@@std@@@std@@@std@@@2@@Z (0x15027B790) ---
+
+// --- Function: ?_Erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less_stricmp@V?$CryStringT@D@@@stl@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@Z (0x15027BB20) ---
+void __fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,int,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,0>>::_Erase(
+        std::_Tree<std::_Tset_traits<CryStringT<char>,CLocalizedStringsManager::less_strcmp,std::allocator<CryStringT<char> >,0> > *this,
+        std::_Tree_node<CryStringT<char>,void *> *_Rootnode)
+{
+  std::_Tree_node<CryStringT<char>,void *> *_Rootnode_1; // rbx
+  std::_Tree_node<CryStringT<char>,void *> *i; // rdi
+  char *m_str; // rcx
+  int v6; // eax
+  int *v7; // rcx
+  int v8; // eax
+
+  _Rootnode_1 = _Rootnode;
+  for ( i = _Rootnode; !i->_Isnil; _Rootnode_1 = i )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,0>>::_Erase(
+      this,
+      i->_Right);
+    m_str = _Rootnode_1->_Myval.m_str;
+    i = i->_Left;
+    v6 = *((_DWORD *)m_str - 3);
+    v7 = (int *)(m_str - 12);
+    if ( v6 >= 0 )
+    {
+      v8 = v6 - 1;
+      *v7 = v8;
+      if ( v8 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+      }
+    }
+    if ( _Rootnode_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Rootnode_1, 0LL));
+  }
+}
+
+// --- End Function: ?_Erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less_stricmp@V?$CryStringT@D@@@stl@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@Z (0x15027BB20) ---
+
+// --- Function: ??$?HD@@YA?AV?$CryStringT@D@@PEBDAEBV0@@Z (0x15027BBC0) ---
+CryStringT<char> *__fastcall operator+<char>(CryStringT<char> *result, char *str1, const CryStringT<char> *str2)
+{
+  size_t nLen; // rbx
+  __int64 v7; // r9
+
+  nLen = 0LL;
+  result->m_str = (char *)&Count;
+  if ( str1 )
+  {
+    v7 = -1LL;
+    do
+      ++v7;
+    while ( str1[v7] );
+  }
+  else
+  {
+    v7 = 0LL;
+  }
+  CryStringT<char>::reserve(result, v7 + *((int *)str2->m_str - 2));
+  if ( str1 )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( str1[nLen] );
+  }
+  CryStringT<char>::_ConcatenateInPlace(result, str1, nLen);
+  CryStringT<char>::_ConcatenateInPlace(result, str2->m_str, *((int *)str2->m_str - 2));
+  return result;
+}
+
+// --- End Function: ??$?HD@@YA?AV?$CryStringT@D@@PEBDAEBV0@@Z (0x15027BBC0) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x15027C0D0) ---
+std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,_TREEITEM *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+        std::_Tree_buy<std::pair<CryStringT<char> const ,IConsoleArgumentAutoComplete *>> *this,
+        SubsumptionEvent *<_Val_1>,
+        std::tuple<CryStringT<char> &&> *<_Val_0>,
+        std::tuple<> *a4)
+{
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Pnode_1; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Pnode_2; // rdx
+  std::pair<int const ,SubactivityTaskData *> *p_Myval; // r8
+  char *m_str; // rax
+  CryStringT<char> *Val; // [rsp+58h] [rbp+10h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,IConsoleArgumentAutoComplete *>,void *> *_Pnode; // [rsp+68h] [rbp+20h]
+
+  _Pnode_1 = std::_Tree_buy<std::pair<SDialogResponseDef const * const,SDialogResponseData>>::_Buynode0(
+               (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)this,
+               <_Val_1>);
+  _Pnode_2 = _Pnode_1;
+  _Pnode = (std::_Tree_node<std::pair<CryStringT<char> const ,IConsoleArgumentAutoComplete *>,void *> *)_Pnode_1;
+  *(_WORD *)&_Pnode_1->_Color = 0;
+  try
+  {
+    p_Myval = &_Pnode_1->_Myval;
+    if ( _Pnode_1 != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-32LL )
+    {
+      Val = <_Val_0>->_Myfirst._Val;
+      *(_QWORD *)&p_Myval->first = &Count;
+      m_str = Val->m_str;
+      Val->m_str = (char *)&Count;
+      *(_QWORD *)&p_Myval->first = m_str;
+      p_Myval->second = 0LL;
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Pnode, 0LL));
+    throw;
+  }
+  return _Pnode_2;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAU_TREEITEM@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x15027C0D0) ---
+
+// --- Function: ?_Destroy_if_not_nil@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@$00@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@Z (0x15027C3E0) ---
+void __fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *this,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Newnode)
+{
+  char *m_str; // rcx
+  int v4; // eax
+  int *v5; // rcx
+  int v6; // eax
+
+  m_str = _Newnode->_Myval.first.m_str;
+  v4 = *((_DWORD *)m_str - 3);
+  v5 = (int *)(m_str - 12);
+  if ( v4 >= 0 )
+  {
+    v6 = v4 - 1;
+    *v5 = v6;
+    if ( v6 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v5[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v5, 0LL));
+    }
+  }
+  if ( _Newnode )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL));
+}
+
+// --- End Function: ?_Destroy_if_not_nil@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@$00@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@Z (0x15027C3E0) ---
+
+// --- Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@1@1@Z (0x15027C450) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *result,
+        bool _Addleft,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *_Wherenode,
+        std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *_Node,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *_Addleft_0)
+{
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Addleft_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Parent; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Left; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_2; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Left; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Right_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_3; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Left_1; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Right_2; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_4; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_5; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_6; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *v27; // rax
+
+  Mysize = this->_Mysize;
+  if ( Mysize >= 0x555555555555554LL )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)0x555555555555554LL,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0);
+    std::_Xlength_error("map/set<T> too long");
+  }
+  this->_Mysize = Mysize + 1;
+  _Addleft_0->_Parent = _Wherenode;
+  if ( _Wherenode == (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead )
+  {
+    this->_Myhead->_Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+    Myhead = this->_Myhead;
+LABEL_9:
+    Myhead->_Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+    goto LABEL_10;
+  }
+  if ( !_Addleft )
+  {
+    _Wherenode->_Right = _Addleft_0;
+    Myhead = this->_Myhead;
+    if ( _Wherenode != (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead->_Right )
+      goto LABEL_10;
+    goto LABEL_9;
+  }
+  _Wherenode->_Left = _Addleft_0;
+  if ( _Wherenode == (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead->_Left )
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+LABEL_10:
+  _Addleft_1 = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+  if ( !_Addleft_0->_Parent->_Color )
+  {
+    do
+    {
+      Parent = _Addleft_1->_Parent;
+      _Parent = Parent->_Parent;
+      Left = _Parent->_Left;
+      if ( Parent == _Parent->_Left )
+      {
+        Right = _Parent->_Right;
+        if ( Right->_Color )
+        {
+          if ( _Addleft_1 == Parent->_Right )
+          {
+            _Right = Parent->_Right;
+            _Addleft_1 = _Addleft_1->_Parent;
+            Parent->_Right = _Right->_Left;
+            if ( !_Right->_Left->_Isnil )
+              _Right->_Left->_Parent = Parent;
+            _Right->_Parent = Parent->_Parent;
+            if ( Parent == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Right;
+            }
+            else
+            {
+              _Parent_1 = Parent->_Parent;
+              if ( _Addleft_1 == _Parent_1->_Left )
+                _Parent_1->_Left = _Right;
+              else
+                _Parent_1->_Right = _Right;
+            }
+            _Right->_Left = _Addleft_1;
+            _Addleft_1->_Parent = _Right;
+          }
+          _Addleft_1->_Parent->_Color = 1;
+          _Addleft_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Addleft_1->_Parent->_Parent;
+          _Left = _Parent_2->_Left;
+          _Parent_2->_Left = _Parent_2->_Left->_Right;
+          _Right_1 = _Left->_Right;
+          if ( !_Right_1->_Isnil )
+            _Right_1->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+            _Left->_Right = _Parent_2;
+          }
+          else
+          {
+            _Parent_3 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_3->_Right )
+              _Parent_3->_Right = _Left;
+            else
+              _Parent_3->_Left = _Left;
+            _Left->_Right = _Parent_2;
+          }
+LABEL_50:
+          _Parent_2->_Parent = _Left;
+          continue;
+        }
+        Parent->_Color = 1;
+        Right->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Addleft_1 = _Addleft_1->_Parent->_Parent;
+      }
+      else
+      {
+        if ( Left->_Color )
+        {
+          if ( _Addleft_1 == Parent->_Left )
+          {
+            _Left_1 = Parent->_Left;
+            _Addleft_1 = _Addleft_1->_Parent;
+            Parent->_Left = Parent->_Left->_Right;
+            _Right_2 = _Left_1->_Right;
+            if ( !_Right_2->_Isnil )
+              _Right_2->_Parent = _Addleft_1;
+            _Left_1->_Parent = _Addleft_1->_Parent;
+            if ( _Addleft_1 == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Left_1;
+            }
+            else
+            {
+              _Parent_4 = _Addleft_1->_Parent;
+              if ( _Addleft_1 == _Parent_4->_Right )
+                _Parent_4->_Right = _Left_1;
+              else
+                _Parent_4->_Left = _Left_1;
+            }
+            _Left_1->_Right = _Addleft_1;
+            _Addleft_1->_Parent = _Left_1;
+          }
+          _Addleft_1->_Parent->_Color = 1;
+          _Addleft_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Addleft_1->_Parent->_Parent;
+          _Left = _Parent_2->_Right;
+          _Parent_2->_Right = _Left->_Left;
+          if ( !_Left->_Left->_Isnil )
+            _Left->_Left->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+          }
+          else
+          {
+            _Parent_5 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_5->_Left )
+              _Parent_5->_Left = _Left;
+            else
+              _Parent_5->_Right = _Left;
+          }
+          _Left->_Left = _Parent_2;
+          goto LABEL_50;
+        }
+        Parent->_Color = 1;
+        Left->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Addleft_1 = _Addleft_1->_Parent->_Parent;
+      }
+    }
+    while ( !_Addleft_1->_Parent->_Color );
+  }
+  _Myhead = this->_Myhead;
+  result->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Addleft_0;
+  _Parent_6 = _Myhead->_Parent;
+  v27 = result;
+  _Parent_6->_Color = 1;
+  return v27;
+}
+
+// --- End Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@PEAUSSurfaceRecord@CSurfaceTypeManager@@@1@1@Z (0x15027C450) ---
+
+// --- Function: ??1?$list@PEAVCUnitAction@@V?$allocator@PEAVCUnitAction@@@std@@@std@@QEAA@XZ (0x150283CF0) ---
+void __fastcall std::list<CUnitAction *>::~list<CUnitAction *>(std::list<CHTTPDownloader *> *this)
+{
+  std::_List_node<CHTTPDownloader *,void *> *Myhead; // rax
+  std::_List_node<CHTTPDownloader *,void *> *Next; // rcx
+  std::_List_node<CHTTPDownloader *,void *> *_Next; // rbx
+
+  Myhead = this->_Myhead;
+  Next = this->_Myhead->_Next;
+  Myhead->_Next = Myhead;
+  this->_Myhead->_Prev = this->_Myhead;
+  this->_Mysize = 0LL;
+  if ( Next != this->_Myhead )
+  {
+    do
+    {
+      _Next = Next->_Next;
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(Next, 0LL));
+      Next = _Next;
+    }
+    while ( _Next != this->_Myhead );
+  }
+  if ( this->_Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(this->_Myhead, 0LL));
+}
+
+// --- End Function: ??1?$list@PEAVCUnitAction@@V?$allocator@PEAVCUnitAction@@@std@@@std@@QEAA@XZ (0x150283CF0) ---
+
+// --- Function: ?realloc_size@NAlloc@@YA_K_K@Z (0x150284FD0) ---
+unsigned __int64 __fastcall NAlloc::realloc_size(unsigned __int64 nMinSize)
+{
+  unsigned __int64 n32_1; // rcx
+  unsigned __int64 n32; // rax
+  __int64 n0x10000; // rdx
+  unsigned __int64 n0x10000_1; // rax
+
+  n32_1 = nMinSize + 16;
+  n32 = 32LL;
+  if ( n32_1 > 0x20 )
+  {
+    do
+      n32 *= 2LL;
+    while ( n32 < n32_1 );
+    n0x10000 = 0x10000LL;
+    if ( n32 > 0x10000 )
+    {
+      n0x10000_1 = n32 >> 3;
+      if ( n0x10000_1 > 0x10000 )
+        n0x10000 = n0x10000_1;
+      n32 = -n0x10000 & (n0x10000 + n32_1 - 1);
+    }
+  }
+  return n32 - 16;
+}
+
+// --- End Function: ?realloc_size@NAlloc@@YA_K_K@Z (0x150284FD0) ---
+
+// --- Function: ?alloc@ModuleAlloc@NAlloc@@SAPEAXPEAXAEA_K_K_N@Z (0x150285020) ---
+void *__fastcall NAlloc::ModuleAlloc::alloc(void *pMem, unsigned __int64 *nSize, unsigned __int64 nAlign, bool bSlack)
+{
+  if ( pMem )
+  {
+    if ( *nSize )
+    {
+      if ( nAlign > 8 )
+        *nSize = nAlign + *nSize - 8;
+      return 0LL;
+    }
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(pMem, 0x3E8uLL));
+    return 0LL;
+  }
+  else
+  {
+    if ( !*nSize )
+      return 0LL;
+    if ( bSlack )
+      *nSize = NAlloc::realloc_size(*nSize);
+    return CryModuleMemalign(*nSize, nAlign);
+  }
+}
+
+// --- End Function: ?alloc@ModuleAlloc@NAlloc@@SAPEAXPEAXAEA_K_K_N@Z (0x150285020) ---
+
+// --- Function: ?alloc@?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@QEAAPEAXPEAXAEA_K_K_N@Z (0x1502850B0) ---
+char *__fastcall NAlloc::AllocCompatible<NAlloc::ModuleAlloc>::alloc(
+        NAlloc::AllocCompatible<NAlloc::ModuleAlloc> *this,
+        _QWORD *pMem,
+        unsigned __int64 *nSize,
+        unsigned __int64 nAlign,
+        bool bSlack)
+{
+  unsigned __int64 n8; // r8
+  _QWORD *pMem_1; // r10
+  unsigned __int64 n8_1; // rcx
+  __int64 (__fastcall *v9)(char *, unsigned __int64 *, unsigned __int64, bool); // rax
+  __int64 v10; // rdi
+  char *result; // rax
+  __int64 v12; // rdi
+
+  n8 = 8LL;
+  pMem_1 = pMem;
+  n8_1 = 8LL;
+  if ( nAlign > 8 )
+    n8_1 = nAlign;
+  if ( pMem )
+  {
+    v9 = (__int64 (__fastcall *)(char *, unsigned __int64 *, unsigned __int64, bool))*(pMem - 1);
+    if ( n8_1 > 8 )
+      n8 = n8_1;
+    v10 = (n8 + 7) & -(__int64)n8;
+    if ( *nSize )
+      *nSize += v10;
+    result = (char *)v9((char *)pMem - v10, nSize, n8, bSlack);
+    if ( *nSize )
+      *nSize -= v10;
+    if ( result )
+      result += v10;
+  }
+  else
+  {
+    if ( *nSize )
+    {
+      if ( n8_1 > 8 )
+        n8 = n8_1;
+      v12 = (n8 + 7) & -(__int64)n8;
+      *nSize += v12;
+      pMem_1 = NAlloc::ModuleAlloc::alloc(0LL, nSize, n8, bSlack);
+      if ( *nSize )
+        *nSize -= v12;
+      if ( pMem_1 )
+      {
+        pMem_1 = (_QWORD *)((char *)pMem_1 + v12);
+        if ( pMem_1 )
+          *(pMem_1 - 1) = NAlloc::ModuleAlloc::alloc;
+      }
+    }
+    return (char *)pMem_1;
+  }
+  return result;
+}
+
+// --- End Function: ?alloc@?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@QEAAPEAXPEAXAEA_K_K_N@Z (0x1502850B0) ---
+
+// --- Function: ?find@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@P6APEAVCFireMode@@XZU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@P6APEAVCFireMode@@XZ@std@@@4@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAVCFireMode@@XZ@std@@@std@@@std@@@2@AEBV?$CryStringT@D@@@Z (0x150291BF0) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > *result,
+        const CryStringT<char> *_Keyval)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *Myhead; // rbx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *Parent; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *_Myhead; // r10
+  char *m_str; // r11
+  char *m_str_1; // rax
+  signed __int64 v10; // r8
+  int v11; // ecx
+  int v12; // edx
+  char *m_str_2; // rax
+  int v14; // ecx
+  int v15; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *_Myhead_1; // [rsp+8h] [rbp+8h]
+
+  Myhead = this->_Myhead;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    m_str = _Keyval->m_str;
+    do
+    {
+      m_str_1 = Parent->_Myval.first.m_str;
+      v10 = m_str - m_str_1;
+      do
+      {
+        v11 = (unsigned __int8)m_str_1[v10];
+        v12 = (unsigned __int8)*m_str_1 - v11;
+        if ( v12 )
+          break;
+        ++m_str_1;
+      }
+      while ( v11 );
+      if ( v12 >= 0 )
+      {
+        _Myhead = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead == Myhead )
+    goto LABEL_15;
+  m_str_2 = _Keyval->m_str;
+  do
+  {
+    v14 = (unsigned __int8)m_str_2[(unsigned __int64)(_Myhead->_Myval.first.m_str - _Keyval->m_str)];
+    v15 = (unsigned __int8)*m_str_2 - v14;
+    if ( v15 )
+      break;
+    ++m_str_2;
+  }
+  while ( v14 );
+  _Myhead_1 = _Myhead;
+  if ( v15 < 0 )
+LABEL_15:
+    _Myhead_1 = Myhead;
+  result->_Ptr = _Myhead_1;
+  return result;
+}
+
+// --- End Function: ?find@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@P6APEAVCFireMode@@XZU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@P6APEAVCFireMode@@XZ@std@@@4@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAVCFireMode@@XZ@std@@@std@@@std@@@2@AEBV?$CryStringT@D@@@Z (0x150291BF0) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@H@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@H@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@1@@Z (0x1502921B0) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,int> &,std::_Tree_node<std::pair<CryStringT<char> const,int>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned short> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > _Where,
+        std::pair<CryStringT<char> const ,unsigned short> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Myhead; // rax
+  char *m_str; // rax
+  signed __int64 v11; // r9
+  int v12; // edx
+  int v13; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Right; // r9
+  char *m_str_1; // rax
+  char *v16; // r8
+  int v17; // ecx
+  int v18; // edx
+  char *m_str_2; // r10
+  char *m_str_3; // rax
+  signed __int64 v21; // r9
+  int v22; // edx
+  int v23; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Left; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Parent; // rdx
+  char *m_str_4; // rax
+  signed __int64 v28; // r11
+  int v29; // edx
+  int v30; // r8d
+  char *m_str_5; // rax
+  signed __int64 v32; // r10
+  int v33; // edx
+  int v34; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *i; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent; // rax
+  char *m_str_6; // rax
+  int v38; // edx
+  int v39; // r8d
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >,bool> resulta; // [rsp+38h] [rbp-20h] BYREF
+
+  if ( !this->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+      this,
+      result,
+      1,
+      this->_Myhead,
+      _Val,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    return result;
+  }
+  Myhead = this->_Myhead;
+  if ( _Where._Ptr == this->_Myhead->_Left )
+  {
+    m_str = _Val->first.m_str;
+    v11 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+    do
+    {
+      v12 = (unsigned __int8)m_str[v11];
+      v13 = (unsigned __int8)*m_str - v12;
+      if ( v13 )
+        break;
+      ++m_str;
+    }
+    while ( v12 );
+    if ( v13 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        1,
+        _Where._Ptr,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+      return result;
+    }
+    goto LABEL_59;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = Myhead->_Right;
+    m_str_1 = Right->_Myval.first.m_str;
+    v16 = (char *)(_Val->first.m_str - m_str_1);
+    do
+    {
+      v17 = (unsigned __int8)v16[(_QWORD)m_str_1];
+      v18 = (unsigned __int8)*m_str_1 - v17;
+      if ( v18 )
+        break;
+      ++m_str_1;
+    }
+    while ( v17 );
+    if ( v18 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        0,
+        Right,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+      return result;
+    }
+    goto LABEL_59;
+  }
+  m_str_2 = _Val->first.m_str;
+  m_str_3 = _Val->first.m_str;
+  v21 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+  do
+  {
+    v22 = (unsigned __int8)m_str_3[v21];
+    v23 = (unsigned __int8)*m_str_3 - v22;
+    if ( v23 )
+      break;
+    ++m_str_3;
+  }
+  while ( v22 );
+  if ( v23 >= 0 )
+    goto LABEL_37;
+  Ptr = _Where._Ptr;
+  if ( _Where._Ptr->_Isnil )
+  {
+    Left = _Where._Ptr->_Right;
+  }
+  else
+  {
+    Left = _Where._Ptr->_Left;
+    if ( _Where._Ptr->_Left->_Isnil )
+    {
+      while ( 1 )
+      {
+        Parent = Ptr->_Parent;
+        if ( Parent->_Isnil || Ptr != Parent->_Left )
+          break;
+        Ptr = Ptr->_Parent;
+      }
+      Left = Ptr;
+      if ( !Ptr->_Isnil )
+        Left = Ptr->_Parent;
+    }
+    else
+    {
+      while ( !Left->_Right->_Isnil )
+        Left = Left->_Right;
+    }
+  }
+  m_str_4 = Left->_Myval.first.m_str;
+  v28 = m_str_2 - m_str_4;
+  do
+  {
+    v29 = (unsigned __int8)m_str_4[v28];
+    v30 = (unsigned __int8)*m_str_4 - v29;
+    if ( v30 )
+      break;
+    ++m_str_4;
+  }
+  while ( v29 );
+  if ( v30 >= 0 )
+  {
+LABEL_37:
+    m_str_5 = _Where._Ptr->_Myval.first.m_str;
+    v32 = m_str_2 - m_str_5;
+    do
+    {
+      v33 = (unsigned __int8)m_str_5[v32];
+      v34 = (unsigned __int8)*m_str_5 - v33;
+      if ( v34 )
+        break;
+      ++m_str_5;
+    }
+    while ( v33 );
+    if ( v34 >= 0 )
+      goto LABEL_59;
+    i = _Where._Ptr;
+    if ( !_Where._Ptr->_Isnil )
+    {
+      if ( _Where._Ptr->_Right->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = i->_Parent;
+          if ( _Parent->_Isnil || i != _Parent->_Right )
+            break;
+          i = i->_Parent;
+        }
+        i = i->_Parent;
+      }
+      else
+      {
+        for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+          ;
+      }
+    }
+    if ( i != this->_Myhead )
+    {
+      m_str_6 = _Val->first.m_str;
+      do
+      {
+        v38 = (unsigned __int8)m_str_6[(unsigned __int64)(i->_Myval.first.m_str - _Val->first.m_str)];
+        v39 = (unsigned __int8)*m_str_6 - v38;
+        if ( v39 )
+          break;
+        ++m_str_6;
+      }
+      while ( v38 );
+      if ( v39 >= 0 )
+      {
+LABEL_59:
+        result->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(this, &resulta, 0, _Val, _Newnode)->first;
+        return result;
+      }
+    }
+    if ( _Where._Ptr->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        0,
+        _Where._Ptr,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        1,
+        i,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    return result;
+  }
+  else
+  {
+    if ( Left->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        0,
+        Left,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        this,
+        result,
+        1,
+        _Where._Ptr,
+        _Val,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    return result;
+  }
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@H@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@H@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@H@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@H@std@@PEAX@1@@Z (0x1502921B0) ---
+
+// --- Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@PEAX@2@XZ (0x1502927A0) ---
+std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,IGameObjectExtensionCreatorBase *>>::_Buynode0(
+        std::_Tree_buy<std::pair<EntityId const ,EntityId>> *this)
+{
+  std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> **v2; // rdx
+  std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> **v4; // [rsp+48h] [rbp+10h]
+
+  v2 = (std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> **)`anonymous namespace'::custom_xml_malloc(0x30uLL);
+  v4 = v2;
+  if ( !v2 )
+    std::_Xbad_alloc();
+  try
+  {
+    *v2 = this->_Myhead;
+    if ( v2 != (std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> **)-8LL )
+      v2[1] = this->_Myhead;
+    if ( v2 != (std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> **)-16LL )
+      v2[2] = this->_Myhead;
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(v4, 0LL));
+    throw;
+  }
+  return (std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *)v2;
+}
+
+// --- End Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@PEAUIGameObjectExtensionCreatorBase@@@std@@PEAX@2@XZ (0x1502927A0) ---
+
+// --- Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@G@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@G@1@1@Z (0x150292800) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned short> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > *result,
+        bool _Addleft,
+        std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Wherenode,
+        std::pair<CryStringT<char> const ,unsigned short> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Node)
+{
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Parent; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Left; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_2; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Left; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Right_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_3; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Left_1; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Right_2; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_4; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_5; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent_6; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > *v27; // rax
+
+  Mysize = this->_Mysize;
+  if ( Mysize >= 0x555555555555554LL )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)this,
+      _Node);
+    std::_Xlength_error("map/set<T> too long");
+  }
+  this->_Mysize = Mysize + 1;
+  _Node->_Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Wherenode;
+  if ( _Wherenode == this->_Myhead )
+  {
+    this->_Myhead->_Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+    Myhead = this->_Myhead;
+LABEL_9:
+    Myhead->_Right = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+    goto LABEL_10;
+  }
+  if ( !_Addleft )
+  {
+    _Wherenode->_Right = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+    Myhead = this->_Myhead;
+    if ( _Wherenode != this->_Myhead->_Right )
+      goto LABEL_10;
+    goto LABEL_9;
+  }
+  _Wherenode->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+  if ( _Wherenode == this->_Myhead->_Left )
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+LABEL_10:
+  _Node_1 = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+  if ( !_Node->_Parent->_Color )
+  {
+    do
+    {
+      Parent = _Node_1->_Parent;
+      _Parent = Parent->_Parent;
+      Left = _Parent->_Left;
+      if ( Parent == _Parent->_Left )
+      {
+        Right = _Parent->_Right;
+        if ( Right->_Color )
+        {
+          if ( _Node_1 == Parent->_Right )
+          {
+            _Right = Parent->_Right;
+            _Node_1 = _Node_1->_Parent;
+            Parent->_Right = _Right->_Left;
+            if ( !_Right->_Left->_Isnil )
+              _Right->_Left->_Parent = Parent;
+            _Right->_Parent = Parent->_Parent;
+            if ( Parent == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Right;
+            }
+            else
+            {
+              _Parent_1 = Parent->_Parent;
+              if ( _Node_1 == _Parent_1->_Left )
+                _Parent_1->_Left = _Right;
+              else
+                _Parent_1->_Right = _Right;
+            }
+            _Right->_Left = _Node_1;
+            _Node_1->_Parent = _Right;
+          }
+          _Node_1->_Parent->_Color = 1;
+          _Node_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Node_1->_Parent->_Parent;
+          _Left = _Parent_2->_Left;
+          _Parent_2->_Left = _Parent_2->_Left->_Right;
+          _Right_1 = _Left->_Right;
+          if ( !_Right_1->_Isnil )
+            _Right_1->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+            _Left->_Right = _Parent_2;
+          }
+          else
+          {
+            _Parent_3 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_3->_Right )
+              _Parent_3->_Right = _Left;
+            else
+              _Parent_3->_Left = _Left;
+            _Left->_Right = _Parent_2;
+          }
+LABEL_50:
+          _Parent_2->_Parent = _Left;
+          continue;
+        }
+        Parent->_Color = 1;
+        Right->_Color = 1;
+        _Node_1->_Parent->_Parent->_Color = 0;
+        _Node_1 = _Node_1->_Parent->_Parent;
+      }
+      else
+      {
+        if ( Left->_Color )
+        {
+          if ( _Node_1 == Parent->_Left )
+          {
+            _Left_1 = Parent->_Left;
+            _Node_1 = _Node_1->_Parent;
+            Parent->_Left = Parent->_Left->_Right;
+            _Right_2 = _Left_1->_Right;
+            if ( !_Right_2->_Isnil )
+              _Right_2->_Parent = _Node_1;
+            _Left_1->_Parent = _Node_1->_Parent;
+            if ( _Node_1 == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Left_1;
+            }
+            else
+            {
+              _Parent_4 = _Node_1->_Parent;
+              if ( _Node_1 == _Parent_4->_Right )
+                _Parent_4->_Right = _Left_1;
+              else
+                _Parent_4->_Left = _Left_1;
+            }
+            _Left_1->_Right = _Node_1;
+            _Node_1->_Parent = _Left_1;
+          }
+          _Node_1->_Parent->_Color = 1;
+          _Node_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Node_1->_Parent->_Parent;
+          _Left = _Parent_2->_Right;
+          _Parent_2->_Right = _Left->_Left;
+          if ( !_Left->_Left->_Isnil )
+            _Left->_Left->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+          }
+          else
+          {
+            _Parent_5 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_5->_Left )
+              _Parent_5->_Left = _Left;
+            else
+              _Parent_5->_Right = _Left;
+          }
+          _Left->_Left = _Parent_2;
+          goto LABEL_50;
+        }
+        Parent->_Color = 1;
+        Left->_Color = 1;
+        _Node_1->_Parent->_Parent->_Color = 0;
+        _Node_1 = _Node_1->_Parent->_Parent;
+      }
+    }
+    while ( !_Node_1->_Parent->_Color );
+  }
+  _Myhead = this->_Myhead;
+  result->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)_Node;
+  _Parent_6 = _Myhead->_Parent;
+  v27 = result;
+  _Parent_6->_Color = 1;
+  return v27;
+}
+
+// --- End Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@G@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@G@1@1@Z (0x150292800) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@G@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@G@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@1@@Z (0x150292AB0) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned short> >,0> > *this,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >,bool> *result,
+        bool _Leftish,
+        std::pair<CryStringT<char> const ,unsigned short> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Myhead; // r11
+  char *m_str; // rax
+  char *v11; // r8
+  int v12; // ecx
+  int v13; // edx
+  bool _Addleft; // r8
+  char *m_str_1; // rax
+  int v16; // ecx
+  int v17; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *Right; // rbx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >,bool> *v20; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Parent; // rax
+  char *m_str_2; // rax
+  char *v23; // r9
+  int v24; // ecx
+  int v25; // edx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > resulta; // [rsp+40h] [rbp-18h] BYREF
+
+  try
+  {
+    Myhead = this->_Myhead;
+    Parent = this->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = Parent;
+      if ( _Leftish )
+      {
+        m_str = Parent->_Myval.first.m_str;
+        v11 = (char *)(_Val->first.m_str - m_str);
+        do
+        {
+          v12 = (unsigned __int8)v11[(_QWORD)m_str];
+          v13 = (unsigned __int8)*m_str - v12;
+          if ( v13 )
+            break;
+          ++m_str;
+        }
+        while ( v12 );
+        _Addleft = v13 >= 0;
+      }
+      else
+      {
+        m_str_1 = _Val->first.m_str;
+        do
+        {
+          v16 = (unsigned __int8)m_str_1[(unsigned __int64)(Parent->_Myval.first.m_str - _Val->first.m_str)];
+          v17 = (unsigned __int8)*m_str_1 - v16;
+          if ( v17 )
+            break;
+          ++m_str_1;
+        }
+        while ( v16 );
+        _Addleft = v17 < 0;
+      }
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == this->_Myhead->_Left )
+      {
+        result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >)std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(this, &resulta, 1, Myhead, _Val, (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode)->_Ptr;
+        result->second = 1;
+        return result;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = Right->_Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = Right->_Parent;
+      }
+      else
+      {
+        for ( Right = Myhead->_Left; !Right->_Right->_Isnil; Right = Right->_Right )
+          ;
+      }
+    }
+    m_str_2 = Right->_Myval.first.m_str;
+    v23 = (char *)(_Val->first.m_str - m_str_2);
+    do
+    {
+      v24 = (unsigned __int8)v23[(_QWORD)m_str_2];
+      v25 = (unsigned __int8)*m_str_2 - v24;
+      if ( v25 )
+        break;
+      ++m_str_2;
+    }
+    while ( v24 );
+    if ( v25 >= 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)this,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+      result->first._Ptr = Right;
+      result->second = 0;
+    }
+    else
+    {
+      result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >)std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Insert_at<std::pair<CryStringT<char> const,unsigned short> &,std::_Tree_node<std::pair<CryStringT<char> const,unsigned short>,void *> *>(this, &resulta, _Addleft, Myhead, _Val, (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode)->_Ptr;
+      result->second = 1;
+    }
+    v20 = result;
+  }
+  catch ( ... )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)this,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    throw;
+  }
+  return v20;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@G@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@G@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@G@std@@PEAX@1@@Z (0x150292AB0) ---
+
+// --- Function: ?push_back@?$vector@PEAUIParticleEffect@@V?$allocator@PEAUIParticleEffect@@@std@@@std@@QEAAX$$QEAPEAUIParticleEffect@@@Z (0x1502A3FE0) ---
+void __fastcall std::vector<IParticleEffect *>::push_back(
+        std::vector<CAsyncIOFileRequest *> *this,
+        CAsyncIOFileRequest **_Val)
+{
+  CAsyncIOFileRequest **Mylast; // rax
+  CAsyncIOFileRequest **Myfirst; // rcx
+  __int64 v6; // rdi
+  CAsyncIOFileRequest **_Mylast_1; // rdx
+  CAsyncIOFileRequest **_Mylast; // rcx
+
+  Mylast = this->_Mylast;
+  if ( _Val >= Mylast || (Myfirst = this->_Myfirst, Myfirst > _Val) )
+  {
+    if ( Mylast == this->_Myend )
+      std::vector<CRadarQuery *>::_Reserve(
+        (std::vector<TActual<TS_TurretDefault> *,std::allocator<TActual<TS_TurretDefault> *> > *)this,
+        (unsigned __int64)_Val);
+    _Mylast = this->_Mylast;
+    if ( _Mylast )
+      *_Mylast = *_Val;
+  }
+  else
+  {
+    v6 = _Val - Myfirst;
+    if ( Mylast == this->_Myend )
+      std::vector<CRadarQuery *>::_Reserve(
+        (std::vector<TActual<TS_TurretDefault> *,std::allocator<TActual<TS_TurretDefault> *> > *)this,
+        (unsigned __int64)_Val);
+    _Mylast_1 = this->_Mylast;
+    if ( _Mylast_1 )
+    {
+      *_Mylast_1 = this->_Myfirst[v6];
+      ++this->_Mylast;
+      return;
+    }
+  }
+  ++this->_Mylast;
+}
+
+// --- End Function: ?push_back@?$vector@PEAUIParticleEffect@@V?$allocator@PEAUIParticleEffect@@@std@@@std@@QEAAX$$QEAPEAUIParticleEffect@@@Z (0x1502A3FE0) ---
+
+// --- Function: ?resize_raw@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@QEAAXH_N@Z (0x1502BB040) ---
+void __fastcall NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::resize_raw(
+        NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<CryStringT<char>,int> *allocator,
+        int new_size,
+        bool allow_slack)
+{
+  CryStringT<char> *m_aElems; // r11
+  int m_str_high; // r9d
+  int m_str_high_1; // eax
+  unsigned __int64 new_size_1; // rdx
+  int v9; // eax
+  CryStringT<char> *m_aElems_1; // rax
+  CryStringT<char> *m_aElems_2; // r8
+  __int64 new_size_2; // r9
+  int new_cap; // [rsp+50h] [rbp+18h] BYREF
+
+  m_aElems = allocator->m_aElems;
+  m_str_high = HIDWORD(allocator->m_aElems[-1].m_str);
+  m_str_high_1 = m_str_high;
+  if ( m_str_high >= 0 )
+    new_size_1 = (unsigned __int64)(m_str_high_1 * 8) >> 3;
+  else
+    LODWORD(new_size_1) = m_aElems[m_str_high_1].m_str;
+  v9 = 0;
+  if ( allow_slack )
+    LOBYTE(v9) = new_size > (int)new_size_1;
+  else
+    LOBYTE(v9) = new_size != (_DWORD)new_size_1;
+  if ( v9 )
+  {
+    if ( !m_str_high )
+      m_aElems = 0LL;
+    new_cap = new_size;
+    m_aElems_1 = NAlloc::reallocate<NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header,4>,CryStringT<char>,int>(
+                   (NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<CryStringT<char>,int>::Header,4> *)allocator,
+                   m_aElems,
+                   m_str_high & 0x7FFFFFFF,
+                   &new_cap,
+                   8uLL,
+                   allow_slack);
+    allocator->m_aElems = m_aElems_1;
+    if ( !m_aElems_1 )
+    {
+      if ( (`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' & 1) != 0 )
+      {
+        allocator->m_aElems = (CryStringT<char> *)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems;
+      }
+      else
+      {
+        `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' |= 1u;
+        `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems = (unsigned __int64)&unk_1537FF0D3 & 0xFFFFFFFFFFFFFFF8uLL;
+        allocator->m_aElems = (CryStringT<char> *)((unsigned __int64)&unk_1537FF0D3 & 0xFFFFFFFFFFFFFFF8uLL);
+      }
+      return;
+    }
+    LODWORD(new_size_1) = new_cap;
+  }
+  m_aElems_2 = allocator->m_aElems;
+  HIDWORD(allocator->m_aElems[-1].m_str) = new_size;
+  new_size_2 = new_size;
+  if ( 8LL * (int)new_size_1 >= (unsigned __int64)(new_size_2 * 8 + 4) )
+  {
+    HIDWORD(m_aElems_2[-1].m_str) = new_size | 0x80000000;
+    LODWORD(m_aElems_2[new_size_2].m_str) = new_size_1;
+  }
+}
+
+// --- End Function: ?resize_raw@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@QEAAXH_N@Z (0x1502BB040) ---
+
+// --- Function: ??$reallocate@U?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@NAlloc@@V?$CryStringT@D@@H@NAlloc@@YAPEAV?$CryStringT@D@@AEAU?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@0@PEAV1@HAEAH_K_N@Z (0x1502BBE40) ---
+CryStringT<char> *__fastcall NAlloc::reallocate<NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header,4>,CryStringT<char>,int>(
+        NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<CryStringT<char>,int>::Header,4> *allocator,
+        CryStringT<char> *old_elems,
+        int old_size,
+        int *new_size,
+        unsigned __int64 alignment,
+        bool allow_slack)
+{
+  __int64 v6; // rax
+  unsigned __int64 alignment_1; // r12
+  unsigned __int64 n4; // r15
+  unsigned __int64 n4_1; // r9
+  __int64 v14; // rdx
+  __int64 v15; // rdi
+  char *m_aElems; // rbx
+  unsigned __int64 zero_1; // rax
+  int old_size_1; // eax
+  Array<CryStringT<char>,int,NArray::ArrayStorage> source__1; // [rsp+30h] [rbp-48h] BYREF
+  Array<CryStringT<char>,int,NArray::ArrayStorage> source_; // [rsp+40h] [rbp-38h] BYREF
+  unsigned __int64 zero; // [rsp+88h] [rbp+10h] BYREF
+
+  v6 = *new_size;
+  alignment_1 = alignment;
+  n4 = 4LL;
+  if ( (_DWORD)v6 )
+  {
+    n4_1 = 4LL;
+    v14 = 8 * v6;
+    if ( alignment > 4 )
+      n4_1 = alignment;
+    zero = 8 * v6;
+    v15 = (n4_1 + 3) & -(__int64)n4_1;
+    if ( v14 )
+      zero = v15 + ((v14 + 3) & 0xFFFFFFFFFFFFFFFCuLL);
+    m_aElems = NAlloc::AllocCompatible<NAlloc::ModuleAlloc>::alloc(allocator, 0LL, &zero, n4_1, allow_slack);
+    zero_1 = zero;
+    if ( zero )
+      zero_1 = zero - v15;
+    if ( m_aElems )
+      m_aElems += v15;
+    *new_size = zero_1 >> 3;
+  }
+  else
+  {
+    m_aElems = 0LL;
+  }
+  if ( old_elems )
+  {
+    if ( m_aElems )
+    {
+      old_size_1 = *new_size;
+      source__1.m_aElems = old_elems;
+      source__1.m_nCount = old_size;
+      source_ = source__1;
+      if ( old_size < old_size_1 )
+        old_size_1 = old_size;
+      source__1.m_aElems = (CryStringT<char> *)m_aElems;
+      source__1.m_nCount = old_size_1;
+      Array<CryStringT<char>,int,NArray::ArrayStorage>::move_init(&source__1, &source_);
+    }
+    zero = 0LL;
+    if ( alignment_1 > 4 )
+      n4 = alignment_1;
+    NAlloc::AllocCompatible<NAlloc::ModuleAlloc>::alloc(
+      allocator,
+      (char **)((char *)&old_elems->m_str - ((n4 + 3) & ~(n4 - 1))),
+      &zero,
+      n4,
+      0);
+  }
+  return (CryStringT<char> *)m_aElems;
+}
+
+// --- End Function: ??$reallocate@U?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@NAlloc@@V?$CryStringT@D@@H@NAlloc@@YAPEAV?$CryStringT@D@@AEAU?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@V?$CryStringT@D@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@0@PEAV1@HAEAH_K_N@Z (0x1502BBE40) ---
+
+// --- Function: ?move_init@?$Array@V?$CryStringT@D@@HUArrayStorage@NArray@@@@QEAAPEAV?$CryStringT@D@@U1@@Z (0x1502BBFA0) ---
+CryStringT<char> *__fastcall Array<CryStringT<char>,int,NArray::ArrayStorage>::move_init(
+        Array<CryStringT<char>,int,NArray::ArrayStorage> *this,
+        Array<CryStringT<char>,int,NArray::ArrayStorage> *source)
+{
+  CryStringT<char> *m_aElems; // rbx
+  CryStringT<char> *m_aElems_1; // rdi
+  __int64 m_nCount; // rax
+  CryStringT<char> *v6; // rbx
+  CryStringT<char> *m_aElems_2; // rsi
+  CryStringT<char> *m_aElems_3; // rsi
+  char *m_str; // rax
+  int v11; // eax
+  int *v12; // rcx
+  int v13; // eax
+
+  m_aElems = source->m_aElems;
+  m_aElems_1 = this->m_aElems;
+  if ( source->m_aElems == this->m_aElems )
+    return this->m_aElems;
+  if ( source->m_aElems <= this->m_aElems && &m_aElems[source->m_nCount] > m_aElems_1 )
+  {
+    m_nCount = this->m_nCount;
+    v6 = &m_aElems[m_nCount];
+    m_aElems_2 = &m_aElems_1[m_nCount];
+    if ( &m_aElems_1[m_nCount] > m_aElems_1 )
+    {
+      do
+        move_init<CryStringT<char>>(--m_aElems_2, --v6);
+      while ( m_aElems_2 > this->m_aElems );
+      return this->m_aElems;
+    }
+    return this->m_aElems;
+  }
+  m_aElems_3 = &m_aElems_1[this->m_nCount];
+  if ( m_aElems_1 == m_aElems_3 )
+    return this->m_aElems;
+  do
+  {
+    if ( m_aElems_1 )
+    {
+      m_str = m_aElems->m_str;
+      if ( *((int *)m_aElems->m_str - 3) < 0 )
+      {
+        m_aElems_1->m_str = (char *)&Count;
+      }
+      else
+      {
+        m_aElems_1->m_str = m_str;
+        ++*((_DWORD *)m_str - 3);
+      }
+    }
+    v11 = *((_DWORD *)m_aElems->m_str - 3);
+    v12 = (int *)(m_aElems->m_str - 12);
+    if ( v11 >= 0 )
+    {
+      v13 = v11 - 1;
+      *v12 = v13;
+      if ( v13 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v12[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v12, 0LL));
+      }
+    }
+    ++m_aElems_1;
+    ++m_aElems;
+  }
+  while ( m_aElems_1 != m_aElems_3 );
+  return this->m_aElems;
+}
+
+// --- End Function: ?move_init@?$Array@V?$CryStringT@D@@HUArrayStorage@NArray@@@@QEAAPEAV?$CryStringT@D@@U1@@Z (0x1502BBFA0) ---
+
+// --- Function: ??$move_init@V?$CryStringT@D@@@@YAXAEAV?$CryStringT@D@@0@Z (0x1502BCDA0) ---
+void __fastcall move_init<CryStringT<char>>(CryStringT<char> *dest, CryStringT<char> *source)
+{
+  char *m_str; // rax
+  int v3; // eax
+  char *v4; // rcx
+  int v5; // eax
+
+  if ( dest )
+  {
+    m_str = source->m_str;
+    if ( *((int *)source->m_str - 3) < 0 )
+    {
+      dest->m_str = (char *)&Count;
+    }
+    else
+    {
+      dest->m_str = m_str;
+      ++*((_DWORD *)m_str - 3);
+    }
+  }
+  v3 = *((_DWORD *)source->m_str - 3);
+  v4 = source->m_str - 12;
+  if ( v3 >= 0 )
+  {
+    v5 = v3 - 1;
+    *(_DWORD *)v4 = v5;
+    if ( v5 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v4 + 2);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v4, 0LL));
+    }
+  }
+}
+
+// --- End Function: ??$move_init@V?$CryStringT@D@@@@YAXAEAV?$CryStringT@D@@0@Z (0x1502BCDA0) ---
+
+// --- Function: ?CryWarning@@YAXW4EValidatorModule@@W4EValidatorSeverity@@PEBDZZ (0x1502BE9F0) ---
+void CryWarning(EValidatorModule module, EValidatorSeverity severity, const char *format, ...)
+{
+  va_list va; // [rsp+68h] [rbp+20h] BYREF
+
+  va_start(va, format);
+  if ( gEnv.pSystem )
+  {
+    if ( format )
+      gEnv.pSystem->WarningV(gEnv.pSystem, module, severity, 0, 0LL, format, va);
+  }
+}
+
+// --- End Function: ?CryWarning@@YAXW4EValidatorModule@@W4EValidatorSeverity@@PEBDZZ (0x1502BE9F0) ---
+
+// --- Function: ?CryLog@@YAXPEBDZZ (0x1502C1660) ---
+void CryLog(const char *format, ...)
+{
+  va_list va; // [rsp+58h] [rbp+18h] BYREF
+
+  va_start(va, format);
+  if ( gEnv.pSystem )
+  {
+    if ( gEnv.pLog )
+      gEnv.pLog->LogV(gEnv.pLog, eMessage, format, va);
+  }
+}
+
+// --- End Function: ?CryLog@@YAXPEBDZZ (0x1502C1660) ---
+
+// --- Function: ?MakeLower@?$CryStringT@D@@QEAAAEAV1@XZ (0x1502D7FC0) ---
+CryStringT<char> *__fastcall CryStringT<char>::MakeLower(CryStringT<char> *this)
+{
+  char *i; // rax
+  char v3; // cl
+
+  CryStringT<char>::_MakeUnique(this);
+  for ( i = this->m_str; *i; ++i )
+  {
+    v3 = *i;
+    if ( (unsigned __int8)(*i - 65) <= 0x19u )
+      v3 += 32;
+    *i = v3;
+  }
+  return this;
+}
+
+// --- End Function: ?MakeLower@?$CryStringT@D@@QEAAAEAV1@XZ (0x1502D7FC0) ---
+
+// --- Function: ?GetExt@PathUtil@@YAPEBDPEBD@Z (0x1502D8010) ---
+std::string *(__fastcall **__fastcall PathUtil::GetExt(
+        const char *filepath))(std::error_category *this, std::string *result, int)
+{
+  __int64 v1; // rax
+  const char *filepath_1; // rdx
+
+  v1 = -1LL;
+  do
+    ++v1;
+  while ( filepath[v1] );
+  filepath_1 = &filepath[v1 - 1];
+  if ( filepath_1 < filepath )
+    return &cBoxModelPath;
+  while ( *filepath_1 != 46 )
+  {
+    if ( *filepath_1 != 47 && *filepath_1 != 58 && *filepath_1 != 92 && --filepath_1 >= filepath )
+      continue;
+    return &cBoxModelPath;
+  }
+  return (std::string *(__fastcall **)(std::error_category *, std::string *, int))(filepath_1 + 1);
+}
+
+// --- End Function: ?GetExt@PathUtil@@YAPEBDPEBD@Z (0x1502D8010) ---
+
+// --- Function: ??0XmlNodeRef@@QEAA@AEBV0@@Z (0x150335EC0) ---
+void __fastcall XmlNodeRef::XmlNodeRef(XmlNodeRef *this, const XmlNodeRef *p_)
+{
+  IXmlNode *p; // rcx
+
+  p = p_->p;
+  this->p = p_->p;
+  if ( p )
+    p->AddRef(p);
+}
+
+// --- End Function: ??0XmlNodeRef@@QEAA@AEBV0@@Z (0x150335EC0) ---
+
+// --- Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBVEntityId@@M@std@@V?$allocator@U?$pair@$$CBVEntityId@@M@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBVEntityId@@M@std@@PEAX@2@XZ (0x15034FEA0) ---
+void __fastcall std::_Tree_alloc<0,std::_Tree_base_types<std::pair<EntityId const,float>>>::_Buyheadnode(
+        std::_Tree_alloc<0,std::_Tree_base_types<std::pair<EntityId const ,EntityId>> > *this)
+{
+  _QWORD *v1; // rax
+  void *v2; // [rsp+48h] [rbp+10h]
+
+  v1 = `anonymous namespace'::custom_xml_malloc(0x30uLL);
+  v2 = v1;
+  if ( !v1 )
+    std::_Xbad_alloc();
+  try
+  {
+    *v1 = v1;
+    if ( v1 != (_QWORD *)-8LL )
+      v1[1] = v1;
+    if ( v1 != (_QWORD *)-16LL )
+      v1[2] = v1;
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(v2, 0LL));
+    throw;
+  }
+  *((_WORD *)v1 + 12) = 257;
+}
+
+// --- End Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBVEntityId@@M@std@@V?$allocator@U?$pair@$$CBVEntityId@@M@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBVEntityId@@M@std@@PEAX@2@XZ (0x15034FEA0) ---
+
+// --- Function: ?AddSlash@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x150353130) ---
+CryStringT<char> *__fastcall PathUtil::AddSlash(CryStringT<char> *result, const CryStringT<char> *path)
+{
+  char *m_str; // rdi
+  unsigned __int64 (__fastcall *Size_1)(CRendElement *); // rax
+  char n92; // cl
+  char *m_str_1; // rbx
+  unsigned __int64 (__fastcall *Size)(CRendElement *); // rbp
+  unsigned __int64 v8; // rbx
+  _DWORD *v9; // rax
+  int v10; // eax
+  int *v11; // rcx
+  int v12; // eax
+  CryStringT<char> str1; // [rsp+48h] [rbp+10h] BYREF
+  unsigned __int64 v15; // [rsp+50h] [rbp+18h] BYREF
+
+  m_str = path->m_str;
+  Size_1 = *((int *)path->m_str - 2);
+  if ( !(_DWORD)Size_1 || (n92 = m_str[Size_1 - 1], n92 == 47) )
+  {
+    if ( *((int *)m_str - 3) >= 0 )
+    {
+      result->m_str = m_str;
+      ++*((_DWORD *)m_str - 3);
+      return result;
+    }
+    result->m_str = (char *)&Count;
+  }
+  else
+  {
+    if ( n92 != 92 )
+    {
+      operator+<char>(result, path, "/");
+      return result;
+    }
+    m_str_1 = (char *)&Count;
+    Size = Size_1 - 1;
+    str1.m_str = (char *)&Count;
+    if ( Size_1 )
+    {
+      if ( Size > Size_1 )
+        Size = Size_1;
+      if ( Size )
+      {
+        v8 = Size + 13;
+        if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+          _CryMemoryManagerPoolHelper::Init();
+        v9 = _CryMemoryManagerPoolHelper::_CryMalloc(Size + 13, &v15, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v15);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v8);
+        _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v8;
+        m_str_1 = (char *)(v9 + 3);
+        *v9 = 1;
+        v9[1] = Size;
+        v9[2] = Size;
+        str1.m_str = m_str_1;
+        m_str_1[Size] = 0;
+        if ( v9 + 3 != (_DWORD *)m_str )
+          memcpy_0(v9 + 3, m_str, Size);
+      }
+    }
+    operator+<char>(result, &str1, "/");
+    v10 = *((_DWORD *)m_str_1 - 3);
+    v11 = (int *)(m_str_1 - 12);
+    if ( v10 >= 0 )
+    {
+      v12 = v10 - 1;
+      *v11 = v12;
+      if ( v12 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v11, 0LL));
+        return result;
+      }
+    }
+  }
+  return result;
+}
+
+// --- End Function: ?AddSlash@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x150353130) ---
+
+// --- Function: ?_Reallocate@?$vector@PEAUIEntityClass@@V?$allocator@PEAUIEntityClass@@@std@@@std@@IEAAX_K@Z (0x150384090) ---
+void __fastcall std::vector<IEntityClass *>::_Reallocate(std::vector<char *> *this, unsigned __int64 _Count)
+{
+  char *_Myfirst; // rbx
+  signed __int64 v5; // r14
+  void *_Myfirst_1; // [rsp+58h] [rbp+10h]
+
+  _Myfirst = 0LL;
+  _Myfirst_1 = 0LL;
+  if ( _Count )
+  {
+    if ( _Count > 0x1FFFFFFFFFFFFFFFLL
+      || (_Myfirst = (char *)`anonymous namespace'::custom_xml_malloc(8 * _Count), (_Myfirst_1 = _Myfirst) == 0LL) )
+    {
+      std::_Xbad_alloc();
+    }
+  }
+  try
+  {
+    memmove(_Myfirst, this->_Myfirst, 8 * (this->_Mylast - this->_Myfirst));
+  }
+  catch ( ... )
+  {
+    if ( _Myfirst_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_1, 0LL));
+    throw;
+  }
+  v5 = this->_Mylast - this->_Myfirst;
+  if ( this->_Myfirst )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(this->_Myfirst, 0LL));
+  this->_Myend = (char **)&_Myfirst[8 * _Count];
+  this->_Mylast = (char **)&_Myfirst[8 * v5];
+  this->_Myfirst = (char **)_Myfirst;
+}
+
+// --- End Function: ?_Reallocate@?$vector@PEAUIEntityClass@@V?$allocator@PEAUIEntityClass@@@std@@@std@@IEAAX_K@Z (0x150384090) ---
+
+// --- Function: ?ToUnixPath@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x150386240) ---
+CryStringT<char> *__fastcall PathUtil::ToUnixPath(CryStringT<char> *result, const CryStringT<char> *strPath)
+{
+  char *v4; // rax
+  char *m_str_1; // rbx
+  int v6; // eax
+  int *v7; // rdi
+  int v8; // eax
+  __int64 v9; // r15
+  unsigned __int64 v10; // rbx
+  _DWORD *v11; // rax
+  char *m_str_2; // rcx
+  __int64 v13; // r8
+  int nRefCount; // eax
+  CryStringT<char> *v15; // rax
+  char *m_str; // rax
+  unsigned __int64 v17; // [rsp+48h] [rbp+10h] BYREF
+
+  if ( strPath->m_str
+    && (v4 = strchr(strPath->m_str, 92)) != 0LL
+    && (m_str_1 = strPath->m_str, v4 - strPath->m_str != -1) )
+  {
+    if ( *((int *)m_str_1 - 3) < 0 )
+      m_str_1 = (char *)&Count;
+    else
+      ++*((_DWORD *)m_str_1 - 3);
+    v6 = *((_DWORD *)m_str_1 - 3);
+    v7 = (int *)(m_str_1 - 12);
+    if ( v6 > 1 )
+    {
+      if ( v6 >= 0 )
+      {
+        v8 = v6 - 1;
+        *v7 = v8;
+        if ( v8 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(m_str_1 - 12, 0LL));
+        }
+      }
+      v9 = *((int *)m_str_1 - 2);
+      if ( *((_DWORD *)m_str_1 - 2) )
+      {
+        v10 = v9 + 13;
+        if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+          _CryMemoryManagerPoolHelper::Init();
+        v11 = _CryMemoryManagerPoolHelper::_CryMalloc(v9 + 13, &v17, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v17);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v10);
+        _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v10;
+        *v11 = 1;
+        v11[1] = v9;
+        m_str_1 = (char *)(v11 + 3);
+        v11[2] = v9;
+        *((_BYTE *)v11 + v9 + 12) = 0;
+      }
+      else
+      {
+        m_str_1 = (char *)&Count;
+      }
+      if ( m_str_1 != (char *)(v7 + 3) )
+        memcpy_0(m_str_1, v7 + 3, v7[1] + 1);
+    }
+    m_str_2 = m_str_1;
+    v13 = *((int *)m_str_1 - 2);
+    if ( m_str_1 > &m_str_1[v13] )
+      v13 = 0LL;
+    if ( v13 )
+    {
+      do
+      {
+        if ( *m_str_2 == 92 )
+          *m_str_2 = 47;
+        ++m_str_2;
+      }
+      while ( m_str_2 - m_str_1 != v13 );
+    }
+    nRefCount = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+    result->m_str = m_str_1;
+    if ( nRefCount >= 0 )
+    {
+      `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount = nRefCount - 1;
+      if ( nRefCount - 1 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13
+                                                             - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(&`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer, 0LL));
+      }
+    }
+    return result;
+  }
+  else
+  {
+    m_str = strPath->m_str;
+    if ( *((int *)strPath->m_str - 3) < 0 )
+    {
+      v15 = result;
+      result->m_str = (char *)&Count;
+    }
+    else
+    {
+      ++*((_DWORD *)m_str - 3);
+      result->m_str = m_str;
+      return result;
+    }
+  }
+  return v15;
+}
+
+// --- End Function: ?ToUnixPath@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x150386240) ---
+
+// --- Function: ?_Eqrange@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@std@@V12@@2@AEBV?$CryStringT@D@@@Z (0x1504296D0) ---
+std::pair<std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > >,std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Eqrange(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned int> >,0> > *this,
+        std::pair<std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > >,std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > > > *result,
+        const CryStringT<char> *_Keyval)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *Myhead; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *_Myhead; // rbx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *Parent_1; // r9
+  char *m_str; // rsi
+  const char *m_str_1; // r8
+  const char *m_str_2; // rax
+  int v12; // ecx
+  int v13; // edx
+  char *m_str_3; // rax
+  int v15; // ecx
+  int v16; // edx
+
+  Myhead = this->_Myhead;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  Parent_1 = Parent;
+  if ( !Parent->_Isnil )
+  {
+    m_str = _Keyval->m_str;
+    do
+    {
+      m_str_1 = Parent_1->_Myval.first.m_str;
+      m_str_2 = m_str_1;
+      do
+      {
+        v12 = (unsigned __int8)m_str_2[m_str - m_str_1];
+        v13 = *(unsigned __int8 *)m_str_2 - v12;
+        if ( v13 )
+          break;
+        ++m_str_2;
+      }
+      while ( v12 );
+      if ( v13 >= 0 )
+      {
+        if ( _Myhead->_Isnil && strcmp(m_str, m_str_1) < 0 )
+          _Myhead = Parent_1;
+        Myhead = Parent_1;
+        Parent_1 = Parent_1->_Left;
+      }
+      else
+      {
+        Parent_1 = Parent_1->_Right;
+      }
+    }
+    while ( !Parent_1->_Isnil );
+  }
+  if ( !_Myhead->_Isnil )
+    Parent = _Myhead->_Left;
+  while ( !Parent->_Isnil )
+  {
+    m_str_3 = _Keyval->m_str;
+    do
+    {
+      v15 = (unsigned __int8)m_str_3[(unsigned __int64)(Parent->_Myval.first.m_str - _Keyval->m_str)];
+      v16 = (unsigned __int8)*m_str_3 - v15;
+      if ( v16 )
+        break;
+      ++m_str_3;
+    }
+    while ( v15 );
+    if ( v16 >= 0 )
+    {
+      Parent = Parent->_Right;
+    }
+    else
+    {
+      _Myhead = Parent;
+      Parent = Parent->_Left;
+    }
+  }
+  result->first._Ptr = Myhead;
+  result->second._Ptr = _Myhead;
+  return result;
+}
+
+// --- End Function: ?_Eqrange@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@GU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@G@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@G@std@@@std@@@std@@@std@@V12@@2@AEBV?$CryStringT@D@@@Z (0x1504296D0) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@U?$STicket@$00@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@@4@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAX@1@@Z (0x150429CF0) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,STicket<1>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,STicket<1>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,STicket<1>> &,std::_Tree_node<std::pair<CryStringT<char> const,STicket<1>>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *this,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >,bool> *result,
+        bool _Leftish,
+        std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *Myhead; // r11
+  char *m_str_1; // rax
+  signed __int64 v10; // r8
+  int v11; // ecx
+  int v12; // edx
+  bool _Addleft; // r8
+  char *m_str_3; // rax
+  int v15; // ecx
+  int v16; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Right; // rbx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *v19; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Ptr; // rcx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >,bool> *v21; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent; // rax
+  char *m_str_5; // rax
+  signed __int64 v24; // r9
+  int v25; // ecx
+  int v26; // edx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *v27; // rax
+  int v28; // eax
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-A8h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > resulta; // [rsp+58h] [rbp-70h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > v31; // [rsp+60h] [rbp-68h] BYREF
+  char *m_str; // [rsp+68h] [rbp-60h]
+  std::pair<CryStringT<char> const ,CGeomCache *> *p_Myval; // [rsp+70h] [rbp-58h]
+  __int64 v34; // [rsp+78h] [rbp-50h]
+  _smart_ptr<BlockyXmlBlocks> *Ptr_1; // [rsp+80h] [rbp-48h]
+  char *m_str_4; // [rsp+88h] [rbp-40h]
+  __int64 v37; // [rsp+90h] [rbp-38h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent_1; // [rsp+98h] [rbp-30h]
+  unsigned __int64 v39; // [rsp+A0h] [rbp-28h]
+  char *m_str_2; // [rsp+A8h] [rbp-20h]
+  unsigned __int64 v41; // [rsp+B0h] [rbp-18h]
+
+  v34 = -2LL;
+  try
+  {
+    Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead;
+    Parent = this->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)Parent;
+      if ( _Leftish )
+      {
+        m_str = _Val->first.m_str;
+        m_str_1 = Parent->_Myval.first.m_str;
+        v10 = m_str - m_str_1;
+        do
+        {
+          v11 = (unsigned __int8)m_str_1[v10];
+          v12 = (unsigned __int8)*m_str_1 - v11;
+          if ( v12 )
+            break;
+          ++m_str_1;
+        }
+        while ( v11 );
+        _Addleft = v12 >= 0;
+      }
+      else
+      {
+        m_str_2 = Parent->_Myval.first.m_str;
+        m_str_3 = _Val->first.m_str;
+        do
+        {
+          v15 = (unsigned __int8)m_str_3[m_str_2 - _Val->first.m_str];
+          v16 = (unsigned __int8)*m_str_3 - v15;
+          if ( v16 )
+            break;
+          ++m_str_3;
+        }
+        while ( v15 );
+        _Addleft = v16 < 0;
+      }
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead->_Left )
+      {
+        v19 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+                this,
+                &resulta,
+                1,
+                Myhead,
+                _Node,
+                _Newnode);
+        Ptr = v19->_Ptr;
+        result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >)v19->_Ptr;
+        result->second = 1;
+        return result;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          _Parent_1 = _Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = _Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = _Parent;
+      }
+      else
+      {
+        for ( Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Myhead->_Left;
+              !Right->_Right->_Isnil;
+              Right = Right->_Right )
+        {
+          ;
+        }
+      }
+    }
+    m_str_4 = _Val->first.m_str;
+    m_str_5 = Right->_Myval.first.m_str;
+    v24 = m_str_4 - m_str_5;
+    do
+    {
+      v25 = (unsigned __int8)m_str_5[v24];
+      v26 = (unsigned __int8)*m_str_5 - v25;
+      if ( v26 )
+        break;
+      ++m_str_5;
+    }
+    while ( v25 );
+    if ( v26 >= 0 )
+    {
+      p_Myval = &_Newnode->_Myval;
+      Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)(_Newnode->_Myval.first.m_str - 12);
+      Ptr_1 = Ptr;
+      if ( SLODWORD(Ptr->_Left) >= 0 )
+      {
+        v28 = LODWORD(Ptr->_Left) - 1;
+        LODWORD(Ptr->_Left) = v28;
+        if ( v28 <= 0 )
+        {
+          v37 = LODWORD(Ptr->_Parent) + 1 + 12LL;
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -(int)v37;
+          v39 = _CryMemoryManagerPoolHelper::_CryFree(Ptr, 0LL);
+          _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v39);
+        }
+      }
+      if ( _Newnode )
+      {
+        v41 = _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v41);
+      }
+      result->first._Ptr = Right;
+      result->second = 0;
+      v21 = result;
+    }
+    else
+    {
+      v27 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+              this,
+              &v31,
+              _Addleft,
+              Myhead,
+              _Node,
+              _Newnode);
+      Ptr = v27->_Ptr;
+      result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >)v27->_Ptr;
+      result->second = 1;
+      v21 = result;
+    }
+  }
+  catch ( ... )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)Ptr,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Newnode);
+    throw;
+  }
+  return v21;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@U?$STicket@$00@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@@4@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@U?$STicket@$00@@@std@@PEAX@1@@Z (0x150429CF0) ---
+
+// --- Function: ??$_Uninit_move@PEAV?$CryStringT@D@@PEAV1@V?$allocator@V?$CryStringT@D@@@std@@V1@@std@@YAPEAV?$CryStringT@D@@PEAV1@00AEAU?$_Wrap_alloc@V?$allocator@V?$CryStringT@D@@@std@@@0@0U_Nonscalar_ptr_iterator_tag@0@@Z (0x150429F70) ---
+CryStringT<char> *__fastcall std::_Uninit_move<CryStringT<char> *,CryStringT<char> *,std::allocator<CryStringT<char>>,CryStringT<char>>(
+        CryStringT<char> *_First,
+        CryStringT<char> *_Last,
+        CryStringT<char> *_Dest,
+        std::_Wrap_alloc<std::allocator<IDataProbe::SModuleInfo> > *_Al,
+        CryStringT<char> *__formal,
+        std::_Nonscalar_ptr_iterator_tag a6)
+{
+  char *m_str; // rax
+  IDataProbe::SModuleInfo *_Next_1; // rbx
+  CryStringT<char> *_Next; // [rsp+20h] [rbp-18h]
+  CryStringT<char> *_Dest_1; // [rsp+50h] [rbp+18h]
+
+  _Dest_1 = _Dest;
+  _Next = _Dest;
+  try
+  {
+    while ( _First != _Last )
+    {
+      if ( _Dest )
+      {
+        _Dest->m_str = (char *)&Count;
+        m_str = _First->m_str;
+        _First->m_str = (char *)&Count;
+        _Dest->m_str = m_str;
+      }
+      _Dest_1 = ++_Dest;
+      ++_First;
+    }
+  }
+  catch ( ... )
+  {
+    _Next_1 = (IDataProbe::SModuleInfo *)_Next;
+    if ( _Next != _Dest_1 )
+    {
+      do
+      {
+        std::_Wrap_alloc<std::allocator<SerializeInspector::SOp>>::destroy<SerializeInspector::SOp>(_Al, _Next_1);
+        _Next_1 = (IDataProbe::SModuleInfo *)((char *)_Next_1 + 8);
+      }
+      while ( _Next_1 != (IDataProbe::SModuleInfo *)_Dest_1 );
+    }
+    throw;
+  }
+  return _Dest;
+}
+
+// --- End Function: ??$_Uninit_move@PEAV?$CryStringT@D@@PEAV1@V?$allocator@V?$CryStringT@D@@@std@@V1@@std@@YAPEAV?$CryStringT@D@@PEAV1@00AEAU?$_Wrap_alloc@V?$allocator@V?$CryStringT@D@@@std@@@0@0U_Nonscalar_ptr_iterator_tag@0@@Z (0x150429F70) ---
+
+// --- Function: ?_Reallocate@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAX_K@Z (0x150429FD0) ---
+void __fastcall std::vector<CryStringT<char>>::_Reallocate(
+        std::vector<CryStringT<char>> *this,
+        unsigned __int64 _Count)
+{
+  CryStringT<char> *_Dest; // rbx
+  signed __int64 v5; // r14
+  std::_Wrap_alloc<std::allocator<CryStringT<char> > > _Al; // [rsp+68h] [rbp+10h] BYREF
+  CryStringT<char> *_Dest_1; // [rsp+70h] [rbp+18h]
+  CryStringT<char> *Mylast; // [rsp+78h] [rbp+20h]
+
+  _Dest = 0LL;
+  _Dest_1 = 0LL;
+  if ( _Count )
+  {
+    if ( _Count > 0x1FFFFFFFFFFFFFFFLL
+      || (_Dest = (CryStringT<char> *)`anonymous namespace'::custom_xml_malloc(8 * _Count), (_Dest_1 = _Dest) == 0LL) )
+    {
+      std::_Xbad_alloc();
+    }
+  }
+  try
+  {
+    Mylast = this->_Mylast;
+    std::_Uninit_move<CryStringT<char> *,CryStringT<char> *,std::allocator<CryStringT<char>>,CryStringT<char>>(
+      this->_Myfirst,
+      Mylast,
+      _Dest,
+      (std::_Wrap_alloc<std::allocator<IDataProbe::SModuleInfo> > *)&_Al,
+      0LL,
+      (std::_Nonscalar_ptr_iterator_tag)_Al.std::_Allocator_base<CryStringT<char> >);
+  }
+  catch ( ... )
+  {
+    if ( _Dest_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Dest_1, 0LL));
+    throw;
+  }
+  v5 = this->_Mylast - this->_Myfirst;
+  if ( this->_Myfirst )
+  {
+    std::vector<CryStringT<char>>::_Destroy(
+      (std::vector<SVoidMemoryEntry> *)this,
+      (SVoidMemoryEntry *)this->_Myfirst,
+      (SVoidMemoryEntry *)this->_Mylast);
+    if ( this->_Myfirst )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(this->_Myfirst, 0LL));
+  }
+  this->_Myend = &_Dest[_Count];
+  this->_Mylast = &_Dest[v5];
+  this->_Myfirst = _Dest;
+}
+
+// --- End Function: ?_Reallocate@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAX_K@Z (0x150429FD0) ---
+
+// --- Function: ?_Reserve@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAX_K@Z (0x15042A0C0) ---
+void __fastcall std::vector<CryStringT<char>>::_Reserve(std::vector<CryStringT<char>> *this, unsigned __int64 _Count)
+{
+  CryStringT<char> *Mylast; // r8
+  __int64 v4; // r8
+  unsigned __int64 _Count_2; // r11
+  unsigned __int64 v6; // rdx
+  unsigned __int64 _Count_1; // rdx
+
+  Mylast = this->_Mylast;
+  if ( this->_Myend - Mylast < _Count )
+  {
+    v4 = Mylast - this->_Myfirst;
+    if ( 0x1FFFFFFFFFFFFFFFLL - v4 < _Count )
+      std::_Xlength_error("vector<T> too long");
+    _Count_2 = v4 + _Count;
+    v6 = this->_Myend - this->_Myfirst;
+    if ( 0x1FFFFFFFFFFFFFFFLL - (v6 >> 1) >= v6 )
+    {
+      _Count_1 = (v6 >> 1) + v6;
+      if ( _Count_1 < _Count_2 )
+        _Count_1 = v4 + _Count;
+    }
+    else
+    {
+      _Count_1 = 0LL;
+      if ( _Count_2 )
+        _Count_1 = v4 + _Count;
+    }
+    std::vector<CryStringT<char>>::_Reallocate(this, _Count_1);
+  }
+}
+
+// --- End Function: ?_Reserve@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAX_K@Z (0x15042A0C0) ---
+
+// --- Function: ?push_back@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@QEAAX$$QEAV?$CryStringT@D@@@Z (0x15042A150) ---
+void __fastcall std::vector<CryStringT<char>>::push_back(std::vector<CryStringT<char>> *this, CryStringT<char> *_Val)
+{
+  CryStringT<char> *Mylast; // rax
+  CryStringT<char> *Myfirst; // rcx
+  __int64 v6; // rdi
+  CryStringT<char> *_Mylast_1; // rdx
+  CryStringT<char> *v8; // r8
+  char *m_str_1; // rax
+  CryStringT<char> *_Mylast; // rdx
+  char *m_str; // rax
+
+  Mylast = this->_Mylast;
+  if ( _Val >= Mylast || (Myfirst = this->_Myfirst, Myfirst > _Val) )
+  {
+    if ( Mylast == this->_Myend )
+      std::vector<CryStringT<char>>::_Reserve(this, 1uLL);
+    _Mylast = this->_Mylast;
+    if ( _Mylast )
+    {
+      _Mylast->m_str = (char *)&Count;
+      m_str = _Val->m_str;
+      _Val->m_str = (char *)&Count;
+      _Mylast->m_str = m_str;
+    }
+  }
+  else
+  {
+    v6 = _Val - Myfirst;
+    if ( Mylast == this->_Myend )
+      std::vector<CryStringT<char>>::_Reserve(this, 1uLL);
+    _Mylast_1 = this->_Mylast;
+    v8 = &this->_Myfirst[v6];
+    if ( _Mylast_1 )
+    {
+      _Mylast_1->m_str = (char *)&Count;
+      m_str_1 = v8->m_str;
+      v8->m_str = (char *)&Count;
+      _Mylast_1->m_str = m_str_1;
+      ++this->_Mylast;
+      return;
+    }
+  }
+  ++this->_Mylast;
+}
+
+// --- End Function: ?push_back@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@QEAAX$$QEAV?$CryStringT@D@@@Z (0x15042A150) ---
+
+// --- Function: ?_Destroy@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAXPEAV?$CryStringT@D@@0@Z (0x15042AE40) ---
+void __fastcall std::vector<CryStringT<char>>::_Destroy(
+        std::vector<SVoidMemoryEntry> *this,
+        SVoidMemoryEntry *_First,
+        SVoidMemoryEntry *_Last)
+{
+  SVoidMemoryEntry *_First_1; // rbx
+  int v5; // eax
+  int *v6; // rcx
+  int v7; // eax
+
+  if ( _First != _Last )
+  {
+    _First_1 = _First;
+    do
+    {
+      v5 = *((_DWORD *)_First_1->m_name.m_str - 3);
+      v6 = (int *)(_First_1->m_name.m_str - 12);
+      if ( v5 >= 0 )
+      {
+        v7 = v5 - 1;
+        *v6 = v7;
+        if ( v7 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v6[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v6, 0LL));
+        }
+      }
+      ++_First_1;
+    }
+    while ( _First_1 != _Last );
+  }
+}
+
+// --- End Function: ?_Destroy@?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@IEAAXPEAV?$CryStringT@D@@0@Z (0x15042AE40) ---
+
+// --- Function: ??A?$map@V?$CryStringT@D@@PEAUIDataCoreStructure@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIDataCoreStructure@@@std@@@4@@std@@QEAAAEAPEAUIDataCoreStructure@@$$QEAV?$CryStringT@D@@@Z (0x15042DCB0) ---
+IDataCoreStructure **__fastcall std::map<CryStringT<char>,IDataCoreStructure *>::operator[](
+        std::map<CryStringT<char>,IDataCoreStructure *,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > *this,
+        CryStringT<char> *_Keyval,
+        __int64 a3,
+        std::tuple<> *a4)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *Myhead; // r11
+  CryStringT<char> *_Keyval_1; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *_Myhead; // rbx
+  char *m_str; // r10
+  char *m_str_1; // rax
+  int v11; // ecx
+  char *m_str_2; // rax
+  int v13; // ecx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode; // rax
+  std::tuple<CryStringT<char> &&> __Val_0__; // [rsp+40h] [rbp+8h] BYREF
+
+  Myhead = this->_Myhead;
+  _Keyval_1 = _Keyval;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    m_str = _Keyval->m_str;
+    do
+    {
+      m_str_1 = Parent->_Myval.first.m_str;
+      a4 = (std::tuple<> *)(m_str - m_str_1);
+      do
+      {
+        v11 = (unsigned __int8)a4[(_QWORD)m_str_1];
+        _Keyval = (CryStringT<char> *)((unsigned int)(unsigned __int8)*m_str_1 - v11);
+        if ( (_DWORD)_Keyval )
+          break;
+        ++m_str_1;
+      }
+      while ( v11 );
+      if ( (int)_Keyval >= 0 )
+      {
+        _Myhead = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead != Myhead )
+  {
+    m_str_2 = _Keyval_1->m_str;
+    do
+    {
+      v13 = (unsigned __int8)m_str_2[(unsigned __int64)(_Myhead->_Myval.first.m_str - _Keyval_1->m_str)];
+      _Keyval = (CryStringT<char> *)((unsigned int)(unsigned __int8)*m_str_2 - v13);
+      if ( (_DWORD)_Keyval )
+        break;
+      ++m_str_2;
+    }
+    while ( v13 );
+    if ( (int)_Keyval >= 0 )
+      return &_Myhead->_Myval.second;
+  }
+  __Val_0__._Myfirst._Val = _Keyval_1;
+  _Newnode = std::_Tree_buy<std::pair<CryStringT<char> const,_TREEITEM *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+               (std::_Tree_buy<std::pair<CryStringT<char> const ,IConsoleArgumentAutoComplete *>> *)this,
+               (SubsumptionEvent *)_Keyval,
+               &__Val_0__,
+               a4);
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,ILoadGame * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,ILoadGame * (*)(void)>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,ILoadGame * (*)(void)> &,std::_Tree_node<std::pair<CryStringT<char> const,ILoadGame * (*)(void)>,void *> *>(
+    (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)this,
+    (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *)&__Val_0__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >)_Myhead,
+    (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)&_Newnode->_Myval,
+    (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Newnode);
+  return (IDataCoreStructure **)&__Val_0__._Myfirst._Val[5];
+}
+
+// --- End Function: ??A?$map@V?$CryStringT@D@@PEAUIDataCoreStructure@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@PEAUIDataCoreStructure@@@std@@@4@@std@@QEAAAEAPEAUIDataCoreStructure@@$$QEAV?$CryStringT@D@@@Z (0x15042DCB0) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@P6APEAUILoadGame@@XZU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAX@1@@Z (0x15042E150) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,ILoadGame * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,ILoadGame * (*)(void)>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,ILoadGame * (*)(void)> &,std::_Tree_node<std::pair<CryStringT<char> const,ILoadGame * (*)(void)>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > > _Where,
+        std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Myhead; // rax
+  char *m_str; // rax
+  signed __int64 v11; // r9
+  int v12; // edx
+  int v13; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *Right; // r9
+  char *m_str_1; // rax
+  char *v16; // r8
+  int v17; // ecx
+  int v18; // edx
+  char *m_str_2; // r10
+  char *m_str_3; // rax
+  signed __int64 v21; // r9
+  int v22; // edx
+  int v23; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *Left; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Parent; // rdx
+  char *m_str_4; // rax
+  signed __int64 v28; // r11
+  int v29; // edx
+  int v30; // r8d
+  char *m_str_5; // rax
+  signed __int64 v32; // r10
+  int v33; // edx
+  int v34; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *i; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Parent; // rax
+  char *m_str_6; // rax
+  int v38; // edx
+  int v39; // r8d
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-38h]
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> > > >,bool> resulta; // [rsp+38h] [rbp-20h] BYREF
+
+  if ( !this->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+      this,
+      result,
+      1,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)this->_Myhead,
+      (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+      _Newnode);
+    return result;
+  }
+  Myhead = this->_Myhead;
+  if ( _Where._Ptr == this->_Myhead->_Left )
+  {
+    m_str = _Val->first.m_str;
+    v11 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+    do
+    {
+      v12 = (unsigned __int8)m_str[v11];
+      v13 = (unsigned __int8)*m_str - v12;
+      if ( v13 )
+        break;
+      ++m_str;
+    }
+    while ( v12 );
+    if ( v13 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Where._Ptr,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+      return result;
+    }
+    goto LABEL_59;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)Myhead->_Right;
+    m_str_1 = Right->_Myval.first.m_str;
+    v16 = (char *)(_Val->first.m_str - m_str_1);
+    do
+    {
+      v17 = (unsigned __int8)v16[(_QWORD)m_str_1];
+      v18 = (unsigned __int8)*m_str_1 - v17;
+      if ( v18 )
+        break;
+      ++m_str_1;
+    }
+    while ( v17 );
+    if ( v18 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        0,
+        Right,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+      return result;
+    }
+    goto LABEL_59;
+  }
+  m_str_2 = _Val->first.m_str;
+  m_str_3 = _Val->first.m_str;
+  v21 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+  do
+  {
+    v22 = (unsigned __int8)m_str_3[v21];
+    v23 = (unsigned __int8)*m_str_3 - v22;
+    if ( v23 )
+      break;
+    ++m_str_3;
+  }
+  while ( v22 );
+  if ( v23 >= 0 )
+    goto LABEL_37;
+  Ptr = _Where._Ptr;
+  if ( _Where._Ptr->_Isnil )
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Where._Ptr->_Right;
+  }
+  else
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Where._Ptr->_Left;
+    if ( _Where._Ptr->_Left->_Isnil )
+    {
+      while ( 1 )
+      {
+        Parent = Ptr->_Parent;
+        if ( Parent->_Isnil || Ptr != Parent->_Left )
+          break;
+        Ptr = Ptr->_Parent;
+      }
+      Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)Ptr;
+      if ( !Ptr->_Isnil )
+        Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)Ptr->_Parent;
+    }
+    else
+    {
+      while ( !Left->_Right->_Isnil )
+        Left = Left->_Right;
+    }
+  }
+  m_str_4 = Left->_Myval.first.m_str;
+  v28 = m_str_2 - m_str_4;
+  do
+  {
+    v29 = (unsigned __int8)m_str_4[v28];
+    v30 = (unsigned __int8)*m_str_4 - v29;
+    if ( v30 )
+      break;
+    ++m_str_4;
+  }
+  while ( v29 );
+  if ( v30 >= 0 )
+  {
+LABEL_37:
+    m_str_5 = _Where._Ptr->_Myval.first.m_str;
+    v32 = m_str_2 - m_str_5;
+    do
+    {
+      v33 = (unsigned __int8)m_str_5[v32];
+      v34 = (unsigned __int8)*m_str_5 - v33;
+      if ( v34 )
+        break;
+      ++m_str_5;
+    }
+    while ( v33 );
+    if ( v34 >= 0 )
+      goto LABEL_59;
+    i = _Where._Ptr;
+    if ( !_Where._Ptr->_Isnil )
+    {
+      if ( _Where._Ptr->_Right->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = i->_Parent;
+          if ( _Parent->_Isnil || i != _Parent->_Right )
+            break;
+          i = i->_Parent;
+        }
+        i = i->_Parent;
+      }
+      else
+      {
+        for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+          ;
+      }
+    }
+    if ( i != this->_Myhead )
+    {
+      m_str_6 = _Val->first.m_str;
+      do
+      {
+        v38 = (unsigned __int8)m_str_6[(unsigned __int64)(i->_Myval.first.m_str - _Val->first.m_str)];
+        v39 = (unsigned __int8)*m_str_6 - v38;
+        if ( v39 )
+          break;
+        ++m_str_6;
+      }
+      while ( v38 );
+      if ( v39 >= 0 )
+      {
+LABEL_59:
+        result->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,STicket<1>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,STicket<1>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,STicket<1>> &,std::_Tree_node<std::pair<CryStringT<char> const,STicket<1>>,void *> *>(this, &resulta, 0, _Val, _Newnode)->first;
+        return result;
+      }
+    }
+    if ( _Where._Ptr->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        0,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Where._Ptr,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)i,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+    return result;
+  }
+  else
+  {
+    if ( Left->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        0,
+        Left,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,CSurfaceTypeManager::SSurfaceRecord *,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>>,0>>::_Insert_at<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *> &,std::_Tree_node<std::pair<CryStringT<char> const,CSurfaceTypeManager::SSurfaceRecord *>,void *> *>(
+        this,
+        result,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CGeomCache *>,void *> *)_Where._Ptr,
+        (std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *)_Node,
+        _Newnode);
+    return result;
+  }
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@P6APEAUILoadGame@@XZU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@P6APEAUILoadGame@@XZ@std@@PEAX@1@@Z (0x15042E150) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@AEBI@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBIPEAVCEntityPool@@@std@@V?$allocator@U?$pair@$$CBIPEAVCEntityPool@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBIPEAVCEntityPool@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@AEBI@1@$$QEAV?$tuple@$$$V@1@@Z (0x15043E420) ---
+std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *__fastcall std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+        std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *this,
+        SubsumptionEvent *<_Val_1>,
+        std::tuple<int const &> *<_Val_0>,
+        std::tuple<> *a4)
+{
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *result; // rax
+
+  result = std::_Tree_buy<std::pair<SDialogResponseDef const * const,SDialogResponseData>>::_Buynode0(this, <_Val_1>);
+  *(_WORD *)&result->_Color = 0;
+  try
+  {
+    if ( result != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)-32LL )
+    {
+      result->_Myval.first = *<_Val_0>->_Myfirst._Val;
+      result->_Myval.second = 0LL;
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(result, 0LL));
+    throw;
+  }
+  return result;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@AEBI@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBIPEAVCEntityPool@@@std@@V?$allocator@U?$pair@$$CBIPEAVCEntityPool@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBIPEAVCEntityPool@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@AEBI@1@$$QEAV?$tuple@$$$V@1@@Z (0x15043E420) ---
+
+// --- Function: ?_Buynode0@?$_List_alloc@$0A@U?$_List_base_types@U?$pair@$$CBII@std@@V?$allocator@U?$pair@$$CBII@std@@@2@@std@@@std@@QEAAPEAU?$_List_node@U?$pair@$$CBII@std@@PEAX@2@PEAU32@0@Z (0x15049DA10) ---
+std::_List_node<DataCoreRecordObserver *,void *> *__fastcall std::_List_alloc<0,std::_List_base_types<std::pair<unsigned int const,unsigned int>>>::_Buynode0(
+        std::_List_alloc<0,std::_List_base_types<DataCoreRecordObserver *> > *this,
+        std::_List_node<DataCoreRecordObserver *,void *> *_Next,
+        std::_List_node<DataCoreRecordObserver *,void *> *_Prev)
+{
+  std::_List_node<DataCoreRecordObserver *,void *> *_Next_1; // rax
+
+  _Next_1 = (std::_List_node<DataCoreRecordObserver *,void *> *)`anonymous namespace'::custom_xml_malloc(0x18uLL);
+  if ( !_Next_1 )
+  {
+    std::_Xbad_alloc();
+    __debugbreak();
+  }
+  if ( !_Next )
+  {
+    _Next = _Next_1;
+    _Prev = _Next_1;
+  }
+  try
+  {
+    _Next_1->_Next = _Next;
+    if ( _Next_1 != (std::_List_node<DataCoreRecordObserver *,void *> *)-8LL )
+      _Next_1->_Prev = _Prev;
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Next_1, 0LL));
+    throw;
+  }
+  return _Next_1;
+}
+
+// --- End Function: ?_Buynode0@?$_List_alloc@$0A@U?$_List_base_types@U?$pair@$$CBII@std@@V?$allocator@U?$pair@$$CBII@std@@@2@@std@@@std@@QEAAPEAU?$_List_node@U?$pair@$$CBII@std@@PEAX@2@PEAU32@0@Z (0x15049DA10) ---
+
+// --- Function: ??$reallocate@U?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@PEAUICryEventDispatcher@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@NAlloc@@PEAUICryEventDispatcher@@H@NAlloc@@YAPEAPEAUICryEventDispatcher@@AEAU?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@PEAUICryEventDispatcher@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@0@PEAPEAU1@HAEAH_K_N@Z (0x1504ADC50) ---
+CTexture **__fastcall NAlloc::reallocate<NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<ICryEventDispatcher *,int>::Header,4>,ICryEventDispatcher *,int>(
+        NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<CTexture *,int>::Header,4> *allocator,
+        CTexture **old_elems,
+        int old_size,
+        int *new_size,
+        unsigned __int64 alignment,
+        bool allow_slack)
+{
+  __int64 v6; // rax
+  unsigned __int64 alignment_1; // r12
+  __int64 old_size_1; // rbp
+  unsigned __int64 n4; // r15
+  unsigned __int64 n4_1; // r9
+  __int64 v14; // rdx
+  __int64 v15; // rdi
+  char *old_elems_1; // rbx
+  unsigned __int64 new_bytes_1; // rax
+  int old_size_2; // edx
+  char *old_elems_4; // rcx
+  CTexture **v20; // rdx
+  signed __int64 v21; // rdx
+  _QWORD *old_elems_2; // rcx
+  char *old_elems_3; // r8
+  unsigned __int64 new_bytes; // [rsp+78h] [rbp+10h] BYREF
+  unsigned __int64 zero; // [rsp+88h] [rbp+20h] BYREF
+
+  v6 = *new_size;
+  alignment_1 = alignment;
+  old_size_1 = old_size;
+  n4 = 4LL;
+  if ( (_DWORD)v6 )
+  {
+    n4_1 = 4LL;
+    v14 = 8 * v6;
+    if ( alignment > 4 )
+      n4_1 = alignment;
+    new_bytes = 8 * v6;
+    v15 = (n4_1 + 3) & -(__int64)n4_1;
+    if ( v14 )
+      new_bytes = v15 + ((v14 + 3) & 0xFFFFFFFFFFFFFFFCuLL);
+    old_elems_1 = NAlloc::AllocCompatible<NAlloc::ModuleAlloc>::alloc(allocator, 0LL, &new_bytes, n4_1, allow_slack);
+    new_bytes_1 = new_bytes;
+    if ( new_bytes )
+      new_bytes_1 = new_bytes - v15;
+    if ( old_elems_1 )
+      old_elems_1 += v15;
+    *new_size = new_bytes_1 >> 3;
+  }
+  else
+  {
+    old_elems_1 = 0LL;
+  }
+  if ( old_elems )
+  {
+    if ( old_elems_1 )
+    {
+      old_size_2 = *new_size;
+      if ( (int)old_size_1 < *new_size )
+        old_size_2 = old_size_1;
+      if ( old_elems != (CTexture **)old_elems_1 )
+      {
+        if ( old_elems > (CTexture **)old_elems_1 || &old_elems[old_size_1] <= (CTexture **)old_elems_1 )
+        {
+          old_elems_2 = old_elems_1;
+          old_elems_3 = &old_elems_1[8 * old_size_2];
+          if ( old_elems_1 != old_elems_3 )
+          {
+            do
+            {
+              if ( old_elems_2 )
+                *old_elems_2 = *(_QWORD *)((char *)old_elems_2 + (char *)old_elems - old_elems_1);
+              ++old_elems_2;
+            }
+            while ( old_elems_2 != (_QWORD *)old_elems_3 );
+          }
+        }
+        else
+        {
+          old_elems_4 = &old_elems_1[8 * old_size_2];
+          v20 = &old_elems[old_size_2];
+          if ( old_elems_4 > old_elems_1 )
+          {
+            v21 = (char *)v20 - old_elems_4;
+            do
+            {
+              old_elems_4 -= 8;
+              if ( old_elems_4 )
+                *(_QWORD *)old_elems_4 = *(_QWORD *)&old_elems_4[v21];
+            }
+            while ( old_elems_4 > old_elems_1 );
+          }
+        }
+      }
+    }
+    zero = 0LL;
+    if ( alignment_1 > 4 )
+      n4 = alignment_1;
+    NAlloc::AllocCompatible<NAlloc::ModuleAlloc>::alloc(
+      allocator,
+      (CTexture **)((char *)old_elems - ((n4 + 3) & ~(n4 - 1))),
+      &zero,
+      n4,
+      0);
+  }
+  return (CTexture **)old_elems_1;
+}
+
+// --- End Function: ??$reallocate@U?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@PEAUICryEventDispatcher@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@NAlloc@@PEAUICryEventDispatcher@@H@NAlloc@@YAPEAPEAUICryEventDispatcher@@AEAU?$AllocPrefix@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@UHeader@?$Store@PEAUICryEventDispatcher@@H@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@$03@0@PEAPEAU1@HAEAH_K_N@Z (0x1504ADC50) ---
+
+// --- Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@V?$allocator@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@PEAX@2@XZ (0x1504B4DA0) ---
+void __fastcall std::_Tree_alloc<0,std::_Tree_base_types<std::pair<boost::variant<boost::detail::variant::over_sequence<boost::mpl::vector<SNullAddr,unsigned short,SIPv4Addr,LobbyIdAddr,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na>>> const,CTimeValue>>>::_Buyheadnode(
+        std::_Tree_alloc<0,std::_Tree_base_types<std::pair<StringHash const ,SubsumptionActivity *>> > *this)
+{
+  _QWORD *v1; // rax
+  void *v2; // [rsp+40h] [rbp+8h]
+
+  v1 = `anonymous namespace'::custom_xml_malloc(0x38uLL);
+  v2 = v1;
+  if ( !v1 )
+    std::_Xbad_alloc();
+  try
+  {
+    *v1 = v1;
+    if ( v1 != (_QWORD *)-8LL )
+      v1[1] = v1;
+    if ( v1 != (_QWORD *)-16LL )
+      v1[2] = v1;
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(v2, 0LL));
+    throw;
+  }
+  *((_WORD *)v1 + 12) = 257;
+}
+
+// --- End Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@V?$allocator@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$variant@U?$over_sequence@U?$vector@USNullAddr@@GUSIPv4Addr@@ULobbyIdAddr@@Una@mpl@boost@@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@U456@@mpl@boost@@@0detail@boost@@Uvoid_@023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@U4023@@boost@@VCTimeValue@@@std@@PEAX@2@XZ (0x1504B4DA0) ---
+
+// --- Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@V?$allocator@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@PEAX@2@XZ (0x1504B59A0) ---
+std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *__fastcall std::_Tree_buy<std::pair<boost::uuids::uuid const,EntityId>>::_Buynode0(
+        std::_Tree_buy<std::pair<StringHash const ,SubsumptionActivity *>> *this)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> **v2; // rdx
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> **v4; // [rsp+48h] [rbp+10h]
+
+  v2 = (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> **)`anonymous namespace'::custom_xml_malloc(0x38uLL);
+  v4 = v2;
+  if ( !v2 )
+    std::_Xbad_alloc();
+  try
+  {
+    *v2 = this->_Myhead;
+    if ( v2 != (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> **)-8LL )
+      v2[1] = this->_Myhead;
+    if ( v2 != (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> **)-16LL )
+      v2[2] = this->_Myhead;
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(v4, 0LL));
+    throw;
+  }
+  return (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)v2;
+}
+
+// --- End Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@V?$allocator@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBUuuid@uuids@boost@@VEntityId@@@std@@PEAX@2@XZ (0x1504B59A0) ---
+
+// --- Function: ??A?$map@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@@std@@QEAAAEAV?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@1@$$QEAV?$CryStringT@D@@@Z (0x1504BD140) ---
+CDataCore::UrlToStruct *__fastcall std::map<CryStringT<char>,std::map<CryStringT<char>,int>>::operator[](
+        std::map<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > *this,
+        CryStringT<char> *_Keyval)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Myhead; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Myhead; // rbx
+  char *m_str; // r10
+  char *m_str_1; // rax
+  signed __int64 v9; // r9
+  int v10; // ecx
+  int v11; // edx
+  char *m_str_2; // rax
+  int v13; // ecx
+  int v14; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode; // rax
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > __Val_2__; // [rsp+40h] [rbp+8h] BYREF
+  std::tuple<CryStringT<char> &&> __Val_1__; // [rsp+50h] [rbp+18h] BYREF
+
+  Myhead = this->_Myhead;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    m_str = _Keyval->m_str;
+    do
+    {
+      m_str_1 = Parent->_Myval.first.m_str;
+      v9 = m_str - m_str_1;
+      do
+      {
+        v10 = (unsigned __int8)m_str_1[v9];
+        v11 = (unsigned __int8)*m_str_1 - v10;
+        if ( v11 )
+          break;
+        ++m_str_1;
+      }
+      while ( v10 );
+      if ( v11 >= 0 )
+      {
+        _Myhead = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead != Myhead )
+  {
+    m_str_2 = _Keyval->m_str;
+    do
+    {
+      v13 = (unsigned __int8)m_str_2[(unsigned __int64)(_Myhead->_Myval.first.m_str - _Keyval->m_str)];
+      v14 = (unsigned __int8)*m_str_2 - v13;
+      if ( v14 )
+        break;
+      ++m_str_2;
+    }
+    while ( v13 );
+    if ( v14 >= 0 )
+      return (CDataCore::UrlToStruct *)&_Myhead->_Myval.second;
+  }
+  __Val_1__._Myfirst._Val = _Keyval;
+  _Newnode = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)std::_Tree_buy<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+                                                                                                    this,
+                                                                                                    &piecewise_construct_912,
+                                                                                                    &__Val_1__,
+                                                                                                    (std::tuple<> *)&__Val_2__);
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+    this,
+    &__Val_2__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)_Myhead,
+    &_Newnode->_Myval,
+    _Newnode);
+  return &__Val_2__._Ptr->_Myval.second;
+}
+
+// --- End Function: ??A?$map@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@@std@@QEAAAEAV?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@1@$$QEAV?$CryStringT@D@@@Z (0x1504BD140) ---
+
+// --- Function: ??1?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@QEAA@XZ (0x1504BD380) ---
+void __fastcall std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>(
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *this)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *Myhead; // rcx
+  int v3; // eax
+  char *v4; // rcx
+  int v5; // eax
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > result; // [rsp+30h] [rbp+8h] BYREF
+
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,IConsoleArgumentAutoComplete *,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,IConsoleArgumentAutoComplete *>>,0>>::erase(
+    (std::_Tree<std::_Tset_traits<CryStringT<char>,CLocalizedStringsManager::less_strcmp,std::allocator<CryStringT<char> >,0> > *)&this->second,
+    &result,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > >)this->second.m_UrlToStruct._Myhead->_Left,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > >)this->second.m_UrlToStruct._Myhead);
+  Myhead = this->second.m_UrlToStruct._Myhead;
+  if ( Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(Myhead, 0LL));
+  v3 = *((_DWORD *)this->first.m_str - 3);
+  v4 = this->first.m_str - 12;
+  if ( v3 >= 0 )
+  {
+    v5 = v3 - 1;
+    *(_DWORD *)v4 = v5;
+    if ( v5 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v4 + 2);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v4, 0LL));
+    }
+  }
+}
+
+// --- End Function: ??1?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@QEAA@XZ (0x1504BD380) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x1504BD410) ---
+std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+        std::_Tree_buy<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> *this,
+        const std::piecewise_construct_t *<_Val_0>,
+        std::tuple<CryStringT<char> &&> *<_Val_1>,
+        std::tuple<> *<_Val_2>)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Pnode_1; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Pnode_2; // rdi
+  std::pair<StringHash const ,SubsumptionActivity *> *p_Myval; // rbx
+  char *m_str; // rax
+  const char *m_str_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Pnode; // [rsp+20h] [rbp-48h]
+  CryStringT<char> *Val; // [rsp+38h] [rbp-30h]
+
+  _Pnode_1 = std::_Tree_buy<std::pair<boost::uuids::uuid const,EntityId>>::_Buynode0((std::_Tree_buy<std::pair<StringHash const ,SubsumptionActivity *>> *)this);
+  _Pnode_2 = _Pnode_1;
+  _Pnode = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)_Pnode_1;
+  *(_WORD *)&_Pnode_1->_Color = 0;
+  try
+  {
+    p_Myval = &_Pnode_1->_Myval;
+    if ( _Pnode_1 != (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)-32LL )
+    {
+      Val = <_Val_1>->_Myfirst._Val;
+      *(_QWORD *)&p_Myval->first.m_hash = &Count;
+      m_str = Val->m_str;
+      Val->m_str = (char *)&Count;
+      *(_QWORD *)&p_Myval->first.m_hash = m_str;
+      p_Myval->first.m_str = 0LL;
+      p_Myval->second = 0LL;
+      std::_Tree_alloc<0,std::_Tree_base_types<std::pair<EntityId const,float>>>::_Buyheadnode((std::_Tree_alloc<0,std::_Tree_base_types<std::pair<EntityId const ,EntityId>> > *)&p_Myval->first.m_str);
+      p_Myval->first.m_str = m_str_1;
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Pnode, 0LL));
+    throw;
+  }
+  return _Pnode_2;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x1504BD410) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@@Z (0x1504BD4B0) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *__Val_2_,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > _Where,
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Myhead; // rax
+  char *m_str; // rax
+  signed __int64 v11; // r9
+  int v12; // edx
+  int v13; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Right; // r9
+  char *m_str_1; // rax
+  char *v16; // r8
+  int v17; // ecx
+  int v18; // edx
+  char *m_str_2; // r10
+  char *m_str_3; // rax
+  signed __int64 v21; // r9
+  int v22; // edx
+  int v23; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Left; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Parent; // rdx
+  char *m_str_4; // rax
+  signed __int64 v28; // r11
+  int v29; // edx
+  int v30; // r8d
+  char *m_str_5; // rax
+  signed __int64 v32; // r10
+  int v33; // edx
+  int v34; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *i; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Parent; // rax
+  char *m_str_6; // rax
+  int v38; // edx
+  int v39; // r8d
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >,bool> result; // [rsp+38h] [rbp-20h] BYREF
+
+  if ( !this->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+      __Val_2_,
+      1,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)this->_Myhead,
+      _Val,
+      _Newnode);
+    return __Val_2_;
+  }
+  Myhead = this->_Myhead;
+  if ( _Where._Ptr == this->_Myhead->_Left )
+  {
+    m_str = _Val->first.m_str;
+    v11 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+    do
+    {
+      v12 = (unsigned __int8)m_str[v11];
+      v13 = (unsigned __int8)*m_str - v12;
+      if ( v13 )
+        break;
+      ++m_str;
+    }
+    while ( v12 );
+    if ( v13 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Where._Ptr,
+        _Val,
+        _Newnode);
+      return __Val_2_;
+    }
+    goto LABEL_59;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)Myhead->_Right;
+    m_str_1 = Right->_Myval.first.m_str;
+    v16 = (char *)(_Val->first.m_str - m_str_1);
+    do
+    {
+      v17 = (unsigned __int8)v16[(_QWORD)m_str_1];
+      v18 = (unsigned __int8)*m_str_1 - v17;
+      if ( v18 )
+        break;
+      ++m_str_1;
+    }
+    while ( v17 );
+    if ( v18 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        0,
+        Right,
+        _Val,
+        _Newnode);
+      return __Val_2_;
+    }
+    goto LABEL_59;
+  }
+  m_str_2 = _Val->first.m_str;
+  m_str_3 = _Val->first.m_str;
+  v21 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+  do
+  {
+    v22 = (unsigned __int8)m_str_3[v21];
+    v23 = (unsigned __int8)*m_str_3 - v22;
+    if ( v23 )
+      break;
+    ++m_str_3;
+  }
+  while ( v22 );
+  if ( v23 >= 0 )
+    goto LABEL_37;
+  Ptr = _Where._Ptr;
+  if ( _Where._Ptr->_Isnil )
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Where._Ptr->_Right;
+  }
+  else
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Where._Ptr->_Left;
+    if ( _Where._Ptr->_Left->_Isnil )
+    {
+      while ( 1 )
+      {
+        Parent = Ptr->_Parent;
+        if ( Parent->_Isnil || Ptr != Parent->_Left )
+          break;
+        Ptr = Ptr->_Parent;
+      }
+      Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)Ptr;
+      if ( !Ptr->_Isnil )
+        Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)Ptr->_Parent;
+    }
+    else
+    {
+      while ( !Left->_Right->_Isnil )
+        Left = Left->_Right;
+    }
+  }
+  m_str_4 = Left->_Myval.first.m_str;
+  v28 = m_str_2 - m_str_4;
+  do
+  {
+    v29 = (unsigned __int8)m_str_4[v28];
+    v30 = (unsigned __int8)*m_str_4 - v29;
+    if ( v30 )
+      break;
+    ++m_str_4;
+  }
+  while ( v29 );
+  if ( v30 >= 0 )
+  {
+LABEL_37:
+    m_str_5 = _Where._Ptr->_Myval.first.m_str;
+    v32 = m_str_2 - m_str_5;
+    do
+    {
+      v33 = (unsigned __int8)m_str_5[v32];
+      v34 = (unsigned __int8)*m_str_5 - v33;
+      if ( v34 )
+        break;
+      ++m_str_5;
+    }
+    while ( v33 );
+    if ( v34 >= 0 )
+      goto LABEL_59;
+    i = _Where._Ptr;
+    if ( !_Where._Ptr->_Isnil )
+    {
+      if ( _Where._Ptr->_Right->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = i->_Parent;
+          if ( _Parent->_Isnil || i != _Parent->_Right )
+            break;
+          i = i->_Parent;
+        }
+        i = i->_Parent;
+      }
+      else
+      {
+        for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+          ;
+      }
+    }
+    if ( i != this->_Myhead )
+    {
+      m_str_6 = _Val->first.m_str;
+      do
+      {
+        v38 = (unsigned __int8)m_str_6[(unsigned __int64)(i->_Myval.first.m_str - _Val->first.m_str)];
+        v39 = (unsigned __int8)*m_str_6 - v38;
+        if ( v39 )
+          break;
+        ++m_str_6;
+      }
+      while ( v38 );
+      if ( v39 >= 0 )
+      {
+LABEL_59:
+        __Val_2_->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(this, &result, 0, _Val, _Newnode)->first._Ptr;
+        return __Val_2_;
+      }
+    }
+    if ( _Where._Ptr->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        0,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Where._Ptr,
+        _Val,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)i,
+        _Val,
+        _Newnode);
+    return __Val_2_;
+  }
+  else
+  {
+    if ( Left->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        0,
+        Left,
+        _Val,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this,
+        __Val_2_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Where._Ptr,
+        _Val,
+        _Newnode);
+    return __Val_2_;
+  }
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@@Z (0x1504BD4B0) ---
+
+// --- Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@1@Z (0x1504BD810) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *result,
+        bool _Addleft,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Wherenode,
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *_Node,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Addleft_0)
+{
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Addleft_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Parent; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Left; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_2; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Left; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Right_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_3; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Left_1; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Right_2; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_4; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_5; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_6; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *v27; // rax
+
+  Mysize = this->_Mysize;
+  if ( Mysize >= 0x492492492492491LL )
+  {
+    std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>(&_Addleft_0->_Myval);
+    if ( _Addleft_0 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Addleft_0, 0LL));
+    std::_Xlength_error("map/set<T> too long");
+  }
+  this->_Mysize = Mysize + 1;
+  _Addleft_0->_Parent = _Wherenode;
+  if ( _Wherenode == this->_Myhead )
+  {
+    this->_Myhead->_Parent = _Addleft_0;
+    this->_Myhead->_Left = _Addleft_0;
+    Myhead = this->_Myhead;
+LABEL_11:
+    Myhead->_Right = _Addleft_0;
+    goto LABEL_12;
+  }
+  if ( !_Addleft )
+  {
+    _Wherenode->_Right = _Addleft_0;
+    Myhead = this->_Myhead;
+    if ( _Wherenode != this->_Myhead->_Right )
+      goto LABEL_12;
+    goto LABEL_11;
+  }
+  _Wherenode->_Left = _Addleft_0;
+  if ( _Wherenode == this->_Myhead->_Left )
+    this->_Myhead->_Left = _Addleft_0;
+LABEL_12:
+  _Addleft_1 = _Addleft_0;
+  while ( !_Addleft_1->_Parent->_Color )
+  {
+    Parent = _Addleft_1->_Parent;
+    _Parent = Parent->_Parent;
+    Left = _Parent->_Left;
+    if ( Parent == _Parent->_Left )
+    {
+      Right = _Parent->_Right;
+      if ( Right->_Color )
+      {
+        if ( _Addleft_1 == Parent->_Right )
+        {
+          _Right = Parent->_Right;
+          _Addleft_1 = _Addleft_1->_Parent;
+          Parent->_Right = _Right->_Left;
+          if ( !_Right->_Left->_Isnil )
+            _Right->_Left->_Parent = Parent;
+          _Right->_Parent = Parent->_Parent;
+          if ( Parent == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Right;
+          }
+          else
+          {
+            _Parent_1 = Parent->_Parent;
+            if ( _Addleft_1 == _Parent_1->_Left )
+              _Parent_1->_Left = _Right;
+            else
+              _Parent_1->_Right = _Right;
+          }
+          _Right->_Left = _Addleft_1;
+          _Addleft_1->_Parent = _Right;
+        }
+        _Addleft_1->_Parent->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Parent_2 = _Addleft_1->_Parent->_Parent;
+        _Left = _Parent_2->_Left;
+        _Parent_2->_Left = _Parent_2->_Left->_Right;
+        _Right_1 = _Left->_Right;
+        if ( !_Right_1->_Isnil )
+          _Right_1->_Parent = _Parent_2;
+        _Left->_Parent = _Parent_2->_Parent;
+        if ( _Parent_2 == this->_Myhead->_Parent )
+        {
+          this->_Myhead->_Parent = _Left;
+          _Left->_Right = _Parent_2;
+        }
+        else
+        {
+          _Parent_3 = _Parent_2->_Parent;
+          if ( _Parent_2 == _Parent_3->_Right )
+            _Parent_3->_Right = _Left;
+          else
+            _Parent_3->_Left = _Left;
+          _Left->_Right = _Parent_2;
+        }
+LABEL_52:
+        _Parent_2->_Parent = _Left;
+        continue;
+      }
+      Parent->_Color = 1;
+      Right->_Color = 1;
+      _Addleft_1->_Parent->_Parent->_Color = 0;
+      _Addleft_1 = _Addleft_1->_Parent->_Parent;
+    }
+    else
+    {
+      if ( Left->_Color )
+      {
+        if ( _Addleft_1 == Parent->_Left )
+        {
+          _Left_1 = Parent->_Left;
+          _Addleft_1 = _Addleft_1->_Parent;
+          Parent->_Left = Parent->_Left->_Right;
+          _Right_2 = _Left_1->_Right;
+          if ( !_Right_2->_Isnil )
+            _Right_2->_Parent = _Addleft_1;
+          _Left_1->_Parent = _Addleft_1->_Parent;
+          if ( _Addleft_1 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left_1;
+          }
+          else
+          {
+            _Parent_4 = _Addleft_1->_Parent;
+            if ( _Addleft_1 == _Parent_4->_Right )
+              _Parent_4->_Right = _Left_1;
+            else
+              _Parent_4->_Left = _Left_1;
+          }
+          _Left_1->_Right = _Addleft_1;
+          _Addleft_1->_Parent = _Left_1;
+        }
+        _Addleft_1->_Parent->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Parent_2 = _Addleft_1->_Parent->_Parent;
+        _Left = _Parent_2->_Right;
+        _Parent_2->_Right = _Left->_Left;
+        if ( !_Left->_Left->_Isnil )
+          _Left->_Left->_Parent = _Parent_2;
+        _Left->_Parent = _Parent_2->_Parent;
+        if ( _Parent_2 == this->_Myhead->_Parent )
+        {
+          this->_Myhead->_Parent = _Left;
+        }
+        else
+        {
+          _Parent_5 = _Parent_2->_Parent;
+          if ( _Parent_2 == _Parent_5->_Left )
+            _Parent_5->_Left = _Left;
+          else
+            _Parent_5->_Right = _Left;
+        }
+        _Left->_Left = _Parent_2;
+        goto LABEL_52;
+      }
+      Parent->_Color = 1;
+      Left->_Color = 1;
+      _Addleft_1->_Parent->_Parent->_Color = 0;
+      _Addleft_1 = _Addleft_1->_Parent->_Parent;
+    }
+  }
+  _Myhead = this->_Myhead;
+  result->_Ptr = _Addleft_0;
+  _Parent_6 = _Myhead->_Parent;
+  v27 = result;
+  _Parent_6->_Color = 1;
+  return v27;
+}
+
+// --- End Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@1@Z (0x1504BD810) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@@Z (0x1504BDAD0) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *this,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >,bool> *result,
+        bool _Leftish,
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // r11
+  char *m_str; // rax
+  char *v11; // r8
+  int v12; // ecx
+  int v13; // edx
+  bool _Addleft; // r8
+  char *m_str_1; // rax
+  int v16; // ecx
+  int v17; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Right; // rbx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >,bool> *v20; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Parent; // rax
+  char *m_str_2; // rax
+  char *v23; // r9
+  int v24; // ecx
+  int v25; // edx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > v26; // [rsp+78h] [rbp-30h] BYREF
+  __int64 v27; // [rsp+80h] [rbp-28h]
+  std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *p_Myval; // [rsp+88h] [rbp-20h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > resulta; // [rsp+90h] [rbp-18h] BYREF
+  unsigned __int64 v30; // [rsp+98h] [rbp-10h]
+
+  v27 = -2LL;
+  try
+  {
+    Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)this->_Myhead;
+    Parent = this->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)Parent;
+      if ( _Leftish )
+      {
+        m_str = Parent->_Myval.first.m_str;
+        v11 = (char *)(_Val->first.m_str - m_str);
+        do
+        {
+          v12 = (unsigned __int8)v11[(_QWORD)m_str];
+          v13 = (unsigned __int8)*m_str - v12;
+          if ( v13 )
+            break;
+          ++m_str;
+        }
+        while ( v12 );
+        _Addleft = v13 >= 0;
+      }
+      else
+      {
+        m_str_1 = _Val->first.m_str;
+        do
+        {
+          v16 = (unsigned __int8)m_str_1[(unsigned __int64)(Parent->_Myval.first.m_str - _Val->first.m_str)];
+          v17 = (unsigned __int8)*m_str_1 - v16;
+          if ( v17 )
+            break;
+          ++m_str_1;
+        }
+        while ( v16 );
+        _Addleft = v17 < 0;
+      }
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)this->_Myhead->_Left )
+      {
+        result->first._Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>((std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this, &resulta, 1, Myhead, _Val, _Newnode)->_Ptr;
+        result->second = 1;
+        return result;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = Right->_Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = Right->_Parent;
+      }
+      else
+      {
+        for ( Right = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)Myhead->_Left;
+              !Right->_Right->_Isnil;
+              Right = Right->_Right )
+        {
+          ;
+        }
+      }
+    }
+    m_str_2 = Right->_Myval.first.m_str;
+    v23 = (char *)(_Val->first.m_str - m_str_2);
+    do
+    {
+      v24 = (unsigned __int8)v23[(_QWORD)m_str_2];
+      v25 = (unsigned __int8)*m_str_2 - v24;
+      if ( v25 )
+        break;
+      ++m_str_2;
+    }
+    while ( v24 );
+    if ( v25 >= 0 )
+    {
+      p_Myval = &_Newnode->_Myval;
+      std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>(&_Newnode->_Myval);
+      if ( _Newnode )
+      {
+        v30 = _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v30);
+      }
+      result->first._Ptr = Right;
+      result->second = 0;
+      v20 = result;
+    }
+    else
+    {
+      result->first._Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>((std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *)this, &v26, _Addleft, Myhead, _Val, _Newnode)->_Ptr;
+      result->second = 1;
+      v20 = result;
+    }
+  }
+  catch ( ... )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Destroy_if_not_nil(
+      this,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)_Newnode);
+    throw;
+  }
+  return v20;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@PEAX@1@@Z (0x1504BDAD0) ---
+
+// --- Function: ?resize_raw@?$Store@PEBDH@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@QEAAXH_N@Z (0x1504EBCF0) ---
+void __fastcall NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::resize_raw(
+        NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<char const *,int> *allocator,
+        int new_size,
+        bool allow_slack)
+{
+  CTexture **m_aElems; // r11
+  int v5; // r9d
+  int v7; // eax
+  unsigned __int64 new_size_1; // rdx
+  int v9; // eax
+  const char **m_aElems_1; // rax
+  const char **m_aElems_2; // r8
+  __int64 new_size_2; // r9
+  int new_cap; // [rsp+50h] [rbp+18h] BYREF
+
+  m_aElems = (CTexture **)allocator->m_aElems;
+  v5 = *((_DWORD *)allocator->m_aElems - 1);
+  v7 = v5;
+  if ( v5 >= 0 )
+    new_size_1 = (unsigned __int64)(v7 * 8) >> 3;
+  else
+    LODWORD(new_size_1) = m_aElems[v7];
+  v9 = 0;
+  if ( allow_slack )
+    LOBYTE(v9) = new_size > (int)new_size_1;
+  else
+    LOBYTE(v9) = new_size != (_DWORD)new_size_1;
+  if ( v9 )
+  {
+    if ( !v5 )
+      m_aElems = 0LL;
+    new_cap = new_size;
+    m_aElems_1 = (const char **)NAlloc::reallocate<NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<ICryEventDispatcher *,int>::Header,4>,ICryEventDispatcher *,int>(
+                                  (NAlloc::AllocPrefix<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<CTexture *,int>::Header,4> *)allocator,
+                                  m_aElems,
+                                  v5 & 0x7FFFFFFF,
+                                  &new_cap,
+                                  8uLL,
+                                  allow_slack);
+    allocator->m_aElems = m_aElems_1;
+    if ( !m_aElems_1 )
+    {
+      if ( (`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::`local static guard' & 1) != 0 )
+      {
+        allocator->m_aElems = (const char **)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::s_EmptyElems;
+      }
+      else
+      {
+        `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::`local static guard' |= 1u;
+        `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::s_EmptyElems = (unsigned __int64)&unk_15380515B & 0xFFFFFFFFFFFFFFF8uLL;
+        allocator->m_aElems = (const char **)((unsigned __int64)&unk_15380515B & 0xFFFFFFFFFFFFFFF8uLL);
+      }
+      return;
+    }
+    LODWORD(new_size_1) = new_cap;
+  }
+  m_aElems_2 = allocator->m_aElems;
+  *((_DWORD *)allocator->m_aElems - 1) = new_size;
+  new_size_2 = new_size;
+  if ( 8LL * (int)new_size_1 >= (unsigned __int64)(new_size_2 * 8 + 4) )
+  {
+    *((_DWORD *)m_aElems_2 - 1) = new_size | 0x80000000;
+    LODWORD(m_aElems_2[new_size_2]) = new_size_1;
+  }
+}
+
+// --- End Function: ?resize_raw@?$Store@PEBDH@?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@QEAAXH_N@Z (0x1504EBCF0) ---
+
+// --- Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@V?$allocator@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@PEAX@2@XZ (0x15052CAC0) ---
+std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *__fastcall std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const,std::function<void (google::protobuf::Message const &)>>>>::_Buyheadnode(
+        std::_Tree_alloc<0,std::_Tree_base_types<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>> > *this,
+        std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *_Count)
+{
+  std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *_Left; // rax
+
+  _Left = (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)std::_Allocate<SelectionTreeNode>(
+                                                                                          1uLL,
+                                                                                          _Count);
+  try
+  {
+    if ( _Left )
+      _Left->_Left = _Left;
+    if ( _Left != (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)-8LL )
+      _Left->_Parent = _Left;
+    if ( _Left != (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)-16LL )
+      _Left->_Right = _Left;
+  }
+  catch ( ... )
+  {
+    if ( _Left )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Left, 0LL));
+    throw;
+  }
+  *(_WORD *)&_Left->_Color = 257;
+  return _Left;
+}
+
+// --- End Function: ?_Buyheadnode@?$_Tree_alloc@$0A@U?$_Tree_base_types@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@V?$allocator@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@@2@@std@@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBHV?$function@$$A6AXAEBVMessage@protobuf@google@@@Z@std@@@std@@PEAX@2@XZ (0x15052CAC0) ---
+
+// --- Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@V?$allocator@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@PEAX@2@XZ (0x15052D760) ---
+std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *__fastcall std::_Tree_buy<std::pair<unsigned int const,CommunicationHandler::PlayingAnimation>>::_Buynode0(
+        std::_Tree_buy<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>> *this,
+        std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *_Count)
+{
+  std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *result; // rax
+
+  result = (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)std::_Allocate<SelectionTreeNode>(
+                                                                                           1uLL,
+                                                                                           _Count);
+  try
+  {
+    if ( result )
+      result->_Left = this->_Myhead;
+    if ( result != (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)-8LL )
+      result->_Parent = this->_Myhead;
+    if ( result != (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)-16LL )
+      result->_Right = this->_Myhead;
+  }
+  catch ( ... )
+  {
+    if ( result )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(result, 0LL));
+    throw;
+  }
+  return result;
+}
+
+// --- End Function: ?_Buynode0@?$_Tree_buy@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@V?$allocator@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBIUPlayingAnimation@CommunicationHandler@@@std@@PEAX@2@XZ (0x15052D760) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@AEBV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@I@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@I@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@I@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@AEBV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x15053BB00) ---
+std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,unsigned int>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> const &>,std::tuple<>>(
+        std::_Tree_buy<std::pair<CryStringT<char> const ,int>> *this,
+        const std::piecewise_construct_t *<_Val_0>,
+        std::tuple<CryStringT<char> const &> *<_Val_1>,
+        std::tuple<> *<_Val_2>)
+{
+  std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *_Pnode_1; // rax
+  std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *_Pnode_2; // r9
+  std::pair<EntityId const ,EntityId> *p_Myval; // rdx
+  char *m_str; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *_Pnode; // [rsp+20h] [rbp-38h]
+
+  _Pnode_1 = std::_Tree_buy<std::pair<CryStringT<char> const,IGameObjectExtensionCreatorBase *>>::_Buynode0((std::_Tree_buy<std::pair<EntityId const ,EntityId>> *)this);
+  _Pnode_2 = _Pnode_1;
+  _Pnode = (std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *)_Pnode_1;
+  *(_WORD *)&_Pnode_1->_Color = 0;
+  try
+  {
+    p_Myval = &_Pnode_1->_Myval;
+    if ( _Pnode_1 != (std::_Tree_node<std::pair<EntityId const ,EntityId>,void *> *)-32LL )
+    {
+      m_str = <_Val_1>->_Myfirst._Val->m_str;
+      if ( *((int *)m_str - 3) < 0 )
+      {
+        p_Myval->first.m_value = (unsigned __int64)&Count;
+      }
+      else
+      {
+        p_Myval->first.m_value = (unsigned __int64)m_str;
+        ++*((_DWORD *)m_str - 3);
+      }
+      LODWORD(p_Myval->second.m_value) = 0;
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Pnode, 0LL));
+    throw;
+  }
+  return _Pnode_2;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@AEBV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@I@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@I@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@I@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@AEBV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x15053BB00) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IPEAVCFlowGraphModule@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBIPEAVCFlowGraphModule@@@1@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAX@1@@Z (0x1505A0C60) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<unsigned int,CFlowGraphModule *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CFlowGraphModule *>>,0>>::_Insert_nohint<std::pair<unsigned int const,CFlowGraphModule *> &,std::_Tree_node<std::pair<unsigned int const,CFlowGraphModule *>,void *> *>(
+        std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > *this,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,bool> *p_resulta,
+        bool _Leftish,
+        std::pair<unsigned int const ,IDataCoreRecordWrapper *> *_Val,
+        std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Myhead; // r9
+  bool _Addleft; // r8
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Right; // rbx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,bool> *p_resulta_1; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent; // rax
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-78h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > v15; // [rsp+68h] [rbp-30h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac; // [rsp+70h] [rbp-28h]
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac_1; // [rsp+78h] [rbp-20h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > result; // [rsp+80h] [rbp-18h] BYREF
+  unsigned __int64 v19; // [rsp+88h] [rbp-10h]
+
+  try
+  {
+    Myhead = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)this->_Myhead;
+    Parent = this->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)Parent;
+      if ( _Leftish )
+        _Addleft = Parent->_Myval.first >= _Val->first;
+      else
+        _Addleft = _Val->first < Parent->_Myval.first;
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *)Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)this->_Myhead->_Left )
+      {
+        TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **)std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>((std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this, &result, 1, Myhead, _Node, _Newnode);
+        p_resulta->first._Ptr = *TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac;
+        p_resulta->second = 1;
+        return p_resulta;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *)Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = Right->_Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = Right->_Parent;
+      }
+      else
+      {
+        for ( Right = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *)Myhead->_Left;
+              !Right->_Right->_Isnil;
+              Right = Right->_Right )
+        {
+          ;
+        }
+      }
+    }
+    if ( Right->_Myval.first >= _Val->first )
+    {
+      if ( _Newnode )
+      {
+        v19 = _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v19);
+      }
+      p_resulta->first._Ptr = Right;
+      p_resulta->second = 0;
+      p_resulta_1 = p_resulta;
+    }
+    else
+    {
+      TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac_1 = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **)std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>((std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this, &v15, _Addleft, Myhead, _Node, _Newnode);
+      p_resulta->first._Ptr = *TrackGroup@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCTargetTrac_1;
+      p_resulta->second = 1;
+      p_resulta_1 = p_resulta;
+    }
+  }
+  catch ( ... )
+  {
+    if ( _Newnode )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL));
+    throw;
+  }
+  return p_resulta_1;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IPEAVCFlowGraphModule@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@@3@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBIPEAVCFlowGraphModule@@@1@PEAU?$_Tree_node@U?$pair@$$CBIPEAVCFlowGraphModule@@@std@@PEAX@1@@Z (0x1505A0C60) ---
+
+// --- Function: ?MakeGamePath@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x1505A0EB0) ---
+CryStringT<char> *__fastcall PathUtil::MakeGamePath(CryStringT<char> *result, const CryStringT<char> *path)
+{
+  const char *m_str_5; // rax
+  char *m_str; // rbx
+  char *m_str_1; // rsi
+  unsigned __int64 nLen; // rdi
+  const CryStringT<char> *strPath; // rax
+  int v8; // eax
+  char *v9; // rcx
+  int v10; // eax
+  int v11; // eax
+  int *v12; // rcx
+  int v13; // eax
+  char *m_str_2; // rdi
+  char *m_str_3; // rbx
+  size_t MaxCount; // r8
+  unsigned __int64 v17; // rdx
+  unsigned __int64 v18; // rcx
+  unsigned __int64 nLen_1; // rsi
+  char *m_str_4; // r15
+  int v21; // eax
+  int *v22; // rcx
+  int v23; // eax
+  int v24; // eax
+  CryStringT<char>::StrHeader *v25; // rcx
+  int nRefCount_1; // eax
+  int v27; // ebp
+  int *v28; // rcx
+  int v29; // eax
+  int v30; // eax
+  int nRefCount; // eax
+  CryStringT<char> resulta; // [rsp+20h] [rbp-38h] BYREF
+  CryStringT<char> rootDataFolder; // [rsp+28h] [rbp-30h] BYREF
+  CryStringT<char> path_; // [rsp+70h] [rbp+18h] BYREF
+  CryStringT<char> fullpath; // [rsp+78h] [rbp+20h] BYREF
+
+  PathUtil::ToUnixPath(&fullpath, path);
+  m_str_5 = gEnv.pCryPak->GetGameFolder(gEnv.pCryPak);
+  m_str = (char *)&Count;
+  m_str_1 = (char *)m_str_5;
+  path_.m_str = (char *)&Count;
+  if ( m_str_5 )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( m_str_5[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(&path_, nLen);
+      m_str = path_.m_str;
+      if ( path_.m_str != m_str_1 )
+        memcpy_0(path_.m_str, m_str_1, nLen);
+    }
+  }
+  strPath = PathUtil::AddSlash(&resulta, &path_);
+  PathUtil::ToUnixPath(&rootDataFolder, strPath);
+  v8 = *((_DWORD *)resulta.m_str - 3);
+  v9 = resulta.m_str - 12;
+  if ( v8 >= 0 )
+  {
+    v10 = v8 - 1;
+    *(_DWORD *)v9 = v10;
+    if ( v10 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v9 + 2);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v9, 0LL));
+      m_str = path_.m_str;
+    }
+  }
+  v11 = *((_DWORD *)m_str - 3);
+  v12 = (int *)(m_str - 12);
+  if ( v11 >= 0 )
+  {
+    v13 = v11 - 1;
+    *v12 = v13;
+    if ( v13 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v12, 0LL));
+    }
+  }
+  m_str_2 = rootDataFolder.m_str;
+  m_str_3 = fullpath.m_str;
+  MaxCount = *((int *)rootDataFolder.m_str - 2);
+  if ( *((int *)fullpath.m_str - 2) > MaxCount && !strnicmp(fullpath.m_str, rootDataFolder.m_str, MaxCount) )
+  {
+    v17 = *((int *)m_str_3 - 2);
+    v18 = *((int *)m_str_2 - 2);
+    nLen_1 = v17 - v18;
+    if ( v18 < v17 )
+    {
+      if ( nLen_1 == -1LL )
+        nLen_1 = v17 - v18;
+      if ( v18 + nLen_1 > v17 )
+        nLen_1 = v17 - v18;
+      m_str_4 = &m_str_3[v18];
+      result->m_str = (char *)&Count;
+      if ( nLen_1 )
+      {
+        CryStringT<char>::_AllocData(result, nLen_1);
+        if ( result->m_str != m_str_4 )
+          memcpy_0(result->m_str, m_str_4, nLen_1);
+      }
+    }
+    else
+    {
+      result->m_str = (char *)&Count;
+    }
+    v21 = *((_DWORD *)m_str_2 - 3);
+    v22 = (int *)(m_str_2 - 12);
+    if ( v21 >= 0 )
+    {
+      v23 = v21 - 1;
+      *v22 = v23;
+      if ( v23 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v22, 0LL));
+        m_str_3 = fullpath.m_str;
+      }
+    }
+    v24 = *((_DWORD *)m_str_3 - 3);
+    v25 = (CryStringT<char>::StrHeader *)(m_str_3 - 12);
+    if ( v24 >= 0 )
+    {
+      nRefCount_1 = v24 - 1;
+      v25->nRefCount = nRefCount_1;
+      if ( nRefCount_1 <= 0 )
+      {
+        v27 = -13 - *((_DWORD *)m_str_3 - 1);
+LABEL_36:
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v27;
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v25, 0LL));
+      }
+    }
+  }
+  else
+  {
+    v28 = (int *)(m_str_2 - 12);
+    result->m_str = m_str_3;
+    v29 = *((_DWORD *)m_str_2 - 3);
+    if ( v29 >= 0 )
+    {
+      v30 = v29 - 1;
+      *v28 = v30;
+      if ( v30 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v28, 0LL));
+      }
+    }
+    nRefCount = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+    if ( `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount >= 0 )
+    {
+      --`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+      if ( nRefCount - 1 <= 0 )
+      {
+        v27 = -13 - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+        v25 = &`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer;
+        goto LABEL_36;
+      }
+    }
+  }
+  return result;
+}
+
+// --- End Function: ?MakeGamePath@PathUtil@@YA?AV?$CryStringT@D@@AEBV2@@Z (0x1505A0EB0) ---
+
+// --- Function: ?_Destroy@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@IEAAXPEAUUnresolvedRef@CDataCore@@0@Z (0x1505CD090) ---
+void __fastcall std::vector<CDataCore::UnresolvedRef>::_Destroy(
+        std::vector<CVisRegTest::SCmd> *this,
+        CVisRegTest::SCmd *_First,
+        CVisRegTest::SCmd *_Last)
+{
+  CVisRegTest::SCmd *_First_1; // rbx
+  char *m_str; // rcx
+  int v6; // eax
+  int *v7; // rcx
+  int v8; // eax
+
+  if ( _First != _Last )
+  {
+    _First_1 = _First;
+    do
+    {
+      m_str = _First_1->args.m_str;
+      v6 = *((_DWORD *)m_str - 3);
+      v7 = (int *)(m_str - 12);
+      if ( v6 >= 0 )
+      {
+        v8 = v6 - 1;
+        *v7 = v8;
+        if ( v8 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+        }
+      }
+      ++_First_1;
+    }
+    while ( _First_1 != _Last );
+  }
+}
+
+// --- End Function: ?_Destroy@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@IEAAXPEAUUnresolvedRef@CDataCore@@0@Z (0x1505CD090) ---
+
+// --- Function: ??A?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@QEAAAEAHAEBV?$CryStringT@D@@@Z (0x1506BEF00) ---
+unsigned __int16 *__fastcall std::map<CryStringT<char>,int>::operator[](
+        std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > *this,
+        const CryStringT<char> *_Keyval)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *Myhead; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *_Myhead; // rbx
+  char *m_str; // r10
+  char *m_str_1; // rax
+  signed __int64 v9; // r9
+  int v10; // ecx
+  int v11; // edx
+  char *m_str_2; // rax
+  int v13; // ecx
+  int v14; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *_Newnode; // rax
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > > __Val_2__; // [rsp+40h] [rbp+8h] BYREF
+  std::tuple<CryStringT<char> const &> __Val_1__; // [rsp+50h] [rbp+18h] BYREF
+
+  Myhead = this->_Myhead;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    m_str = _Keyval->m_str;
+    do
+    {
+      m_str_1 = Parent->_Myval.first.m_str;
+      v9 = m_str - m_str_1;
+      do
+      {
+        v10 = (unsigned __int8)m_str_1[v9];
+        v11 = (unsigned __int8)*m_str_1 - v10;
+        if ( v11 )
+          break;
+        ++m_str_1;
+      }
+      while ( v10 );
+      if ( v11 >= 0 )
+      {
+        _Myhead = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead != Myhead )
+  {
+    m_str_2 = _Keyval->m_str;
+    do
+    {
+      v13 = (unsigned __int8)m_str_2[(unsigned __int64)(_Myhead->_Myval.first.m_str - _Keyval->m_str)];
+      v14 = (unsigned __int8)*m_str_2 - v13;
+      if ( v14 )
+        break;
+      ++m_str_2;
+    }
+    while ( v13 );
+    if ( v14 >= 0 )
+      return (unsigned __int16 *)&_Myhead->_Myval.second;
+  }
+  __Val_1__._Myfirst._Val = _Keyval;
+  _Newnode = (std::_Tree_node<std::pair<CryStringT<char> const ,unsigned short>,void *> *)std::_Tree_buy<std::pair<CryStringT<char> const,unsigned int>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> const &>,std::tuple<>>(
+                                                                                            this,
+                                                                                            &piecewise_construct_978,
+                                                                                            &__Val_1__,
+                                                                                            (std::tuple<> *)&__Val_2__);
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,int> &,std::_Tree_node<std::pair<CryStringT<char> const,int>,void *> *>(
+    (std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned short> >,0> > *)this,
+    &__Val_2__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned short> > > >)_Myhead,
+    &_Newnode->_Myval,
+    _Newnode);
+  return &__Val_2__._Ptr->_Myval.second;
+}
+
+// --- End Function: ??A?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@QEAAAEAHAEBV?$CryStringT@D@@@Z (0x1506BEF00) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBIVEntityId@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IVEntityId@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIVEntityId@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBIVEntityId@@@1@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@1@@Z (0x1506E37B0) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *__fastcall std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+        std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > _Where,
+        std::pair<unsigned int const ,IDataCoreRecordWrapper *> *_Val,
+        std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Right; // r9
+  bool v10; // cf
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Left; // r9
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Parent; // rdx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *i; // r9
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent; // rax
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-68h]
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,bool> resulta; // [rsp+70h] [rbp-18h] BYREF
+
+  if ( !this->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+      (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+      result,
+      1,
+      (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)this->_Myhead,
+      (std::pair<int const ,SubactivityTaskData *> *)_Node,
+      _Newnode);
+    return result;
+  }
+  Myhead = this->_Myhead;
+  if ( _Where._Ptr == this->_Myhead->_Left )
+  {
+    if ( _Val->first < _Where._Ptr->_Myval.first )
+    {
+      std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+        result,
+        1,
+        (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)_Where._Ptr,
+        (std::pair<int const ,SubactivityTaskData *> *)_Node,
+        _Newnode);
+      return result;
+    }
+    goto LABEL_42;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)Myhead->_Right;
+    if ( Right->_Myval.first < _Val->first )
+    {
+      std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+        (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+        result,
+        0,
+        Right,
+        (std::pair<int const ,SubactivityTaskData *> *)_Node,
+        _Newnode);
+      return result;
+    }
+    goto LABEL_42;
+  }
+  v10 = _Where._Ptr->_Myval.first < _Val->first;
+  if ( _Where._Ptr->_Myval.first > _Val->first )
+  {
+    Ptr = _Where._Ptr;
+    if ( _Where._Ptr->_Isnil )
+    {
+      Left = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)_Where._Ptr->_Right;
+    }
+    else
+    {
+      Left = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)_Where._Ptr->_Left;
+      if ( _Where._Ptr->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          Parent = Ptr->_Parent;
+          if ( Parent->_Isnil || Ptr != Parent->_Left )
+            break;
+          Ptr = Ptr->_Parent;
+        }
+        Left = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)Ptr;
+        if ( !Ptr->_Isnil )
+          Left = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)Ptr->_Parent;
+      }
+      else
+      {
+        while ( !Left->_Right->_Isnil )
+          Left = Left->_Right;
+      }
+    }
+    if ( Left->_Myval.first < _Val->first )
+    {
+      if ( Left->_Right->_Isnil )
+        std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+          (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+          result,
+          0,
+          Left,
+          (std::pair<int const ,SubactivityTaskData *> *)_Node,
+          _Newnode);
+      else
+        std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+          (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+          result,
+          1,
+          (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)_Where._Ptr,
+          (std::pair<int const ,SubactivityTaskData *> *)_Node,
+          _Newnode);
+      return result;
+    }
+    v10 = _Where._Ptr->_Myval.first < _Val->first;
+  }
+  if ( !v10 )
+    goto LABEL_42;
+  i = _Where._Ptr;
+  if ( !_Where._Ptr->_Isnil )
+  {
+    if ( _Where._Ptr->_Right->_Isnil )
+    {
+      while ( 1 )
+      {
+        _Parent = i->_Parent;
+        if ( _Parent->_Isnil || i != _Parent->_Right )
+          break;
+        i = i->_Parent;
+      }
+      i = i->_Parent;
+    }
+    else
+    {
+      for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+        ;
+    }
+  }
+  if ( i != this->_Myhead && _Val->first >= i->_Myval.first )
+  {
+LABEL_42:
+    result->_Ptr = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)std::_Tree<std::_Tmap_traits<unsigned int,CFlowGraphModule *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CFlowGraphModule *>>,0>>::_Insert_nohint<std::pair<unsigned int const,CFlowGraphModule *> &,std::_Tree_node<std::pair<unsigned int const,CFlowGraphModule *>,void *> *>(
+                                                                                            this,
+                                                                                            &resulta,
+                                                                                            0,
+                                                                                            _Val,
+                                                                                            _Newnode)->first._Ptr;
+    return result;
+  }
+  if ( _Where._Ptr->_Right->_Isnil )
+    std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+      (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+      result,
+      0,
+      (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)_Where._Ptr,
+      (std::pair<int const ,SubactivityTaskData *> *)_Node,
+      _Newnode);
+  else
+    std::_Tree<std::_Tmap_traits<unsigned int,CTargetTrackGroup *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,CTargetTrackGroup *>>,0>>::_Insert_at<std::pair<unsigned int const,CTargetTrackGroup *> &,std::_Tree_node<std::pair<unsigned int const,CTargetTrackGroup *>,void *> *>(
+      (std::_Tree<std::_Tmap_traits<int,SubactivityTaskData *,std::less<int>,std::allocator<std::pair<int const ,SubactivityTaskData *> >,0> > *)this,
+      result,
+      1,
+      (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)i,
+      (std::pair<int const ,SubactivityTaskData *> *)_Node,
+      _Newnode);
+  return result;
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBIVEntityId@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IVEntityId@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIVEntityId@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBIVEntityId@@@1@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@1@@Z (0x1506E37B0) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@U?$CommHandle@$02@@VEntityId@@U?$less@U?$CommHandle@$02@@@std@@V?$allocator@U?$pair@$$CBU?$CommHandle@$02@@VEntityId@@@std@@@4@$0A@@std@@@std@@QEAA_KAEBU?$CommHandle@$02@@@Z (0x150799EA0) ---
+__int64 __fastcall std::_Tree<std::_Tmap_traits<CommHandle<3>,EntityId,std::less<CommHandle<3>>,std::allocator<std::pair<CommHandle<3> const,EntityId>>,0>>::erase(
+        std::_Tree<std::_Tmap_traits<KytEntityId,UsableUserAnimation::SUsableAnimState,std::less<KytEntityId>,std::allocator<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState> >,0> > *this,
+        const KytEntityId *_Keyval)
+{
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *Myhead; // rdi
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *Parent; // rax
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *_Myhead; // r9
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *Parent_1; // r8
+  unsigned int saltedId; // r10d
+  unsigned int saltedId_1; // edx
+  __int64 v10; // rbx
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *Myhead_1; // rax
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *Right; // rcx
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *j; // rcx
+  std::_Tree_node<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState>,void *> *i; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > result; // [rsp+30h] [rbp+8h] BYREF
+
+  Myhead = this->_Myhead;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = this->_Myhead;
+  Parent_1 = Parent;
+  if ( !Parent->_Isnil )
+  {
+    saltedId = _Keyval->id.saltedId;
+    do
+    {
+      saltedId_1 = Parent_1->_Myval.first.id.saltedId;
+      if ( saltedId_1 >= saltedId )
+      {
+        if ( _Myhead->_Isnil && saltedId < saltedId_1 )
+          _Myhead = Parent_1;
+        Myhead = Parent_1;
+        Parent_1 = Parent_1->_Left;
+      }
+      else
+      {
+        Parent_1 = Parent_1->_Right;
+      }
+    }
+    while ( !Parent_1->_Isnil );
+  }
+  if ( !_Myhead->_Isnil )
+    Parent = _Myhead->_Left;
+  while ( !Parent->_Isnil )
+  {
+    if ( _Keyval->id.saltedId >= Parent->_Myval.first.id.saltedId )
+    {
+      Parent = Parent->_Right;
+    }
+    else
+    {
+      _Myhead = Parent;
+      Parent = Parent->_Left;
+    }
+  }
+  v10 = 0LL;
+  Myhead_1 = Myhead;
+  while ( Myhead_1 != _Myhead )
+  {
+    ++v10;
+    if ( !Myhead_1->_Isnil )
+    {
+      Right = Myhead_1->_Right;
+      if ( Right->_Isnil )
+      {
+        for ( i = Myhead_1->_Parent; !i->_Isnil; i = i->_Parent )
+        {
+          if ( Myhead_1 != i->_Right )
+            break;
+          Myhead_1 = i;
+        }
+        Myhead_1 = i;
+      }
+      else
+      {
+        Myhead_1 = Myhead_1->_Right;
+        for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+          Myhead_1 = j;
+      }
+    }
+  }
+  std::_Tree<std::_Tmap_traits<EntityId,int,std::less<EntityId>,std::allocator<std::pair<EntityId const,int>>,1>>::erase(
+    (std::_Tree<std::_Tmap_traits<StringHash,SubsumptionActivity *,std::less<StringHash>,std::allocator<std::pair<StringHash const ,SubsumptionActivity *> >,0> > *)this,
+    &result,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > >)Myhead,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > >)_Myhead);
+  return v10;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@U?$CommHandle@$02@@VEntityId@@U?$less@U?$CommHandle@$02@@@std@@V?$allocator@U?$pair@$$CBU?$CommHandle@$02@@VEntityId@@@std@@@4@$0A@@std@@@std@@QEAA_KAEBU?$CommHandle@$02@@@Z (0x150799EA0) ---
+
+// --- Function: ?erase@?$CryStringT@D@@QEAAAEAV1@_K0@Z (0x1509422D0) ---
+CryStringT<char> *__fastcall CryStringT<char>::erase(
+        CryStringT<char> *this,
+        unsigned __int64 nIndex,
+        unsigned __int64 nCount)
+{
+  unsigned __int64 nCount_1; // rdi
+  unsigned __int64 nIndex_1; // rcx
+
+  nCount_1 = nCount;
+  nIndex_1 = *((int *)this->m_str - 2);
+  if ( nCount > nIndex_1 - nIndex )
+    nCount_1 = nIndex_1 - nIndex;
+  if ( nCount_1 && nIndex < nIndex_1 )
+  {
+    CryStringT<char>::_MakeUnique(this);
+    memmove(&this->m_str[nIndex], &this->m_str[nIndex + nCount_1], *((int *)this->m_str - 2) - nIndex - nCount_1 + 1);
+    *((_DWORD *)this->m_str - 2) -= nCount_1;
+  }
+  return this;
+}
+
+// --- End Function: ?erase@?$CryStringT@D@@QEAAAEAV1@_K0@Z (0x1509422D0) ---
+
+// --- Function: CrySock::TranslateOSError (0x151028330) ---
+__int64 __fastcall CrySock::TranslateOSError(int oserror)
+{
+  __int64 result; // rax
+
+  if ( oserror > 10004 )
+  {
+    switch ( oserror )
+    {
+      case 10009:
+        result = 4294967290LL;
+        break;
+      case 10013:
+        result = 0xFFFFFFFFLL;
+        break;
+      case 10014:
+        result = 4294967286LL;
+        break;
+      case 10022:
+        result = 4294967282LL;
+        break;
+      case 10024:
+        result = 4294967280LL;
+        break;
+      case 10035:
+        result = 4294967268LL;
+        break;
+      case 10036:
+        result = 4294967284LL;
+        break;
+      case 10037:
+        result = 4294967291LL;
+        break;
+      case 10040:
+        result = 4294967279LL;
+        break;
+      case 10042:
+        result = 4294967276LL;
+        break;
+      case 10043:
+      case 10047:
+        result = 4294967292LL;
+        break;
+      case 10045:
+        result = 4294967273LL;
+        break;
+      case 10048:
+        result = 4294967294LL;
+        break;
+      case 10049:
+        result = 4294967293LL;
+        break;
+      case 10051:
+        result = 4294967278LL;
+        break;
+      case 10053:
+        result = 4294967289LL;
+        break;
+      case 10054:
+        result = 4294967287LL;
+        break;
+      case 10055:
+        result = 4294967277LL;
+        break;
+      case 10056:
+        result = 4294967281LL;
+        break;
+      case 10057:
+        result = 4294967275LL;
+        break;
+      case 10059:
+        result = 4294967269LL;
+        break;
+      case 10060:
+        result = 4294967270LL;
+        break;
+      case 10061:
+        result = 4294967288LL;
+        break;
+      case 10064:
+        result = 4294967285LL;
+        break;
+      case 10093:
+        result = 4294967274LL;
+        break;
+      default:
+        goto LABEL_32;
+    }
+  }
+  else if ( oserror == 10004 )
+  {
+    return 4294967283LL;
+  }
+  else if ( oserror )
+  {
+LABEL_32:
+    CryLog("CrySock could not translate OS error code %x, treating as miscellaneous", oserror);
+    return 4294966296LL;
+  }
+  else
+  {
+    return 0LL;
+  }
+  return result;
+}
+
+// --- End Function: CrySock::TranslateOSError (0x151028330) ---
+
+// --- Function: CrySock::closesocket (0x1512EF780) ---
+int __fastcall CrySock::closesocket(int s)
+{
+  int result; // eax
+  int Error; // eax
+
+  result = closesocket(s);
+  if ( result == -1 )
+  {
+    Error = WSAGetLastError();
+    return CrySock::TranslateOSError(Error);
+  }
+  return result;
+}
+
+// --- End Function: CrySock::closesocket (0x1512EF780) ---
+
+// --- Function: ??1IDataCore@@UEAA@XZ (0x15131B200) ---
+void __fastcall IDataCore::~IDataCore(IDataCore *this)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Myhead; // rcx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > result; // [rsp+30h] [rbp+8h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > > v5; // [rsp+38h] [rbp+10h] BYREF
+
+  this->__vftable = (IDataCore_vtbl *)&IDataCore::`vftable';
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::erase(
+    &this->m_Enums,
+    &result,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)this->m_Enums._Myhead->_Left,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)this->m_Enums._Myhead);
+  Myhead = this->m_Enums._Myhead;
+  if ( Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(Myhead, 0LL));
+  std::list<CUnitAction *>::~list<CUnitAction *>((std::list<CHTTPDownloader *> *)&this->m_pObservers);
+  std::_Tree<std::_Tmap_traits<EntityId,int,std::less<EntityId>,std::allocator<std::pair<EntityId const,int>>,1>>::erase(
+    (std::_Tree<std::_Tmap_traits<StringHash,SubsumptionActivity *,std::less<StringHash>,std::allocator<std::pair<StringHash const ,SubsumptionActivity *> >,0> > *)&this->m_Records,
+    &v5,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > >)this->m_Records._Myhead->_Left,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<StringHash const ,SubsumptionActivity *> > > >)this->m_Records._Myhead);
+  _Myhead = this->m_Records._Myhead;
+  if ( _Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Myhead, 0LL));
+}
+
+// --- End Function: ??1IDataCore@@UEAA@XZ (0x15131B200) ---
+
+// --- Function: ?GetRecord@IDataCore@@EEAAPEBUIDataCoreRecordWrapper@@I@Z (0x15131B290) ---
+const IDataCoreRecordWrapper *__fastcall IDataCore::GetRecord(IDataCore *this, unsigned int hash)
+{
+  unsigned int _Keyval; // [rsp+38h] [rbp+10h] BYREF
+
+  _Keyval = hash;
+  return *std::map<unsigned int,IDataCoreRecordWrapper *>::operator[](
+            (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&this->m_Records,
+            (SubsumptionEvent *)&_Keyval);
+}
+
+// --- End Function: ?GetRecord@IDataCore@@EEAAPEBUIDataCoreRecordWrapper@@I@Z (0x15131B290) ---
+
+// --- Function: ??_GIDataCore@@UEAAPEAXI@Z (0x15131B2B0) ---
+IDataCore *__fastcall IDataCore::`scalar deleting destructor'(IDataCore *this, char a2)
+{
+  IDataCore::~IDataCore(this);
+  if ( (a2 & 1) != 0 && this )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(this, 0LL));
+  return this;
+}
+
+// --- End Function: ??_GIDataCore@@UEAAPEAXI@Z (0x15131B2B0) ---
+
+// --- Function: ??$GetValFromAttrib@_K@DataCoreHelper@@YA_KVXmlNodeRef@@V?$CryStringT@D@@@Z (0x15131B2F0) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<unsigned __int64>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  __int64 v5; // rdi
+  int v6; // edx
+  int *v7; // rcx
+  int v8; // edx
+  __int64 v10; // [rsp+30h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  v10 = 0LL;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, _QWORD, __int64 *, _QWORD))v3->DeleteThis + 25))(
+    v3,
+    *(_QWORD *)attr.m_str,
+    &v10,
+    0LL);
+  v5 = v10;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v6 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v7 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v6 >= 0 )
+  {
+    v8 = v6 - 1;
+    *v7 = v8;
+    if ( v8 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+    }
+  }
+  return v5;
+}
+
+// --- End Function: ??$GetValFromAttrib@_K@DataCoreHelper@@YA_KVXmlNodeRef@@V?$CryStringT@D@@@Z (0x15131B2F0) ---
+
+// --- Function: ??0DataCoreRecordWrapper@@QEAA@PEAUIDataCoreStructure@@V?$CryStringT@D@@1@Z (0x15131B390) ---
+void __fastcall DataCoreRecordWrapper::DataCoreRecordWrapper(
+        DataCoreRecordWrapper *this,
+        IDataCoreStructure *record,
+        CryStringT<char> uniqueHash,
+        CryStringT<char> name)
+{
+  char *m_str; // rax
+  char *m_str_1; // rax
+  int v7; // eax
+  int *v8; // rcx
+  int v9; // eax
+  int v10; // eax
+  int *v11; // rcx
+  int v12; // eax
+
+  this->m_pRecord = record;
+  this->__vftable = (DataCoreRecordWrapper_vtbl *)&DataCoreRecordWrapper::`vftable';
+  m_str = *(char **)uniqueHash.m_str;
+  if ( *(int *)(*(_QWORD *)uniqueHash.m_str - 12LL) < 0 )
+  {
+    this->m_UniqueHash.m_str = (char *)&Count;
+  }
+  else
+  {
+    this->m_UniqueHash.m_str = m_str;
+    ++*((_DWORD *)m_str - 3);
+  }
+  m_str_1 = *(char **)name.m_str;
+  if ( *(int *)(*(_QWORD *)name.m_str - 12LL) < 0 )
+  {
+    this->m_Name.m_str = (char *)&Count;
+  }
+  else
+  {
+    this->m_Name.m_str = m_str_1;
+    ++*((_DWORD *)m_str_1 - 3);
+  }
+  v7 = *(_DWORD *)(*(_QWORD *)uniqueHash.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)uniqueHash.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  v10 = *(_DWORD *)(*(_QWORD *)name.m_str - 12LL);
+  v11 = (int *)(*(_QWORD *)name.m_str - 12LL);
+  if ( v10 >= 0 )
+  {
+    v12 = v10 - 1;
+    *v11 = v12;
+    if ( v12 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v11[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v11, 0LL));
+    }
+  }
+}
+
+// --- End Function: ??0DataCoreRecordWrapper@@QEAA@PEAUIDataCoreStructure@@V?$CryStringT@D@@1@Z (0x15131B390) ---
+
+// --- Function: CrySock::MakeSocketNonBlocking (0x15131B470) ---
+bool __fastcall CrySock::MakeSocketNonBlocking(int sock)
+{
+  u_long argp; // [rsp+30h] [rbp+8h] BYREF
+
+  argp = 1;
+  return ioctlsocket(sock, -2147195266, &argp) != -1;
+}
+
+// --- End Function: CrySock::MakeSocketNonBlocking (0x15131B470) ---
+
+// --- Function: ?LoadStringA@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x15131B4A0) ---
+void __fastcall CDataCore::LoadStringA(
+        CDataCore *this,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  char *sStr; // rax
+  unsigned __int64 nLen; // r8
+  const char *v9; // [rsp+20h] [rbp-8h]
+
+  if ( pField->size != 8 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s. Strings must be const char*",
+      pField->pName,
+      v9);
+  sStr = (char *)(*((__int64 (__fastcall **)(IXmlNode_vtbl *, const char *))xmlRef.p->DeleteThis + 30))(
+                   xmlRef.p->__vftable,
+                   pField->pName);
+  if ( sStr && *sStr )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( sStr[nLen] );
+    CryStringT<char>::_Assign((CryStringT<char> *)((char *)pRecord + pField->offset), sStr, nLen);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ?LoadStringA@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x15131B4A0) ---
+
+// --- Function: ??0CDataCore@@QEAA@XZ (0x15131B530) ---
+void __fastcall CDataCore::CDataCore(CDataCore *this, SubsumptionEvent *_Count)
+{
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<StringHash const ,SubsumptionActivity *>> > *v3; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Myhead; // rax
+  std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *_Count_1; // rdx
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>> > *v6; // rcx
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<StringHash const ,SubsumptionActivity *>> > *v7; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead_1; // rax
+
+  this->__vftable = (CDataCore_vtbl *)&IDataCore::`vftable';
+  this->m_Records._Myhead = 0LL;
+  this->m_Records._Mysize = 0LL;
+  this->m_Records._Myhead = (std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *)std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const,CDialogScript *>>>::_Buyheadnode((std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const ,SubactivityTaskData *>> > *)this, _Count);
+  this->m_pObservers._Myhead = 0LL;
+  this->m_pObservers._Mysize = 0LL;
+  this->m_pObservers._Myhead = std::_List_alloc<0,std::_List_base_types<std::pair<unsigned int const,unsigned int>>>::_Buynode0(
+                                 &this->m_pObservers,
+                                 0LL,
+                                 0LL);
+  this->m_Enums._Myhead = 0LL;
+  this->m_Enums._Mysize = 0LL;
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<boost::variant<boost::detail::variant::over_sequence<boost::mpl::vector<SNullAddr,unsigned short,SIPv4Addr,LobbyIdAddr,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na>>> const,CTimeValue>>>::_Buyheadnode(v3);
+  this->m_Enums._Myhead = _Myhead;
+  this->__vftable = (CDataCore_vtbl *)&CDataCore::`vftable';
+  this->m_GameStructures._Myhead = 0LL;
+  this->m_GameStructures._Mysize = 0LL;
+  this->m_GameStructures._Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const,std::function<void (google::protobuf::Message const &)>>>>::_Buyheadnode(v6, _Count_1);
+  this->m_Structures._Myhead = 0LL;
+  this->m_Structures._Mysize = 0LL;
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<boost::variant<boost::detail::variant::over_sequence<boost::mpl::vector<SNullAddr,unsigned short,SIPv4Addr,LobbyIdAddr,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na,boost::mpl::na>>> const,CTimeValue>>>::_Buyheadnode(v7);
+  this->m_Structures._Myhead = _Myhead_1;
+  this->m_DestructMeStructs._Myfirst = 0LL;
+  this->m_DestructMeStructs._Mylast = 0LL;
+  this->m_DestructMeStructs._Myend = 0LL;
+  this->m_UnresolvedRefs._Myfirst = 0LL;
+  this->m_UnresolvedRefs._Mylast = 0LL;
+  this->m_UnresolvedRefs._Myend = 0LL;
+  this->m_UnresolvedWeakPtrs._Myfirst = 0LL;
+  this->m_UnresolvedWeakPtrs._Mylast = 0LL;
+  this->m_UnresolvedWeakPtrs._Myend = 0LL;
+  this->m_Buffer.m_str = (char *)&Count;
+  this->m_hRegisterForLogging = 0LL;
+  this->m_hDAL = 0LL;
+  this->m_hReload = 0LL;
+  this->m_totalPendingRecieve = 0LL;
+  *(_QWORD *)&this->m_listenerSocket = -1LL;
+  this->m_lanDiscoverySocket = -1;
+}
+
+// --- End Function: ??0CDataCore@@QEAA@XZ (0x15131B530) ---
+
+// --- Function: ??_GCDataCore@@UEAAPEAXI@Z (0x15131B660) ---
+CDataCore *__fastcall CDataCore::`scalar deleting destructor'(CDataCore *this, char a2)
+{
+  CDataCore::~CDataCore(this);
+  if ( (a2 & 1) != 0 && this )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(this, 0LL));
+  return this;
+}
+
+// --- End Function: ??_GCDataCore@@UEAAPEAXI@Z (0x15131B660) ---
+
+// --- Function: ??1CDataCore@@UEAA@XZ (0x15131B6A0) ---
+void __fastcall CDataCore::~CDataCore(CDataCore *this)
+{
+  IDataCoreStructure **Myfirst; // rbx
+  __int64 v3; // rsi
+  unsigned __int64 v4; // rbp
+  int Error; // eax
+  int oserror; // eax
+  int oserror_1; // eax
+  int oserror_2; // eax
+  char *m_str; // rcx
+  int v10; // eax
+  int *v11; // rcx
+  int v12; // eax
+  CDataCore::UnresolvedWeakPtr *_Myfirst; // rbx
+  CDataCore::UnresolvedWeakPtr *i; // rsi
+  char *m_str_1; // rcx
+  int v16; // eax
+  int *v17; // rcx
+  int v18; // eax
+  CDataCore::UnresolvedWeakPtr *_Myfirst_1; // rcx
+  CDataCore::UnresolvedRef *_Myfirst_2; // rbx
+  CDataCore::UnresolvedRef *j; // rsi
+  char *m_str_2; // rcx
+  int v23; // eax
+  int *v24; // rcx
+  int v25; // eax
+  CDataCore::UnresolvedRef *_Myfirst_3; // rcx
+  IDataCoreStructure **_Myfirst_4; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > result; // [rsp+40h] [rbp+8h] BYREF
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > > v31; // [rsp+48h] [rbp+10h] BYREF
+
+  this->__vftable = (CDataCore_vtbl *)&CDataCore::`vftable';
+  Myfirst = this->m_DestructMeStructs._Myfirst;
+  v3 = 0LL;
+  v4 = (unsigned __int64)((char *)this->m_DestructMeStructs._Mylast - (char *)Myfirst + 7) >> 3;
+  if ( Myfirst > this->m_DestructMeStructs._Mylast )
+    v4 = 0LL;
+  if ( v4 )
+  {
+    do
+    {
+      if ( *Myfirst )
+        ((void (__fastcall *)(IDataCoreStructure *, __int64))(*Myfirst)->~IDataCoreStructure)(*Myfirst, 1LL);
+      ++v3;
+      ++Myfirst;
+    }
+    while ( v3 != v4 );
+  }
+  this->m_DestructMeStructs._Mylast = this->m_DestructMeStructs._Myfirst;
+  if ( shutdown(this->m_connSocket, 2) == -1 )
+  {
+    Error = WSAGetLastError();
+    CrySock::TranslateOSError(Error);
+  }
+  if ( closesocket(this->m_connSocket) == -1 )
+  {
+    oserror = WSAGetLastError();
+    CrySock::TranslateOSError(oserror);
+  }
+  if ( closesocket(this->m_listenerSocket) == -1 )
+  {
+    oserror_1 = WSAGetLastError();
+    CrySock::TranslateOSError(oserror_1);
+  }
+  if ( closesocket(this->m_lanDiscoverySocket) == -1 )
+  {
+    oserror_2 = WSAGetLastError();
+    CrySock::TranslateOSError(oserror_2);
+  }
+  m_str = this->m_Buffer.m_str;
+  v10 = *((_DWORD *)m_str - 3);
+  v11 = (int *)(m_str - 12);
+  if ( v10 >= 0 )
+  {
+    v12 = v10 - 1;
+    *v11 = v12;
+    if ( v12 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v11[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v11, 0LL));
+    }
+  }
+  _Myfirst = this->m_UnresolvedWeakPtrs._Myfirst;
+  if ( _Myfirst )
+  {
+    for ( i = this->m_UnresolvedWeakPtrs._Mylast; _Myfirst != i; ++_Myfirst )
+    {
+      m_str_1 = _Myfirst->m_URL.m_str;
+      v16 = *((_DWORD *)m_str_1 - 3);
+      v17 = (int *)(m_str_1 - 12);
+      if ( v16 >= 0 )
+      {
+        v18 = v16 - 1;
+        *v17 = v18;
+        if ( v18 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v17[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v17, 0LL));
+        }
+      }
+    }
+    _Myfirst_1 = this->m_UnresolvedWeakPtrs._Myfirst;
+    if ( _Myfirst_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_1, 0LL));
+    this->m_UnresolvedWeakPtrs._Myfirst = 0LL;
+    this->m_UnresolvedWeakPtrs._Mylast = 0LL;
+    this->m_UnresolvedWeakPtrs._Myend = 0LL;
+  }
+  _Myfirst_2 = this->m_UnresolvedRefs._Myfirst;
+  if ( _Myfirst_2 )
+  {
+    for ( j = this->m_UnresolvedRefs._Mylast; _Myfirst_2 != j; ++_Myfirst_2 )
+    {
+      m_str_2 = _Myfirst_2->hash.m_str;
+      v23 = *((_DWORD *)m_str_2 - 3);
+      v24 = (int *)(m_str_2 - 12);
+      if ( v23 >= 0 )
+      {
+        v25 = v23 - 1;
+        *v24 = v25;
+        if ( v25 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v24[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v24, 0LL));
+        }
+      }
+    }
+    _Myfirst_3 = this->m_UnresolvedRefs._Myfirst;
+    if ( _Myfirst_3 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_3, 0LL));
+    this->m_UnresolvedRefs._Myfirst = 0LL;
+    this->m_UnresolvedRefs._Mylast = 0LL;
+    this->m_UnresolvedRefs._Myend = 0LL;
+  }
+  _Myfirst_4 = this->m_DestructMeStructs._Myfirst;
+  if ( _Myfirst_4 )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_4, 0LL));
+    this->m_DestructMeStructs._Myfirst = 0LL;
+    this->m_DestructMeStructs._Mylast = 0LL;
+    this->m_DestructMeStructs._Myend = 0LL;
+  }
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::erase(
+    (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *)&this->m_Structures,
+    &result,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)this->m_Structures._Myhead->_Left,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)this->m_Structures._Myhead);
+  Myhead = this->m_Structures._Myhead;
+  if ( Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(Myhead, 0LL));
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,IConsoleArgumentAutoComplete *,stl::less_stricmp<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,IConsoleArgumentAutoComplete *>>,0>>::erase(
+    (std::_Tree<std::_Tset_traits<CryStringT<char>,CLocalizedStringsManager::less_strcmp,std::allocator<CryStringT<char> >,0> > *)&this->m_GameStructures,
+    &v31,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > >)this->m_GameStructures._Myhead->_Left,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<CryStringT<char> > > >)this->m_GameStructures._Myhead);
+  _Myhead = this->m_GameStructures._Myhead;
+  if ( _Myhead )
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Myhead, 0LL));
+  IDataCore::~IDataCore(this);
+}
+
+// --- End Function: ??1CDataCore@@UEAA@XZ (0x15131B6A0) ---
+
+// --- Function: ?Initialize@CDataCore@@UEAA_NXZ (0x15131B9D0) ---
+char __fastcall CDataCore::Initialize(CDataCore *this)
+{
+  HMODULE m_hDAL_1; // rax
+  void (__fastcall *RegisterForLogging)(bool (__fastcall *)(const unsigned int, const char *)); // rax
+  bool (__fastcall *DB_Load)(bool (__fastcall *)(const char *, void *), unsigned int (__fastcall *)(const char *), void (__fastcall *)(const int, const char *), const unsigned int, const char **, const unsigned int, const char **); // rax
+  HMODULE m_hDAL; // rcx
+  void (__fastcall *DB_Close)(); // rax
+  HMODULE m_hDAL_2; // rcx
+  bool (__fastcall *DB_ReloadRecordByName)(const char *); // rax
+  HMODULE m_hDAL_3; // rcx
+  unsigned __int64 (__fastcall *DB_LoadRecord)(const char *); // rax
+  HMODULE m_hDAL_4; // rcx
+  int (__fastcall *DB_GetRecordCount)(); // rax
+  HMODULE m_hDAL_5; // rcx
+  const unsigned __int64 *(__fastcall *DB_GetRecords)(); // rax
+  HMODULE m_hDAL_6; // rcx
+  const char *(__fastcall *DB_DataRecord_SchemaName)(unsigned __int64); // rax
+  HMODULE m_hDAL_7; // rcx
+  const char *(__fastcall *DB_DataRecord_Filename)(unsigned __int64); // rax
+  HMODULE m_hDAL_8; // rcx
+  const char *(__fastcall *DB_DataRecord_Name)(unsigned __int64); // rax
+  HMODULE m_hDAL_9; // rcx
+  const char *(__fastcall *DB_DataRecord_Hash)(unsigned __int64); // rax
+  HMODULE m_hDAL_10; // rcx
+  unsigned __int64 (__fastcall *DB_GetRecordByName)(const char *); // rax
+  HMODULE m_hDAL_11; // rcx
+  unsigned __int64 (__fastcall *DB_GetRecordByHash)(const char *); // rax
+  HMODULE m_hDAL_12; // rcx
+  const char *(__fastcall *DB_Export)(unsigned __int64); // rax
+  HMODULE m_hDAL_13; // rcx
+  unsigned __int64 (__fastcall *DB_SchemaStruct)(const char *); // rax
+  HMODULE m_hDAL_14; // rcx
+  const char *(__fastcall *DB_DataStruct_Name)(unsigned __int64); // rax
+  HMODULE m_hDAL_15; // rcx
+  unsigned __int64 (__fastcall *DB_SchemaStruct_GetFieldByName)(unsigned __int64, const char *, bool, unsigned __int64); // rax
+  HMODULE m_hDAL_16; // rcx
+  unsigned __int64 (__fastcall *DB_SchemaStruct_GetFieldByIndex)(unsigned __int64, int, bool, unsigned __int64); // rax
+  HMODULE m_hDAL_17; // rcx
+  int (__fastcall *DB_SchemaStruct_GetFieldCount)(unsigned __int64, bool, unsigned __int64); // rax
+  HMODULE m_hDAL_18; // rcx
+  const char *(__fastcall *DB_SchemaField_GetName)(unsigned __int64); // rax
+  HMODULE m_hDAL_19; // rcx
+  int (__fastcall *DB_SchemaField_GetFieldOption)(unsigned __int64); // rax
+  HMODULE m_hDAL_20; // rcx
+  int (__fastcall *DB_SchemaField_GetFieldStorageType)(unsigned __int64); // rax
+  HMODULE m_hDAL_21; // rcx
+  int (__fastcall *DB_SchemaField_GetFieldType)(unsigned __int64); // rax
+  bool v47; // zf
+  const char *m_str_10; // rax
+  char *m_str_1; // rsi
+  char *m_str; // rbx
+  unsigned __int64 nLen; // rdi
+  int v52; // eax
+  int *v53; // rcx
+  int v54; // eax
+  char *m_str_2; // rdi
+  __int64 v56; // r12
+  char *v57; // rsi
+  char *m_str_3; // rbx
+  int v59; // eax
+  int *v60; // rcx
+  int v61; // eax
+  char *m_str_4; // rbx
+  int v63; // eax
+  int *v64; // rcx
+  int v65; // eax
+  const char **Myend; // rdx
+  int v67; // r13d
+  const char **Mylast; // rbx
+  const char **Myfirst; // rsi
+  char *m_str_5; // rdi
+  __int64 v71; // rdi
+  __int64 v72; // rbx
+  unsigned __int64 _Count_5; // rbx
+  unsigned __int64 v74; // rdx
+  unsigned __int64 _Count_1; // rdx
+  __int64 v76; // rbx
+  unsigned __int64 _Count_4; // rbx
+  unsigned __int64 v78; // rdx
+  unsigned __int64 _Count; // rdx
+  const char **_Myend; // rdx
+  int v81; // r9d
+  const char **_Myfirst; // rdi
+  const char **_Mylast; // r8
+  __int64 v84; // r13
+  char *m_str_7; // r12
+  __int64 v86; // r12
+  __int64 v87; // r8
+  unsigned __int64 _Count_7; // r8
+  unsigned __int64 v89; // rdx
+  unsigned __int64 _Count_3; // rdx
+  __int64 v91; // r8
+  unsigned __int64 _Count_6; // r8
+  unsigned __int64 v93; // rdx
+  unsigned __int64 _Count_2; // rdx
+  CryStringT<char> *_Myfirst_1; // rbx
+  CryStringT<char> *_Mylast_1; // rdi
+  int v97; // eax
+  int *v98; // rcx
+  int v99; // eax
+  CryStringT<char> *_Myfirst_2; // rbx
+  CryStringT<char> *_Mylast_2; // rdi
+  int v102; // eax
+  int *v103; // rcx
+  int v104; // eax
+  _DWORD *v105; // rcx
+  int v106; // eax
+  __int64 v108; // r12
+  const unsigned __int64 *v109; // rcx
+  unsigned __int64 v110; // rbx
+  const char *v111; // rdi
+  const char *v112; // r13
+  char *str; // rbx
+  __int64 v114; // r9
+  char *m_str_9; // rbx
+  int v116; // eax
+  int *v117; // rdi
+  int v118; // eax
+  __int64 v119; // rsi
+  unsigned __int64 v120; // rbx
+  _DWORD *v121; // rax
+  char *i; // rcx
+  char v123; // al
+  int v124; // eax
+  int *v125; // rcx
+  int v126; // eax
+  CryStringT<char> *_Myfirst_3; // rbx
+  CryStringT<char> *_Mylast_3; // rdi
+  int v129; // eax
+  int *v130; // rcx
+  int v131; // eax
+  CryStringT<char> *_Myfirst_4; // rbx
+  CryStringT<char> *_Mylast_4; // rdi
+  int v134; // eax
+  int *v135; // rcx
+  int v136; // eax
+  _DWORD *v137; // rcx
+  int v138; // eax
+  int v139; // [rsp+30h] [rbp-D0h]
+  std::vector<char const *> schemasCSTR; // [rsp+40h] [rbp-C0h] BYREF
+  std::vector<CryStringT<char>> schemas; // [rsp+58h] [rbp-A8h] BYREF
+  std::vector<CryStringT<char>> records; // [rsp+70h] [rbp-90h] BYREF
+  std::vector<char const *> recordsCSTR; // [rsp+88h] [rbp-78h] BYREF
+  CryStringT<char> recordNameLower; // [rsp+A0h] [rbp-60h] BYREF
+  char *m_str_8; // [rsp+A8h] [rbp-58h] BYREF
+  XmlNodeRef ref; // [rsp+B0h] [rbp-50h] BYREF
+  void *v147; // [rsp+B8h] [rbp-48h]
+  CryStringT<char> v148; // [rsp+C0h] [rbp-40h] BYREF
+  CryStringT<char> gamePath; // [rsp+C8h] [rbp-38h] BYREF
+  unsigned __int64 v150; // [rsp+D0h] [rbp-30h] BYREF
+  IXmlNode *p; // [rsp+D8h] [rbp-28h] BYREF
+  const unsigned __int64 *v152; // [rsp+E0h] [rbp-20h]
+  int v153; // [rsp+140h] [rbp+40h]
+  __int64 v154; // [rsp+140h] [rbp+40h]
+  CryStringT<char> v155; // [rsp+148h] [rbp+48h] BYREF
+  CryStringT<char> v156; // [rsp+150h] [rbp+50h] BYREF
+  char *m_str_6; // [rsp+158h] [rbp+58h] BYREF
+
+  m_hDAL_1 = LoadLibraryA("DataCore.dll");
+  this->m_hDAL = m_hDAL_1;
+  if ( m_hDAL_1 )
+  {
+    RegisterForLogging = (void (__fastcall *)(bool (__fastcall *)(const unsigned int, const char *)))GetProcAddress(m_hDAL_1, "RegisterForLogging");
+    this->m_hRegisterForLogging = RegisterForLogging;
+    if ( RegisterForLogging )
+      RegisterForLogging(CDataCore::OnLogMessage);
+    DB_Load = (bool (__fastcall *)(bool (__fastcall *)(const char *, void *), unsigned int (__fastcall *)(const char *), void (__fastcall *)(const int, const char *), const unsigned int, const char **, const unsigned int, const char **))GetProcAddress((HMODULE)this->m_hDAL, "DB_Load");
+    m_hDAL = (HMODULE)this->m_hDAL;
+    this->m_fnLoad = DB_Load;
+    DB_Close = (void (__fastcall *)())GetProcAddress(m_hDAL, "DB_Close");
+    m_hDAL_2 = (HMODULE)this->m_hDAL;
+    this->m_fnUnload = DB_Close;
+    DB_ReloadRecordByName = (bool (__fastcall *)(const char *))GetProcAddress(m_hDAL_2, "DB_ReloadRecordByName");
+    m_hDAL_3 = (HMODULE)this->m_hDAL;
+    this->m_hReload = DB_ReloadRecordByName;
+    DB_LoadRecord = (unsigned __int64 (__fastcall *)(const char *))GetProcAddress(m_hDAL_3, "DB_LoadRecord");
+    m_hDAL_4 = (HMODULE)this->m_hDAL;
+    this->m_fnLoadRecord = DB_LoadRecord;
+    DB_GetRecordCount = (int (__fastcall *)())GetProcAddress(m_hDAL_4, "DB_GetRecordCount");
+    m_hDAL_5 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordCount = DB_GetRecordCount;
+    DB_GetRecords = (const unsigned __int64 *(__fastcall *)())GetProcAddress(m_hDAL_5, "DB_GetRecords");
+    m_hDAL_6 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecords = DB_GetRecords;
+    DB_DataRecord_SchemaName = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                               m_hDAL_6,
+                                                                               "DB_DataRecord_SchemaName");
+    m_hDAL_7 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordSchemaName = DB_DataRecord_SchemaName;
+    DB_DataRecord_Filename = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                             m_hDAL_7,
+                                                                             "DB_DataRecord_Filename");
+    m_hDAL_8 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordFilename = DB_DataRecord_Filename;
+    DB_DataRecord_Name = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(m_hDAL_8, "DB_DataRecord_Name");
+    m_hDAL_9 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordName = DB_DataRecord_Name;
+    DB_DataRecord_Hash = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(m_hDAL_9, "DB_DataRecord_Hash");
+    m_hDAL_10 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordHash = DB_DataRecord_Hash;
+    DB_GetRecordByName = (unsigned __int64 (__fastcall *)(const char *))GetProcAddress(m_hDAL_10, "DB_GetRecordByName");
+    m_hDAL_11 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordByName = DB_GetRecordByName;
+    DB_GetRecordByHash = (unsigned __int64 (__fastcall *)(const char *))GetProcAddress(m_hDAL_11, "DB_GetRecordByHash");
+    m_hDAL_12 = (HMODULE)this->m_hDAL;
+    this->m_fnGetRecordByHash = DB_GetRecordByHash;
+    DB_Export = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(m_hDAL_12, "DB_Export");
+    m_hDAL_13 = (HMODULE)this->m_hDAL;
+    this->m_fnExportRecord = DB_Export;
+    DB_SchemaStruct = (unsigned __int64 (__fastcall *)(const char *))GetProcAddress(m_hDAL_13, "DB_SchemaStruct");
+    m_hDAL_14 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaStruct = DB_SchemaStruct;
+    DB_DataStruct_Name = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(m_hDAL_14, "DB_DataStruct_Name");
+    m_hDAL_15 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaStruct_GetName = DB_DataStruct_Name;
+    DB_SchemaStruct_GetFieldByName = (unsigned __int64 (__fastcall *)(unsigned __int64, const char *, bool, unsigned __int64))GetProcAddress(m_hDAL_15, "DB_SchemaStruct_GetFieldByName");
+    m_hDAL_16 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaStruct_FieldByName = DB_SchemaStruct_GetFieldByName;
+    DB_SchemaStruct_GetFieldByIndex = (unsigned __int64 (__fastcall *)(unsigned __int64, int, bool, unsigned __int64))GetProcAddress(m_hDAL_16, "DB_SchemaStruct_GetFieldByIndex");
+    m_hDAL_17 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaStruct_FieldByIndex = DB_SchemaStruct_GetFieldByIndex;
+    DB_SchemaStruct_GetFieldCount = (int (__fastcall *)(unsigned __int64, bool, unsigned __int64))GetProcAddress(
+                                                                                                    m_hDAL_17,
+                                                                                                    "DB_SchemaStruct_GetFieldCount");
+    m_hDAL_18 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaStruct_FieldCount = DB_SchemaStruct_GetFieldCount;
+    DB_SchemaField_GetName = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                             m_hDAL_18,
+                                                                             "DB_SchemaField_GetName");
+    m_hDAL_19 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaField_GetName = DB_SchemaField_GetName;
+    this->m_fnGetSchemaField_GetEnumName = (const char *(__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                                           m_hDAL_19,
+                                                                                           "DB_SchemaField_GetEnumName");
+    DB_SchemaField_GetFieldOption = (int (__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                            (HMODULE)this->m_hDAL,
+                                                                            "DB_SchemaField_GetFieldOption");
+    m_hDAL_20 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaField_GetFieldOption = DB_SchemaField_GetFieldOption;
+    DB_SchemaField_GetFieldStorageType = (int (__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                                 m_hDAL_20,
+                                                                                 "DB_SchemaField_GetFieldStorageType");
+    m_hDAL_21 = (HMODULE)this->m_hDAL;
+    this->m_fnGetSchemaField_GetFieldStorageType = DB_SchemaField_GetFieldStorageType;
+    DB_SchemaField_GetFieldType = (int (__fastcall *)(unsigned __int64))GetProcAddress(
+                                                                          m_hDAL_21,
+                                                                          "DB_SchemaField_GetFieldType");
+    v47 = this->m_fnLoad == 0LL;
+    this->m_fnGetSchemaField_GetFieldType = DB_SchemaField_GetFieldType;
+    if ( !v47
+      && this->m_fnUnload
+      && this->m_hReload
+      && this->m_fnGetRecordCount
+      && this->m_fnGetRecords
+      && this->m_fnGetRecordSchemaName
+      && this->m_fnGetRecordName
+      && this->m_fnGetRecordByName
+      && this->m_fnGetRecordByHash
+      && this->m_fnExportRecord
+      && this->m_fnGetSchemaStruct
+      && this->m_fnGetSchemaStruct_FieldByName
+      && this->m_fnGetSchemaStruct_FieldByIndex
+      && this->m_fnGetSchemaStruct_FieldCount
+      && this->m_fnGetSchemaField_GetName
+      && this->m_fnGetSchemaField_GetFieldOption
+      && this->m_fnGetSchemaField_GetFieldStorageType
+      && DB_SchemaField_GetFieldType
+      && this->m_fnGetSchemaStruct_GetName
+      && this->m_fnLoadRecord
+      && this->m_fnGetRecordHash )
+    {
+      m_str_10 = gEnv.pCryPak->GetGameFolder(gEnv.pCryPak);
+      m_str_1 = (char *)m_str_10;
+      m_str = (char *)&Count;
+      v148.m_str = (char *)&Count;
+      if ( m_str_10 )
+      {
+        nLen = -1LL;
+        do
+          ++nLen;
+        while ( m_str_10[nLen] );
+        if ( nLen )
+        {
+          CryStringT<char>::_AllocData(&v148, nLen);
+          m_str = v148.m_str;
+          if ( v148.m_str != m_str_1 )
+            memcpy_0(v148.m_str, m_str_1, nLen);
+        }
+      }
+      CryStringT<char>::CryStringT<char>(&gamePath, m_str);
+      v52 = *((_DWORD *)m_str - 3);
+      v53 = (int *)(m_str - 12);
+      if ( v52 >= 0 )
+      {
+        v54 = v52 - 1;
+        *v53 = v54;
+        if ( v54 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v53, 0LL));
+        }
+      }
+      m_str_2 = gamePath.m_str;
+      v56 = 0LL;
+      v57 = gamePath.m_str - 12;
+      memset(&schemas, 0, sizeof(schemas));
+      v147 = gamePath.m_str - 12;
+      if ( *((int *)gamePath.m_str - 3) < 0 )
+      {
+        v155.m_str = (char *)&Count;
+      }
+      else
+      {
+        ++*(_DWORD *)v57;
+        v155.m_str = m_str_2;
+      }
+      CryStringT<char>::_ConcatenateInPlace(&v155, "/Libs/Foundry/Schemas/", 0x16uLL);
+      m_str_3 = v155.m_str;
+      CDataCore::ScanFolder(this, v155.m_str, "sch", &schemas);
+      v59 = *((_DWORD *)m_str_3 - 3);
+      v60 = (int *)(m_str_3 - 12);
+      if ( v59 >= 0 )
+      {
+        v61 = v59 - 1;
+        *v60 = v61;
+        if ( v61 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_3 - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v60, 0LL));
+          m_str_2 = gamePath.m_str;
+        }
+      }
+      memset(&records, 0, sizeof(records));
+      if ( *(int *)v57 < 0 )
+      {
+        v156.m_str = (char *)&Count;
+      }
+      else
+      {
+        ++*(_DWORD *)v57;
+        v156.m_str = m_str_2;
+      }
+      CryStringT<char>::_ConcatenateInPlace(&v156, "/Libs/Foundry/Records/", 0x16uLL);
+      m_str_4 = v156.m_str;
+      CDataCore::ScanFolder(this, v156.m_str, "xml", &records);
+      v63 = *((_DWORD *)m_str_4 - 3);
+      v64 = (int *)(m_str_4 - 12);
+      if ( v63 >= 0 )
+      {
+        v65 = v63 - 1;
+        *v64 = v65;
+        if ( v65 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_4 - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v64, 0LL));
+        }
+      }
+      Myend = 0LL;
+      v67 = 0;
+      memset(&schemasCSTR, 0, sizeof(schemasCSTR));
+      Mylast = 0LL;
+      Myfirst = 0LL;
+      if ( schemas._Mylast - schemas._Myfirst )
+      {
+        do
+        {
+          m_str_5 = schemas._Myfirst[v56].m_str;
+          m_str_6 = m_str_5;
+          if ( &m_str_6 >= (char **)Mylast || Myfirst > (const char **)&m_str_6 )
+          {
+            if ( Mylast == Myend && !(Myend - Mylast) )
+            {
+              v76 = Mylast - Myfirst;
+              if ( v76 == 0x1FFFFFFFFFFFFFFFLL )
+                std::_Xlength_error("vector<T> too long");
+              _Count_4 = v76 + 1;
+              v78 = Myend - Myfirst;
+              if ( 0x1FFFFFFFFFFFFFFFLL - (v78 >> 1) >= v78 )
+                _Count = (v78 >> 1) + v78;
+              else
+                _Count = 0LL;
+              if ( _Count < _Count_4 )
+                _Count = _Count_4;
+              std::vector<IEntityClass *>::_Reallocate((std::vector<char *> *)&schemasCSTR, _Count);
+              Myend = schemasCSTR._Myend;
+              Mylast = schemasCSTR._Mylast;
+              Myfirst = schemasCSTR._Myfirst;
+            }
+            if ( Mylast )
+              *Mylast = m_str_5;
+          }
+          else
+          {
+            v71 = ((char *)&m_str_6 - (char *)Myfirst) >> 3;
+            if ( Mylast == Myend && !(Myend - Mylast) )
+            {
+              v72 = Mylast - Myfirst;
+              if ( v72 == 0x1FFFFFFFFFFFFFFFLL )
+                std::_Xlength_error("vector<T> too long");
+              _Count_5 = v72 + 1;
+              v74 = Myend - Myfirst;
+              if ( 0x1FFFFFFFFFFFFFFFLL - (v74 >> 1) >= v74 )
+                _Count_1 = (v74 >> 1) + v74;
+              else
+                _Count_1 = 0LL;
+              if ( _Count_1 < _Count_5 )
+                _Count_1 = _Count_5;
+              std::vector<IEntityClass *>::_Reallocate((std::vector<char *> *)&schemasCSTR, _Count_1);
+              Myend = schemasCSTR._Myend;
+              Mylast = schemasCSTR._Mylast;
+              Myfirst = schemasCSTR._Myfirst;
+            }
+            if ( Mylast )
+              *Mylast = Myfirst[v71];
+          }
+          ++v67;
+          ++Mylast;
+          ++v56;
+          v64 = (int *)(schemas._Mylast - schemas._Myfirst);
+          schemasCSTR._Mylast = Mylast;
+        }
+        while ( v67 < (unsigned __int64)v64 );
+      }
+      _Myend = 0LL;
+      v81 = 0;
+      memset(&recordsCSTR, 0, sizeof(recordsCSTR));
+      _Myfirst = 0LL;
+      v153 = 0;
+      if ( !(records._Mylast - records._Myfirst) )
+        goto LABEL_131;
+      _Mylast = recordsCSTR._Mylast;
+      v84 = 0LL;
+      do
+      {
+        m_str_7 = records._Myfirst[v84].m_str;
+        m_str_8 = m_str_7;
+        if ( &m_str_8 >= (char **)_Mylast || _Myfirst > (const char **)&m_str_8 )
+        {
+          if ( _Mylast == _Myend && !(_Myend - _Mylast) )
+          {
+            v91 = _Mylast - _Myfirst;
+            if ( v91 == 0x1FFFFFFFFFFFFFFFLL )
+              std::_Xlength_error("vector<T> too long");
+            _Count_6 = v91 + 1;
+            v93 = _Myend - _Myfirst;
+            if ( 0x1FFFFFFFFFFFFFFFLL - (v93 >> 1) >= v93 )
+              _Count_2 = (v93 >> 1) + v93;
+            else
+              _Count_2 = 0LL;
+            if ( _Count_2 < _Count_6 )
+              _Count_2 = _Count_6;
+            std::vector<IEntityClass *>::_Reallocate((std::vector<char *> *)&recordsCSTR, _Count_2);
+            _Myend = recordsCSTR._Myend;
+            _Mylast = recordsCSTR._Mylast;
+            _Myfirst = recordsCSTR._Myfirst;
+            v81 = v153;
+          }
+          if ( _Mylast )
+            *_Mylast = m_str_7;
+        }
+        else
+        {
+          v86 = ((char *)&m_str_8 - (char *)_Myfirst) >> 3;
+          if ( _Mylast == _Myend && !(_Myend - _Mylast) )
+          {
+            v87 = _Mylast - _Myfirst;
+            if ( v87 == 0x1FFFFFFFFFFFFFFFLL )
+              std::_Xlength_error("vector<T> too long");
+            _Count_7 = v87 + 1;
+            v89 = _Myend - _Myfirst;
+            if ( 0x1FFFFFFFFFFFFFFFLL - (v89 >> 1) >= v89 )
+              _Count_3 = (v89 >> 1) + v89;
+            else
+              _Count_3 = 0LL;
+            if ( _Count_3 < _Count_7 )
+              _Count_3 = _Count_7;
+            std::vector<IEntityClass *>::_Reallocate((std::vector<char *> *)&recordsCSTR, _Count_3);
+            _Myend = recordsCSTR._Myend;
+            _Mylast = recordsCSTR._Mylast;
+            _Myfirst = recordsCSTR._Myfirst;
+            v81 = v153;
+          }
+          if ( _Mylast )
+            *_Mylast = _Myfirst[v86];
+        }
+        ++v81;
+        ++_Mylast;
+        ++v84;
+        v64 = (int *)(records._Mylast - records._Myfirst);
+        recordsCSTR._Mylast = _Mylast;
+        v153 = v81;
+      }
+      while ( v81 < (unsigned __int64)v64 );
+      if ( _Myfirst
+        && Myfirst
+        && !this->m_fnLoad(
+              (bool (__fastcall *)(const char *, void *))CDataCore::DFFileLoader,
+              (unsigned int (__fastcall *)(const char *))CDataCore::DFFileSizer,
+              0LL,
+              Mylast - Myfirst,
+              Myfirst,
+              _Mylast - _Myfirst,
+              _Myfirst) )
+      {
+        CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "DataCore - Errors on load, please see output and fix.");
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(_Myfirst, 0LL));
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(schemasCSTR._Myfirst, 0LL));
+        _Myfirst_1 = records._Myfirst;
+        if ( records._Myfirst )
+        {
+          _Mylast_1 = records._Mylast;
+          if ( records._Myfirst != records._Mylast )
+          {
+            do
+            {
+              v97 = *((_DWORD *)_Myfirst_1->m_str - 3);
+              v98 = (int *)(_Myfirst_1->m_str - 12);
+              if ( v97 >= 0 )
+              {
+                v99 = v97 - 1;
+                *v98 = v99;
+                if ( v99 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v98[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v98, 0LL));
+                }
+              }
+              ++_Myfirst_1;
+            }
+            while ( _Myfirst_1 != _Mylast_1 );
+            _Myfirst_1 = records._Myfirst;
+          }
+          if ( _Myfirst_1 )
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_1, 0LL));
+          memset(&records, 0, sizeof(records));
+        }
+        _Myfirst_2 = schemas._Myfirst;
+        if ( schemas._Myfirst )
+        {
+          _Mylast_2 = schemas._Mylast;
+          if ( schemas._Myfirst != schemas._Mylast )
+          {
+            do
+            {
+              v102 = *((_DWORD *)_Myfirst_2->m_str - 3);
+              v103 = (int *)(_Myfirst_2->m_str - 12);
+              if ( v102 >= 0 )
+              {
+                v104 = v102 - 1;
+                *v103 = v104;
+                if ( v104 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v103[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v103, 0LL));
+                }
+              }
+              ++_Myfirst_2;
+            }
+            while ( _Myfirst_2 != _Mylast_2 );
+            _Myfirst_2 = schemas._Myfirst;
+          }
+          if ( _Myfirst_2 )
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_2, 0LL));
+          memset(&schemas, 0, sizeof(schemas));
+        }
+        v105 = v147;
+        if ( *(int *)v147 >= 0 )
+        {
+          v106 = *(_DWORD *)v147 - 1;
+          *(_DWORD *)v147 = v106;
+          if ( v106 <= 0 )
+          {
+            `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v105[2];
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(v105, 0LL));
+          }
+        }
+        return 0;
+      }
+      else
+      {
+LABEL_131:
+        v108 = 0LL;
+        v154 = ((int (__fastcall *)(int *))this->m_fnGetRecordCount)(v64);
+        v109 = this->m_fnGetRecords();
+        v152 = v109;
+        if ( (int)v154 > 0 )
+        {
+          do
+          {
+            v110 = v109[v108];
+            v111 = this->m_fnExportRecord(v110);
+            v112 = this->m_fnGetRecordSchemaName(v110);
+            str = (char *)this->m_fnGetRecordName(v110);
+            if ( v111 )
+            {
+              v114 = -1LL;
+              do
+                ++v114;
+              while ( v111[v114] );
+              ((void (__fastcall *)(ISystem *, XmlNodeRef *, const char *))gEnv.pSystem->LoadXmlFromBuffer)(
+                gEnv.pSystem,
+                &ref,
+                v111);
+              CryStringT<char>::CryStringT<char>(&recordNameLower, str);
+              m_str_9 = recordNameLower.m_str;
+              v116 = *((_DWORD *)recordNameLower.m_str - 3);
+              v117 = (int *)(recordNameLower.m_str - 12);
+              if ( v116 > 1 )
+              {
+                if ( v116 >= 0 )
+                {
+                  v118 = v116 - 1;
+                  *v117 = v118;
+                  if ( v118 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v117[2];
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v117, 0LL));
+                  }
+                }
+                v119 = v117[1];
+                if ( v117[1] )
+                {
+                  v120 = v119 + 13;
+                  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                    _CryMemoryManagerPoolHelper::Init();
+                  v121 = _CryMemoryManagerPoolHelper::_CryMalloc(v119 + 13, &v150, 0LL);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory,
+                    v150);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory,
+                    v120);
+                  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v120;
+                  *v121 = 1;
+                  v121[1] = v119;
+                  m_str_9 = (char *)(v121 + 3);
+                  v121[2] = v119;
+                  *((_BYTE *)v121 + v119 + 12) = 0;
+                }
+                else
+                {
+                  m_str_9 = (char *)&Count;
+                }
+                recordNameLower.m_str = m_str_9;
+                if ( m_str_9 != (char *)(v117 + 3) )
+                  memcpy_0(m_str_9, v117 + 3, v117[1] + 1);
+              }
+              for ( i = m_str_9; *i; ++i )
+              {
+                v123 = *i;
+                if ( (unsigned __int8)(*i - 65) <= 0x19u )
+                  v123 += 32;
+                *i = v123;
+              }
+              p = ref.p;
+              if ( ref.p )
+                ref.p->AddRef(ref.p);
+              LOBYTE(v139) = 1;
+              ((void (__fastcall *)(CDataCore *, _QWORD, const char *, char *, char *, IXmlNode **, int))this->LoadStruct)(
+                this,
+                0LL,
+                v112,
+                m_str_9,
+                m_str_9,
+                &p,
+                v139);
+              v124 = *((_DWORD *)m_str_9 - 3);
+              v125 = (int *)(m_str_9 - 12);
+              if ( v124 >= 0 )
+              {
+                v126 = v124 - 1;
+                *v125 = v126;
+                if ( v126 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_9 - 1);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v125, 0LL));
+                }
+              }
+              if ( ref.p )
+                ref.p->Release(ref.p);
+            }
+            v109 = v152;
+            ++v108;
+          }
+          while ( v108 < v154 );
+          Myfirst = schemasCSTR._Myfirst;
+          _Myfirst = recordsCSTR._Myfirst;
+        }
+        CDataCore::ResolveRefs(this);
+        if ( _Myfirst )
+        {
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(_Myfirst, 0LL));
+          Myfirst = schemasCSTR._Myfirst;
+        }
+        if ( Myfirst )
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(Myfirst, 0LL));
+        _Myfirst_3 = records._Myfirst;
+        if ( records._Myfirst )
+        {
+          _Mylast_3 = records._Mylast;
+          if ( records._Myfirst != records._Mylast )
+          {
+            do
+            {
+              v129 = *((_DWORD *)_Myfirst_3->m_str - 3);
+              v130 = (int *)(_Myfirst_3->m_str - 12);
+              if ( v129 >= 0 )
+              {
+                v131 = v129 - 1;
+                *v130 = v131;
+                if ( v131 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v130[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v130, 0LL));
+                }
+              }
+              ++_Myfirst_3;
+            }
+            while ( _Myfirst_3 != _Mylast_3 );
+            _Myfirst_3 = records._Myfirst;
+          }
+          if ( _Myfirst_3 )
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_3, 0LL));
+          memset(&records, 0, sizeof(records));
+        }
+        _Myfirst_4 = schemas._Myfirst;
+        if ( schemas._Myfirst )
+        {
+          _Mylast_4 = schemas._Mylast;
+          if ( schemas._Myfirst != schemas._Mylast )
+          {
+            do
+            {
+              v134 = *((_DWORD *)_Myfirst_4->m_str - 3);
+              v135 = (int *)(_Myfirst_4->m_str - 12);
+              if ( v134 >= 0 )
+              {
+                v136 = v134 - 1;
+                *v135 = v136;
+                if ( v136 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v135[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v135, 0LL));
+                }
+              }
+              ++_Myfirst_4;
+            }
+            while ( _Myfirst_4 != _Mylast_4 );
+            _Myfirst_4 = schemas._Myfirst;
+          }
+          if ( _Myfirst_4 )
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(_Myfirst_4, 0LL));
+          memset(&schemas, 0, sizeof(schemas));
+        }
+        v137 = v147;
+        if ( *(int *)v147 >= 0 )
+        {
+          v138 = *(_DWORD *)v147 - 1;
+          *(_DWORD *)v147 = v138;
+          if ( v138 <= 0 )
+          {
+            `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v137[2];
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(v137, 0LL));
+          }
+        }
+        return 1;
+      }
+    }
+    else
+    {
+      CryWarning(
+        VALIDATOR_MODULE_SYSTEM,
+        VALIDATOR_ERROR,
+        "%s one or more functions could not be located.",
+        "DataCore.dll");
+      return 0;
+    }
+  }
+  else
+  {
+    CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "%s could not be loaded", "DataCore.dll");
+    return 0;
+  }
+}
+
+// --- End Function: ?Initialize@CDataCore@@UEAA_NXZ (0x15131B9D0) ---
+
+// --- Function: ?LoadRecord@CDataCore@@AEAA_NPEBD@Z (0x15131C900) ---
+bool __fastcall CDataCore::LoadRecord(CDataCore *this, const char *filepath)
+{
+  unsigned __int64 v3; // rbx
+  const char *(__fastcall *name)(std::error_category *); // rdi
+  unsigned int *data; // rax
+
+  v3 = this->m_fnLoadRecord(filepath);
+  name = (char *)this->m_fnGetRecordName(v3);
+  data = this->m_fnExportRecord(v3);
+  return CDataCore::ReloadRecord(this, name, data, 1);
+}
+
+// --- End Function: ?LoadRecord@CDataCore@@AEAA_NPEBD@Z (0x15131C900) ---
+
+// --- Function: ?ReloadRecord@CDataCore@@AEAA_NPEBD0_N@Z (0x15131C960) ---
+bool __fastcall CDataCore::ReloadRecord(CDataCore *this, char *name, const char *data, bool bInitialLoad)
+{
+  unsigned __int64 v6; // rax
+  char *m_str_7; // r14
+  unsigned __int64 v8; // r13
+  char *m_str; // rsi
+  unsigned __int64 nLen; // rbx
+  int v11; // eax
+  int *v12; // rbx
+  int v13; // eax
+  __int64 v14; // rdi
+  unsigned __int64 v15; // rsi
+  _DWORD *v16; // rax
+  CDataCore *m_str_1; // rcx
+  char v18; // al
+  unsigned int nameHash_1; // eax
+  std::tuple<> *v20; // r9
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead; // rcx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Parent; // rdx
+  __int64 nameHash_2; // r8
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_1; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **v25; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Ptr; // rbx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode_1; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead; // rcx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead_1; // rbx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent_1; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode_2; // rax
+  void (__fastcall ***v33)(_QWORD, __int64); // rax
+  std::tuple<> *v34; // r9
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead_2; // rdx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent_2; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead_3; // rbx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode_3; // rax
+  IDataCoreRecordWrapper *second; // rcx
+  char *m_str_2; // rbx
+  unsigned __int64 nLen_1; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead_4; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead_5; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent_3; // r9
+  char *m_str_3; // rcx
+  signed __int64 v46; // r10
+  int v47; // edx
+  char *m_str_4; // rcx
+  int v49; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> **v50; // rcx
+  bool v51; // zf
+  int v52; // eax
+  int *v53; // rcx
+  bool v54; // di
+  int v55; // eax
+  unsigned __int64 nLen_2; // rbx
+  char *m_str_5; // rbx
+  __int64 nameHash_3; // r8
+  std::tuple<> *__Val_1_; // r9
+  int v60; // eax
+  char *v61; // rcx
+  __int64 *m_str_6; // rbx
+  int v63; // eax
+  unsigned __int64 (__fastcall *Size)(CRendElement *); // rdi
+  unsigned __int64 v65; // rsi
+  char *v66; // rax
+  int v67; // eax
+  bool v68; // di
+  char *v69; // rcx
+  int v70; // eax
+  IDataCoreStructure **Myfirst; // rdi
+  IDataCoreStructure **Mylast; // rax
+  IDataCoreStructure *v73; // rcx
+  __int64 **v74; // rax
+  __int64 *j; // rax
+  __int64 *i; // rax
+  unsigned __int64 nLen_3; // rbx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *_Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *Right; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *m; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,unsigned int>,void *> *k; // rdx
+  int v82; // eax
+  int *v83; // rcx
+  int v84; // eax
+  unsigned __int64 v85; // rax
+  const char *v86; // r14
+  std::_List_node<DataCoreRecordObserver *,void *> *_Myhead_8; // rdi
+  const char *(__fastcall *name_1)(std::error_category *); // r15
+  std::_List_node<DataCoreRecordObserver *,void *> *n; // rbx
+  DataCoreRecordObserver *Myval; // r9
+  const char *m_str_8; // rax
+  signed __int64 v92; // r8
+  int v93; // ecx
+  int v94; // edx
+  int v95; // eax
+  int *v96; // rcx
+  int v97; // eax
+  BOOL _Newnode; // [rsp+20h] [rbp-E0h]
+  unsigned int nameHash; // [rsp+40h] [rbp-C0h] BYREF
+  CryStringT<char> upper; // [rsp+48h] [rbp-B8h] BYREF
+  CryStringT<char> _Keyval_; // [rsp+50h] [rbp-B0h] BYREF
+  CryStringT<char> _Keyval; // [rsp+58h] [rbp-A8h] BYREF
+  CryStringT<char> _Keyval__1; // [rsp+60h] [rbp-A0h] BYREF
+  CryStringT<char> v105; // [rsp+68h] [rbp-98h] BYREF
+  XmlNodeRef ref; // [rsp+70h] [rbp-90h] BYREF
+  std::tuple<int const &> __Val_0__; // [rsp+78h] [rbp-88h] BYREF
+  std::tuple<int const &> __Val_0___2; // [rsp+80h] [rbp-80h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > v109; // [rsp+88h] [rbp-78h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_2; // [rsp+90h] [rbp-70h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead_7; // [rsp+98h] [rbp-68h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > result; // [rsp+A0h] [rbp-60h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead_6; // [rsp+A8h] [rbp-58h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > v114; // [rsp+B0h] [rbp-50h] BYREF
+  unsigned __int64 v115; // [rsp+B8h] [rbp-48h] BYREF
+  unsigned __int64 v116; // [rsp+C0h] [rbp-40h] BYREF
+  IXmlNode *p; // [rsp+C8h] [rbp-38h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_3; // [rsp+D0h] [rbp-30h] BYREF
+  std::tuple<int const &> __Val_0___1; // [rsp+D8h] [rbp-28h] BYREF
+  std::pair<std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > >,std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,unsigned int> > > > > v120; // [rsp+E0h] [rbp-20h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > v121; // [rsp+F0h] [rbp-10h] BYREF
+
+  if ( !data )
+  {
+    v6 = this->m_fnGetRecordByName(name);
+    if ( !v6 )
+      return v6;
+    this->m_fnExportRecord(v6);
+  }
+  m_str_7 = (char *)&Count;
+  v8 = -1LL;
+  m_str = (char *)&Count;
+  upper.m_str = (char *)&Count;
+  if ( name )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( name[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(&upper, nLen);
+      m_str = upper.m_str;
+      if ( upper.m_str != name )
+        memcpy_0(upper.m_str, name, nLen);
+    }
+  }
+  v11 = *((_DWORD *)m_str - 3);
+  v12 = (int *)(m_str - 12);
+  if ( v11 > 1 )
+  {
+    if ( v11 >= 0 )
+    {
+      v13 = v11 - 1;
+      *v12 = v13;
+      if ( v13 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(m_str - 12, 0LL));
+      }
+    }
+    v14 = *((int *)m_str - 2);
+    if ( *((_DWORD *)m_str - 2) )
+    {
+      v15 = v14 + 13;
+      if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+        _CryMemoryManagerPoolHelper::Init();
+      v16 = _CryMemoryManagerPoolHelper::_CryMalloc(v14 + 13, &v116, 0LL);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v116);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v15);
+      _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v15;
+      *v16 = 1;
+      m_str = (char *)(v16 + 3);
+      v16[1] = v14;
+      v16[2] = v14;
+      upper.m_str = m_str;
+      m_str[v14] = 0;
+    }
+    else
+    {
+      m_str = (char *)&Count;
+      upper.m_str = (char *)&Count;
+    }
+    if ( m_str != (char *)(v12 + 3) )
+      memcpy_0(m_str, v12 + 3, v12[1] + 1);
+  }
+  m_str_1 = (CDataCore *)m_str;
+  if ( *m_str )
+  {
+    do
+    {
+      v18 = (char)m_str_1->__vftable;
+      if ( (unsigned __int8)(LOBYTE(m_str_1->__vftable) - 65) <= 0x19u )
+        v18 += 32;
+      LOBYTE(m_str_1->__vftable) = v18;
+      m_str_1 = (CDataCore *)((char *)m_str_1 + 1);
+    }
+    while ( LOBYTE(m_str_1->__vftable) );
+  }
+  nameHash_1 = CDataCore::GenerateNameHash(m_str_1, m_str);
+  Myhead = this->m_Records._Myhead;
+  nameHash = nameHash_1;
+  Parent = Myhead->_Parent;
+  nameHash_2 = nameHash_1;
+  Myhead_1 = Myhead;
+  while ( !Parent->_Isnil )
+  {
+    if ( Parent->_Myval.first >= (unsigned int)nameHash_2 )
+    {
+      Myhead_1 = Parent;
+      Parent = Parent->_Left;
+    }
+    else
+    {
+      Parent = Parent->_Right;
+    }
+  }
+  if ( Myhead_1 == Myhead || (unsigned int)nameHash_2 < Myhead_1->_Myval.first )
+  {
+    Myhead_2 = Myhead;
+    v25 = &Myhead_2;
+  }
+  else
+  {
+    Myhead_3 = Myhead_1;
+    v25 = &Myhead_3;
+  }
+  if ( *v25 != Myhead )
+  {
+    _Parent = Myhead->_Parent;
+    Ptr = Myhead;
+    while ( !_Parent->_Isnil )
+    {
+      if ( _Parent->_Myval.first >= (unsigned int)nameHash_2 )
+      {
+        Ptr = _Parent;
+        _Parent = _Parent->_Left;
+      }
+      else
+      {
+        _Parent = _Parent->_Right;
+      }
+    }
+    if ( Ptr == Myhead || (unsigned int)nameHash_2 < Ptr->_Myval.first )
+    {
+      __Val_0__._Myfirst._Val = (const int *)&nameHash;
+      _Newnode_1 = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+                     (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&this->m_Records,
+                     (SubsumptionEvent *)Parent,
+                     &__Val_0__,
+                     v20);
+      std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+        &this->m_Records,
+        (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&result,
+        (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)Ptr,
+        (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode_1->_Myval,
+        _Newnode_1);
+      Ptr = result._Ptr;
+      LODWORD(nameHash_2) = nameHash;
+    }
+    if ( Ptr->_Myval.second )
+    {
+      _Myhead = this->m_Records._Myhead;
+      _Myhead_1 = _Myhead;
+      _Parent_1 = _Myhead->_Parent;
+      while ( !_Parent_1->_Isnil )
+      {
+        if ( _Parent_1->_Myval.first >= (unsigned int)nameHash_2 )
+        {
+          _Myhead_1 = _Parent_1;
+          _Parent_1 = _Parent_1->_Left;
+        }
+        else
+        {
+          _Parent_1 = _Parent_1->_Right;
+        }
+      }
+      if ( _Myhead_1 == _Myhead || (unsigned int)nameHash_2 < _Myhead_1->_Myval.first )
+      {
+        __Val_0___1._Myfirst._Val = (const int *)&nameHash;
+        _Newnode_2 = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+                       (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&this->m_Records,
+                       (SubsumptionEvent *)Parent,
+                       &__Val_0___1,
+                       v20);
+        std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+          &this->m_Records,
+          (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&v114,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)_Myhead_1,
+          (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode_2->_Myval,
+          _Newnode_2);
+        _Myhead_1 = v114._Ptr;
+      }
+      v33 = (void (__fastcall ***)(_QWORD, __int64))_Myhead_1->_Myval.second->GetRaw(_Myhead_1->_Myval.second);
+      if ( v33 )
+        (**v33)(v33, 1LL);
+      _Myhead_2 = this->m_Records._Myhead;
+      _Parent_2 = _Myhead_2->_Parent;
+      _Myhead_3 = _Myhead_2;
+      while ( !_Parent_2->_Isnil )
+      {
+        if ( _Parent_2->_Myval.first >= nameHash )
+        {
+          _Myhead_3 = _Parent_2;
+          _Parent_2 = _Parent_2->_Left;
+        }
+        else
+        {
+          _Parent_2 = _Parent_2->_Right;
+        }
+      }
+      if ( _Myhead_3 == _Myhead_2 || nameHash < _Myhead_3->_Myval.first )
+      {
+        __Val_0___2._Myfirst._Val = (const int *)&nameHash;
+        _Newnode_3 = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+                       (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&this->m_Records,
+                       (SubsumptionEvent *)_Myhead_2,
+                       &__Val_0___2,
+                       v34);
+        std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+          &this->m_Records,
+          (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&v109,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)_Myhead_3,
+          (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode_3->_Myval,
+          _Newnode_3);
+        _Myhead_3 = v109._Ptr;
+      }
+      second = _Myhead_3->_Myval.second;
+      if ( second )
+      {
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree((void *)second, 0LL));
+        m_str = upper.m_str;
+      }
+    }
+    std::_Tree<std::_Tmap_traits<CommHandle<3>,EntityId,std::less<CommHandle<3>>,std::allocator<std::pair<CommHandle<3> const,EntityId>>,0>>::erase(
+      (std::_Tree<std::_Tmap_traits<KytEntityId,UsableUserAnimation::SUsableAnimState,std::less<KytEntityId>,std::allocator<std::pair<KytEntityId const ,UsableUserAnimation::SUsableAnimState> >,0> > *)&this->m_Records,
+      (const KytEntityId *)&nameHash);
+  }
+  m_str_2 = (char *)&Count;
+  nLen_1 = -1LL;
+  v105.m_str = (char *)&Count;
+  do
+    ++nLen_1;
+  while ( m_str[nLen_1] );
+  if ( nLen_1 )
+  {
+    CryStringT<char>::_AllocData(&v105, nLen_1);
+    m_str_2 = v105.m_str;
+    if ( v105.m_str != m_str )
+      memcpy_0(v105.m_str, m_str, nLen_1);
+  }
+  _Myhead_4 = this->m_Structures._Myhead;
+  _Myhead_5 = _Myhead_4;
+  _Parent_3 = _Myhead_4->_Parent;
+  while ( !_Parent_3->_Isnil )
+  {
+    m_str_3 = _Parent_3->_Myval.first.m_str;
+    v46 = m_str_2 - m_str_3;
+    do
+    {
+      v47 = (unsigned __int8)m_str_3[v46];
+      nameHash_2 = (unsigned int)(unsigned __int8)*m_str_3 - v47;
+      if ( (_DWORD)nameHash_2 )
+        break;
+      ++m_str_3;
+    }
+    while ( v47 );
+    if ( (int)nameHash_2 >= 0 )
+    {
+      _Myhead_5 = _Parent_3;
+      _Parent_3 = _Parent_3->_Left;
+    }
+    else
+    {
+      _Parent_3 = _Parent_3->_Right;
+    }
+  }
+  if ( _Myhead_5 == _Myhead_4 )
+    goto LABEL_85;
+  m_str_4 = m_str_2;
+  _Parent_3 = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)(_Myhead_5->_Myval.first.m_str
+                                                                                                  - m_str_2);
+  do
+  {
+    v49 = *((unsigned __int8 *)&_Parent_3->_Left + (_QWORD)m_str_4);
+    nameHash_2 = (unsigned int)(unsigned __int8)*m_str_4 - v49;
+    if ( (_DWORD)nameHash_2 )
+      break;
+    ++m_str_4;
+  }
+  while ( v49 );
+  if ( (int)nameHash_2 < 0 )
+  {
+LABEL_85:
+    _Myhead_6 = this->m_Structures._Myhead;
+    v50 = &_Myhead_6;
+  }
+  else
+  {
+    _Myhead_7 = _Myhead_5;
+    v50 = &_Myhead_7;
+  }
+  v51 = *v50 == _Myhead_4;
+  v52 = *((_DWORD *)m_str_2 - 3);
+  v53 = (int *)(m_str_2 - 12);
+  v54 = !v51;
+  if ( v52 >= 0 )
+  {
+    v55 = v52 - 1;
+    *v53 = v55;
+    if ( v55 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v53, 0LL));
+      m_str = upper.m_str;
+    }
+  }
+  if ( v54 )
+  {
+    _Keyval.m_str = (char *)&Count;
+    nLen_2 = -1LL;
+    do
+      ++nLen_2;
+    while ( m_str[nLen_2] );
+    if ( nLen_2 )
+    {
+      CryStringT<char>::_AllocData(&_Keyval, nLen_2);
+      if ( _Keyval.m_str != m_str )
+        memcpy_0(_Keyval.m_str, m_str, nLen_2);
+    }
+    m_str_5 = std::map<CryStringT<char>,CDataCore::UrlToStruct>::operator[](
+                &this->m_Structures,
+                (const std::piecewise_construct_t *)&_Keyval,
+                nameHash_2,
+                (std::tuple<> *)_Parent_3)->m_str;
+    v60 = *((_DWORD *)_Keyval.m_str - 3);
+    v61 = _Keyval.m_str - 12;
+    m_str_6 = *(__int64 **)m_str_5;
+    if ( v60 >= 0 )
+    {
+      v63 = v60 - 1;
+      *(_DWORD *)v61 = v63;
+      if ( v63 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v61 + 2);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v61, 0LL));
+        m_str = upper.m_str;
+      }
+    }
+    while ( 1 )
+    {
+      _Keyval_.m_str = (char *)&Count;
+      Size = -1LL;
+      do
+        ++Size;
+      while ( m_str[Size] );
+      if ( Size )
+      {
+        v65 = Size + 13;
+        if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+          _CryMemoryManagerPoolHelper::Init();
+        v66 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(Size + 13, &v115, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v115);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v65);
+        _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v65;
+        m_str = upper.m_str;
+        *(_DWORD *)v66 = 1;
+        _Keyval_.m_str = v66 + 12;
+        *((_DWORD *)v66 + 1) = Size;
+        *((_DWORD *)v66 + 2) = Size;
+        _Keyval_.m_str[Size] = 0;
+        if ( _Keyval_.m_str != m_str )
+          memcpy_0(_Keyval_.m_str, m_str, Size);
+      }
+      v51 = m_str_6 == (__int64 *)std::map<CryStringT<char>,CDataCore::UrlToStruct>::operator[](
+                                    &this->m_Structures,
+                                    (const std::piecewise_construct_t *)&_Keyval_,
+                                    nameHash_3,
+                                    __Val_1_)->m_str;
+      v67 = *((_DWORD *)_Keyval_.m_str - 3);
+      v68 = !v51;
+      v69 = _Keyval_.m_str - 12;
+      if ( v67 >= 0 )
+      {
+        v70 = v67 - 1;
+        *(_DWORD *)v69 = v70;
+        if ( v70 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v69 + 2);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v69, 0LL));
+          m_str = upper.m_str;
+        }
+      }
+      if ( !v68 )
+        break;
+      Myfirst = this->m_DestructMeStructs._Myfirst;
+      Mylast = this->m_DestructMeStructs._Mylast;
+      if ( Myfirst != Mylast )
+      {
+        v73 = (IDataCoreStructure *)m_str_6[5];
+        while ( *Myfirst != v73 )
+        {
+          if ( ++Myfirst == Mylast )
+            goto LABEL_117;
+        }
+        if ( v73 )
+          ((void (__fastcall *)(IDataCoreStructure *, __int64))v73->~IDataCoreStructure)(v73, 1LL);
+        memmove(
+          Myfirst,
+          Myfirst + 1,
+          ((char *)this->m_DestructMeStructs._Mylast - (char *)(Myfirst + 1)) & 0xFFFFFFFFFFFFFFF8uLL);
+        --this->m_DestructMeStructs._Mylast;
+      }
+LABEL_117:
+      if ( !*((_BYTE *)m_str_6 + 25) )
+      {
+        v74 = (__int64 **)m_str_6[2];
+        if ( *((_BYTE *)v74 + 25) )
+        {
+          for ( i = (__int64 *)m_str_6[1]; !*((_BYTE *)i + 25); i = (__int64 *)i[1] )
+          {
+            if ( m_str_6 != (__int64 *)i[2] )
+              break;
+            m_str_6 = i;
+          }
+          m_str_6 = i;
+        }
+        else
+        {
+          m_str_6 = (__int64 *)m_str_6[2];
+          for ( j = *v74; !*((_BYTE *)j + 25); j = (__int64 *)*j )
+            m_str_6 = j;
+        }
+      }
+    }
+    _Keyval__1.m_str = (char *)&Count;
+    nLen_3 = -1LL;
+    do
+      ++nLen_3;
+    while ( m_str[nLen_3] );
+    if ( nLen_3 )
+    {
+      CryStringT<char>::_AllocData(&_Keyval__1, nLen_3);
+      m_str_7 = _Keyval__1.m_str;
+      if ( _Keyval__1.m_str != m_str )
+        memcpy_0(_Keyval__1.m_str, m_str, nLen_3);
+    }
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned short,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,unsigned short>>,0>>::_Eqrange(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,unsigned int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,unsigned int> >,0> > *)&this->m_Structures,
+      &v120,
+      &_Keyval__1);
+    _Ptr = v120.first._Ptr;
+    while ( _Ptr != v120.second._Ptr )
+    {
+      if ( !_Ptr->_Isnil )
+      {
+        Right = _Ptr->_Right;
+        if ( Right->_Isnil )
+        {
+          for ( k = _Ptr->_Parent; !k->_Isnil; k = k->_Parent )
+          {
+            if ( _Ptr != k->_Right )
+              break;
+            _Ptr = k;
+          }
+          _Ptr = k;
+        }
+        else
+        {
+          _Ptr = _Ptr->_Right;
+          for ( m = Right->_Left; !m->_Isnil; m = m->_Left )
+            _Ptr = m;
+        }
+      }
+    }
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::erase(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *)&this->m_Structures,
+      &v121,
+      (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)v120.first._Ptr,
+      (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)v120.second._Ptr);
+    v82 = *((_DWORD *)m_str_7 - 3);
+    v83 = (int *)(m_str_7 - 12);
+    if ( v82 >= 0 )
+    {
+      v84 = v82 - 1;
+      *v83 = v84;
+      if ( v84 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_7 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v83, 0LL));
+        m_str = upper.m_str;
+      }
+    }
+  }
+  v85 = this->m_fnGetRecordByName(m_str);
+  if ( v85 )
+  {
+    v86 = this->m_fnGetRecordSchemaName(v85);
+    do
+      ++v8;
+    while ( data[v8] );
+    LOBYTE(_Newnode) = 0;
+    gEnv.pSystem->LoadXmlFromBuffer(gEnv.pSystem, &ref, data, v8, _Newnode);
+    p = ref.p;
+    if ( ref.p )
+      ref.p->AddRef(ref.p);
+    ((void (__fastcall *)(CDataCore *, _QWORD, const char *, char *, char *, IXmlNode **, char))this->LoadStruct)(
+      this,
+      0LL,
+      v86,
+      m_str,
+      m_str,
+      &p,
+      1);
+    CDataCore::ResolveRefs(this);
+    _Myhead_8 = this->m_pObservers._Myhead;
+    name_1 = name;
+    for ( n = _Myhead_8->_Next; n != _Myhead_8; n = n->_Next )
+    {
+      Myval = n->_Myval;
+      m_str_8 = Myval->m_ObservedType.m_str;
+      v92 = v86 - m_str_8;
+      do
+      {
+        v93 = (unsigned __int8)m_str_8[v92];
+        v94 = *(unsigned __int8 *)m_str_8 - v93;
+        if ( v94 )
+          break;
+        ++m_str_8;
+      }
+      while ( v93 );
+      if ( !v94 )
+        Myval->m_Funk.thunk(&n->_Myval->m_Funk, name, (RecordUpdateType)bInitialLoad);
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  else
+  {
+    name_1 = name;
+  }
+  CryLog("DataCore: File %s has changed. Reloading.", name_1);
+  v95 = *((_DWORD *)m_str - 3);
+  v96 = (int *)(m_str - 12);
+  if ( v95 >= 0 )
+  {
+    v97 = v95 - 1;
+    *v96 = v97;
+    if ( v97 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v96, 0LL));
+    }
+  }
+  LOBYTE(v6) = 1;
+  return v6;
+}
+
+// --- End Function: ?ReloadRecord@CDataCore@@AEAA_NPEBD0_N@Z (0x15131C960) ---
+
+// --- Function: ?LoadRecordDeprecated@CDataCore@@UEAA?AVXmlNodeRef@@PEBD@Z (0x15131D350) ---
+XmlNodeRef *__fastcall CDataCore::LoadRecordDeprecated(CDataCore *this, XmlNodeRef *result, const char *name)
+{
+  FARPROC DB_Export; // rax
+  __int64 v6; // rax
+  __int64 v7; // r9
+  IXmlNode *p; // rcx
+  XmlNodeRef ref; // [rsp+40h] [rbp+8h] BYREF
+
+  DB_Export = GetProcAddress((HMODULE)this->m_hDAL, "DB_Export");
+  if ( !DB_Export )
+    goto LABEL_9;
+  v6 = ((__int64 (__fastcall *)(const char *))DB_Export)(name);
+  if ( !v6 )
+  {
+    CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "DataCore: File %s could not be loaded.", name);
+LABEL_9:
+    result->p = 0LL;
+    return result;
+  }
+  v7 = -1LL;
+  do
+    ++v7;
+  while ( *(_BYTE *)(v6 + v7) );
+  ((void (__fastcall *)(ISystem *, XmlNodeRef *, __int64))gEnv.pSystem->LoadXmlFromBuffer)(gEnv.pSystem, &ref, v6);
+  p = ref.p;
+  result->p = ref.p;
+  if ( p )
+  {
+    p->AddRef(p);
+    if ( ref.p )
+    {
+      ref.p->Release(ref.p);
+      return result;
+    }
+  }
+  return result;
+}
+
+// --- End Function: ?LoadRecordDeprecated@CDataCore@@UEAA?AVXmlNodeRef@@PEBD@Z (0x15131D350) ---
+
+// --- Function: ?Shutdown@CDataCore@@UEAAXXZ (0x15131D410) ---
+void __fastcall CDataCore::Shutdown(CDataCore *this)
+{
+  void (*m_fnUnload)(void); // rax
+
+  m_fnUnload = this->m_fnUnload;
+  if ( m_fnUnload )
+    m_fnUnload();
+}
+
+// --- End Function: ?Shutdown@CDataCore@@UEAAXXZ (0x15131D410) ---
+
+// --- Function: ?DFFileLoader@CDataCore@@CA_NPEBDPEAX@Z (0x15131D420) ---
+char __fastcall CDataCore::DFFileLoader(const char *fn, void *data)
+{
+  _iobuf *v3; // rax
+  _iobuf *v4; // rdi
+  unsigned __int64 v5; // rbx
+  bool v6; // zf
+  ICryPak_vtbl *v7; // rax
+
+  v3 = gEnv.pCryPak->FOpen(gEnv.pCryPak, fn, "rb", 0LL);
+  v4 = v3;
+  if ( v3 )
+  {
+    v5 = gEnv.pCryPak->FGetSize(gEnv.pCryPak, v3);
+    v6 = gEnv.pCryPak->FReadRawAll(gEnv.pCryPak, data, v5, v4) == v5;
+    v7 = gEnv.pCryPak->__vftable;
+    if ( v6 )
+    {
+      v7->FClose(gEnv.pCryPak, v4);
+      return 1;
+    }
+    v7->FClose(gEnv.pCryPak, v4);
+  }
+  return 0;
+}
+
+// --- End Function: ?DFFileLoader@CDataCore@@CA_NPEBDPEAX@Z (0x15131D420) ---
+
+// --- Function: ?DFFileSizer@CDataCore@@CAIPEBD@Z (0x15131D4D0) ---
+_iobuf *__fastcall CDataCore::DFFileSizer(const char *fn)
+{
+  _iobuf *result; // rax
+  _iobuf *v2; // rdi
+  unsigned int v3; // ebx
+
+  result = gEnv.pCryPak->FOpen(gEnv.pCryPak, fn, "rb", 0LL);
+  v2 = result;
+  if ( result )
+  {
+    v3 = gEnv.pCryPak->FGetSize(gEnv.pCryPak, result);
+    gEnv.pCryPak->FClose(gEnv.pCryPak, v2);
+    return (_iobuf *)v3;
+  }
+  return result;
+}
+
+// --- End Function: ?DFFileSizer@CDataCore@@CAIPEBD@Z (0x15131D4D0) ---
+
+// --- Function: ?ScanFolder@CDataCore@@AEAAXPEBD0AEAV?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@@Z (0x15131D540) ---
+void __fastcall CDataCore::ScanFolder(
+        CDataCore *this,
+        char *folderName,
+        const char *fileType,
+        std::vector<CryStringT<char>> *outFiles)
+{
+  size_t m_nLength; // rsi
+  char *m_strBuf; // rdi
+  unsigned __int64 m_nAllocSize; // r10
+  unsigned __int64 m_nAllocSize_1; // rbx
+  char *m_strBuf_1; // rax
+  unsigned __int64 n8; // rbx
+  CryFixedStringT<512> *m_strBuf_2; // rcx
+  char *m_strBuf_3; // rdx
+  char *m_strBuf_4; // rax
+  char *m_str; // rcx
+  __int64 v14; // rax
+  CryFixedStringT<512> *m_strBuf_5; // rcx
+  __int64 v16; // rbx
+  unsigned __int64 nLen; // r8
+  char *m_str_1; // rdi
+  bool v19; // sf
+  char *v20; // rcx
+  char *m_str_2; // rbx
+  unsigned __int64 (__fastcall *Size_1)(CRendElement *); // rsi
+  bool v23; // cc
+  int *v24; // r8
+  __int64 v25; // rdx
+  unsigned __int64 (__fastcall *Size_2)(CRendElement *); // rax
+  unsigned __int64 n8_3; // rcx
+  unsigned __int64 n8_5; // rax
+  unsigned __int64 n8_1; // rdx
+  unsigned __int64 (__fastcall *Size_3)(CRendElement *); // rax
+  int v31; // eax
+  bool v32; // zf
+  int v33; // eax
+  int v34; // eax
+  __int64 v35; // rsi
+  unsigned __int64 v36; // rdi
+  char *v37; // rax
+  int v38; // eax
+  int *v39; // rcx
+  int v40; // eax
+  int *v41; // rdi
+  char *m_str_4; // rsi
+  int v43; // eax
+  int v44; // eax
+  __int64 v45; // rsi
+  unsigned __int64 v46; // rbx
+  _DWORD *v47; // rax
+  int v48; // eax
+  int *v49; // rcx
+  int v50; // eax
+  unsigned __int64 n511_3; // rdi
+  _BYTE *v52; // rsi
+  size_t n511_1; // rbx
+  _BYTE *v54; // rax
+  char *m_strBuf_6; // rax
+  std::string *(__fastcall **Ext)(std::error_category *, std::string *, int); // rax
+  char *m_str_5; // rdi
+  unsigned __int64 nLen_1; // rbx
+  int v59; // eax
+  char *v60; // rcx
+  int v61; // eax
+  int *n8_6; // rbx
+  unsigned __int64 (__fastcall *Size_4)(CRendElement *); // rsi
+  int *v64; // r8
+  __int64 v65; // rdx
+  int v66; // eax
+  char *v67; // rcx
+  int v68; // eax
+  int v69; // eax
+  unsigned __int64 n8_2; // rdx
+  char *m_str_6; // rbx
+  int v72; // eax
+  char *m_str_7; // r8
+  int v74; // eax
+  int v75; // eax
+  size_t Size; // [rsp+30h] [rbp-D0h]
+  char *Sizea; // [rsp+30h] [rbp-D0h]
+  size_t Sizeb; // [rsp+30h] [rbp-D0h]
+  CryStringT<char> v79; // [rsp+38h] [rbp-C8h] BYREF
+  CryStringT<char> v80; // [rsp+40h] [rbp-C0h] BYREF
+  __int64 v81; // [rsp+48h] [rbp-B8h]
+  CryStringT<char> newFolder; // [rsp+50h] [rbp-B0h] BYREF
+  void *v83; // [rsp+58h] [rbp-A8h]
+  CryStringT<char> _Val; // [rsp+60h] [rbp-A0h] BYREF
+  CryStringT<char> gamePath; // [rsp+68h] [rbp-98h] BYREF
+  ICryPak *pCryPak; // [rsp+70h] [rbp-90h]
+  char *v87; // [rsp+78h] [rbp-88h]
+  unsigned __int64 n8_4; // [rsp+80h] [rbp-80h]
+  void *m_str_3; // [rsp+88h] [rbp-78h]
+  CryStringT<char> result; // [rsp+90h] [rbp-70h] BYREF
+  unsigned __int64 v91; // [rsp+98h] [rbp-68h] BYREF
+  unsigned __int64 v92; // [rsp+A0h] [rbp-60h] BYREF
+  CryFixedStringT<512> searchString; // [rsp+B0h] [rbp-50h] BYREF
+  CryFixedStringT<512> fileName; // [rsp+2D0h] [rbp+1D0h] BYREF
+  _finddata64i32_t fd; // [rsp+4F0h] [rbp+3F0h] BYREF
+  size_t n511_2; // [rsp+620h] [rbp+520h]
+  __int64 n511; // [rsp+628h] [rbp+528h]
+  void *v98; // [rsp+630h] [rbp+530h]
+  _BYTE v99[552]; // [rsp+638h] [rbp+538h] BYREF
+
+  m_nLength = 0LL;
+  m_strBuf = searchString.m_strBuf;
+  m_nAllocSize = 511LL;
+  searchString.m_strBuf[0] = 0;
+  pCryPak = gEnv.pCryPak;
+  searchString.m_str = searchString.m_strBuf;
+  searchString.m_nLength = 0LL;
+  searchString.m_nAllocSize = 511LL;
+  if ( folderName )
+  {
+    m_nAllocSize_1 = -1LL;
+    do
+      ++m_nAllocSize_1;
+    while ( folderName[m_nAllocSize_1] );
+    if ( m_nAllocSize_1 )
+    {
+      m_strBuf_1 = searchString.m_strBuf;
+      if ( m_nAllocSize_1 + 1 <= 0x200 )
+      {
+        searchString.m_nAllocSize = 511LL;
+      }
+      else
+      {
+        m_strBuf_1 = (char *)`anonymous namespace'::custom_xml_malloc(m_nAllocSize_1 + 1);
+        `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += m_nAllocSize_1 + 1;
+        searchString.m_nAllocSize = m_nAllocSize_1;
+      }
+      searchString.m_str = m_strBuf_1;
+      searchString.m_nLength = m_nAllocSize_1;
+      m_strBuf_1[m_nAllocSize_1] = 0;
+      memcpy_0(searchString.m_str, folderName, m_nAllocSize_1);
+      m_strBuf = searchString.m_str;
+      m_nAllocSize = searchString.m_nAllocSize;
+      m_nLength = searchString.m_nLength;
+    }
+  }
+  n8 = m_nLength + 3;
+  if ( m_nLength + 3 <= m_nAllocSize )
+  {
+    qmemcpy(&m_strBuf[m_nLength], "*.*", 3);
+    searchString.m_nLength += 3LL;
+    searchString.m_str[searchString.m_nLength] = 0;
+    goto LABEL_23;
+  }
+  m_strBuf_2 = (CryFixedStringT<512> *)m_strBuf;
+  if ( 2 * m_nLength > n8 )
+    n8 = 2 * m_nLength;
+  if ( n8 )
+  {
+    if ( n8 < 8 )
+      n8 = 8LL;
+    m_strBuf_3 = searchString.m_strBuf;
+    if ( n8 + 1 <= 0x200 )
+    {
+      searchString.m_nAllocSize = 511LL;
+    }
+    else
+    {
+      m_strBuf_4 = (char *)`anonymous namespace'::custom_xml_malloc(n8 + 1);
+      searchString.m_nAllocSize = n8;
+      `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += n8 + 1;
+      m_strBuf_3 = m_strBuf_4;
+    }
+    searchString.m_str = m_strBuf_3;
+    m_strBuf_3[n8] = 0;
+    memcpy_0(searchString.m_str, m_strBuf, m_nLength);
+    m_str = searchString.m_str;
+    *(_WORD *)&searchString.m_str[m_nLength] = *(_WORD *)"*.*";
+    m_str[m_nLength + 2] = szPart2[2];
+    m_strBuf_2 = (CryFixedStringT<512> *)m_strBuf;
+    searchString.m_nLength = m_nLength + 3;
+    searchString.m_str[m_nLength + 3] = 0;
+    m_strBuf = searchString.m_str;
+    m_nAllocSize = searchString.m_nAllocSize;
+  }
+  if ( m_strBuf_2 != (CryFixedStringT<512> *)searchString.m_strBuf )
+  {
+    `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += -1LL - m_nAllocSize;
+    if ( m_strBuf_2 )
+    {
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(m_strBuf_2, 0LL));
+LABEL_23:
+      m_strBuf = searchString.m_str;
+    }
+  }
+  v14 = pCryPak->FindFirst(pCryPak, m_strBuf, &fd, 0, 0);
+  m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_strBuf;
+  fileName.m_strBuf[0] = 0;
+  fileName.m_str = fileName.m_strBuf;
+  fileName.m_nLength = 0LL;
+  v81 = v14;
+  fileName.m_nAllocSize = 511LL;
+  newFolder.m_str = (char *)&Count;
+  if ( v14 > -1 )
+  {
+    v16 = v14;
+    while ( 1 )
+    {
+      if ( (fd.name[0] != pObjectName[0] || fd.name[1] != pObjectName[1])
+        && (fd.name[0] != asc_1527A5A00[0] || fd.name[1] != asc_1527A5A00[1] || fd.name[2] != asc_1527A5A00[2])
+        && (fd.attrib & 2) == 0 )
+      {
+        if ( (fd.attrib & 0x10) != 0 )
+        {
+          if ( folderName )
+          {
+            nLen = -1LL;
+            do
+              ++nLen;
+            while ( folderName[nLen] );
+          }
+          else
+          {
+            nLen = 0LL;
+          }
+          CryStringT<char>::_Assign(&newFolder, folderName, nLen);
+          m_str_1 = newFolder.m_str;
+          v19 = *((int *)newFolder.m_str - 3) < 0;
+          v20 = newFolder.m_str - 12;
+          v83 = newFolder.m_str - 12;
+          if ( v19 )
+          {
+            m_str_2 = (char *)&Count;
+          }
+          else
+          {
+            ++*(_DWORD *)v20;
+            m_str_2 = m_str_1;
+          }
+          v79.m_str = m_str_2;
+          Size_1 = -1LL;
+          do
+            ++Size_1;
+          while ( fd.name[Size_1] );
+          if ( Size_1 )
+          {
+            v23 = *((_DWORD *)m_str_2 - 3) <= 1;
+            v24 = (int *)(m_str_2 - 12);
+            v87 = m_str_2 - 12;
+            if ( v23 && (v25 = *((int *)m_str_2 - 2), v25 + Size_1 <= *((int *)m_str_2 - 1)) )
+            {
+              if ( &m_str_2[v25] != fd.name )
+                memcpy_0(&m_str_2[v25], fd.name, Size_1);
+              *((_DWORD *)m_str_2 - 2) += Size_1;
+              m_str_2[*((int *)m_str_2 - 2)] = 0;
+            }
+            else
+            {
+              Size_2 = *((int *)m_str_2 - 2);
+              m_str_3 = m_str_2;
+              n8_3 = Size_2 + Size_1;
+              Size = Size_2;
+              n8_5 = 2 * Size_2;
+              n8_1 = n8_3;
+              n8_4 = n8_3;
+              if ( n8_5 > n8_3 )
+                n8_1 = n8_5;
+              if ( n8_1 )
+              {
+                if ( n8_1 < 8 )
+                  n8_1 = 8LL;
+                CryStringT<char>::_AllocData(&v79, n8_1);
+                m_str_2 = v79.m_str;
+                if ( v79.m_str != m_str_3 )
+                  memcpy_0(v79.m_str, m_str_3, Size);
+                Size_3 = Size;
+                if ( &m_str_2[Size] != fd.name )
+                {
+                  memcpy_0(&m_str_2[Size], fd.name, Size_1);
+                  Size_3 = Size;
+                }
+                v24 = (int *)v87;
+                *((_DWORD *)m_str_2 - 2) = Size_1 + Size_3;
+                m_str_2[n8_4] = 0;
+              }
+              if ( *v24 >= 0 )
+              {
+                v31 = *v24 - 1;
+                *v24 = v31;
+                if ( v31 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v24[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v24, 0LL));
+                  m_str_1 = newFolder.m_str;
+                  m_str_2 = v79.m_str;
+                }
+              }
+            }
+            v20 = (char *)v83;
+          }
+          v32 = *((_DWORD *)m_str_1 - 2) == 0;
+          v79.m_str = m_str_1;
+          if ( !v32 )
+          {
+            v33 = *(_DWORD *)v20;
+            if ( *(int *)v20 < 0 )
+            {
+              if ( v33 > 1 )
+              {
+                v35 = *((int *)v20 + 1);
+                if ( *((_DWORD *)v20 + 1) )
+                {
+                  v36 = v35 + 13;
+                  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                    _CryMemoryManagerPoolHelper::Init();
+                  v37 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v35 + 13, &v92, 0LL);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory,
+                    v92);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory,
+                    v36);
+                  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v36;
+                  v20 = (char *)v83;
+                  *(_DWORD *)v37 = 1;
+                  m_str_1 = v37 + 12;
+                  *((_DWORD *)v37 + 1) = v35;
+                  *((_DWORD *)v37 + 2) = v35;
+                  v37[v35 + 12] = 0;
+                  v79.m_str = v37 + 12;
+                }
+                else
+                {
+                  m_str_1 = (char *)&Count;
+                  v79.m_str = (char *)&Count;
+                }
+                if ( m_str_1 != v20 + 12 )
+                  memcpy_0(m_str_1, v20 + 12, *((_DWORD *)v20 + 1) + 1);
+              }
+              if ( *((_DWORD *)m_str_1 - 2) )
+              {
+                *((_DWORD *)m_str_1 - 2) = 0;
+                *m_str_1 = 0;
+              }
+            }
+            else
+            {
+              v34 = v33 - 1;
+              *(_DWORD *)v20 = v34;
+              if ( v34 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v20 + 2);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v20, 0LL));
+              }
+              m_str_1 = (char *)&Count;
+              v79.m_str = (char *)&Count;
+            }
+          }
+          v38 = *((_DWORD *)m_str_1 - 3);
+          v39 = (int *)(m_str_1 - 12);
+          if ( v38 >= 0 )
+          {
+            v40 = v38 - 1;
+            *v39 = v40;
+            if ( v40 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v39, 0LL));
+            }
+          }
+          v41 = (int *)(m_str_2 - 12);
+          if ( *((int *)m_str_2 - 3) < 0 )
+          {
+            v80.m_str = (char *)&Count;
+          }
+          else
+          {
+            ++*v41;
+            v80.m_str = m_str_2;
+          }
+          CryStringT<char>::_ConcatenateInPlace(&v80, "\\", 1uLL);
+          v32 = *((_DWORD *)m_str_2 - 2) == 0;
+          m_str_4 = v80.m_str;
+          Sizea = v80.m_str;
+          newFolder.m_str = v80.m_str;
+          v80.m_str = m_str_2;
+          if ( !v32 )
+          {
+            v43 = *v41;
+            if ( *v41 < 0 )
+            {
+              if ( v43 > 1 )
+              {
+                v45 = *((int *)m_str_2 - 2);
+                if ( *((_DWORD *)m_str_2 - 2) )
+                {
+                  v46 = v45 + 13;
+                  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                    _CryMemoryManagerPoolHelper::Init();
+                  v47 = _CryMemoryManagerPoolHelper::_CryMalloc(v45 + 13, &v91, 0LL);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory,
+                    v91);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory,
+                    v46);
+                  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v46;
+                  *v47 = 1;
+                  m_str_2 = (char *)(v47 + 3);
+                  v47[1] = v45;
+                  v47[2] = v45;
+                  v80.m_str = m_str_2;
+                  m_str_2[v45] = 0;
+                }
+                else
+                {
+                  m_str_2 = (char *)&Count;
+                  v80.m_str = (char *)&Count;
+                }
+                if ( m_str_2 != (char *)(v41 + 3) )
+                  memcpy_0(m_str_2, v41 + 3, v41[1] + 1);
+                m_str_4 = Sizea;
+              }
+              if ( *((_DWORD *)m_str_2 - 2) )
+              {
+                *((_DWORD *)m_str_2 - 2) = 0;
+                *m_str_2 = 0;
+              }
+            }
+            else
+            {
+              v44 = v43 - 1;
+              *v41 = v44;
+              if ( v44 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(m_str_2 - 12, 0LL));
+              }
+              m_str_2 = (char *)&Count;
+              v80.m_str = (char *)&Count;
+            }
+          }
+          v48 = *((_DWORD *)m_str_2 - 3);
+          v49 = (int *)(m_str_2 - 12);
+          if ( v48 >= 0 )
+          {
+            v50 = v48 - 1;
+            *v49 = v50;
+            if ( v50 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v49, 0LL));
+            }
+          }
+          CDataCore::ScanFolder(this, m_str_4, fileType, outFiles);
+        }
+        else
+        {
+          n511_3 = 0LL;
+          v52 = v99;
+          v99[0] = 0;
+          n511 = 511LL;
+          n511_1 = -1LL;
+          v98 = v99;
+          n511_2 = 0LL;
+          do
+            ++n511_1;
+          while ( fd.name[n511_1] );
+          if ( n511_1 )
+          {
+            v54 = v99;
+            if ( n511_1 + 1 <= 0x200 )
+            {
+              n511 = 511LL;
+            }
+            else
+            {
+              v54 = `anonymous namespace'::custom_xml_malloc(n511_1 + 1);
+              `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += n511_1 + 1;
+              n511 = n511_1;
+            }
+            v98 = v54;
+            n511_2 = n511_1;
+            v54[n511_1] = 0;
+            memcpy_0(v98, fd.name, n511_1);
+            m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_str;
+            v52 = v98;
+            n511_3 = n511_2;
+          }
+          if ( n511_3 > fileName.m_nAllocSize )
+          {
+            if ( m_strBuf_5 != (CryFixedStringT<512> *)fileName.m_strBuf )
+            {
+              `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += -1LL - fileName.m_nAllocSize;
+              if ( m_strBuf_5 )
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(m_strBuf_5, 0LL));
+            }
+            fileName.m_strBuf[0] = 0;
+            fileName.m_nAllocSize = 511LL;
+            fileName.m_str = fileName.m_strBuf;
+            fileName.m_nLength = 0LL;
+            if ( n511_3 )
+            {
+              m_strBuf_6 = fileName.m_strBuf;
+              if ( n511_3 + 1 <= 0x200 )
+              {
+                fileName.m_nAllocSize = 511LL;
+              }
+              else
+              {
+                m_strBuf_6 = (char *)`anonymous namespace'::custom_xml_malloc(n511_3 + 1);
+                `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += n511_3 + 1;
+                fileName.m_nAllocSize = n511_3;
+              }
+              fileName.m_str = m_strBuf_6;
+              fileName.m_nLength = n511_3;
+              m_strBuf_6[n511_3] = 0;
+              m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_str;
+            }
+            else
+            {
+              m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_strBuf;
+              fileName.m_strBuf[0] = 0;
+              fileName.m_nLength = 0LL;
+              fileName.m_str = fileName.m_strBuf;
+              fileName.m_nAllocSize = 511LL;
+            }
+          }
+          memcpy_0(m_strBuf_5, v52, n511_3);
+          fileName.m_nLength = n511_3;
+          fileName.m_str[n511_3] = 0;
+          if ( v98 != v99 )
+          {
+            `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += -1 - n511;
+            if ( v98 )
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v98, 0LL));
+          }
+          Ext = PathUtil::GetExt(fileName.m_str);
+          if ( !strcmpi((const char *)Ext, fileType) )
+          {
+            m_str_5 = (char *)&Count;
+            gamePath.m_str = (char *)&Count;
+            if ( folderName )
+            {
+              nLen_1 = -1LL;
+              do
+                ++nLen_1;
+              while ( folderName[nLen_1] );
+              if ( nLen_1 )
+              {
+                CryStringT<char>::_AllocData(&gamePath, nLen_1);
+                m_str_5 = gamePath.m_str;
+                if ( gamePath.m_str != folderName )
+                  memcpy_0(gamePath.m_str, folderName, nLen_1);
+              }
+            }
+            PathUtil::MakeGamePath(&result, &gamePath);
+            v59 = *((_DWORD *)result.m_str - 3);
+            v60 = result.m_str - 12;
+            if ( v59 >= 0 )
+            {
+              v61 = v59 - 1;
+              *(_DWORD *)v60 = v61;
+              if ( v61 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v60 + 2);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v60, 0LL));
+                m_str_5 = gamePath.m_str;
+              }
+            }
+            v19 = *((int *)m_str_5 - 3) < 0;
+            n8_6 = (int *)(m_str_5 - 12);
+            n8_4 = (unsigned __int64)(m_str_5 - 12);
+            if ( v19 )
+            {
+              m_str_5 = (char *)&Count;
+              _Val.m_str = (char *)&Count;
+            }
+            else
+            {
+              ++*n8_6;
+              _Val.m_str = m_str_5;
+            }
+            Size_4 = -1LL;
+            do
+              ++Size_4;
+            while ( fd.name[Size_4] );
+            if ( Size_4 )
+            {
+              v23 = *((_DWORD *)m_str_5 - 3) <= 1;
+              v64 = (int *)(m_str_5 - 12);
+              v87 = m_str_5 - 12;
+              if ( v23 && (v65 = *((int *)m_str_5 - 2), Size_4 + v65 <= *((int *)m_str_5 - 1)) )
+              {
+                if ( &m_str_5[v65] != fd.name )
+                  memcpy_0(&m_str_5[v65], fd.name, Size_4);
+                *((_DWORD *)m_str_5 - 2) += Size_4;
+                m_str_5[*((int *)m_str_5 - 2)] = 0;
+              }
+              else
+              {
+                Sizeb = *((int *)m_str_5 - 2);
+                n8_2 = Sizeb + Size_4;
+                if ( 2 * Sizeb > Sizeb + Size_4 )
+                  n8_2 = 2 * Sizeb;
+                if ( n8_2 )
+                {
+                  if ( n8_2 < 8 )
+                    n8_2 = 8LL;
+                  CryStringT<char>::_AllocData(&_Val, n8_2);
+                  m_str_6 = _Val.m_str;
+                  if ( _Val.m_str != m_str_5 )
+                    memcpy_0(_Val.m_str, m_str_5, Sizeb);
+                  if ( &m_str_6[Sizeb] != fd.name )
+                    memcpy_0(&m_str_6[Sizeb], fd.name, Size_4);
+                  v64 = (int *)v87;
+                  *((_DWORD *)m_str_6 - 2) = Size_4 + Sizeb;
+                  m_str_6[Sizeb + Size_4] = 0;
+                  n8_6 = (int *)n8_4;
+                }
+                if ( *v64 >= 0 )
+                {
+                  v72 = *v64 - 1;
+                  *v64 = v72;
+                  if ( v72 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v64[2];
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v64, 0LL));
+                  }
+                }
+              }
+            }
+            std::vector<CryStringT<char>>::push_back(outFiles, &_Val);
+            v66 = *((_DWORD *)_Val.m_str - 3);
+            v67 = _Val.m_str - 12;
+            if ( v66 >= 0 )
+            {
+              v68 = v66 - 1;
+              *(_DWORD *)v67 = v68;
+              if ( v68 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v67 + 2);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v67, 0LL));
+              }
+            }
+            if ( *n8_6 >= 0 )
+            {
+              v69 = *n8_6 - 1;
+              *n8_6 = v69;
+              if ( v69 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - n8_6[2];
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(n8_6, 0LL));
+              }
+            }
+          }
+        }
+        v16 = v81;
+      }
+      if ( pCryPak->FindNext(pCryPak, v16, &fd) < 0 )
+        break;
+      m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_str;
+    }
+    pCryPak->FindClose(pCryPak, v16);
+    m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_str;
+  }
+  m_str_7 = newFolder.m_str;
+  v74 = *((_DWORD *)newFolder.m_str - 3);
+  if ( v74 >= 0 )
+  {
+    v75 = v74 - 1;
+    *((_DWORD *)newFolder.m_str - 3) = v75;
+    if ( v75 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_7 - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(m_str_7 - 12, 0LL));
+    }
+    m_strBuf_5 = (CryFixedStringT<512> *)fileName.m_str;
+  }
+  if ( m_strBuf_5 != (CryFixedStringT<512> *)fileName.m_strBuf )
+  {
+    `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += -1LL - fileName.m_nAllocSize;
+    if ( m_strBuf_5 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(m_strBuf_5, 0LL));
+  }
+  if ( searchString.m_str != searchString.m_strBuf )
+  {
+    `CryStackStringT<char,512>::_usedMemory'::`2'::s_used_memory += -1LL - searchString.m_nAllocSize;
+    if ( searchString.m_str )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(searchString.m_str, 0LL));
+  }
+}
+
+// --- End Function: ?ScanFolder@CDataCore@@AEAAXPEBD0AEAV?$vector@V?$CryStringT@D@@V?$allocator@V?$CryStringT@D@@@std@@@std@@@Z (0x15131D540) ---
+
+// --- Function: ?OnLogMessage@CDataCore@@CA_NIPEBD@Z (0x15131E230) ---
+bool __fastcall CDataCore::OnLogMessage(const unsigned int type, const char *msg)
+{
+  if ( type == 1 )
+  {
+    CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_COMMENT, msg);
+    return 0;
+  }
+  else
+  {
+    if ( type == 2 || type == 3 )
+      CryLogAlways(msg);
+    return 0;
+  }
+}
+
+// --- End Function: ?OnLogMessage@CDataCore@@CA_NIPEBD@Z (0x15131E230) ---
+
+// --- Function: ?RegisterStruct@CDataCore@@UEAAXPEBDPEAUIRecordCreator@@QEAUCDataCoreField@@_K0@Z (0x15131E270) ---
+void __fastcall CDataCore::RegisterStruct(
+        CDataCore *this,
+        char *structName,
+        IRecordCreator *pCreator,
+        std::tuple<> *defs,
+        __int64 numDefs,
+        const char *pInheritsFrom)
+{
+  unsigned __int64 nLen; // rbx
+  CryStringT<char> *v11; // rax
+  int v12; // eax
+  char *v13; // rcx
+  int v14; // eax
+  __int128 v15; // [rsp+20h] [rbp-38h]
+  __int128 v16; // [rsp+30h] [rbp-28h]
+  CryStringT<char> _Keyval; // [rsp+60h] [rbp+8h] BYREF
+
+  _Keyval.m_str = (char *)&Count;
+  if ( structName )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( structName[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(&_Keyval, nLen);
+      if ( _Keyval.m_str != structName )
+        memcpy_0(_Keyval.m_str, structName, nLen);
+    }
+  }
+  *((_QWORD *)&v15 + 1) = numDefs;
+  *(_QWORD *)&v15 = defs;
+  *((_QWORD *)&v16 + 1) = pInheritsFrom;
+  *(_QWORD *)&v16 = pCreator;
+  v11 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+          &this->m_GameStructures,
+          (const std::piecewise_construct_t *)&_Keyval,
+          (__int64)pCreator,
+          defs);
+  *(_OWORD *)&v11->m_str = v15;
+  *(_OWORD *)&v11[2].m_str = v16;
+  v12 = *((_DWORD *)_Keyval.m_str - 3);
+  v13 = _Keyval.m_str - 12;
+  if ( v12 >= 0 )
+  {
+    v14 = v12 - 1;
+    *(_DWORD *)v13 = v14;
+    if ( v14 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v13 + 2);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v13, 0LL));
+    }
+  }
+}
+
+// --- End Function: ?RegisterStruct@CDataCore@@UEAAXPEBDPEAUIRecordCreator@@QEAUCDataCoreField@@_K0@Z (0x15131E270) ---
+
+// --- Function: ?GetRecordNamesForSchema@CDataCore@@UEAA?AU?$DynArray@PEBDHU?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@@@PEBD@Z (0x15131E380) ---
+DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *__fastcall CDataCore::GetRecordNamesForSchema(
+        CDataCore *this,
+        DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *allocator,
+        const char *schemaName)
+{
+  const char **?s_EmptyElems@?1??null_header@Header@?$Store@PEBDH@?$SmallDynSt; // rax
+  __int64 v7; // rdi
+  __int64 v8; // r14
+  const unsigned __int64 *v9; // r15
+  const char *v10; // rax
+  const char *v11; // r9
+  int v12; // edx
+  int v13; // r8d
+  const char *v14; // rbx
+  __int64 v15; // rcx
+  const char **v16; // rcx
+  const char **v17; // rax
+
+  if ( (`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::`local static guard' & 1) != 0 )
+  {
+    ?s_EmptyElems@?1??null_header@Header@?$Store@PEBDH@?$SmallDynSt = (const char **)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::s_EmptyElems;
+  }
+  else
+  {
+    `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::`local static guard' |= 1u;
+    ?s_EmptyElems@?1??null_header@Header@?$Store@PEBDH@?$SmallDynSt = (const char **)((unsigned __int64)&unk_15380515B & 0xFFFFFFFFFFFFFFF8uLL);
+    `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::Header::null_header'::`2'::s_EmptyElems = (unsigned __int64)&unk_15380515B & 0xFFFFFFFFFFFFFFF8uLL;
+  }
+  allocator->m_aElems = ?s_EmptyElems@?1??null_header@Header@?$Store@PEBDH@?$SmallDynSt;
+  v7 = 0LL;
+  v8 = this->m_fnGetRecordCount();
+  v9 = this->m_fnGetRecords();
+  if ( (int)v8 > 0 )
+  {
+    do
+    {
+      v10 = this->m_fnGetRecordSchemaName(v9[v7]);
+      v11 = (const char *)(schemaName - v10);
+      do
+      {
+        v12 = (unsigned __int8)v11[(_QWORD)v10];
+        v13 = *(unsigned __int8 *)v10 - v12;
+        if ( v13 )
+          break;
+        ++v10;
+      }
+      while ( v12 );
+      if ( !v13 )
+      {
+        v14 = this->m_fnGetRecordName(v9[v7]);
+        NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<char const *,int>::resize_raw(
+          allocator,
+          (*((_DWORD *)allocator->m_aElems - 1) & 0x7FFFFFFF) + 1,
+          1);
+        v15 = *((unsigned int *)allocator->m_aElems - 1);
+        LODWORD(v15) = v15 & 0x7FFFFFFF;
+        v16 = &allocator->m_aElems[v15 - 1];
+        v17 = v16 + 1;
+        do
+        {
+          if ( v16 )
+            *v16 = v14;
+          ++v16;
+        }
+        while ( v16 != v17 );
+      }
+      ++v7;
+    }
+    while ( v7 < v8 );
+  }
+  return allocator;
+}
+
+// --- End Function: ?GetRecordNamesForSchema@CDataCore@@UEAA?AU?$DynArray@PEBDHU?$SmallDynStorage@U?$AllocCompatible@UModuleAlloc@NAlloc@@@NAlloc@@@NArray@@@@PEBD@Z (0x15131E380) ---
+
+// --- Function: ?GenerateNameHash@CDataCore@@AEAAIPEBD@Z (0x15131E4B0) ---
+__int64 __fastcall CDataCore::GenerateNameHash(CDataCore *m_str, char *recordName)
+{
+  char *m_str_1; // rbx
+  unsigned __int64 nLen; // rdi
+  int v5; // eax
+  int *v6; // rdi
+  int v7; // eax
+  __int64 v8; // rsi
+  unsigned __int64 v9; // rbx
+  _DWORD *v10; // rax
+  char *i; // rcx
+  char v12; // al
+  char *m_str_2; // rdx
+  unsigned int v14; // edi
+  int v15; // ecx
+  int v16; // edx
+  int *v17; // rcx
+  int v18; // edx
+  CryStringT<char> v20; // [rsp+40h] [rbp+8h] BYREF
+  unsigned __int64 v21; // [rsp+48h] [rbp+10h] BYREF
+
+  m_str_1 = (char *)&Count;
+  v20.m_str = (char *)&Count;
+  if ( recordName )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( recordName[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(&v20, nLen);
+      m_str_1 = v20.m_str;
+      if ( v20.m_str != recordName )
+        memcpy_0(v20.m_str, recordName, nLen);
+    }
+  }
+  v5 = *((_DWORD *)m_str_1 - 3);
+  v6 = (int *)(m_str_1 - 12);
+  if ( v5 > 1 )
+  {
+    if ( v5 >= 0 )
+    {
+      v7 = v5 - 1;
+      *v6 = v7;
+      if ( v7 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(m_str_1 - 12, 0LL));
+      }
+    }
+    v8 = *((int *)m_str_1 - 2);
+    if ( *((_DWORD *)m_str_1 - 2) )
+    {
+      v9 = v8 + 13;
+      if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+        _CryMemoryManagerPoolHelper::Init();
+      v10 = _CryMemoryManagerPoolHelper::_CryMalloc(v8 + 13, &v21, 0LL);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v21);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v9);
+      _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v9;
+      *v10 = 1;
+      v10[1] = v8;
+      m_str_1 = (char *)(v10 + 3);
+      v10[2] = v8;
+      *((_BYTE *)v10 + v8 + 12) = 0;
+    }
+    else
+    {
+      m_str_1 = (char *)&Count;
+    }
+    v20.m_str = m_str_1;
+    if ( m_str_1 != (char *)(v6 + 3) )
+      memcpy_0(m_str_1, v6 + 3, v6[1] + 1);
+  }
+  for ( i = m_str_1; *i; ++i )
+  {
+    v12 = *i;
+    if ( (unsigned __int8)(*i - 65) <= 0x19u )
+      v12 += 32;
+    *i = v12;
+  }
+  m_str_2 = m_str_1;
+  v14 = -2128831035;
+  do
+  {
+    v15 = *m_str_2++;
+    v14 = 16777619 * (v15 ^ v14);
+  }
+  while ( (_BYTE)v15 );
+  v16 = *((_DWORD *)m_str_1 - 3);
+  v17 = (int *)(m_str_1 - 12);
+  if ( v16 >= 0 )
+  {
+    v18 = v16 - 1;
+    *v17 = v18;
+    if ( v18 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v17, 0LL));
+    }
+  }
+  return v14;
+}
+
+// --- End Function: ?GenerateNameHash@CDataCore@@AEAAIPEBD@Z (0x15131E4B0) ---
+
+// --- Function: ?LoadStruct@CDataCore@@EEAAPEBUIDataCoreStructure@@PEAU2@PEBD11VXmlNodeRef@@_N@Z (0x15131E670) ---
+CAsyncIOFileRequest *__fastcall CDataCore::LoadStruct(
+        CDataCore *m_str,
+        CAsyncIOFileRequest *pStruct,
+        char *gameStructName,
+        char *recordName,
+        char *url,
+        XmlNodeRef xmlRef,
+        bool bIsRecord)
+{
+  IXmlNode *p; // rsi
+  unsigned int NameHash; // eax
+  std::tuple<> *v12; // r9
+  __int64 NameHash_1; // r8
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead; // rcx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_1; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Parent; // rdx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **v17; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent_2; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_3; // rbx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode; // rax
+  CAsyncIOFileRequest *v21; // rbx
+  unsigned __int64 nLen_3; // r14
+  char *m_str_1; // rbx
+  unsigned __int64 nLen; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead_2; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent; // r9
+  char *m_str_2; // rcx
+  signed __int64 v29; // r10
+  int v30; // edx
+  char *m_str_3; // rcx
+  int v32; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> **v33; // rcx
+  bool v34; // zf
+  int v35; // eax
+  int *v36; // rcx
+  bool v37; // di
+  int v38; // eax
+  unsigned __int64 nLen_1; // rbx
+  CryStringT<char> *dataCoreStruct_1; // rax
+  int v41; // edx
+  char *v42; // rcx
+  CryStringT<char> *dataCoreStruct; // rsi
+  int v44; // edx
+  unsigned __int64 xmlRef__1; // rbx
+  unsigned __int64 xmlRef__2; // rcx
+  CDataCore *m_str_4; // rbx
+  boost::mpl::int_<6> *second; // r13
+  int v49; // r12d
+  int v50; // edi
+  unsigned __int64 xmlRef__3; // r14
+  __int64 v52; // rax
+  const char *v53; // rbx
+  char *m_str_5; // r11
+  unsigned __int64 m_str_7; // r10
+  const char **m_str_6; // r9
+  const char *v57; // rcx
+  int v58; // eax
+  int v59; // edx
+  IXmlNode *p_1; // r12
+  IXmlNode_vtbl *xmlRef__4; // rcx
+  char *url_1; // rdi
+  char *gameStructName_1; // r9
+  char *str_1; // r15
+  __int64 nameHash; // r8
+  std::tuple<> *__Val_1_; // r9
+  __int64 v67; // rax
+  char *str_2; // rsi
+  DataCoreRecordWrapper *v69; // rdi
+  std::tuple<> *v70; // r9
+  char *m_str_8; // rax
+  const char *(__fastcall *name)(std::error_category *); // rbx
+  CryStringT<char> uniqueHash; // rax
+  boost::mpl::int_<6> *second_1; // rax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead_5; // rdx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Ptr; // rbx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent_1; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode_1; // rax
+  unsigned __int64 nLen_2; // rbx
+  CryStringT<char> *v80; // rax
+  __int64 v81; // r8
+  std::tuple<> *v82; // r9
+  IDataCoreStructure **v83; // rax
+  int v84; // eax
+  char *v85; // rcx
+  int v86; // eax
+  int v87; // eax
+  char *v88; // rcx
+  int v89; // eax
+  unsigned int NameHash_2; // [rsp+40h] [rbp-81h] BYREF
+  CryStringT<char> _Keyval_; // [rsp+48h] [rbp-79h] BYREF
+  CryStringT<char> _Keyval__1; // [rsp+50h] [rbp-71h] BYREF
+  CryStringT<char> _Keyval; // [rsp+58h] [rbp-69h] BYREF
+  unsigned __int64 xmlRef_; // [rsp+60h] [rbp-61h] BYREF
+  CryStringT<char> v95; // [rsp+68h] [rbp-59h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > result; // [rsp+70h] [rbp-51h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead; // [rsp+78h] [rbp-49h] BYREF
+  unsigned __int64 v98; // [rsp+80h] [rbp-41h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_2; // [rsp+88h] [rbp-39h] BYREF
+  std::tuple<int const &> __Val_0__; // [rsp+90h] [rbp-31h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead_3; // [rsp+98h] [rbp-29h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > v102; // [rsp+A0h] [rbp-21h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead_4; // [rsp+A8h] [rbp-19h] BYREF
+  std::tuple<int const &> __Val_0___1; // [rsp+B0h] [rbp-11h] BYREF
+  CryStringT<char> v105; // [rsp+B8h] [rbp-9h] BYREF
+  CryStringT<char> v106; // [rsp+C0h] [rbp-1h] BYREF
+  CAsyncIOFileRequest *_Val; // [rsp+118h] [rbp+57h] BYREF
+  char *str; // [rsp+128h] [rbp+67h]
+
+  str = recordName;
+  _Val = pStruct;
+  p = xmlRef.p;
+  if ( xmlRef.p->__vftable )
+  {
+    NameHash = CDataCore::GenerateNameHash(m_str, recordName);
+    NameHash_1 = NameHash;
+    NameHash_2 = NameHash;
+    if ( !bIsRecord )
+      goto LABEL_27;
+    Myhead = m_str->m_Records._Myhead;
+    Myhead_1 = Myhead;
+    Parent = Myhead->_Parent;
+    while ( !Parent->_Isnil )
+    {
+      if ( Parent->_Myval.first >= (unsigned int)NameHash_1 )
+      {
+        Myhead_1 = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    if ( Myhead_1 == Myhead || (unsigned int)NameHash_1 < Myhead_1->_Myval.first )
+    {
+      _Myhead = m_str->m_Records._Myhead;
+      v17 = &_Myhead;
+    }
+    else
+    {
+      Myhead_2 = Myhead_1;
+      v17 = &Myhead_2;
+    }
+    if ( *v17 == Myhead )
+    {
+LABEL_27:
+      nLen_3 = -1LL;
+      m_str_1 = (char *)&Count;
+      v95.m_str = (char *)&Count;
+      if ( gameStructName )
+      {
+        nLen = -1LL;
+        do
+          ++nLen;
+        while ( gameStructName[nLen] );
+        if ( nLen )
+        {
+          CryStringT<char>::_AllocData(&v95, nLen);
+          m_str_1 = v95.m_str;
+          if ( v95.m_str != gameStructName )
+            memcpy_0(v95.m_str, gameStructName, nLen);
+        }
+      }
+      _Myhead_1 = m_str->m_GameStructures._Myhead;
+      _Myhead_2 = _Myhead_1;
+      _Parent = _Myhead_1->_Parent;
+      while ( !_Parent->_Isnil )
+      {
+        m_str_2 = _Parent->_Myval.first.m_str;
+        v29 = m_str_1 - m_str_2;
+        do
+        {
+          v30 = (unsigned __int8)m_str_2[v29];
+          NameHash_1 = (unsigned int)(unsigned __int8)*m_str_2 - v30;
+          if ( (_DWORD)NameHash_1 )
+            break;
+          ++m_str_2;
+        }
+        while ( v30 );
+        if ( (int)NameHash_1 >= 0 )
+        {
+          _Myhead_2 = _Parent;
+          _Parent = _Parent->_Left;
+        }
+        else
+        {
+          _Parent = _Parent->_Right;
+        }
+      }
+      if ( _Myhead_2 == _Myhead_1 )
+        goto LABEL_47;
+      m_str_3 = m_str_1;
+      _Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)(_Myhead_2->_Myval.first.m_str
+                                                                                             - m_str_1);
+      do
+      {
+        v32 = *((unsigned __int8 *)&_Parent->_Left + (_QWORD)m_str_3);
+        NameHash_1 = (unsigned int)(unsigned __int8)*m_str_3 - v32;
+        if ( (_DWORD)NameHash_1 )
+          break;
+        ++m_str_3;
+      }
+      while ( v32 );
+      if ( (int)NameHash_1 < 0 )
+      {
+LABEL_47:
+        _Myhead_3 = m_str->m_GameStructures._Myhead;
+        v33 = &_Myhead_3;
+      }
+      else
+      {
+        _Myhead_4 = _Myhead_2;
+        v33 = &_Myhead_4;
+      }
+      v34 = *v33 == _Myhead_1;
+      v35 = *((_DWORD *)m_str_1 - 3);
+      v36 = (int *)(m_str_1 - 12);
+      v37 = v34;
+      if ( v35 >= 0 )
+      {
+        v38 = v35 - 1;
+        *v36 = v38;
+        if ( v38 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v36, 0LL));
+        }
+      }
+      if ( v37 )
+      {
+        CryWarning(
+          VALIDATOR_MODULE_SYSTEM,
+          VALIDATOR_WARNING,
+          "[DataCore] %s was not a game-registered structure. Ignoring.",
+          gameStructName);
+        if ( p->__vftable )
+          (*((void (__fastcall **)(IXmlNode_vtbl *))p->DeleteThis + 4))(p->__vftable);
+        return 0LL;
+      }
+      else
+      {
+        _Keyval.m_str = (char *)&Count;
+        if ( gameStructName )
+        {
+          nLen_1 = -1LL;
+          do
+            ++nLen_1;
+          while ( gameStructName[nLen_1] );
+          if ( nLen_1 )
+          {
+            CryStringT<char>::_AllocData(&_Keyval, nLen_1);
+            if ( _Keyval.m_str != gameStructName )
+              memcpy_0(_Keyval.m_str, gameStructName, nLen_1);
+          }
+        }
+        dataCoreStruct_1 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+                             &m_str->m_GameStructures,
+                             (const std::piecewise_construct_t *)&_Keyval,
+                             NameHash_1,
+                             (std::tuple<> *)_Parent);
+        v41 = *((_DWORD *)_Keyval.m_str - 3);
+        v42 = _Keyval.m_str - 12;
+        dataCoreStruct = dataCoreStruct_1;
+        if ( v41 >= 0 )
+        {
+          v44 = v41 - 1;
+          *(_DWORD *)v42 = v44;
+          if ( v44 <= 0 )
+          {
+            `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v42 + 2);
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(v42, 0LL));
+          }
+        }
+        xmlRef__1 = m_str->m_fnGetSchemaStruct(gameStructName);
+        xmlRef_ = xmlRef__1;
+        if ( !_Val )
+        {
+          _Val = (CAsyncIOFileRequest *)(**(__int64 (__fastcall ***)(char *, _QWORD))dataCoreStruct[2].m_str)(
+                                          dataCoreStruct[2].m_str,
+                                          0LL);
+          std::vector<IParticleEffect *>::push_back(
+            (std::vector<CAsyncIOFileRequest *> *)&m_str->m_DestructMeStructs,
+            &_Val);
+        }
+        xmlRef__2 = xmlRef__1;
+        m_str_4 = m_str;
+        second = 0LL;
+        v49 = m_str->m_fnGetSchemaStruct_FieldCount(xmlRef__2, 0, 0LL);
+        v50 = 0;
+        if ( v49 > 0 )
+        {
+          xmlRef__3 = xmlRef_;
+          do
+          {
+            v52 = m_str_4->m_fnGetSchemaStruct_FieldByIndex(xmlRef__3, v50, 0, 0LL);
+            v53 = m_str_4->m_fnGetSchemaField_GetName(v52);
+            if ( v53 )
+            {
+              m_str_5 = dataCoreStruct[1].m_str;
+              m_str_7 = 0LL;
+              if ( m_str_5 )
+              {
+                m_str_6 = (const char **)dataCoreStruct->m_str;
+                while ( 1 )
+                {
+                  v57 = *m_str_6;
+                  do
+                  {
+                    v58 = (unsigned __int8)v57[v53 - *m_str_6];
+                    v59 = *(unsigned __int8 *)v57 - v58;
+                    if ( v59 )
+                      break;
+                    ++v57;
+                  }
+                  while ( v58 );
+                  if ( !v59 )
+                    break;
+                  ++m_str_7;
+                  m_str_6 += 6;
+                  if ( m_str_7 >= (unsigned __int64)m_str_5 )
+                    goto LABEL_76;
+                }
+              }
+              else
+              {
+LABEL_76:
+                CryWarning(
+                  VALIDATOR_MODULE_SYSTEM,
+                  VALIDATOR_WARNING,
+                  "[DataCore] Structure %s has incoming data that will be ignored by the game (field name: %s). Please re"
+                  "move the field from the schema, define this game-side or mark as deprecated in the schema.",
+                  gameStructName,
+                  v53);
+              }
+            }
+            m_str_4 = m_str;
+            ++v50;
+          }
+          while ( v50 < v49 );
+          nLen_3 = -1LL;
+        }
+        p_1 = xmlRef.p;
+        xmlRef__4 = xmlRef.p->__vftable;
+        xmlRef_ = (unsigned __int64)xmlRef__4;
+        if ( xmlRef__4 )
+          (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef__4->DeleteThis + 3))(xmlRef__4);
+        url_1 = url;
+        gameStructName_1 = gameStructName;
+        str_1 = str;
+        CDataCore::LoadFields(
+          m_str_4,
+          (XmlNodeRef)&xmlRef_,
+          str,
+          gameStructName_1,
+          (IDataCoreStructure *)_Val,
+          (SDataCoreStruct *)dataCoreStruct,
+          url);
+        if ( bIsRecord )
+        {
+          v67 = m_str_4->m_fnGetRecordByName(str_1);
+          str_2 = (char *)m_str_4->m_fnGetRecordHash(v67);
+          if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+            _CryMemoryManagerPoolHelper::Init();
+          v69 = (DataCoreRecordWrapper *)_CryMemoryManagerPoolHelper::_CryMalloc(0x20uLL, &v98, 0LL);
+          _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v98);
+          _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, 0x20uLL);
+          _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+          if ( v69 )
+          {
+            CryStringT<char>::CryStringT<char>(&v105, str_1);
+            name.m_str = m_str_8;
+            CryStringT<char>::CryStringT<char>(&v106, str_2);
+            DataCoreRecordWrapper::DataCoreRecordWrapper(v69, (IDataCoreStructure *)_Val, uniqueHash, name);
+            second = second_1;
+          }
+          _Myhead_5 = m_str->m_Records._Myhead;
+          Ptr = _Myhead_5;
+          _Parent_1 = _Myhead_5->_Parent;
+          while ( !_Parent_1->_Isnil )
+          {
+            if ( _Parent_1->_Myval.first >= NameHash_2 )
+            {
+              Ptr = _Parent_1;
+              _Parent_1 = _Parent_1->_Left;
+            }
+            else
+            {
+              _Parent_1 = _Parent_1->_Right;
+            }
+          }
+          if ( Ptr == _Myhead_5 || NameHash_2 < Ptr->_Myval.first )
+          {
+            __Val_0__._Myfirst._Val = (const int *)&NameHash_2;
+            _Newnode_1 = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+                           (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&m_str->m_Records,
+                           (SubsumptionEvent *)_Myhead_5,
+                           &__Val_0__,
+                           v70);
+            std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+              &m_str->m_Records,
+              (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&v102,
+              (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)Ptr,
+              (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode_1->_Myval,
+              _Newnode_1);
+            Ptr = v102._Ptr;
+          }
+          Ptr->_Myval.second = second;
+          CDataCore::ResolveWeakPtrs(m_str, str_1);
+        }
+        else
+        {
+          _Keyval__1.m_str = (char *)&Count;
+          if ( url_1 )
+          {
+            nLen_2 = -1LL;
+            do
+              ++nLen_2;
+            while ( url_1[nLen_2] );
+            if ( nLen_2 )
+            {
+              CryStringT<char>::_AllocData(&_Keyval__1, nLen_2);
+              if ( _Keyval__1.m_str != url_1 )
+                memcpy_0(_Keyval__1.m_str, url_1, nLen_2);
+            }
+            m_str_4 = m_str;
+          }
+          _Keyval_.m_str = (char *)&Count;
+          if ( str_1 )
+          {
+            do
+              ++nLen_3;
+            while ( str_1[nLen_3] );
+            if ( nLen_3 )
+            {
+              CryStringT<char>::_AllocData(&_Keyval_, nLen_3);
+              if ( _Keyval_.m_str != str_1 )
+                memcpy_0(_Keyval_.m_str, str_1, nLen_3);
+            }
+          }
+          v80 = std::map<CryStringT<char>,CDataCore::UrlToStruct>::operator[](
+                  &m_str_4->m_Structures,
+                  (const std::piecewise_construct_t *)&_Keyval_,
+                  nameHash,
+                  __Val_1_);
+          v83 = std::map<CryStringT<char>,IDataCoreStructure *>::operator[](
+                  (std::map<CryStringT<char>,IDataCoreStructure *,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > *)v80,
+                  &_Keyval__1,
+                  v81,
+                  v82);
+          *v83 = (IDataCoreStructure *)_Val;
+          v84 = *((_DWORD *)_Keyval_.m_str - 3);
+          v85 = _Keyval_.m_str - 12;
+          if ( v84 >= 0 )
+          {
+            v86 = v84 - 1;
+            *(_DWORD *)v85 = v86;
+            if ( v86 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v85 + 2);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v85, 0LL));
+            }
+          }
+          v87 = *((_DWORD *)_Keyval__1.m_str - 3);
+          v88 = _Keyval__1.m_str - 12;
+          if ( v87 >= 0 )
+          {
+            v89 = v87 - 1;
+            *(_DWORD *)v88 = v89;
+            if ( v89 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v88 + 2);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v88, 0LL));
+            }
+          }
+        }
+        if ( p_1->__vftable )
+          (*((void (__fastcall **)(IXmlNode_vtbl *))p_1->DeleteThis + 4))(p_1->__vftable);
+        return _Val;
+      }
+    }
+    else
+    {
+      _Parent_2 = Myhead->_Parent;
+      Myhead_3 = Myhead;
+      while ( !_Parent_2->_Isnil )
+      {
+        if ( _Parent_2->_Myval.first >= (unsigned int)NameHash_1 )
+        {
+          Myhead_3 = _Parent_2;
+          _Parent_2 = _Parent_2->_Left;
+        }
+        else
+        {
+          _Parent_2 = _Parent_2->_Right;
+        }
+      }
+      if ( Myhead_3 == Myhead || (unsigned int)NameHash_1 < Myhead_3->_Myval.first )
+      {
+        __Val_0___1._Myfirst._Val = (const int *)&NameHash_2;
+        _Newnode = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+                     (std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *)&m_str->m_Records,
+                     (SubsumptionEvent *)Parent,
+                     &__Val_0___1,
+                     v12);
+        std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+          &m_str->m_Records,
+          (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&result,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)Myhead_3,
+          (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode->_Myval,
+          _Newnode);
+        Myhead_3 = result._Ptr;
+      }
+      v21 = (CAsyncIOFileRequest *)Myhead_3->_Myval.second->GetRaw(Myhead_3->_Myval.second);
+      if ( p->__vftable )
+        (*((void (__fastcall **)(IXmlNode_vtbl *))p->DeleteThis + 4))(p->__vftable);
+      return v21;
+    }
+  }
+  else
+  {
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_WARNING,
+      "[DataCore] Structure %s is not registered with the DataCore, record will not be loaded",
+      recordName);
+    if ( p->__vftable )
+      (*((void (__fastcall **)(IXmlNode_vtbl *))p->DeleteThis + 4))(p->__vftable);
+    return 0LL;
+  }
+}
+
+// --- End Function: ?LoadStruct@CDataCore@@EEAAPEBUIDataCoreStructure@@PEAU2@PEBD11VXmlNodeRef@@_N@Z (0x15131E670) ---
+
+// --- Function: ?LoadFields@CDataCore@@AEAAXVXmlNodeRef@@PEBD1PEAUIDataCoreStructure@@AEAUSDataCoreStruct@@1@Z (0x15131ED80) ---
+void __fastcall CDataCore::LoadFields(
+        CDataCore *m_str,
+        XmlNodeRef xmlRef,
+        const char *recordName,
+        const char *gameStructName,
+        IDataCoreStructure *pStruct,
+        SDataCoreStruct *dataCoreStruct,
+        char *url)
+{
+  CDataCore *m_str_1; // rbx
+  unsigned __int64 v8; // rax
+  SDataCoreStruct *dataCoreStruct_1; // rcx
+  unsigned __int64 m_numFields_low; // rdx
+  unsigned __int64 v11; // r10
+  unsigned __int64 m_numFields_low_2; // rax
+  const char **p_pName; // rdi
+  CAsyncIOFileRequest **Srca_5; // rax
+  unsigned __int64 Srca_7; // rbx
+  char isArray_1; // di
+  int option_1; // esi
+  int *type_2; // rax
+  CDataCoreField *pField_1; // r8
+  EDCFieldOption option; // ecx
+  int *type_1; // rbx
+  EDCFieldType type; // edx
+  char isArray; // al
+  bool v24; // zf
+  IXmlNode_vtbl *v25; // rcx
+  void (__fastcall *DeleteThis)(IXmlNode *); // rax
+  DataCoreArray<DataCoreRecordRefBase> *v27; // rbx
+  int count; // eax
+  int count_4; // edi
+  __int64 v30; // rsi
+  IDataCoreStructure **m_pStruct_1; // rbx
+  char *str_2; // rax
+  char **v33; // rax
+  char *m_str_3; // rcx
+  char *v35; // rcx
+  int v36; // eax
+  int *v37; // rcx
+  int v38; // eax
+  int v39; // eax
+  char *v40; // rcx
+  int v41; // eax
+  IDataCoreStructure **m_pStruct; // rbx
+  char *str_1; // rax
+  char **v44; // rax
+  char *m_str_2; // rcx
+  char *v46; // rcx
+  int v47; // eax
+  int *v48; // rcx
+  int v49; // eax
+  int v50; // eax
+  char *v51; // rcx
+  int v52; // eax
+  IXmlNode_vtbl *v53; // rcx
+  void (__fastcall *DeleteThis_1)(IXmlNode *); // rax
+  DataCoreArray<IDataCoreStructPtrBase> *Srca_1; // rdi
+  int count_1; // eax
+  int count_6; // esi
+  CDataCoreField *pFielda_1; // rbx
+  IDataCoreStructure **m_pStruct_3; // rdi
+  const char *v60; // rax
+  __int64 v61; // rcx
+  CryStringT<char> *v62; // rax
+  char *m_str_5; // rbx
+  int v64; // eax
+  int *v65; // rcx
+  int v66; // eax
+  int nRefCount_1; // eax
+  char *j; // rax
+  char v69; // cl
+  int v70; // eax
+  char *v71; // rcx
+  int v72; // eax
+  int v73; // eax
+  int *v74; // rcx
+  int v75; // eax
+  IDataCoreStructure **m_pStruct_2; // rdi
+  const char *v77; // rax
+  __int64 v78; // rcx
+  CryStringT<char> *v79; // rax
+  char *m_str_4; // rbx
+  int Ptr_high; // eax
+  int *v82; // rcx
+  int v83; // eax
+  int nRefCount; // eax
+  char *i; // rcx
+  char v86; // al
+  int v87; // eax
+  char *v88; // rcx
+  int v89; // eax
+  int v90; // eax
+  int *v91; // rcx
+  int v92; // eax
+  IXmlNode *p; // rcx
+  IXmlNode *p_1; // rcx
+  IXmlNode *p_2; // rcx
+  IXmlNode *p_3; // rcx
+  boost::mpl::int_<6> *second_4; // rcx
+  IXmlNode *p_4; // rcx
+  IXmlNode *p_5; // rcx
+  IXmlNode *p_6; // rcx
+  IXmlNode *p_8; // rcx
+  IXmlNode *p_9; // rcx
+  boost::mpl::int_<6> *second_3; // rcx
+  IXmlNode *p_7; // rcx
+  int count_7; // eax
+  unsigned __int64 count_2; // rsi
+  _QWORD *v107; // rax
+  char *str_5; // rdi
+  char **pField_2; // rbx
+  CAsyncIOFileRequest **Srca_2; // rdi
+  int count_9; // edx
+  __int64 v112; // rcx
+  char *m_str_11; // rdi
+  char *url_1; // r9
+  __int64 v115; // rax
+  char *v116; // rsi
+  unsigned __int64 nAllocSize; // rcx
+  char *m_str_12; // rbx
+  int nRefCount_3; // eax
+  size_t nLen_2; // r8
+  unsigned __int64 (__fastcall *Size_6)(CRendElement *); // rsi
+  char *m_str_13; // rbx
+  bool v123; // cc
+  boost::mpl::int_<6> *second_10; // r8
+  __int64 v125; // rdx
+  unsigned __int64 (__fastcall *Size_7)(CRendElement *); // rax
+  unsigned __int64 n8_2; // rdx
+  unsigned __int64 n8_4; // rax
+  unsigned __int64 (__fastcall *Size_8)(CRendElement *); // rax
+  char *Srcc_1; // rcx
+  int v131; // eax
+  size_t Srcd_1; // rdx
+  char *m_str_14; // rsi
+  boost::mpl::int_<6> *second_11; // r8
+  __int64 v135; // r9
+  unsigned __int64 (__fastcall *Size_9)(CRendElement *); // rax
+  unsigned __int64 n8_3; // rdx
+  unsigned __int64 n8_5; // rax
+  char *m_str_15; // rax
+  unsigned __int64 (__fastcall *Size_10)(CRendElement *); // rdx
+  int v141; // eax
+  int v142; // eax
+  int *v143; // rcx
+  int v144; // eax
+  int v145; // eax
+  int *v146; // rcx
+  int v147; // eax
+  std::locale *m_str_8; // rdi
+  char *sStr; // rsi
+  __int64 v150; // rax
+  std::locale *Srce_1; // rbx
+  unsigned __int64 nLen; // rcx
+  std::locale *second; // rbx
+  int nRefCount_2; // eax
+  size_t nLen_1; // r8
+  size_t Ptr_low; // rsi
+  boost::mpl::int_<6> *second_5; // rbx
+  boost::mpl::int_<6> *second_13; // r8
+  __int64 v159; // rdx
+  size_t Srcf_1; // rax
+  unsigned __int64 (__fastcall *Size_1)(CRendElement *); // rcx
+  unsigned __int64 (__fastcall *Size_2)(CRendElement *); // rax
+  unsigned __int64 n8; // rdx
+  int Srcf_2; // eax
+  int v165; // eax
+  CryStringT<char> *v166; // rax
+  bool v167; // sf
+  char *m_str_9; // rdx
+  unsigned __int64 (__fastcall *Size_3)(CRendElement *); // rsi
+  int *v170; // r8
+  __int64 v171; // r9
+  size_t Srcg_1; // rax
+  unsigned __int64 (__fastcall *Size_4)(CRendElement *); // rcx
+  unsigned __int64 (__fastcall *Size_5)(CRendElement *); // rax
+  unsigned __int64 n8_1; // rdx
+  int Srcg_2; // eax
+  int v177; // eax
+  int *v178; // rsi
+  char *m_str_10; // rbx
+  int v180; // eax
+  int *v181; // rcx
+  int v182; // eax
+  int v183; // eax
+  _DWORD *v184; // rcx
+  int v185; // eax
+  int v186; // eax
+  int *v187; // rcx
+  int v188; // eax
+  int v189; // eax
+  char *v190; // rcx
+  int v191; // eax
+  int v192; // eax
+  char *v193; // rcx
+  int v194; // eax
+  char *str_9; // rax
+  char *str_6; // rbx
+  int v197; // eax
+  bool v198; // di
+  int *v199; // rcx
+  int v200; // eax
+  __int64 v201; // r8
+  std::tuple<> *__Val_1__1; // r9
+  CryStringT<char> *v203; // rax
+  int v204; // edx
+  char *v205; // rcx
+  CryStringT<char> *v206; // rdi
+  int v207; // edx
+  std::locale::_Locimp *_Ptr; // rax
+  boost::mpl::int_<6> *second_8; // rdi
+  CryStringT<char> *v210; // rax
+  CAsyncIOFileRequest **Srca_4; // rsi
+  bool v212; // bl
+  __int64 v213; // r8
+  std::tuple<> *__Val_1__2; // r9
+  CryStringT<char> *v215; // rbx
+  __int64 v216; // rax
+  int count_10; // esi
+  const CryStringT<char> *str2_2; // rax
+  CryStringT<char> *v219; // rax
+  int v220; // eax
+  int *v221; // rcx
+  int v222; // eax
+  CryStringT<char> *v223; // rbx
+  const CryStringT<char> *str2_3; // rax
+  CryStringT<char> *v225; // rax
+  char *m_str_16; // rcx
+  char **v227; // rax
+  char *m_str_17; // rcx
+  CryStringT<char>::StrHeader *pData; // rdi
+  char *sStr_1; // rdx
+  boost::mpl::int_<6> *second_12; // rbx
+  __int64 v232; // rdi
+  char *v233; // rbx
+  CryStringT<char> *v234; // rax
+  XmlNodeRef xmlRef_2; // rax
+  CDataCore *temp_1; // rcx
+  XmlNodeRef xmlRef_3; // rax
+  CDataCore *temp_2; // rcx
+  XmlNodeRef xmlRef_4; // rax
+  CDataCore *temp_3; // rcx
+  XmlNodeRef xmlRef_5; // rax
+  CDataCore *temp_4; // rcx
+  XmlNodeRef xmlRef_6; // rax
+  CDataCore *temp_5; // rcx
+  XmlNodeRef xmlRef_7; // rax
+  CDataCore *temp_6; // rcx
+  XmlNodeRef xmlRef_8; // rax
+  CDataCore *temp_7; // rcx
+  XmlNodeRef xmlRef_9; // rax
+  CDataCore *temp_8; // rcx
+  XmlNodeRef xmlRef_11; // rax
+  CDataCore *temp_9; // rcx
+  XmlNodeRef xmlRef_12; // rax
+  CDataCore *v254; // rcx
+  XmlNodeRef xmlRef_1; // rax
+  CDataCore *temp; // rcx
+  char *str_3; // rdi
+  bool v258; // bl
+  const char *pName; // rdx
+  std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > *v260; // rax
+  XmlNodeRef xmlRef_10; // rax
+  CDataCore *v262; // rcx
+  CAsyncIOFileRequest **Srca_6; // rcx
+  const char *pName_1; // r8
+  __int64 str_8; // rbx
+  char *str_7; // rax
+  char *str_4; // rdi
+  bool v268; // bl
+  const CryStringT<char> *str2; // rax
+  CryStringT<char> *str1; // rax
+  CryStringT<char> *v271; // rax
+  int v272; // ebx
+  CryStringT<char> *v273; // rcx
+  char *m_str_6; // rax
+  __int64 v275; // r8
+  std::tuple<> *__Val_1_; // r9
+  CryStringT<char> *v277; // rbx
+  CAsyncIOFileRequest *v278; // rax
+  CAsyncIOFileRequest **_Val_1; // rbx
+  CryStringT<char> *Lower; // rax
+  char *v281; // rdi
+  __int64 v282; // rbx
+  const CryStringT<char> *str2_1; // rax
+  CryStringT<char> *str1_1; // rax
+  CryStringT<char> *v285; // rax
+  int v286; // esi
+  CryStringT<char> *v287; // rcx
+  char *m_str_7; // rax
+  CryStringT<char> *v289; // rax
+  __int64 v290; // r8
+  const char *gameStructName_1; // rsi
+  char *m_inherits; // rdx
+  int v293; // eax
+  bool v294; // di
+  int *v295; // rcx
+  int v296; // eax
+  __int64 v297; // r8
+  std::tuple<> *__Val_1__3; // r9
+  CryStringT<char> *dataCoreStruct_3; // rax
+  int v300; // edx
+  char *v301; // rcx
+  SDataCoreStruct *dataCoreStruct_2; // rbx
+  int v303; // edx
+  IXmlNode *p_10; // rcx
+  int urla; // [rsp+30h] [rbp-D0h]
+  CDataCoreField *pField; // [rsp+40h] [rbp-C0h]
+  CDataCoreField *pFielda; // [rsp+40h] [rbp-C0h]
+  unsigned int v308; // [rsp+48h] [rbp-B8h]
+  DataCoreArray<DataCoreRecordRefBase> *Src; // [rsp+50h] [rbp-B0h]
+  DataCoreArray<IDataCoreStructPtrBase> *Srca; // [rsp+50h] [rbp-B0h]
+  char *Srcb; // [rsp+50h] [rbp-B0h]
+  char *Srcc; // [rsp+50h] [rbp-B0h]
+  size_t Srcd; // [rsp+50h] [rbp-B0h]
+  std::locale *Srce; // [rsp+50h] [rbp-B0h]
+  size_t Srcf; // [rsp+50h] [rbp-B0h]
+  size_t Srcg; // [rsp+50h] [rbp-B0h]
+  int count_3; // [rsp+58h] [rbp-A8h]
+  int count_5; // [rsp+58h] [rbp-A8h]
+  int count_8; // [rsp+58h] [rbp-A8h]
+  CryStringT<char> v320; // [rsp+60h] [rbp-A0h] BYREF
+  size_t Size; // [rsp+68h] [rbp-98h]
+  std::pair<CryStringT<char>,std::locale *> v322; // [rsp+70h] [rbp-90h] BYREF
+  CryStringT<char> v323; // [rsp+80h] [rbp-80h] BYREF
+  CAsyncIOFileRequest **Srca_3; // [rsp+88h] [rbp-78h]
+  int count_11; // [rsp+90h] [rbp-70h]
+  boost::mpl::int_<6> *second_6; // [rsp+98h] [rbp-68h]
+  CryStringT<char> v327; // [rsp+A0h] [rbp-60h] BYREF
+  __int64 v328; // [rsp+A8h] [rbp-58h]
+  __int64 v329; // [rsp+B0h] [rbp-50h] BYREF
+  CryStringT<char> v330; // [rsp+B8h] [rbp-48h] BYREF
+  char *str; // [rsp+C0h] [rbp-40h]
+  boost::mpl::int_<6> *second_1; // [rsp+C8h] [rbp-38h] BYREF
+  CryStringT<char> v333; // [rsp+D0h] [rbp-30h] BYREF
+  CDataCore::UnresolvedWeakPtr _Val__1; // [rsp+D8h] [rbp-28h] BYREF
+  CryStringT<char> v335; // [rsp+E8h] [rbp-18h] BYREF
+  CDataCore::UnresolvedWeakPtr _Val__2; // [rsp+F0h] [rbp-10h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v337; // [rsp+100h] [rbp+0h] BYREF
+  CryStringT<char> v338; // [rsp+110h] [rbp+10h] BYREF
+  int v339; // [rsp+118h] [rbp+18h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v340; // [rsp+120h] [rbp+20h] BYREF
+  __int64 v341; // [rsp+130h] [rbp+30h] BYREF
+  boost::mpl::int_<6> *second_7; // [rsp+138h] [rbp+38h]
+  boost::mpl::int_<6> *second_2; // [rsp+140h] [rbp+40h] BYREF
+  CryStringT<char> v344; // [rsp+148h] [rbp+48h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v345; // [rsp+150h] [rbp+50h] BYREF
+  CryStringT<char> v346; // [rsp+160h] [rbp+60h] BYREF
+  unsigned __int64 m_numFields_low_3; // [rsp+168h] [rbp+68h]
+  std::pair<CryStringT<char>,std::locale *> _Keyval_; // [rsp+170h] [rbp+70h] BYREF
+  std::pair<CryStringT<char>,std::locale *> _Keyval__2; // [rsp+180h] [rbp+80h] BYREF
+  __int64 v350; // [rsp+190h] [rbp+90h] BYREF
+  CryStringT<char> _Keyval__3; // [rsp+198h] [rbp+98h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v352; // [rsp+1A0h] [rbp+A0h] BYREF
+  CryStringT<char> _Keyval__1; // [rsp+1B0h] [rbp+B0h] BYREF
+  __int64 v354; // [rsp+1B8h] [rbp+B8h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v355; // [rsp+1C0h] [rbp+C0h] BYREF
+  __int64 v356; // [rsp+1D0h] [rbp+D0h] BYREF
+  CryStringT<char> v357; // [rsp+1D8h] [rbp+D8h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v358; // [rsp+1E0h] [rbp+E0h] BYREF
+  CDataCore::UnresolvedWeakPtr _Val_; // [rsp+1F0h] [rbp+F0h] BYREF
+  CDataCore::UnresolvedWeakPtr _Val; // [rsp+200h] [rbp+100h] BYREF
+  XmlNodeRef xmlRef__6; // [rsp+210h] [rbp+110h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v362; // [rsp+218h] [rbp+118h] BYREF
+  XmlNodeRef xmlRef__9; // [rsp+228h] [rbp+128h] BYREF
+  unsigned __int64 m_numFields_low_1; // [rsp+230h] [rbp+130h]
+  XmlNodeRef xmlRef__7; // [rsp+238h] [rbp+138h] BYREF
+  unsigned __int64 v366; // [rsp+240h] [rbp+140h]
+  XmlNodeRef xmlRef__1; // [rsp+248h] [rbp+148h] BYREF
+  XmlNodeRef xmlRef__10; // [rsp+250h] [rbp+150h] BYREF
+  char *v369; // [rsp+258h] [rbp+158h]
+  std::pair<CryStringT<char>,std::locale *> v370; // [rsp+260h] [rbp+160h] BYREF
+  boost::mpl::int_<6> *second_9; // [rsp+270h] [rbp+170h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v372; // [rsp+278h] [rbp+178h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v373; // [rsp+288h] [rbp+188h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v374; // [rsp+298h] [rbp+198h] BYREF
+  XmlNodeRef xmlRef__8; // [rsp+2A8h] [rbp+1A8h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v376; // [rsp+2B0h] [rbp+1B0h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v377; // [rsp+2C0h] [rbp+1C0h] BYREF
+  XmlNodeRef xmlRef__3; // [rsp+2D0h] [rbp+1D0h] BYREF
+  XmlNodeRef xmlRef__2; // [rsp+2D8h] [rbp+1D8h] BYREF
+  CryStringT<char> v380; // [rsp+2E0h] [rbp+1E0h] BYREF
+  void *v381; // [rsp+2E8h] [rbp+1E8h]
+  std::pair<CryStringT<char>,std::locale *> v382; // [rsp+2F0h] [rbp+1F0h] BYREF
+  std::pair<CryStringT<char>,std::locale *> v383; // [rsp+300h] [rbp+200h] BYREF
+  XmlNodeRef xmlRef_; // [rsp+310h] [rbp+210h] BYREF
+  XmlNodeRef xmlRef__4; // [rsp+318h] [rbp+218h] BYREF
+  __int64 v386; // [rsp+320h] [rbp+220h] BYREF
+  XmlNodeRef xmlRef__5; // [rsp+328h] [rbp+228h] BYREF
+  CryStringT<char> v388; // [rsp+330h] [rbp+230h] BYREF
+  XmlNodeRef v389; // [rsp+338h] [rbp+238h] BYREF
+  XmlNodeRef v390; // [rsp+340h] [rbp+240h] BYREF
+  XmlNodeRef v391; // [rsp+348h] [rbp+248h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > v392; // [rsp+350h] [rbp+250h] BYREF
+  XmlNodeRef v393; // [rsp+358h] [rbp+258h] BYREF
+  XmlNodeRef v394; // [rsp+360h] [rbp+260h] BYREF
+  XmlNodeRef v395; // [rsp+368h] [rbp+268h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > v396; // [rsp+370h] [rbp+270h] BYREF
+  XmlNodeRef v397; // [rsp+378h] [rbp+278h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > v398; // [rsp+380h] [rbp+280h] BYREF
+  XmlNodeRef v399; // [rsp+388h] [rbp+288h] BYREF
+  CryStringT<char> v400; // [rsp+390h] [rbp+290h] BYREF
+  XmlNodeRef v401; // [rsp+398h] [rbp+298h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > result; // [rsp+3A0h] [rbp+2A0h] BYREF
+  XmlNodeRef v403; // [rsp+3A8h] [rbp+2A8h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > v404; // [rsp+3B0h] [rbp+2B0h] BYREF
+  XmlNodeRef v405; // [rsp+3B8h] [rbp+2B8h] BYREF
+  XmlNodeRef v406; // [rsp+3C0h] [rbp+2C0h] BYREF
+
+  m_str_1 = m_str;
+  v308 = 0;
+  v8 = m_str->m_fnGetSchemaStruct(gameStructName);
+  dataCoreStruct_1 = dataCoreStruct;
+  m_numFields_low = SLODWORD(dataCoreStruct->m_numFields);
+  v11 = v8;
+  v366 = v8;
+  m_numFields_low_2 = 0LL;
+  m_numFields_low_1 = m_numFields_low;
+  m_numFields_low_3 = 0LL;
+  if ( m_numFields_low )
+  {
+    while ( 1 )
+    {
+      p_pName = &dataCoreStruct_1->m_pFields[m_numFields_low_2].pName;
+      pField = (CDataCoreField *)p_pName;
+      Srca_5 = (CAsyncIOFileRequest **)m_str_1->m_fnGetSchemaStruct_FieldByName(v11, *p_pName, 0, 0LL);
+      Srca_7 = (unsigned __int64)Srca_5;
+      Srca_3 = Srca_5;
+      if ( !Srca_5 )
+      {
+        CryWarning(
+          VALIDATOR_MODULE_SYSTEM,
+          VALIDATOR_ERROR,
+          "[DataCore] Structure %s contains field %s but this does not exist in the schema. Data game-side will be left uninitialized.",
+          gameStructName,
+          *p_pName);
+        goto LABEL_424;
+      }
+      isArray_1 = m_str->m_fnGetSchemaField_GetFieldStorageType((unsigned __int64)Srca_5) > 0;
+      option_1 = m_str->m_fnGetSchemaField_GetFieldOption(Srca_7);
+      type_2 = m_str->m_fnGetSchemaField_GetFieldType(Srca_7);
+      pField_1 = pField;
+      option = pField->option;
+      type_1 = type_2;
+      if ( option != option_1 )
+        goto LABEL_418;
+      type = pField->type;
+      if ( type != type_2 && (type != eDCT_Struct || type_2 != 16) || (isArray = pField->isArray, isArray != isArray_1) )
+      {
+        if ( option == option_1 )
+        {
+          gameStructName_1 = gameStructName;
+        }
+        else
+        {
+LABEL_418:
+          gameStructName_1 = gameStructName;
+          CryWarning(
+            VALIDATOR_MODULE_SYSTEM,
+            VALIDATOR_ERROR,
+            "[DataCore] Structure \"%s\" contains field \"%s\" that has incorrect option (Optional, Weak Pointer, Referen"
+            "ce) ! Data will be left uninitialized",
+            gameStructName,
+            pField->pName);
+          pField_1 = pField;
+        }
+        if ( pField_1->isArray != isArray_1 )
+        {
+          CryWarning(
+            VALIDATOR_MODULE_SYSTEM,
+            VALIDATOR_ERROR,
+            "[DataCore] Structure \"%s\" contains field \"%s\" that has incorrect array specifier! Data will be left uninitialized",
+            gameStructName_1,
+            pField_1->pName);
+          pField_1 = pField;
+        }
+        if ( pField_1->type != type_1 )
+          CryWarning(
+            VALIDATOR_MODULE_SYSTEM,
+            VALIDATOR_ERROR,
+            "[DataCore] Structure \"%s\" contains field \"%s\" that specifies a type that does not match the schema! Data"
+            " will be left uninitialized",
+            gameStructName_1,
+            pField_1->pName);
+        goto LABEL_424;
+      }
+      if ( option == eDCO_Reference )
+      {
+        v24 = isArray == 0;
+        v25 = xmlRef.p->__vftable;
+        DeleteThis = xmlRef.p->DeleteThis;
+        if ( v24 )
+        {
+          m_pStruct = (IDataCoreStructure **)((char *)pStruct + pField->offset);
+          str_1 = (char *)(*((__int64 (__fastcall **)(IXmlNode_vtbl *, const char *))DeleteThis + 30))(
+                            v25,
+                            pField->pName);
+          if ( str_1 && *str_1 )
+          {
+            CryStringT<char>::CryStringT<char>(&v400, str_1);
+            _Val_.m_pStruct = m_pStruct;
+            m_str_2 = *v44;
+            if ( *((int *)*v44 - 3) < 0 )
+              m_str_2 = (char *)&Count;
+            else
+              ++*((_DWORD *)m_str_2 - 3);
+            _Val_.m_URL.m_str = m_str_2;
+            v46 = *v44;
+            v47 = *((_DWORD *)*v44 - 3);
+            v48 = (int *)(v46 - 12);
+            if ( v47 >= 0 )
+            {
+              v49 = v47 - 1;
+              *v48 = v49;
+              if ( v49 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v48[2];
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v48, 0LL));
+              }
+            }
+            m_str_1 = m_str;
+            std::vector<CDataCore::UnresolvedRef>::push_back(
+              (std::vector<CDataCore::UnresolvedWeakPtr> *)&m_str->m_UnresolvedRefs,
+              &_Val_);
+            v50 = *((_DWORD *)_Val_.m_URL.m_str - 3);
+            v51 = _Val_.m_URL.m_str - 12;
+            if ( v50 >= 0 )
+            {
+              v52 = v50 - 1;
+              *(_DWORD *)v51 = v52;
+              if ( v52 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v51 + 2);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v51, 0LL));
+              }
+            }
+            goto LABEL_425;
+          }
+          *(_DWORD *)m_pStruct = 0;
+        }
+        else
+        {
+          (*((void (__fastcall **)(IXmlNode_vtbl *, std::locale **, const char *))DeleteThis + 38))(
+            v25,
+            &v340.second,
+            pField->pName);
+          v27 = (DataCoreArray<DataCoreRecordRefBase> *)((char *)pStruct + pField->offset);
+          Src = v27;
+          if ( v340.second )
+          {
+            count = (*(__int64 (__fastcall **)(std::locale *))&v340.second->_Ptr[5]._Refs)(v340.second);
+            count_3 = count;
+            if ( count > 0 )
+            {
+              DataCoreArray<DataCoreRecordRefBase>::resize(v27, count);
+              count_4 = 0;
+              v30 = 0LL;
+              do
+              {
+                ((void (__fastcall *)(std::locale *, __int64 *, _QWORD))v340.second->_Ptr[5]._Facetvec)(
+                  v340.second,
+                  &v356,
+                  (unsigned int)count_4);
+                if ( v356 )
+                {
+                  m_pStruct_1 = (IDataCoreStructure **)&v27->m_pData[v30];
+                  str_2 = (char *)(*(__int64 (__fastcall **)(__int64, const char *))(*(_QWORD *)v356 + 240LL))(
+                                    v356,
+                                    "Value");
+                  if ( str_2 && *str_2 )
+                  {
+                    CryStringT<char>::CryStringT<char>(&v388, str_2);
+                    _Val.m_pStruct = m_pStruct_1;
+                    m_str_3 = *v33;
+                    if ( *((int *)*v33 - 3) < 0 )
+                      m_str_3 = (char *)&Count;
+                    else
+                      ++*((_DWORD *)m_str_3 - 3);
+                    _Val.m_URL.m_str = m_str_3;
+                    v35 = *v33;
+                    v36 = *((_DWORD *)*v33 - 3);
+                    v37 = (int *)(v35 - 12);
+                    if ( v36 >= 0 )
+                    {
+                      v38 = v36 - 1;
+                      *v37 = v38;
+                      if ( v38 <= 0 )
+                      {
+                        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v37[2];
+                        _InterlockedExchangeAdd64(
+                          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                          _CryMemoryManagerPoolHelper::_CryFree(v37, 0LL));
+                      }
+                    }
+                    std::vector<CDataCore::UnresolvedRef>::push_back(
+                      (std::vector<CDataCore::UnresolvedWeakPtr> *)&m_str->m_UnresolvedRefs,
+                      &_Val);
+                    v39 = *((_DWORD *)_Val.m_URL.m_str - 3);
+                    v40 = _Val.m_URL.m_str - 12;
+                    if ( v39 >= 0 )
+                    {
+                      v41 = v39 - 1;
+                      *(_DWORD *)v40 = v41;
+                      if ( v41 <= 0 )
+                      {
+                        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v40 + 2);
+                        _InterlockedExchangeAdd64(
+                          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                          _CryMemoryManagerPoolHelper::_CryFree(v40, 0LL));
+                      }
+                    }
+                  }
+                  else
+                  {
+                    *(_DWORD *)m_pStruct_1 = 0;
+                  }
+                  if ( v356 )
+                    (*(void (__fastcall **)(__int64))(*(_QWORD *)v356 + 32LL))(v356);
+                  v27 = Src;
+                }
+                ++count_4;
+                v30 += 4LL;
+              }
+              while ( count_4 < count_3 );
+            }
+            if ( v340.second )
+              (*(void (__fastcall **)(std::locale *))&v340.second->_Ptr->_Catmask)(v340.second);
+          }
+        }
+        goto LABEL_424;
+      }
+      if ( option != eDCO_WeakPointer )
+        break;
+      v24 = isArray == 0;
+      v53 = xmlRef.p->__vftable;
+      DeleteThis_1 = xmlRef.p->DeleteThis;
+      if ( v24 )
+      {
+        m_pStruct_2 = (IDataCoreStructure **)((char *)pStruct + pField->offset);
+        v77 = (const char *)(*((__int64 (__fastcall **)(IXmlNode_vtbl *, const char *))DeleteThis_1 + 30))(
+                              v53,
+                              pField->pName);
+        v78 = -1LL;
+        do
+          ++v78;
+        while ( v77[v78] );
+        if ( v78 )
+        {
+          v355.second = (std::locale *)&Count;
+          v79 = CryStringT<char>::Format((CryStringT<char> *)&v355.second, "%s.%s", recordName, v77);
+          m_str_4 = v79->m_str;
+          if ( *((int *)v79->m_str - 3) < 0 )
+            m_str_4 = (char *)&Count;
+          else
+            ++*((_DWORD *)m_str_4 - 3);
+          Ptr_high = HIDWORD(v355.second[-2]._Ptr);
+          v82 = (int *)&v355.second[-2]._Ptr + 1;
+          if ( Ptr_high >= 0 )
+          {
+            v83 = Ptr_high - 1;
+            *v82 = v83;
+            if ( v83 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v82[2];
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v82, 0LL));
+            }
+          }
+          _Val__1.m_pStruct = m_pStruct_2;
+          _Val__1.m_URL.m_str = (char *)&Count;
+          if ( &Count != (CFlashUIBaseNodeDynPorts *)m_str_4 )
+          {
+            nRefCount = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+            if ( `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount >= 0 )
+            {
+              if ( *((int *)m_str_4 - 3) >= 0 )
+              {
+                CryStringT<char>::_Free(&_Val__1.m_URL);
+                goto LABEL_105;
+              }
+              --`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+              if ( nRefCount - 1 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13
+                                                                     - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(&`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer, 0LL));
+              }
+LABEL_106:
+              _Val__1.m_URL.m_str = m_str_4;
+            }
+            else if ( *((int *)m_str_4 - 3) >= 0 )
+            {
+LABEL_105:
+              ++*((_DWORD *)m_str_4 - 3);
+              goto LABEL_106;
+            }
+          }
+          CryStringT<char>::_MakeUnique(&_Val__1.m_URL);
+          for ( i = _Val__1.m_URL.m_str; *i; ++i )
+          {
+            v86 = *i;
+            if ( (unsigned __int8)(*i - 65) <= 0x19u )
+              v86 += 32;
+            *i = v86;
+          }
+          std::vector<CDataCore::UnresolvedRef>::push_back(&m_str->m_UnresolvedWeakPtrs, &_Val__1);
+          v87 = *((_DWORD *)_Val__1.m_URL.m_str - 3);
+          v88 = _Val__1.m_URL.m_str - 12;
+          if ( v87 >= 0 )
+          {
+            v89 = v87 - 1;
+            *(_DWORD *)v88 = v89;
+            if ( v89 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v88 + 2);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v88, 0LL));
+            }
+          }
+          v90 = *((_DWORD *)m_str_4 - 3);
+          v91 = (int *)(m_str_4 - 12);
+          if ( v90 >= 0 )
+          {
+            v92 = v90 - 1;
+            *v91 = v92;
+            if ( v92 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_4 - 1);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v91, 0LL));
+            }
+          }
+          goto LABEL_424;
+        }
+        *m_pStruct_2 = 0LL;
+      }
+      else
+      {
+        (*((void (__fastcall **)(IXmlNode_vtbl *, __int64 *, const char *))DeleteThis_1 + 38))(
+          v53,
+          &v341,
+          pField->pName);
+        Srca_1 = (DataCoreArray<IDataCoreStructPtrBase> *)((char *)pStruct + pField->offset);
+        Srca = Srca_1;
+        if ( v341 )
+        {
+          count_1 = (*(__int64 (__fastcall **)(__int64))(*(_QWORD *)v341 + 288LL))(v341);
+          count_5 = count_1;
+          if ( count_1 <= 0 )
+          {
+LABEL_85:
+            if ( v341 )
+              (*(void (__fastcall **)(__int64))(*(_QWORD *)v341 + 32LL))(v341);
+            goto LABEL_424;
+          }
+          DataCoreArray<IDataCoreStructPtrBase>::resize(Srca_1, count_1);
+          count_6 = 0;
+          pFielda_1 = 0LL;
+          pFielda = 0LL;
+          while ( 2 )
+          {
+            (*(void (__fastcall **)(__int64, __int64 *, _QWORD))(*(_QWORD *)v341 + 296LL))(
+              v341,
+              &v354,
+              (unsigned int)count_6);
+            if ( v354 )
+            {
+              m_pStruct_3 = (IDataCoreStructure **)((char *)pFielda_1 + (unsigned __int64)Srca_1->m_pData);
+              v60 = (const char *)(*(__int64 (__fastcall **)(__int64, const char *))(*(_QWORD *)v354 + 240LL))(
+                                    v354,
+                                    "Value");
+              v61 = -1LL;
+              do
+                ++v61;
+              while ( v60[v61] );
+              if ( v61 )
+              {
+                v352.second = (std::locale *)&Count;
+                v62 = CryStringT<char>::Format((CryStringT<char> *)&v352.second, "%s.%s", recordName, v60);
+                m_str_5 = v62->m_str;
+                if ( *((int *)v62->m_str - 3) < 0 )
+                  m_str_5 = (char *)&Count;
+                else
+                  ++*((_DWORD *)m_str_5 - 3);
+                v64 = HIDWORD(v352.second[-2]._Ptr);
+                v65 = (int *)&v352.second[-2]._Ptr + 1;
+                if ( v64 >= 0 )
+                {
+                  v66 = v64 - 1;
+                  *v65 = v66;
+                  if ( v66 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v65[2];
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v65, 0LL));
+                  }
+                }
+                _Val__2.m_pStruct = m_pStruct_3;
+                _Val__2.m_URL.m_str = (char *)&Count;
+                if ( &Count != (CFlashUIBaseNodeDynPorts *)m_str_5 )
+                {
+                  nRefCount_1 = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+                  if ( `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount >= 0 )
+                  {
+                    if ( *((int *)m_str_5 - 3) >= 0 )
+                    {
+                      CryStringT<char>::_Free(&_Val__2.m_URL);
+                      goto LABEL_68;
+                    }
+                    --`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+                    if ( nRefCount_1 - 1 <= 0 )
+                    {
+                      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13
+                                                                           - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+                      _InterlockedExchangeAdd64(
+                        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                        _CryMemoryManagerPoolHelper::_CryFree(
+                          &`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer,
+                          0LL));
+                    }
+LABEL_69:
+                    _Val__2.m_URL.m_str = m_str_5;
+                  }
+                  else if ( *((int *)m_str_5 - 3) >= 0 )
+                  {
+LABEL_68:
+                    ++*((_DWORD *)m_str_5 - 3);
+                    goto LABEL_69;
+                  }
+                }
+                CryStringT<char>::_MakeUnique(&_Val__2.m_URL);
+                for ( j = _Val__2.m_URL.m_str; *j; ++j )
+                {
+                  v69 = *j;
+                  if ( (unsigned __int8)(*j - 65) <= 0x19u )
+                    v69 += 32;
+                  *j = v69;
+                }
+                std::vector<CDataCore::UnresolvedRef>::push_back(&m_str->m_UnresolvedWeakPtrs, &_Val__2);
+                v70 = *((_DWORD *)_Val__2.m_URL.m_str - 3);
+                v71 = _Val__2.m_URL.m_str - 12;
+                if ( v70 >= 0 )
+                {
+                  v72 = v70 - 1;
+                  *(_DWORD *)v71 = v72;
+                  if ( v72 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v71 + 2);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v71, 0LL));
+                  }
+                }
+                v73 = *((_DWORD *)m_str_5 - 3);
+                v74 = (int *)(m_str_5 - 12);
+                if ( v73 >= 0 )
+                {
+                  v75 = v73 - 1;
+                  *v74 = v75;
+                  if ( v75 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_5 - 1);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v74, 0LL));
+                  }
+                }
+                pFielda_1 = pFielda;
+              }
+              else
+              {
+                *m_pStruct_3 = 0LL;
+              }
+              if ( v354 )
+                (*(void (__fastcall **)(__int64))(*(_QWORD *)v354 + 32LL))(v354);
+              Srca_1 = Srca;
+            }
+            pFielda_1 = (CDataCoreField *)((char *)pFielda_1 + 8);
+            ++count_6;
+            pFielda = pFielda_1;
+            if ( count_6 >= count_5 )
+              goto LABEL_85;
+            continue;
+          }
+        }
+      }
+LABEL_424:
+      m_str_1 = m_str;
+LABEL_425:
+      dataCoreStruct_1 = dataCoreStruct;
+      v11 = v366;
+      m_numFields_low_2 = m_numFields_low_3 + 1;
+      m_numFields_low_3 = m_numFields_low_2;
+      if ( m_numFields_low_2 >= m_numFields_low_1 )
+        goto LABEL_426;
+    }
+    if ( !isArray )
+    {
+      if ( type != eDCT_Struct && option != eDCO_Optional )
+      {
+        if ( !(*((unsigned __int8 (__fastcall **)(IXmlNode_vtbl *, const char *))xmlRef.p->DeleteThis + 31))(
+                xmlRef.p->__vftable,
+                pField->pName) )
+          CryWarning(
+            VALIDATOR_MODULE_SYSTEM,
+            VALIDATOR_WARNING,
+            "[DataCore] Field \"%s\" was not found in source record \"%s\" but exists as a field within game side structu"
+            "re. Data will default.",
+            pField->pName,
+            gameStructName);
+        pField_1 = pField;
+      }
+      switch ( pField_1->type )
+      {
+        case eDCT_Bool:
+          XmlNodeRef::XmlNodeRef(&v390, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<bool>(temp, pStruct, pField, xmlRef_1);
+          goto LABEL_424;
+        case eDCT_Int8:
+          XmlNodeRef::XmlNodeRef(&v406, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<char>(temp_1, pStruct, pField, xmlRef_2);
+          goto LABEL_424;
+        case eDCT_Int16:
+          XmlNodeRef::XmlNodeRef(&v405, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<short>(temp_2, pStruct, pField, xmlRef_3);
+          goto LABEL_424;
+        case eDCT_Int32:
+          XmlNodeRef::XmlNodeRef(&v391, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<int>(temp_3, pStruct, pField, xmlRef_4);
+          goto LABEL_424;
+        case eDCT_Int64:
+          XmlNodeRef::XmlNodeRef(&v399, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<__int64>(temp_4, pStruct, pField, xmlRef_5);
+          goto LABEL_424;
+        case eDCT_UInt8:
+          XmlNodeRef::XmlNodeRef(&v393, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<unsigned char>(temp_5, pStruct, pField, xmlRef_6);
+          goto LABEL_424;
+        case eDCT_UInt16:
+          XmlNodeRef::XmlNodeRef(&v403, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<unsigned short>(temp_6, pStruct, pField, xmlRef_7);
+          goto LABEL_424;
+        case eDCT_UInt32:
+          XmlNodeRef::XmlNodeRef(&v395, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<unsigned int>(temp_7, pStruct, pField, xmlRef_8);
+          goto LABEL_424;
+        case eDCT_UInt64:
+          XmlNodeRef::XmlNodeRef(&v401, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<unsigned __int64>(temp_8, pStruct, pField, xmlRef_9);
+          goto LABEL_424;
+        case eDCT_String:
+          XmlNodeRef::XmlNodeRef(&v394, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadStringA(v262, pStruct, pField, xmlRef_10);
+          goto LABEL_424;
+        case eDCT_Float:
+          XmlNodeRef::XmlNodeRef(&v397, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<float>(temp_9, pStruct, pField, xmlRef_11);
+          goto LABEL_424;
+        case eDCT_Double:
+          XmlNodeRef::XmlNodeRef(&v389, (const XmlNodeRef *)xmlRef.p);
+          CDataCore::LoadAtomic<double>(v254, pStruct, pField, xmlRef_12);
+          goto LABEL_424;
+        case eDCT_Enum:
+          str_3 = (char *)m_str->m_fnGetSchemaField_GetEnumName(Srca_3);
+          CryStringT<char>::CryStringT<char>(&v355.first, str_3);
+          v258 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+                   (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)&m_str->m_Enums,
+                   &v392,
+                   &v355.first)->_Ptr != (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *)m_str->m_Enums._Myhead;
+          CMusicSystem::SInputContributorDef::~SInputContributorDef(&v355);
+          if ( v258 )
+          {
+            pName = pField->pName;
+            v345.first.m_str = (char *)&Count;
+            (*((void (__fastcall **)(IXmlNode_vtbl *, const char *, std::pair<CryStringT<char>,std::locale *> *))xmlRef.p->DeleteThis
+             + 13))(
+              xmlRef.p->__vftable,
+              pName,
+              &v345);
+            CryStringT<char>::CryStringT<char>(&v352.first, str_3);
+            v260 = (std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > *)std::map<CryStringT<char>,std::map<CryStringT<char>,int>>::operator[](&m_str->m_Enums, &v352.first);
+            v339 = *(_DWORD *)std::map<CryStringT<char>,int>::operator[](v260, &v345.first);
+            CMusicSystem::SInputContributorDef::~SInputContributorDef(&v352);
+            memcpy_0((char *)pStruct + pField->offset, &v339, pField->size);
+            CMusicSystem::SInputContributorDef::~SInputContributorDef(&v345);
+          }
+          else
+          {
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_WARNING,
+              "[DataCore] Field \"%s\" enum \"%s\" was not found. Did you register it (see DataCore_GamePreInitialize())? \"%s\"",
+              pField->pName,
+              str_3,
+              gameStructName);
+          }
+          goto LABEL_424;
+        case eDCT_Struct:
+          if ( pField_1->option == eDCO_Optional )
+          {
+            Srca_6 = (CAsyncIOFileRequest **)((char *)pStruct + pField_1->offset);
+            pName_1 = pField_1->pName;
+            Srca_3 = Srca_6;
+            (*((void (__fastcall **)(IXmlNode_vtbl *, std::locale **, const char *))xmlRef.p->DeleteThis + 38))(
+              xmlRef.p->__vftable,
+              &second_1,
+              pName_1);
+            if ( second_1 )
+            {
+              str_8 = ((__int64 (__fastcall *)(std::locale *, const char *))second_1->_Ptr[4]._Facetvec)(
+                        second_1,
+                        "__type");
+              str_7 = (char *)((__int64 (__fastcall *)(std::locale *, const char *))second_1->_Ptr[4]._Facetvec)(
+                                second_1,
+                                "__polymorphicType");
+              str_4 = str_7;
+              if ( !str_7 || !*str_7 )
+                str_4 = (char *)str_8;
+              CryStringT<char>::CryStringT<char>(&v358.first, str_4);
+              v268 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+                       (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)&m_str->m_GameStructures,
+                       &v396,
+                       &v358.first)->_Ptr != (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *)m_str->m_GameStructures._Myhead;
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v358);
+              if ( v268 )
+              {
+                if ( url )
+                {
+                  v308 |= 7u;
+                  CryStringT<char>::CryStringT<char>(&v370.first, ".");
+                  str1 = operator+<char>(&v377.first, url, str2);
+                  v271 = operator+<char>(&v382.first, str1, (char *)pField->pName);
+                  v272 = v308;
+                }
+                else
+                {
+                  v272 = v308 | 8;
+                  v308 |= 8u;
+                  CryStringT<char>::CryStringT<char>(&v376.first, (char *)pField->pName);
+                }
+                v273 = v271;
+                v340.first.m_str = (char *)&Count;
+                m_str_6 = v271->m_str;
+                v273->m_str = (char *)&Count;
+                v340.first.m_str = m_str_6;
+                if ( (v272 & 8) != 0 )
+                {
+                  v272 &= ~8u;
+                  v308 = v272;
+                  CMusicSystem::SInputContributorDef::~SInputContributorDef(&v376);
+                }
+                if ( (v272 & 4) != 0 )
+                {
+                  v272 &= ~4u;
+                  v308 = v272;
+                  CMusicSystem::SInputContributorDef::~SInputContributorDef(&v382);
+                }
+                if ( (v272 & 2) != 0 )
+                {
+                  v272 &= ~2u;
+                  v308 = v272;
+                  CMusicSystem::SInputContributorDef::~SInputContributorDef(&v377);
+                }
+                if ( (v272 & 1) != 0 )
+                {
+                  v308 = v272 & 0xFFFFFFFE;
+                  CMusicSystem::SInputContributorDef::~SInputContributorDef(&v370);
+                }
+                CryStringT<char>::CryStringT<char>(&_Keyval_.first, str_4);
+                v277 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+                         &m_str->m_GameStructures,
+                         (const std::piecewise_construct_t *)&_Keyval_,
+                         v275,
+                         __Val_1_);
+                CMusicSystem::SInputContributorDef::~SInputContributorDef(&_Keyval_);
+                v278 = (CAsyncIOFileRequest *)(**(__int64 (__fastcall ***)(char *, _QWORD))v277[2].m_str)(
+                                                v277[2].m_str,
+                                                0LL);
+                _Val_1 = Srca_3;
+                *Srca_3 = v278;
+                v370.second = second_1;
+                if ( second_1 )
+                  ((void (__fastcall *)(std::locale *))second_1->_Ptr->_Facetcount)(second_1);
+                Lower = CryStringT<char>::MakeLower(&v340.first);
+                LOBYTE(urla) = 0;
+                ((void (__fastcall *)(CDataCore *, CAsyncIOFileRequest *, char *, const char *, char *, std::locale **, int))m_str->LoadStruct)(
+                  m_str,
+                  *_Val_1,
+                  str_4,
+                  recordName,
+                  Lower->m_str,
+                  &v370.second,
+                  urla);
+                std::vector<IParticleEffect *>::push_back(
+                  (std::vector<CAsyncIOFileRequest *> *)&m_str->m_DestructMeStructs,
+                  _Val_1);
+                CMusicSystem::SInputContributorDef::~SInputContributorDef(&v340);
+              }
+              else
+              {
+                CryWarning(
+                  VALIDATOR_MODULE_SYSTEM,
+                  VALIDATOR_ERROR,
+                  "[DataCore] Structure of type \"%s\" is not a game-registered structure. Is this defined in DataCorePre"
+                  "Init.cpp or DataCoreGame.cpp?",
+                  str_4);
+              }
+              if ( second_1 )
+                (*(void (__fastcall **)(std::locale *))&second_1->_Ptr->_Catmask)(second_1);
+            }
+            goto LABEL_424;
+          }
+          v281 = (char *)pStruct + pField_1->offset;
+          (*((void (__fastcall **)(IXmlNode_vtbl *, std::locale **, const char *))xmlRef.p->DeleteThis + 38))(
+            xmlRef.p->__vftable,
+            &second_2,
+            pField_1->pName);
+          if ( second_2 )
+          {
+            v282 = ((__int64 (__fastcall *)(std::locale *, const char *))second_2->_Ptr[4]._Facetvec)(
+                     second_2,
+                     "__type");
+            if ( url )
+            {
+              v308 |= 0x70u;
+              CryStringT<char>::CryStringT<char>(&v362.first, ".");
+              str1_1 = operator+<char>(&v374.first, url, str2_1);
+              v285 = operator+<char>(&v373.first, str1_1, (char *)pField->pName);
+              v286 = v308;
+            }
+            else
+            {
+              v286 = v308 | 0x80;
+              v308 |= 0x80u;
+              CryStringT<char>::CryStringT<char>(&v372.first, (char *)pField->pName);
+            }
+            v287 = v285;
+            v337.first.m_str = (char *)&Count;
+            m_str_7 = v285->m_str;
+            v287->m_str = (char *)&Count;
+            v337.first.m_str = m_str_7;
+            if ( (v286 & 0x80u) != 0 )
+            {
+              v286 &= ~0x80u;
+              v308 = v286;
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v372);
+            }
+            if ( (v286 & 0x40) != 0 )
+            {
+              v286 &= ~0x40u;
+              v308 = v286;
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v373);
+            }
+            if ( (v286 & 0x20) != 0 )
+            {
+              v286 &= ~0x20u;
+              v308 = v286;
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v374);
+            }
+            if ( (v286 & 0x10) != 0 )
+            {
+              v308 = v286 & 0xFFFFFFEF;
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v362);
+            }
+            v362.second = second_2;
+            if ( second_2 )
+              ((void (__fastcall *)(std::locale *))second_2->_Ptr->_Facetcount)(second_2);
+            v289 = CryStringT<char>::MakeLower(&v337.first);
+            v290 = v282;
+            m_str_1 = m_str;
+            LOBYTE(urla) = 0;
+            ((void (__fastcall *)(CDataCore *, char *, __int64, const char *, char *, std::locale **, int))m_str->LoadStruct)(
+              m_str,
+              v281,
+              v290,
+              recordName,
+              v289->m_str,
+              &v362.second,
+              urla);
+            CMusicSystem::SInputContributorDef::~SInputContributorDef(&v337);
+          }
+          else
+          {
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_ERROR,
+              "[DataCore] Non optional field \"%s\" doesn't exist in the source record \"%s\". Please add this field to t"
+              "he schema and re-export the source record.",
+              pField->pName,
+              recordName);
+            m_str_1 = m_str;
+          }
+          if ( second_2 )
+            (*(void (__fastcall **)(std::locale *))&second_2->_Ptr->_Catmask)(second_2);
+          break;
+        default:
+          goto LABEL_424;
+      }
+      goto LABEL_425;
+    }
+    switch ( type )
+    {
+      case eDCT_Bool:
+        second_3 = (std::locale *)xmlRef.p->__vftable;
+        v376.second = second_3;
+        if ( second_3 )
+        {
+          ((void (__fastcall *)(std::locale *))second_3->_Ptr->_Facetcount)(second_3);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<bool>((CDataCore *)second_3, pStruct, pField_1, (XmlNodeRef)&v376.second);
+        goto LABEL_424;
+      case eDCT_Int8:
+        p = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef_.p = p;
+        if ( p )
+        {
+          p->AddRef(p);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<char>((CDataCore *)p, pStruct, pField_1, (XmlNodeRef)&xmlRef_);
+        goto LABEL_424;
+      case eDCT_Int16:
+        p_1 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__1.p = p_1;
+        if ( p_1 )
+        {
+          p_1->AddRef(p_1);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<short>((CDataCore *)p_1, pStruct, pField_1, (XmlNodeRef)&xmlRef__1);
+        goto LABEL_424;
+      case eDCT_Int32:
+        p_2 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__2.p = p_2;
+        if ( p_2 )
+        {
+          p_2->AddRef(p_2);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<int>((CDataCore *)p_2, pStruct, pField_1, (XmlNodeRef)&xmlRef__2);
+        goto LABEL_424;
+      case eDCT_Int64:
+        p_3 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__3.p = p_3;
+        if ( p_3 )
+        {
+          p_3->AddRef(p_3);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<__int64>((CDataCore *)p_3, pStruct, pField_1, (XmlNodeRef)&xmlRef__3);
+        goto LABEL_424;
+      case eDCT_UInt8:
+        second_4 = (std::locale *)xmlRef.p->__vftable;
+        v383.second = second_4;
+        if ( second_4 )
+        {
+          ((void (__fastcall *)(std::locale *))second_4->_Ptr->_Facetcount)(second_4);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<unsigned char>((CDataCore *)second_4, pStruct, pField_1, (XmlNodeRef)&v383.second);
+        goto LABEL_424;
+      case eDCT_UInt16:
+        p_4 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__4.p = p_4;
+        if ( p_4 )
+        {
+          p_4->AddRef(p_4);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<unsigned short>((CDataCore *)p_4, pStruct, pField_1, (XmlNodeRef)&xmlRef__4);
+        goto LABEL_424;
+      case eDCT_UInt32:
+        p_5 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__5.p = p_5;
+        if ( p_5 )
+        {
+          p_5->AddRef(p_5);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<unsigned int>((CDataCore *)p_5, pStruct, pField_1, (XmlNodeRef)&xmlRef__5);
+        goto LABEL_424;
+      case eDCT_UInt64:
+        p_6 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__6.p = p_6;
+        if ( p_6 )
+        {
+          p_6->AddRef(p_6);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<unsigned __int64>((CDataCore *)p_6, pStruct, pField_1, (XmlNodeRef)&xmlRef__6);
+        goto LABEL_424;
+      case eDCT_String:
+        p_7 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__7.p = p_7;
+        if ( p_7 )
+        {
+          p_7->AddRef(p_7);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<CryStringT<char>>(
+          (CFlashUIBaseNodeDynPorts *)p_7,
+          pStruct,
+          pField_1,
+          (XmlNodeRef)&xmlRef__7);
+        goto LABEL_424;
+      case eDCT_Float:
+        p_8 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__8.p = p_8;
+        if ( p_8 )
+        {
+          p_8->AddRef(p_8);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<float>((CDataCore *)p_8, pStruct, pField_1, (XmlNodeRef)&xmlRef__8);
+        goto LABEL_424;
+      case eDCT_Double:
+        p_9 = (IXmlNode *)xmlRef.p->__vftable;
+        xmlRef__9.p = p_9;
+        if ( p_9 )
+        {
+          p_9->AddRef(p_9);
+          pField_1 = pField;
+        }
+        CDataCore::LoadArray<double>((CDataCore *)p_9, pStruct, pField_1, (XmlNodeRef)&xmlRef__9);
+        goto LABEL_424;
+      case eDCT_Struct:
+        (*((void (__fastcall **)(IXmlNode_vtbl *, __int64 *, const char *))xmlRef.p->DeleteThis + 38))(
+          xmlRef.p->__vftable,
+          &v329,
+          pField->pName);
+        if ( !v329 )
+          goto LABEL_424;
+        count_7 = (*(__int64 (__fastcall **)(__int64))(*(_QWORD *)v329 + 288LL))(v329);
+        count_2 = count_7;
+        count_8 = count_7;
+        if ( count_7 <= 0 )
+          goto LABEL_352;
+        v107 = (_QWORD *)(*(__int64 (__fastcall **)(__int64, std::locale **, _QWORD))(*(_QWORD *)v329 + 296LL))(
+                           v329,
+                           &v377.second,
+                           0LL);
+        str_5 = (char *)(*(__int64 (__fastcall **)(_QWORD, const char *))(*(_QWORD *)*v107 + 240LL))(*v107, "__type");
+        str = str_5;
+        if ( v377.second )
+          (*(void (__fastcall **)(std::locale *))&v377.second->_Ptr->_Catmask)(v377.second);
+        if ( !str_5 )
+          goto LABEL_352;
+        pField_2 = (char **)pField;
+        if ( pField->option == eDCO_Optional )
+        {
+          Srca_2 = (CAsyncIOFileRequest **)((char *)pStruct + pField->offset);
+          Srca_3 = Srca_2;
+          DataCoreArray<IDataCoreStructPtrBase>::resize((DataCoreArray<IDataCoreStructPtrBase> *)Srca_2, count_2);
+          count_9 = 0;
+          v112 = 0LL;
+          count_11 = 0;
+          v328 = 0LL;
+          if ( (int)count_2 > 0 )
+          {
+            while ( 1 )
+            {
+              v382.second = (std::locale *)(&Srca_2[1]->m_nextFree.pNext + v112);
+              (*(void (__fastcall **)(__int64, std::locale **, _QWORD))(*(_QWORD *)v329 + 296LL))(
+                v329,
+                &v345.second,
+                (unsigned int)count_9);
+              v322.first.m_str = (char *)&Count;
+              if ( url )
+                break;
+LABEL_227:
+              v335.m_str = (char *)&Count;
+              CryStringT<char>::_AllocData(&v335, 1uLL);
+              if ( v335.m_str != "]" )
+                *v335.m_str = asc_1528479A0[0];
+              v357.m_str = (char *)&Count;
+              v323.m_str = (char *)&Count;
+              CryStringT<char>::_AllocData(&v323, 1uLL);
+              m_str_8 = (std::locale *)v323.m_str;
+              if ( v323.m_str != "[" )
+                *v323.m_str = asc_1527C0908[0];
+              sStr = *pField_2;
+              v322.second = (std::locale *)&Count;
+              if ( sStr )
+              {
+                v150 = -1LL;
+                do
+                  ++v150;
+                while ( sStr[v150] );
+              }
+              else
+              {
+                v150 = 0LL;
+              }
+              Srce_1 = m_str_8 - 1;
+              nLen = v150 + SLODWORD(m_str_8[-1]._Ptr);
+              Srce = m_str_8 - 1;
+              if ( nLen <= `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize )
+              {
+                if ( !nLen
+                  && `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength != `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize )
+                {
+                  CryStringT<char>::_AllocData(
+                    (CryStringT<char> *)&v322.second,
+                    `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+                  if ( (CFlashUIBaseNodeDynPorts *)v322.second != &Count )
+                    memcpy_0(
+                      (void *)v322.second,
+                      &Count,
+                      `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+                  CryStringT<char>::_FreeData(&`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer);
+                }
+              }
+              else
+              {
+                CryStringT<char>::_AllocData((CryStringT<char> *)&v322.second, nLen);
+                second = v322.second;
+                if ( (CFlashUIBaseNodeDynPorts *)v322.second != &Count )
+                  memcpy_0(
+                    (void *)v322.second,
+                    &Count,
+                    `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+                LODWORD(second[-1]._Ptr) = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength;
+                *((_BYTE *)&second->_Ptr + `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength) = 0;
+                nRefCount_2 = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+                if ( `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount >= 0 )
+                {
+                  --`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+                  if ( nRefCount_2 - 1 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13
+                                                                         - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(
+                        &`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer,
+                        0LL));
+                    m_str_8 = (std::locale *)v323.m_str;
+                  }
+                }
+                Srce_1 = Srce;
+              }
+              if ( sStr )
+              {
+                nLen_1 = -1LL;
+                do
+                  ++nLen_1;
+                while ( sStr[nLen_1] );
+              }
+              else
+              {
+                nLen_1 = 0LL;
+              }
+              CryStringT<char>::_ConcatenateInPlace((CryStringT<char> *)&v322.second, sStr, nLen_1);
+              Ptr_low = SLODWORD(Srce_1->_Ptr);
+              second_5 = (char *)v322.second;
+              if ( Ptr_low )
+              {
+                v123 = SHIDWORD(v322.second[-2]._Ptr) <= 1;
+                second_13 = (int *)&v322.second[-2]._Ptr + 1;
+                second_7 = (char *)&v322.second[-2]._Ptr + 4;
+                if ( v123 && (v159 = SLODWORD(v322.second[-1]._Ptr), Ptr_low + v159 <= SHIDWORD(v322.second[-1]._Ptr)) )
+                {
+                  if ( (std::locale *)((char *)v322.second + v159) != m_str_8 )
+                    memcpy_0((char *)v322.second + v159, m_str_8, Ptr_low);
+                  *((_DWORD *)second_5 - 2) += Ptr_low;
+                  second_5[*((int *)second_5 - 2)] = 0;
+                }
+                else
+                {
+                  Srcf_1 = SLODWORD(v322.second[-1]._Ptr);
+                  second_6 = (void *)v322.second;
+                  Size_1 = Srcf_1 + Ptr_low;
+                  Srcf = Srcf_1;
+                  Size_2 = 2 * Srcf_1;
+                  n8 = Size_1;
+                  Size = Size_1;
+                  if ( Size_2 > Size_1 )
+                    n8 = Size_2;
+                  if ( n8 )
+                  {
+                    if ( n8 < 8 )
+                      n8 = 8LL;
+                    CryStringT<char>::_AllocData((CryStringT<char> *)&v322.second, n8);
+                    second_5 = (char *)v322.second;
+                    if ( (void *)v322.second != second_6 )
+                      memcpy_0((void *)v322.second, second_6, Srcf);
+                    Srcf_2 = Srcf;
+                    if ( &second_5[Srcf] != (char *)m_str_8 )
+                    {
+                      memcpy_0(&second_5[Srcf], m_str_8, Ptr_low);
+                      Srcf_2 = Srcf;
+                    }
+                    second_13 = (int *)second_7;
+                    *((_DWORD *)second_5 - 2) = Ptr_low + Srcf_2;
+                    second_5[Size] = 0;
+                  }
+                  if ( *second_13 >= 0 )
+                  {
+                    v165 = *second_13 - 1;
+                    *second_13 = v165;
+                    if ( v165 <= 0 )
+                    {
+                      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - second_13[2];
+                      _InterlockedExchangeAdd64(
+                        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                        _CryMemoryManagerPoolHelper::_CryFree(second_13, 0LL));
+                      m_str_8 = (std::locale *)v323.m_str;
+                      second_5 = (char *)v322.second;
+                    }
+                  }
+                }
+              }
+              v166 = CryStringT<char>::Format(&v357, "%i", count_11);
+              v167 = *((int *)second_5 - 3) < 0;
+              v381 = second_5 - 12;
+              if ( v167 )
+              {
+                second_5 = (char *)&Count;
+                v330.m_str = (char *)&Count;
+              }
+              else
+              {
+                ++*((_DWORD *)second_5 - 3);
+                v330.m_str = second_5;
+              }
+              m_str_9 = v166->m_str;
+              second_6 = m_str_9;
+              Size_3 = *((int *)m_str_9 - 2);
+              if ( *((_DWORD *)m_str_9 - 2) )
+              {
+                v123 = *((_DWORD *)second_5 - 3) <= 1;
+                v170 = (int *)(second_5 - 12);
+                v369 = second_5 - 12;
+                if ( v123 && (v171 = *((int *)second_5 - 2), Size_3 + v171 <= *((int *)second_5 - 1)) )
+                {
+                  if ( &second_5[v171] != m_str_9 )
+                    memcpy_0(&second_5[v171], m_str_9, Size_3);
+                  *((_DWORD *)second_5 - 2) += Size_3;
+                  second_5[*((int *)second_5 - 2)] = 0;
+                }
+                else
+                {
+                  Srcg_1 = *((int *)second_5 - 2);
+                  second_7 = second_5;
+                  Size_4 = Srcg_1 + Size_3;
+                  Srcg = Srcg_1;
+                  Size_5 = 2 * Srcg_1;
+                  n8_1 = Size_4;
+                  Size = Size_4;
+                  if ( Size_5 > Size_4 )
+                    n8_1 = Size_5;
+                  if ( n8_1 )
+                  {
+                    if ( n8_1 < 8 )
+                      n8_1 = 8LL;
+                    CryStringT<char>::_AllocData(&v330, n8_1);
+                    second_5 = v330.m_str;
+                    if ( v330.m_str != second_7 )
+                      memcpy_0(v330.m_str, second_7, Srcg);
+                    Srcg_2 = Srcg;
+                    if ( &second_5[Srcg] != second_6 )
+                    {
+                      memcpy_0(&second_5[Srcg], second_6, Size_3);
+                      Srcg_2 = Srcg;
+                    }
+                    v170 = (int *)v369;
+                    *((_DWORD *)second_5 - 2) = Size_3 + Srcg_2;
+                    second_5[Size] = 0;
+                  }
+                  if ( *v170 >= 0 )
+                  {
+                    v177 = *v170 - 1;
+                    *v170 = v177;
+                    if ( v177 <= 0 )
+                    {
+                      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v170[2];
+                      _InterlockedExchangeAdd64(
+                        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                        _CryMemoryManagerPoolHelper::_CryFree(v170, 0LL));
+                      m_str_8 = (std::locale *)v323.m_str;
+                      second_5 = v330.m_str;
+                    }
+                  }
+                }
+              }
+              v178 = (int *)(second_5 - 12);
+              if ( *((int *)second_5 - 3) < 0 )
+              {
+                v344.m_str = (char *)&Count;
+              }
+              else
+              {
+                ++*v178;
+                v344.m_str = second_5;
+              }
+              CryStringT<char>::_ConcatenateInPlace(&v344, v335.m_str, *((int *)v335.m_str - 2));
+              m_str_10 = v344.m_str;
+              CryStringT<char>::_ConcatenateInPlace(&v322.first, v344.m_str, *((int *)v344.m_str - 2));
+              v180 = *((_DWORD *)m_str_10 - 3);
+              v181 = (int *)(m_str_10 - 12);
+              if ( v180 >= 0 )
+              {
+                v182 = v180 - 1;
+                *v181 = v182;
+                if ( v182 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_10 - 1);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v181, 0LL));
+                  m_str_8 = (std::locale *)v323.m_str;
+                }
+              }
+              if ( *v178 >= 0 )
+              {
+                v183 = *v178 - 1;
+                *v178 = v183;
+                if ( v183 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v178[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v178, 0LL));
+                  m_str_8 = (std::locale *)v323.m_str;
+                }
+              }
+              v184 = v381;
+              if ( *(int *)v381 >= 0 )
+              {
+                v185 = *(_DWORD *)v381 - 1;
+                *(_DWORD *)v381 = v185;
+                if ( v185 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v184[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v184, 0LL));
+                  m_str_8 = (std::locale *)v323.m_str;
+                }
+              }
+              v186 = HIDWORD(m_str_8[-2]._Ptr);
+              v187 = (int *)&m_str_8[-2]._Ptr + 1;
+              if ( v186 >= 0 )
+              {
+                v188 = v186 - 1;
+                *v187 = v188;
+                if ( v188 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - HIDWORD(m_str_8[-1]._Ptr);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v187, 0LL));
+                }
+              }
+              v189 = *((_DWORD *)v357.m_str - 3);
+              v190 = v357.m_str - 12;
+              if ( v189 >= 0 )
+              {
+                v191 = v189 - 1;
+                *(_DWORD *)v190 = v191;
+                if ( v191 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v190 + 2);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v190, 0LL));
+                }
+              }
+              v192 = *((_DWORD *)v335.m_str - 3);
+              v193 = v335.m_str - 12;
+              if ( v192 >= 0 )
+              {
+                v194 = v192 - 1;
+                *(_DWORD *)v193 = v194;
+                if ( v194 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v193 + 2);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v193, 0LL));
+                }
+              }
+              str_9 = (char *)((__int64 (__fastcall *)(std::locale *, const char *))v345.second->_Ptr[4]._Facetvec)(
+                                v345.second,
+                                "__polymorphicType");
+              str_6 = str_9;
+              if ( !str_9 || !*str_9 )
+                str_6 = str;
+              CryStringT<char>::CryStringT<char>((CryStringT<char> *)&v358.second, str_6);
+              v24 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+                      (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)&m_str->m_GameStructures,
+                      &result,
+                      (const CryStringT<char> *)&v358.second)->_Ptr == (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *)m_str->m_GameStructures._Myhead;
+              v197 = HIDWORD(v358.second[-2]._Ptr);
+              v198 = !v24;
+              v199 = (int *)&v358.second[-2]._Ptr + 1;
+              if ( v197 >= 0 )
+              {
+                v200 = v197 - 1;
+                *v199 = v200;
+                if ( v200 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v199[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v199, 0LL));
+                }
+              }
+              if ( v198 )
+              {
+                CryStringT<char>::CryStringT<char>(&_Keyval__1, str_6);
+                v203 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+                         &m_str->m_GameStructures,
+                         (const std::piecewise_construct_t *)&_Keyval__1,
+                         v201,
+                         __Val_1__1);
+                v204 = *((_DWORD *)_Keyval__1.m_str - 3);
+                v205 = _Keyval__1.m_str - 12;
+                v206 = v203;
+                if ( v204 >= 0 )
+                {
+                  v207 = v204 - 1;
+                  *(_DWORD *)v205 = v207;
+                  if ( v207 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v205 + 2);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(v205, 0LL));
+                  }
+                }
+                _Ptr = (std::locale::_Locimp *)(**(__int64 (__fastcall ***)(char *, _QWORD))v206[2].m_str)(
+                                                 v206[2].m_str,
+                                                 0LL);
+                second_8 = (CAsyncIOFileRequest **)v382.second;
+                v382.second->_Ptr = _Ptr;
+                second_9 = v345.second;
+                if ( v345.second )
+                  ((void (__fastcall *)(std::locale *))v345.second->_Ptr->_Facetcount)(v345.second);
+                v210 = CryStringT<char>::MakeLower(&v322.first);
+                LOBYTE(urla) = 0;
+                ((void (__fastcall *)(CDataCore *, CAsyncIOFileRequest *, char *, const char *, char *, std::locale **, int))m_str->LoadStruct)(
+                  m_str,
+                  *second_8,
+                  str_6,
+                  recordName,
+                  v210->m_str,
+                  &second_9,
+                  urla);
+                std::vector<IParticleEffect *>::push_back(
+                  (std::vector<CAsyncIOFileRequest *> *)&m_str->m_DestructMeStructs,
+                  second_8);
+              }
+              else
+              {
+                CryWarning(
+                  VALIDATOR_MODULE_SYSTEM,
+                  VALIDATOR_WARNING,
+                  "[DataCore] Type %s was determined for Array \"%s\" but this type does not exist in the game-side struc"
+                  "tures. Has it been removed or renamed?",
+                  str_6,
+                  pField->pName);
+              }
+              CMusicSystem::SInputContributorDef::~SInputContributorDef(&v322);
+              if ( v345.second )
+                (*(void (__fastcall **)(std::locale *))&v345.second->_Ptr->_Catmask)(v345.second);
+              pField_2 = (char **)pField;
+              Srca_2 = Srca_3;
+              count_9 = count_11 + 1;
+              v112 = v328 + 1;
+              count_11 = count_9;
+              ++v328;
+              if ( count_9 >= count_8 )
+                goto LABEL_352;
+            }
+            v327.m_str = (char *)&Count;
+            CryStringT<char>::_AllocData(&v327, 1uLL);
+            m_str_11 = v327.m_str;
+            if ( v327.m_str != "." )
+              *v327.m_str = pObjectName[0];
+            url_1 = url;
+            v320.m_str = (char *)&Count;
+            v115 = -1LL;
+            do
+              ++v115;
+            while ( url[v115] );
+            v116 = m_str_11 - 8;
+            nAllocSize = v115 + *((int *)m_str_11 - 2);
+            if ( nAllocSize <= `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize )
+            {
+              if ( nAllocSize
+                || `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength == `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize )
+              {
+                goto LABEL_180;
+              }
+              CryStringT<char>::_AllocData(&v320, `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+              if ( (CFlashUIBaseNodeDynPorts *)v320.m_str != &Count )
+                memcpy_0(v320.m_str, &Count, `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+              CryStringT<char>::_FreeData(&`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer);
+            }
+            else
+            {
+              CryStringT<char>::_AllocData(&v320, v115 + *((int *)m_str_11 - 2));
+              m_str_12 = v320.m_str;
+              if ( (CFlashUIBaseNodeDynPorts *)v320.m_str != &Count )
+                memcpy_0(v320.m_str, &Count, `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength);
+              *((_DWORD *)m_str_12 - 2) = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength;
+              m_str_12[`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nLength] = 0;
+              nRefCount_3 = `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+              if ( `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount >= 0 )
+              {
+                --`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nRefCount;
+                if ( nRefCount_3 - 1 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13
+                                                                       - `CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer.nAllocSize;
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(
+                      &`CryStringT<char>::_emptyHeader'::`2'::sEmptyStringBuffer,
+                      0LL));
+                  m_str_11 = v327.m_str;
+                }
+              }
+            }
+            url_1 = url;
+LABEL_180:
+            nLen_2 = -1LL;
+            do
+              ++nLen_2;
+            while ( url_1[nLen_2] );
+            CryStringT<char>::_ConcatenateInPlace(&v320, url_1, nLen_2);
+            Size_6 = *(int *)v116;
+            m_str_13 = v320.m_str;
+            if ( Size_6 )
+            {
+              v123 = *((_DWORD *)v320.m_str - 3) <= 1;
+              second_10 = v320.m_str - 12;
+              second_6 = v320.m_str - 12;
+              if ( v123 && (v125 = *((int *)v320.m_str - 2), Size_6 + v125 <= *((int *)v320.m_str - 1)) )
+              {
+                if ( &v320.m_str[v125] != m_str_11 )
+                  memcpy_0(&v320.m_str[v125], m_str_11, Size_6);
+                *((_DWORD *)m_str_13 - 2) += Size_6;
+                m_str_13[*((int *)m_str_13 - 2)] = 0;
+              }
+              else
+              {
+                Size_7 = *((int *)v320.m_str - 2);
+                Srcb = v320.m_str;
+                n8_2 = Size_7 + Size_6;
+                Size = Size_7;
+                n8_4 = 2 * Size_7;
+                if ( n8_4 > n8_2 )
+                  n8_2 = n8_4;
+                if ( n8_2 )
+                {
+                  if ( n8_2 < 8 )
+                    n8_2 = 8LL;
+                  CryStringT<char>::_AllocData(&v320, n8_2);
+                  m_str_13 = v320.m_str;
+                  if ( v320.m_str != Srcb )
+                    memcpy_0(v320.m_str, Srcb, Size);
+                  Size_8 = Size;
+                  Srcc_1 = &m_str_13[Size];
+                  Srcc = &m_str_13[Size];
+                  if ( &m_str_13[Size] != m_str_11 )
+                  {
+                    memcpy_0(Srcc_1, m_str_11, Size_6);
+                    Size_8 = Size;
+                    Srcc_1 = Srcc;
+                  }
+                  second_10 = (char *)second_6;
+                  *((_DWORD *)m_str_13 - 2) = Size_6 + Size_8;
+                  Srcc_1[Size_6] = 0;
+                }
+                if ( *(int *)second_10 >= 0 )
+                {
+                  v131 = *(_DWORD *)second_10 - 1;
+                  *(_DWORD *)second_10 = v131;
+                  if ( v131 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)second_10 + 2);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(second_10, 0LL));
+                    m_str_11 = v327.m_str;
+                    m_str_13 = v320.m_str;
+                  }
+                }
+              }
+            }
+            Srcd_1 = *((int *)m_str_13 - 2);
+            Srcd = Srcd_1;
+            if ( *((_DWORD *)m_str_13 - 2) )
+            {
+              m_str_14 = v322.first.m_str;
+              v123 = *((_DWORD *)v322.first.m_str - 3) <= 1;
+              second_11 = v322.first.m_str - 12;
+              second_6 = v322.first.m_str - 12;
+              if ( v123 && (v135 = *((int *)v322.first.m_str - 2), Srcd_1 + v135 <= *((int *)v322.first.m_str - 1)) )
+              {
+                if ( &v322.first.m_str[v135] != m_str_13 )
+                {
+                  memcpy_0(&v322.first.m_str[v135], m_str_13, Srcd_1);
+                  m_str_14 = v322.first.m_str;
+                  LODWORD(Srcd_1) = Srcd;
+                }
+                *((_DWORD *)m_str_14 - 2) += Srcd_1;
+                v322.first.m_str[*((int *)v322.first.m_str - 2)] = 0;
+              }
+              else
+              {
+                Size_9 = *((int *)v322.first.m_str - 2);
+                n8_3 = Size_9 + Srcd_1;
+                Size = Size_9;
+                n8_5 = 2 * Size_9;
+                if ( n8_5 > n8_3 )
+                  n8_3 = n8_5;
+                if ( n8_3 )
+                {
+                  if ( n8_3 < 8 )
+                    n8_3 = 8LL;
+                  CryStringT<char>::_AllocData(&v322.first, n8_3);
+                  m_str_15 = v322.first.m_str;
+                  if ( v322.first.m_str != m_str_14 )
+                  {
+                    memcpy_0(v322.first.m_str, m_str_14, Size);
+                    m_str_15 = v322.first.m_str;
+                  }
+                  Size_10 = Size;
+                  if ( &m_str_15[Size] != m_str_13 )
+                  {
+                    memcpy_0(&m_str_15[Size], m_str_13, Srcd);
+                    m_str_15 = v322.first.m_str;
+                    Size_10 = Size;
+                  }
+                  second_11 = (char *)second_6;
+                  *((_DWORD *)m_str_15 - 2) = Srcd + Size_10;
+                  v322.first.m_str[Size_10 + Srcd] = 0;
+                }
+                if ( *(int *)second_11 >= 0 )
+                {
+                  v141 = *(_DWORD *)second_11 - 1;
+                  *(_DWORD *)second_11 = v141;
+                  if ( v141 <= 0 )
+                  {
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)second_11 + 2);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                      _CryMemoryManagerPoolHelper::_CryFree(second_11, 0LL));
+                    m_str_11 = v327.m_str;
+                    m_str_13 = v320.m_str;
+                  }
+                }
+              }
+            }
+            v142 = *((_DWORD *)m_str_13 - 3);
+            v143 = (int *)(m_str_13 - 12);
+            if ( v142 >= 0 )
+            {
+              v144 = v142 - 1;
+              *v143 = v144;
+              if ( v144 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_13 - 1);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v143, 0LL));
+                m_str_11 = v327.m_str;
+              }
+            }
+            v145 = *((_DWORD *)m_str_11 - 3);
+            v146 = (int *)(m_str_11 - 12);
+            if ( v145 >= 0 )
+            {
+              v147 = v145 - 1;
+              *v146 = v147;
+              if ( v147 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_11 - 1);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v146, 0LL));
+              }
+            }
+            pField_2 = (char **)pField;
+            goto LABEL_227;
+          }
+        }
+        else
+        {
+          Srca_4 = (CAsyncIOFileRequest **)((char *)pStruct + pField->offset);
+          Srca_3 = Srca_4;
+          CryStringT<char>::CryStringT<char>((CryStringT<char> *)&_Keyval_.second, str_5);
+          v212 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+                   (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)&m_str->m_GameStructures,
+                   &v404,
+                   (const CryStringT<char> *)&_Keyval_.second)->_Ptr != (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *)m_str->m_GameStructures._Myhead;
+          CMusicSystem::SInputContributorDef::~SInputContributorDef((std::pair<CryStringT<char>,std::locale *> *)&_Keyval_.second);
+          if ( v212 )
+          {
+            CryStringT<char>::CryStringT<char>(&_Keyval__2.first, str);
+            v215 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+                     &m_str->m_GameStructures,
+                     (const std::piecewise_construct_t *)&_Keyval__2,
+                     v213,
+                     __Val_1__2);
+            CMusicSystem::SInputContributorDef::~SInputContributorDef(&_Keyval__2);
+            v216 = (**(__int64 (__fastcall ***)(char *, _QWORD))v215[2].m_str)(v215[2].m_str, count_8);
+            Srca_4[2] = (CAsyncIOFileRequest *)count_8;
+            Srca_4[1] = (CAsyncIOFileRequest *)v216;
+            count_10 = 0;
+            if ( count_8 > 0 )
+            {
+              v328 = 0LL;
+              do
+              {
+                (*(void (__fastcall **)(__int64, __int64 *, _QWORD))(*(_QWORD *)v329 + 296LL))(
+                  v329,
+                  &v350,
+                  (unsigned int)count_10);
+                v333.m_str = (char *)&Count;
+                if ( url )
+                {
+                  CryStringT<char>::CryStringT<char>(&v383.first, ".");
+                  v219 = operator+<char>((CryStringT<char> *)&v372.second, url, str2_2);
+                  CryStringT<char>::_ConcatenateInPlace(&v333, v219->m_str, *((int *)v219->m_str - 2));
+                  v220 = HIDWORD(v372.second[-2]._Ptr);
+                  v221 = (int *)&v372.second[-2]._Ptr + 1;
+                  if ( v220 >= 0 )
+                  {
+                    v222 = v220 - 1;
+                    *v221 = v222;
+                    if ( v222 <= 0 )
+                    {
+                      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v221[2];
+                      _InterlockedExchangeAdd64(
+                        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                        _CryMemoryManagerPoolHelper::_CryFree(v221, 0LL));
+                    }
+                  }
+                  CMusicSystem::SInputContributorDef::~SInputContributorDef(&v383);
+                }
+                v346.m_str = (char *)&Count;
+                v223 = CryStringT<char>::Format(&v346, "%i", count_10);
+                CryStringT<char>::CryStringT<char>(&v380, "[");
+                v225 = operator+<char>((CryStringT<char> *)&v373.second, (char *)pField->pName, str2_3);
+                m_str_16 = v225->m_str;
+                if ( *((int *)v225->m_str - 3) < 0 )
+                {
+                  v338.m_str = (char *)&Count;
+                }
+                else
+                {
+                  ++*((_DWORD *)m_str_16 - 3);
+                  v338.m_str = m_str_16;
+                }
+                CryStringT<char>::_ConcatenateInPlace(&v338, v223->m_str, *((int *)v223->m_str - 2));
+                CryStringT<char>::CryStringT<char>((CryStringT<char> *)&v374.second, "]");
+                m_str_17 = v338.m_str;
+                pData = (CryStringT<char>::StrHeader *)(v338.m_str - 12);
+                if ( *((int *)v338.m_str - 3) < 0 )
+                  m_str_17 = (char *)&Count;
+                else
+                  ++pData->nRefCount;
+                sStr_1 = *v227;
+                v337.second = (std::locale *)m_str_17;
+                CryStringT<char>::_ConcatenateInPlace((CryStringT<char> *)&v337.second, sStr_1, *((int *)sStr_1 - 2));
+                second_12 = v337.second;
+                CryStringT<char>::_ConcatenateInPlace(&v333, (char *)v337.second, SLODWORD(v337.second[-1]._Ptr));
+                CryStringT<char>::_FreeData((CryStringT<char>::StrHeader *)((char *)&second_12[-2]._Ptr + 4));
+                CryStringT<char>::_FreeData(pData);
+                CryStringT<char>::_FreeData((CryStringT<char>::StrHeader *)((char *)&v373.second[-2]._Ptr + 4));
+                CryStringT<char>::_FreeData((CryStringT<char>::StrHeader *)v380.m_str - 1);
+                CryStringT<char>::_FreeData((CryStringT<char>::StrHeader *)v346.m_str - 1);
+                CryStringT<char>::_FreeData((CryStringT<char>::StrHeader *)((char *)&v374.second[-2]._Ptr + 4));
+                v232 = v328;
+                v233 = (char *)Srca_3[1] + (_QWORD)Srca_3[3] * v328;
+                v386 = v350;
+                if ( v350 )
+                  (*(void (__fastcall **)(__int64))(*(_QWORD *)v350 + 24LL))(v350);
+                v234 = CryStringT<char>::MakeLower(&v333);
+                LOBYTE(urla) = 0;
+                ((void (__fastcall *)(CDataCore *, char *, char *, const char *, char *, __int64 *, int))m_str->LoadStruct)(
+                  m_str,
+                  v233,
+                  str,
+                  recordName,
+                  v234->m_str,
+                  &v386,
+                  urla);
+                CMusicSystem::SInputContributorDef::~SInputContributorDef((std::pair<CryStringT<char>,std::locale *> *)&v333);
+                if ( v350 )
+                  (*(void (__fastcall **)(__int64))(*(_QWORD *)v350 + 32LL))(v350);
+                ++count_10;
+                v328 = v232 + 1;
+              }
+              while ( count_10 < count_8 );
+            }
+          }
+          else
+          {
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_WARNING,
+              "[DataCore] Type %s was determined for Array \"%s\" but this type does not exist in the game-side structure"
+              "s. Has it been removed or renamed?",
+              str,
+              pField->pName);
+          }
+        }
+LABEL_352:
+        if ( v329 )
+          (*(void (__fastcall **)(__int64))(*(_QWORD *)v329 + 32LL))(v329);
+        goto LABEL_424;
+      default:
+        goto LABEL_424;
+    }
+  }
+LABEL_426:
+  m_inherits = (char *)dataCoreStruct_1->m_inherits;
+  if ( m_inherits )
+  {
+    CryStringT<char>::CryStringT<char>((CryStringT<char> *)&_Keyval__2.second, m_inherits);
+    v24 = std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+            (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)&m_str_1->m_GameStructures,
+            &v398,
+            (const CryStringT<char> *)&_Keyval__2.second)->_Ptr == (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > >,void *> *)m_str_1->m_GameStructures._Myhead;
+    v293 = HIDWORD(_Keyval__2.second[-2]._Ptr);
+    v294 = v24;
+    v295 = (int *)&_Keyval__2.second[-2]._Ptr + 1;
+    if ( v293 >= 0 )
+    {
+      v296 = v293 - 1;
+      *v295 = v296;
+      if ( v296 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v295[2];
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v295, 0LL));
+      }
+    }
+    if ( v294 )
+    {
+      CryWarning(
+        VALIDATOR_MODULE_SYSTEM,
+        VALIDATOR_ERROR,
+        "structure [%s] inherited class [%s] is not registered",
+        gameStructName,
+        dataCoreStruct->m_inherits);
+    }
+    else
+    {
+      CryStringT<char>::CryStringT<char>(&_Keyval__3, (char *)dataCoreStruct->m_inherits);
+      dataCoreStruct_3 = std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+                           &m_str_1->m_GameStructures,
+                           (const std::piecewise_construct_t *)&_Keyval__3,
+                           v297,
+                           __Val_1__3);
+      v300 = *((_DWORD *)_Keyval__3.m_str - 3);
+      v301 = _Keyval__3.m_str - 12;
+      dataCoreStruct_2 = (SDataCoreStruct *)dataCoreStruct_3;
+      if ( v300 >= 0 )
+      {
+        v303 = v300 - 1;
+        *(_DWORD *)v301 = v303;
+        if ( v303 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v301 + 2);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v301, 0LL));
+        }
+      }
+      m_str->m_fnGetSchemaStruct(dataCoreStruct->m_inherits);
+      p_10 = (IXmlNode *)xmlRef.p->__vftable;
+      xmlRef__10.p = p_10;
+      if ( p_10 )
+        p_10->AddRef(p_10);
+      CDataCore::LoadFields(
+        m_str,
+        (XmlNodeRef)&xmlRef__10,
+        recordName,
+        dataCoreStruct->m_inherits,
+        pStruct,
+        dataCoreStruct_2,
+        url);
+    }
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ?LoadFields@CDataCore@@AEAAXVXmlNodeRef@@PEBD1PEAUIDataCoreStructure@@AEAUSDataCoreStruct@@1@Z (0x15131ED80) ---
+
+// --- Function: ?ResolveRefs@CDataCore@@AEAAXXZ (0x1513213E0) ---
+void __fastcall CDataCore::ResolveRefs(CDataCore *this)
+{
+  CDataCore::UnresolvedRef *Mylast; // rdi
+  CDataCore::UnresolvedRef *i; // rbx
+  unsigned __int64 v4; // rax
+  char *recordName; // rax
+  CDataCore *m_str_1; // rcx
+  unsigned int NameHash; // eax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead; // rcx
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Parent; // rdx
+  unsigned int NameHash_1; // r9d
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_1; // r8
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> **v12; // rax
+  CDataCore::UnresolvedRef *_Mylast; // rdi
+  CDataCore::UnresolvedRef *Myfirst; // rbx
+  char *m_str; // rcx
+  int v16; // eax
+  int *v17; // rcx
+  int v18; // eax
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *Myhead_2; // [rsp+30h] [rbp+8h] BYREF
+  std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead; // [rsp+38h] [rbp+10h] BYREF
+
+  Mylast = this->m_UnresolvedRefs._Mylast;
+  for ( i = this->m_UnresolvedRefs._Myfirst; i != Mylast; ++i )
+  {
+    v4 = this->m_fnGetRecordByHash(i->hash.m_str);
+    if ( v4 )
+    {
+      recordName = (char *)this->m_fnGetRecordName(v4);
+      NameHash = CDataCore::GenerateNameHash(m_str_1, recordName);
+      Myhead = this->m_Records._Myhead;
+      Parent = Myhead->_Parent;
+      NameHash_1 = NameHash;
+      Myhead_1 = Myhead;
+      while ( !Parent->_Isnil )
+      {
+        if ( Parent->_Myval.first >= NameHash )
+        {
+          Myhead_1 = Parent;
+          Parent = Parent->_Left;
+        }
+        else
+        {
+          Parent = Parent->_Right;
+        }
+      }
+      if ( Myhead_1 == Myhead || NameHash < Myhead_1->_Myval.first )
+      {
+        _Myhead = this->m_Records._Myhead;
+        v12 = &_Myhead;
+      }
+      else
+      {
+        Myhead_2 = Myhead_1;
+        v12 = &Myhead_2;
+      }
+      if ( *v12 != Myhead )
+        i->pStruct->m_hashId = NameHash_1;
+    }
+  }
+  _Mylast = this->m_UnresolvedRefs._Mylast;
+  Myfirst = this->m_UnresolvedRefs._Myfirst;
+  if ( Myfirst == _Mylast )
+  {
+    this->m_UnresolvedRefs._Mylast = Myfirst;
+  }
+  else
+  {
+    do
+    {
+      m_str = Myfirst->hash.m_str;
+      v16 = *((_DWORD *)m_str - 3);
+      v17 = (int *)(m_str - 12);
+      if ( v16 >= 0 )
+      {
+        v18 = v16 - 1;
+        *v17 = v18;
+        if ( v18 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v17[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v17, 0LL));
+        }
+      }
+      ++Myfirst;
+    }
+    while ( Myfirst != _Mylast );
+    this->m_UnresolvedRefs._Mylast = this->m_UnresolvedRefs._Myfirst;
+  }
+}
+
+// --- End Function: ?ResolveRefs@CDataCore@@AEAAXXZ (0x1513213E0) ---
+
+// --- Function: ?ResolveWeakPtrs@CDataCore@@AEAAXPEBD@Z (0x151321530) ---
+void __fastcall CDataCore::ResolveWeakPtrs(CDataCore *m_str, char *recordName, __int64 nameHash)
+{
+  unsigned __int64 nLen_1; // rsi
+  char *m_str_1; // rbx
+  unsigned __int64 nLen; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead_1; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Parent; // r9
+  char *m_str_2; // rcx
+  signed __int64 v12; // r10
+  int v13; // edx
+  char *m_str_3; // rcx
+  int v15; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> **v16; // rcx
+  bool v17; // zf
+  int v18; // eax
+  int *v19; // rcx
+  bool v20; // di
+  int v21; // eax
+  CryStringT<char> *v22; // rax
+  int v23; // edx
+  std::vector<CVisRegTest::SCmd> *second; // rcx
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *v25; // rbp
+  int v26; // edx
+  CDataCore::UnresolvedWeakPtr *Mylast; // rdi
+  CDataCore::UnresolvedWeakPtr *i; // rbx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Myhead; // [rsp+20h] [rbp-48h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > > itor; // [rsp+28h] [rbp-40h] BYREF
+  CryStringT<char> _Keyval; // [rsp+70h] [rbp+8h] BYREF
+  CryStringT<char> v32; // [rsp+80h] [rbp+18h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead_2; // [rsp+88h] [rbp+20h] BYREF
+
+  if ( (((char *)m_str->m_UnresolvedWeakPtrs._Mylast - (char *)m_str->m_UnresolvedWeakPtrs._Myfirst) & 0xFFFFFFFFFFFFFFF0uLL) != 0 )
+  {
+    nLen_1 = -1LL;
+    m_str_1 = (char *)&Count;
+    v32.m_str = (char *)&Count;
+    if ( recordName )
+    {
+      nLen = -1LL;
+      do
+        ++nLen;
+      while ( recordName[nLen] );
+      if ( nLen )
+      {
+        CryStringT<char>::_AllocData(&v32, nLen);
+        m_str_1 = v32.m_str;
+        if ( v32.m_str != recordName )
+          memcpy_0(v32.m_str, recordName, nLen);
+      }
+    }
+    Myhead = m_str->m_Structures._Myhead;
+    Myhead_1 = Myhead;
+    Parent = Myhead->_Parent;
+    while ( !Parent->_Isnil )
+    {
+      m_str_2 = Parent->_Myval.first.m_str;
+      v12 = m_str_1 - m_str_2;
+      do
+      {
+        v13 = (unsigned __int8)m_str_2[v12];
+        nameHash = (unsigned int)(unsigned __int8)*m_str_2 - v13;
+        if ( (_DWORD)nameHash )
+          break;
+        ++m_str_2;
+      }
+      while ( v13 );
+      if ( (int)nameHash >= 0 )
+      {
+        Myhead_1 = Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    if ( Myhead_1 == Myhead )
+      goto LABEL_22;
+    m_str_3 = m_str_1;
+    Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)(Myhead_1->_Myval.first.m_str
+                                                                                                 - m_str_1);
+    do
+    {
+      v15 = *((unsigned __int8 *)&Parent->_Left + (_QWORD)m_str_3);
+      nameHash = (unsigned int)(unsigned __int8)*m_str_3 - v15;
+      if ( (_DWORD)nameHash )
+        break;
+      ++m_str_3;
+    }
+    while ( v15 );
+    if ( (int)nameHash < 0 )
+    {
+LABEL_22:
+      _Myhead = m_str->m_Structures._Myhead;
+      v16 = &_Myhead;
+    }
+    else
+    {
+      Myhead_2 = Myhead_1;
+      v16 = &Myhead_2;
+    }
+    v17 = *v16 == Myhead;
+    v18 = *((_DWORD *)m_str_1 - 3);
+    v19 = (int *)(m_str_1 - 12);
+    v20 = v17;
+    if ( v18 >= 0 )
+    {
+      v21 = v18 - 1;
+      *v19 = v21;
+      if ( v21 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_1 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v19, 0LL));
+      }
+    }
+    if ( !v20 )
+    {
+      _Keyval.m_str = (char *)&Count;
+      if ( recordName )
+      {
+        do
+          ++nLen_1;
+        while ( recordName[nLen_1] );
+        if ( nLen_1 )
+        {
+          CryStringT<char>::_AllocData(&_Keyval, nLen_1);
+          if ( _Keyval.m_str != recordName )
+            memcpy_0(_Keyval.m_str, recordName, nLen_1);
+        }
+      }
+      v22 = std::map<CryStringT<char>,CDataCore::UrlToStruct>::operator[](
+              &m_str->m_Structures,
+              (const std::piecewise_construct_t *)&_Keyval,
+              nameHash,
+              (std::tuple<> *)Parent);
+      v23 = *((_DWORD *)_Keyval.m_str - 3);
+      second = (std::vector<CVisRegTest::SCmd> *)(_Keyval.m_str - 12);
+      v25 = (std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > >,0> > *)v22;
+      if ( v23 >= 0 )
+      {
+        v26 = v23 - 1;
+        LODWORD(second->_Myfirst) = v26;
+        if ( v26 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - LODWORD(second->_Mylast);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(second, 0LL));
+        }
+      }
+      if ( v25->_Mysize )
+      {
+        Mylast = m_str->m_UnresolvedWeakPtrs._Mylast;
+        for ( i = m_str->m_UnresolvedWeakPtrs._Myfirst; i != Mylast; ++i )
+        {
+          std::_Tree<std::_Tmap_traits<CryStringT<char>,CFireMode * (*)(void),std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CFireMode * (*)(void)>>,0>>::find(
+            v25,
+            (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,CryStringT<char>,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CryStringT<char> > > > > > > > > > > *)&itor,
+            &i->m_URL);
+          if ( itor._Ptr == (std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *)v25->_Myhead )
+          {
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_ERROR,
+              "Url \"%s\" within record was not resolved.",
+              i->m_URL.m_str);
+          }
+          else
+          {
+            second = (std::vector<CVisRegTest::SCmd> *)itor._Ptr->_Myval.second;
+            *i->m_pStruct = (IDataCoreStructure *)second;
+          }
+        }
+        std::vector<CDataCore::UnresolvedRef>::_Destroy(
+          second,
+          (CVisRegTest::SCmd *)m_str->m_UnresolvedWeakPtrs._Myfirst,
+          (CVisRegTest::SCmd *)m_str->m_UnresolvedWeakPtrs._Mylast);
+        m_str->m_UnresolvedWeakPtrs._Mylast = m_str->m_UnresolvedWeakPtrs._Myfirst;
+      }
+    }
+  }
+}
+
+// --- End Function: ?ResolveWeakPtrs@CDataCore@@AEAAXPEBD@Z (0x151321530) ---
+
+// --- Function: ?InheritsFrom@CDataCore@@EEAA_NPEBD0@Z (0x1513217E0) ---
+bool __fastcall CDataCore::InheritsFrom(CDataCore *this, char *type, const char *inheritsFrom)
+{
+  char *m_str; // rdi
+  unsigned __int64 nLen; // rbx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead; // r11
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead_1; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Parent; // r8
+  char *m_str_1; // rax
+  signed __int64 v12; // r9
+  int v13; // ecx
+  int v14; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> **v15; // rbx
+  int v16; // eax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead_1; // rbx
+  int *v18; // rcx
+  int v19; // eax
+  const char *m_inherits; // r9
+  const char *inheritsFrom_1; // rax
+  int v23; // ecx
+  int v24; // edx
+  CryStringT<char> v25; // [rsp+50h] [rbp+8h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead_2; // [rsp+58h] [rbp+10h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead; // [rsp+68h] [rbp+20h] BYREF
+
+  m_str = (char *)&Count;
+  v25.m_str = (char *)&Count;
+  if ( type )
+  {
+    nLen = -1LL;
+    do
+      ++nLen;
+    while ( type[nLen] );
+    if ( nLen )
+    {
+      CryStringT<char>::_AllocData(&v25, nLen);
+      m_str = v25.m_str;
+      if ( v25.m_str != type )
+        memcpy_0(v25.m_str, type, nLen);
+    }
+  }
+  Myhead = this->m_GameStructures._Myhead;
+  Myhead_1 = Myhead;
+  Parent = Myhead->_Parent;
+  while ( !Parent->_Isnil )
+  {
+    m_str_1 = Parent->_Myval.first.m_str;
+    v12 = m_str - m_str_1;
+    do
+    {
+      v13 = (unsigned __int8)m_str_1[v12];
+      v14 = (unsigned __int8)*m_str_1 - v13;
+      if ( v14 )
+        break;
+      ++m_str_1;
+    }
+    while ( v13 );
+    if ( v14 >= 0 )
+    {
+      Myhead_1 = Parent;
+      Parent = Parent->_Left;
+    }
+    else
+    {
+      Parent = Parent->_Right;
+    }
+  }
+  if ( Myhead_1 == Myhead || strcmp(m_str, Myhead_1->_Myval.first.m_str) < 0 )
+  {
+    _Myhead = this->m_GameStructures._Myhead;
+    v15 = &_Myhead;
+  }
+  else
+  {
+    Myhead_2 = Myhead_1;
+    v15 = &Myhead_2;
+  }
+  v16 = *((_DWORD *)m_str - 3);
+  _Myhead_1 = *v15;
+  v18 = (int *)(m_str - 12);
+  if ( v16 >= 0 )
+  {
+    v19 = v16 - 1;
+    *v18 = v19;
+    if ( v19 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v18, 0LL));
+    }
+  }
+  if ( _Myhead_1 == this->m_GameStructures._Myhead )
+    return 0;
+  m_inherits = _Myhead_1->_Myval.second.m_inherits;
+  if ( !m_inherits )
+    return 0;
+  inheritsFrom_1 = inheritsFrom;
+  do
+  {
+    v23 = (unsigned __int8)inheritsFrom_1[m_inherits - inheritsFrom];
+    v24 = *(unsigned __int8 *)inheritsFrom_1 - v23;
+    if ( v24 )
+      break;
+    ++inheritsFrom_1;
+  }
+  while ( v23 );
+  return !v24 || this->InheritsFrom(this, _Myhead_1->_Myval.second.m_inherits, inheritsFrom);
+}
+
+// --- End Function: ?InheritsFrom@CDataCore@@EEAA_NPEBD0@Z (0x1513217E0) ---
+
+// --- Function: ?NetUpdate@CDataCore@@UEAAXXZ (0x151321980) ---
+void __fastcall CDataCore::NetUpdate(CDataCore *this)
+{
+  CDataCore *v1; // r13
+  int v2; // r9d
+  int oserror_4; // eax
+  size_t nLen; // r8
+  size_t m_totalPendingRecieve; // rbx
+  void **p_m_str; // r15
+  char *m_str_7; // r8
+  _BYTE *m_str_8; // rdi
+  char *m_str_9; // rdx
+  const char *_0123456789; // rax
+  __int64 *index; // rdi
+  _DWORD *v12; // r14
+  const char *v13; // rbx
+  __int64 *index_1; // rsi
+  unsigned __int64 v15; // rbx
+  _DWORD *v16; // rax
+  unsigned __int64 v17; // rsi
+  _DWORD *v18; // rdi
+  int v19; // eax
+  int v20; // eax
+  __int64 m_totalPendingRecieve_2; // rax
+  int *v22; // rcx
+  int v23; // eax
+  int v24; // eax
+  CryStringT<char> *p_m_Buffer; // r12
+  char *m_str; // rax
+  char *m_str_1; // rsi
+  size_t m_totalPendingRecieve_1; // rax
+  const char *v29; // r14
+  unsigned __int64 v30; // rdi
+  _DWORD *v31; // rax
+  CryStringT<char> *m_aElems; // rbx
+  const char *v33; // rdi
+  int v34; // eax
+  size_t v35; // rsi
+  int v36; // r15d
+  const char *v37; // rcx
+  unsigned __int64 (__fastcall *Size_2)(CRendElement *); // rax
+  size_t v39; // rcx
+  unsigned __int64 (__fastcall *Size)(CRendElement *); // rdi
+  const char *v41; // r15
+  char *m_str_2; // rsi
+  unsigned __int64 v43; // rbx
+  _DWORD *v44; // rax
+  int m_str_high; // edx
+  int m_nCount; // r12d
+  int m_nCount_3; // r15d
+  int m_str_high_1; // eax
+  unsigned __int64 m_nCount_2; // rdi
+  CryStringT<char> *m_aElems_1; // r13
+  unsigned __int64 nMinSize; // rax
+  bool v52; // zf
+  int m_nCount_1; // eax
+  __int64 v54; // rax
+  __int64 m_nCount_4; // rdx
+  __int64 v56; // rax
+  CryStringT<char> *v57; // rax
+  CryStringT<char> *v58; // rcx
+  int v59; // r13d
+  unsigned __int64 v60; // r15
+  int v61; // r12d
+  const char *v62; // rcx
+  unsigned __int64 (__fastcall *Size_3)(CRendElement *); // rax
+  unsigned __int64 (__fastcall *Size_1)(CRendElement *); // rdi
+  size_t v65; // rdx
+  size_t v66; // rcx
+  const char *v67; // r12
+  CFlashUIBaseNodeDynPorts *m_str_3; // r15
+  unsigned __int64 v69; // rbx
+  _DWORD *v70; // rax
+  int v71; // eax
+  char *v72; // rcx
+  int v73; // eax
+  unsigned int *v74; // r15
+  const char *m_str_4; // rdi
+  __int64 n7; // rcx
+  char v77; // al
+  const char *m_str_5; // rdi
+  int v79; // eax
+  int *v80; // rcx
+  int v81; // eax
+  int *v82; // rcx
+  int v83; // eax
+  int v84; // eax
+  __int64 v85; // rax
+  CryStringT<char> *m_aElems_2; // rdi
+  char *m_str_6; // rcx
+  int v88; // eax
+  int *v89; // rcx
+  int v90; // eax
+  int v91; // eax
+  int *v92; // rcx
+  int v93; // eax
+  int oserror_5; // eax
+  int oserror_6; // eax
+  SOCKET m_listenerSocket; // rcx
+  SOCKET m_connSocket_1; // rbx
+  int oserror_3; // eax
+  SOCKET m_connSocket; // rcx
+  sockaddr sa_1; // xmm6
+  u_long v101; // ebx
+  u_short v102; // ax
+  SOCKET m_lanDiscoverySocket; // rcx
+  int sockname; // eax
+  int Error; // eax
+  SOCKET m_listenerSocket_3; // rax
+  int m_listenerSocket_1; // ecx
+  int oserror; // eax
+  int v109; // eax
+  int oserror_1; // eax
+  int v111; // eax
+  int oserror_2; // eax
+  u_short sin_port; // ax
+  int v114; // eax
+  int oserror_10; // eax
+  SOCKET m_listenerSocket_2; // rcx
+  int sockname_1; // eax
+  int oserror_11; // eax
+  const char *Editor; // rsi
+  INetwork *pNetwork; // rbx
+  int v121; // edi
+  const char *v122; // rax
+  char *m_str_10; // rbx
+  int v124; // eax
+  int oserror_12; // eax
+  int v126; // eax
+  int *v127; // rcx
+  int v128; // eax
+  SOCKET m_lanDiscoverySocket_1; // rax
+  int oserror_7; // eax
+  unsigned int n0xA; // ebx
+  u_short v132; // ax
+  SOCKET m_lanDiscoverySocket_2; // rcx
+  int v134; // eax
+  int oserror_8; // eax
+  SOCKET m_lanDiscoverySocket_3; // rcx
+  int oserror_9; // eax
+  DynArray<CryStringT<char>,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > packetTokens; // [rsp+50h] [rbp-B0h] BYREF
+  unsigned __int64 size; // [rsp+58h] [rbp-A8h]
+  int addrLength; // [rsp+60h] [rbp-A0h] BYREF
+  __int64 v141; // [rsp+68h] [rbp-98h] BYREF
+  int addrLen; // [rsp+70h] [rbp-90h] BYREF
+  CryStringT<char> v143; // [rsp+78h] [rbp-88h] BYREF
+  int slen; // [rsp+80h] [rbp-80h] BYREF
+  tcp_keepalive keepalive_opts; // [rsp+88h] [rbp-78h] BYREF
+  u_long argp; // [rsp+98h] [rbp-68h] BYREF
+  int namelen; // [rsp+9Ch] [rbp-64h] BYREF
+  CryStringT<char> response; // [rsp+A0h] [rbp-60h] BYREF
+  sockaddr_in addr; // [rsp+A8h] [rbp-58h] BYREF
+  unsigned __int64 v150; // [rsp+B8h] [rbp-48h] BYREF
+  unsigned __int64 v151; // [rsp+C0h] [rbp-40h] BYREF
+  unsigned __int64 v152; // [rsp+C8h] [rbp-38h] BYREF
+  CryStringT<char> *p_m_Buffer_1; // [rsp+D0h] [rbp-30h]
+  struct sockaddr name; // [rsp+D8h] [rbp-28h] BYREF
+  unsigned __int64 v155; // [rsp+E8h] [rbp-18h] BYREF
+  struct sockaddr name_; // [rsp+F0h] [rbp-10h] BYREF
+  Array<CryStringT<char>,int,NArray::ArrayStorage> source__1; // [rsp+100h] [rbp+0h]
+  Array<CryStringT<char>,int,NArray::ArrayStorage> v158; // [rsp+110h] [rbp+10h] BYREF
+  sockaddr_in saOut; // [rsp+120h] [rbp+20h] BYREF
+  struct sockaddr name__1; // [rsp+130h] [rbp+30h] BYREF
+  sockaddr sa; // [rsp+140h] [rbp+40h] BYREF
+  Array<CryStringT<char>,int,NArray::ArrayStorage> source_; // [rsp+150h] [rbp+50h] BYREF
+  char buffer[4112]; // [rsp+160h] [rbp+60h] BYREF
+  char buf[4112]; // [rsp+1170h] [rbp+1070h] BYREF
+  int v166; // [rsp+21E8h] [rbp+20E8h]
+  int v167; // [rsp+21F0h] [rbp+20F0h]
+  int v168; // [rsp+21F8h] [rbp+20F8h]
+
+  v1 = this;
+  if ( this->m_connSocket < 0 )
+  {
+    if ( this->m_listenerSocket < 0 )
+    {
+      if ( this->m_lanDiscoverySocket >= 0 )
+      {
+        m_lanDiscoverySocket = this->m_lanDiscoverySocket;
+        slen = 16;
+        sockname = getsockname(m_lanDiscoverySocket, (struct sockaddr *)&saOut, &slen);
+        if ( sockname == -1 )
+        {
+          Error = WSAGetLastError();
+          sockname = CrySock::TranslateOSError(Error);
+        }
+        if ( !sockname )
+        {
+          m_listenerSocket_3 = socket(2, 1, 6);
+          m_listenerSocket_1 = m_listenerSocket_3;
+          if ( m_listenerSocket_3 == -1LL )
+          {
+            oserror = WSAGetLastError();
+            m_listenerSocket_1 = CrySock::TranslateOSError(oserror);
+          }
+          v1->m_listenerSocket = m_listenerSocket_1;
+          if ( m_listenerSocket_1 < 0 )
+          {
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_ERROR,
+              "CDataCore::NetUpdate() - failed to create a valid socket");
+          }
+          else
+          {
+            name.sa_family = 2;
+            *(_DWORD *)&name.sa_data[2] = 0;
+            *(_WORD *)name.sa_data = saOut.sin_port;
+            v109 = bind(m_listenerSocket_1, &name, 16);
+            if ( v109 == -1 )
+            {
+              oserror_1 = WSAGetLastError();
+              v109 = CrySock::TranslateOSError(oserror_1);
+            }
+            if ( v109 )
+            {
+              CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "CDataCore::NetUpdate() - failed to bind socket");
+              CrySock::closesocket(v1->m_listenerSocket);
+              v1->m_listenerSocket = -1;
+            }
+            else
+            {
+              v111 = listen(v1->m_listenerSocket, 1);
+              if ( v111 == -1 )
+              {
+                oserror_2 = WSAGetLastError();
+                v111 = CrySock::TranslateOSError(oserror_2);
+              }
+              if ( v111 )
+              {
+                CryWarning(
+                  VALIDATOR_MODULE_SYSTEM,
+                  VALIDATOR_ERROR,
+                  "CDataCore::NetUpdate() - failed to listen on socket");
+                CrySock::closesocket(v1->m_listenerSocket);
+                v1->m_listenerSocket = -1;
+              }
+              else
+              {
+                CrySock::MakeSocketNonBlocking(v1->m_listenerSocket);
+              }
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      m_listenerSocket = this->m_listenerSocket;
+      addrLen = 16;
+      m_connSocket_1 = accept(m_listenerSocket, &sa, &addrLen);
+      if ( m_connSocket_1 == -1LL )
+      {
+        oserror_3 = WSAGetLastError();
+        LODWORD(m_connSocket_1) = CrySock::TranslateOSError(oserror_3);
+      }
+      if ( (_DWORD)m_connSocket_1 != -28 )
+      {
+        if ( (m_connSocket_1 & 0x80000000) != 0LL )
+        {
+          CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "CDataCore::NetUpdate() - invalid socket from accept()");
+        }
+        else
+        {
+          CrySock::closesocket(v1->m_listenerSocket);
+          v1->m_listenerSocket = -1;
+          v1->m_connSocket = m_connSocket_1;
+          CrySock::MakeSocketNonBlocking(m_connSocket_1);
+          m_connSocket = v1->m_connSocket;
+          *(_QWORD *)&keepalive_opts.keepalivetime = 0x1F400002710LL;
+          keepalive_opts.onoff = 1;
+          WSAIoctl(m_connSocket, 0x98000004, &keepalive_opts, 0xCu, 0LL, 0, 0LL, 0LL, 0LL);
+          sa_1 = sa;
+          v101 = ntohl(*(u_long *)&sa.sa_data[2]);
+          v102 = ntohs(_mm_extract_epi16((__m128i)sa_1, 1));
+          CryLog(
+            "CDataCore connected to: %d.%d.%d.%d:%d\n",
+            HIBYTE(v101),
+            BYTE2(v101),
+            BYTE1(v101),
+            (unsigned __int8)v101,
+            v102);
+        }
+      }
+    }
+    goto LABEL_194;
+  }
+  while ( 1 )
+  {
+    v2 = recv(v1->m_connSocket, buffer, 4096, 0);
+    v168 = v2;
+    if ( v2 == -1 )
+    {
+      oserror_4 = WSAGetLastError();
+      v2 = CrySock::TranslateOSError(oserror_4);
+      v168 = v2;
+    }
+    if ( v2 <= 0 )
+      break;
+    nLen = -1LL;
+    buffer[v2] = 0;
+    do
+      ++nLen;
+    while ( buffer[nLen] );
+    CryStringT<char>::_ConcatenateInPlace(&v1->m_Buffer, buffer, nLen);
+  }
+LABEL_8:
+  while ( 1 )
+  {
+    m_totalPendingRecieve = v1->m_totalPendingRecieve;
+    if ( !m_totalPendingRecieve )
+      break;
+    p_m_Buffer = &v1->m_Buffer;
+    p_m_Buffer_1 = &v1->m_Buffer;
+    m_str = v1->m_Buffer.m_str;
+    if ( *((int *)m_str - 2) < m_totalPendingRecieve )
+      goto LABEL_164;
+    m_str_1 = v1->m_Buffer.m_str;
+    m_totalPendingRecieve_1 = *((int *)m_str - 2);
+    v29 = (const char *)&Count;
+    if ( m_totalPendingRecieve_1 )
+    {
+      if ( m_totalPendingRecieve == -1LL )
+        m_totalPendingRecieve = m_totalPendingRecieve_1;
+      if ( m_totalPendingRecieve > m_totalPendingRecieve_1 )
+        m_totalPendingRecieve = m_totalPendingRecieve_1;
+      if ( m_totalPendingRecieve )
+      {
+        v30 = m_totalPendingRecieve + 13;
+        if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+          _CryMemoryManagerPoolHelper::Init();
+        v31 = _CryMemoryManagerPoolHelper::_CryMalloc(m_totalPendingRecieve + 13, &v151, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v151);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v30);
+        _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v30;
+        *v31 = 1;
+        v29 = (const char *)(v31 + 3);
+        v31[1] = m_totalPendingRecieve;
+        v31[2] = m_totalPendingRecieve;
+        *((_BYTE *)v31 + m_totalPendingRecieve + 12) = 0;
+        if ( v31 + 3 != (_DWORD *)m_str_1 )
+          memcpy_0(v31 + 3, m_str_1, m_totalPendingRecieve);
+      }
+    }
+    if ( (`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' & 1) == 0 )
+    {
+      `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' |= 1u;
+      `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems = (unsigned __int64)&unk_1537FF0D3 & 0xFFFFFFFFFFFFFFF8uLL;
+    }
+    m_aElems = (CryStringT<char> *)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems;
+    v33 = &v29[*((int *)v29 - 2)];
+    packetTokens.m_aElems = (CryStringT<char> *)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems;
+    if ( v29 >= v33 || (v34 = strspn(v29, "|"), v35 = v34, v36 = v34, v37 = &v29[v34], v37 >= v33) )
+    {
+      v166 = -1;
+LABEL_68:
+      m_str_2 = (char *)&Count;
+      goto LABEL_69;
+    }
+    Size_2 = strcspn(v37, "|");
+    v39 = *((int *)v29 - 2);
+    Size = Size_2;
+    v166 = Size_2 + v36 + 1;
+    if ( v35 >= v39 )
+      goto LABEL_68;
+    if ( Size_2 == -1LL )
+      Size = v39 - v35;
+    if ( v35 + Size > v39 )
+      Size = v39 - v35;
+    v41 = &v29[v35];
+    m_str_2 = (char *)&Count;
+    if ( Size )
+    {
+      v43 = Size + 13;
+      if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+        _CryMemoryManagerPoolHelper::Init();
+      v44 = _CryMemoryManagerPoolHelper::_CryMalloc(Size + 13, &v152, 0LL);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v152);
+      _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v43);
+      _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v43;
+      *v44 = 1;
+      m_str_2 = (char *)(v44 + 3);
+      v44[1] = Size;
+      v44[2] = Size;
+      *((_BYTE *)v44 + Size + 12) = 0;
+      if ( v44 + 3 != (_DWORD *)v41 )
+        memcpy_0(v44 + 3, v41, Size);
+      m_aElems = packetTokens.m_aElems;
+    }
+LABEL_69:
+    v167 = 0;
+    if ( *((_DWORD *)m_str_2 - 2) )
+    {
+      while ( 1 )
+      {
+        m_str_high = HIDWORD(m_aElems[-1].m_str);
+        m_nCount = m_str_high & 0x7FFFFFFF;
+        m_nCount_3 = (m_str_high & 0x7FFFFFFF) + 1;
+        m_str_high_1 = m_str_high;
+        if ( m_str_high >= 0 )
+          m_nCount_2 = (unsigned __int64)(m_str_high_1 * 8) >> 3;
+        else
+          LODWORD(m_nCount_2) = m_aElems[m_str_high_1].m_str;
+        if ( m_nCount_3 <= (int)m_nCount_2 )
+          goto LABEL_106;
+        LODWORD(m_nCount_2) = m_nCount + 1;
+        if ( !m_str_high )
+          m_aElems = 0LL;
+        m_aElems_1 = m_aElems;
+        if ( m_nCount == -1 )
+        {
+          m_aElems = 0LL;
+        }
+        else
+        {
+          nMinSize = 8LL * m_nCount_3;
+          size = nMinSize;
+          if ( nMinSize )
+          {
+            nMinSize = ((nMinSize + 3) & 0xFFFFFFFFFFFFFFFCuLL) + 8;
+            size = nMinSize;
+          }
+          m_aElems = 0LL;
+          if ( nMinSize )
+          {
+            v52 = nMinSize == -8LL;
+            nMinSize += 8LL;
+            size = nMinSize;
+            if ( !v52 )
+            {
+              size = NAlloc::realloc_size(nMinSize);
+              m_aElems = (CryStringT<char> *)CryModuleMemalign(size, 8uLL);
+              nMinSize = size;
+              if ( size )
+              {
+                nMinSize = size - 8;
+                size -= 8LL;
+              }
+              if ( m_aElems )
+                ++m_aElems;
+            }
+            if ( m_aElems )
+            {
+              m_aElems[-1].m_str = (char *)NAlloc::ModuleAlloc::alloc;
+              nMinSize = size;
+            }
+            if ( nMinSize )
+            {
+              nMinSize -= 8LL;
+              size = nMinSize;
+            }
+          }
+          if ( m_aElems )
+            ++m_aElems;
+          LODWORD(m_nCount_2) = nMinSize >> 3;
+        }
+        if ( m_aElems_1 )
+        {
+          if ( m_aElems )
+          {
+            m_nCount_1 = m_nCount_2;
+            source__1.m_aElems = m_aElems_1;
+            source__1.m_nCount = m_nCount;
+            source_ = source__1;
+            if ( m_nCount < (int)m_nCount_2 )
+              m_nCount_1 = m_nCount;
+            v158.m_aElems = m_aElems;
+            v158.m_nCount = m_nCount_1;
+            Array<CryStringT<char>,int,NArray::ArrayStorage>::move_init(&v158, &source_);
+          }
+          v141 = 0LL;
+          if ( m_aElems_1 != (CryStringT<char> *)8 )
+          {
+            ((void (__fastcall *)(CryStringT<char> *, __int64 *, __int64))m_aElems_1[-2].m_str)(
+              &m_aElems_1[-2],
+              &v141,
+              8LL);
+            if ( v141 )
+            {
+              v54 = v141 - 8;
+              v141 = v54;
+              if ( v54 )
+                v141 = v54 - 8;
+            }
+          }
+        }
+        packetTokens.m_aElems = m_aElems;
+        if ( m_aElems )
+        {
+LABEL_106:
+          HIDWORD(m_aElems[-1].m_str) = m_nCount_3;
+          m_nCount_4 = m_nCount_3;
+          if ( 8LL * (int)m_nCount_2 >= (unsigned __int64)(m_nCount_4 * 8 + 4) )
+          {
+            HIDWORD(m_aElems[-1].m_str) = m_nCount_3 | 0x80000000;
+            LODWORD(m_aElems[m_nCount_4].m_str) = m_nCount_2;
+          }
+        }
+        else
+        {
+          if ( (`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' & 1) == 0 )
+          {
+            `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::`local static guard' |= 1u;
+            `NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems = (unsigned __int64)&unk_1537FF0D3 & 0xFFFFFFFFFFFFFFF8uLL;
+          }
+          m_aElems = (CryStringT<char> *)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems;
+          packetTokens.m_aElems = (CryStringT<char> *)`NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::Header::null_header'::`2'::s_EmptyElems;
+        }
+        v56 = HIDWORD(m_aElems[-1].m_str);
+        LODWORD(v56) = v56 & 0x7FFFFFFF;
+        v57 = &m_aElems[v56 - 1];
+        v58 = v57 + 1;
+        do
+        {
+          if ( v57 )
+          {
+            if ( *((int *)m_str_2 - 3) < 0 )
+            {
+              v57->m_str = (char *)&Count;
+            }
+            else
+            {
+              v57->m_str = m_str_2;
+              ++*((_DWORD *)m_str_2 - 3);
+            }
+          }
+          ++v57;
+        }
+        while ( v57 != v58 );
+        v59 = v166;
+        if ( v166 >= 0 )
+        {
+          v60 = (unsigned __int64)&v29[*((int *)v29 - 2)];
+          if ( (unsigned __int64)&v29[v166] >= v60
+            || (v61 = strspn(&v29[v166], "|"), v62 = &v29[v166 + v61], (unsigned __int64)v62 >= v60) )
+          {
+            v166 = -1;
+          }
+          else
+          {
+            Size_3 = strcspn(v62, "|");
+            Size_1 = Size_3;
+            v166 += v61 + Size_3 + 1;
+            v65 = v61 + v59;
+            v66 = *((int *)v29 - 2);
+            if ( v65 < v66 )
+            {
+              if ( Size_3 == -1LL )
+                Size_1 = v66 - v65;
+              if ( v65 + Size_1 > v66 )
+                Size_1 = v66 - v65;
+              v67 = &v29[v65];
+              m_str_3 = &Count;
+              v143.m_str = (char *)&Count;
+              if ( Size_1 )
+              {
+                v69 = Size_1 + 13;
+                if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                  _CryMemoryManagerPoolHelper::Init();
+                v70 = _CryMemoryManagerPoolHelper::_CryMalloc(Size_1 + 13, &v150, 0LL);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory,
+                  v150);
+                _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v69);
+                _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v69;
+                *v70 = 1;
+                m_str_3 = (CFlashUIBaseNodeDynPorts *)(v70 + 3);
+                v70[1] = Size_1;
+                v70[2] = Size_1;
+                *((_BYTE *)v70 + Size_1 + 12) = 0;
+                if ( v70 + 3 != (_DWORD *)v67 )
+                  memcpy_0(v70 + 3, v67, Size_1);
+                m_aElems = packetTokens.m_aElems;
+              }
+              goto LABEL_130;
+            }
+          }
+        }
+        m_str_3 = &Count;
+LABEL_130:
+        v143.m_str = m_str_2;
+        m_str_2 = (char *)m_str_3;
+        CryStringT<char>::clear(&v143);
+        v71 = *((_DWORD *)v143.m_str - 3);
+        v72 = v143.m_str - 12;
+        if ( v71 >= 0 )
+        {
+          v73 = v71 - 1;
+          *(_DWORD *)v72 = v73;
+          if ( v73 <= 0 )
+          {
+            `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v72 + 2);
+            _InterlockedExchangeAdd64(
+              (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+              _CryMemoryManagerPoolHelper::_CryFree(v72, 0LL));
+            m_aElems = packetTokens.m_aElems;
+          }
+        }
+        if ( ++v167 == 3 || !LODWORD(m_str_3[-1].m_enumStr.m_str) )
+        {
+          p_m_Buffer = p_m_Buffer_1;
+          v1 = this;
+          break;
+        }
+      }
+    }
+    v74 = (unsigned int *)&m_aElems[-1].m_str + 1;
+    if ( (HIDWORD(m_aElems[-1].m_str) & 0x7FFFFFFF) != 3 )
+      CryFatalError(
+        "Live Edit Protocol Error: Invalid packet received. Format is type|filename or name|data %s",
+        p_m_Buffer->m_str);
+    m_str_4 = m_aElems->m_str;
+    n7 = 0LL;
+    while ( 1 )
+    {
+      v77 = m_str_4[n7++];
+      if ( v77 != aBuffer[n7 - 1] )
+        break;
+      if ( n7 == 7 )
+      {
+        if ( !CDataCore::ReloadRecord(v1, m_aElems[1].m_str, m_aElems[2].m_str, 0) )
+          CryLog("Live Edit Protocol Error: Record was not reloaded. %s", m_aElems[1].m_str);
+        goto LABEL_153;
+      }
+    }
+    if ( !strcmp_0(m_aElems->m_str, "Filepath") )
+    {
+      m_str_5 = m_aElems[1].m_str;
+      if ( *((int *)m_str_5 - 3) < 0 )
+        m_str_5 = (const char *)&Count;
+      else
+        ++*((_DWORD *)m_str_5 - 3);
+      if ( !CDataCore::LoadRecord(v1, m_str_5) )
+        CryLog("Live Edit Protocol Error: Record was not loaded. %s", m_str_5);
+      v79 = *((_DWORD *)m_str_5 - 3);
+      v80 = (int *)(m_str_5 - 12);
+      if ( v79 >= 0 )
+      {
+        v81 = v79 - 1;
+        *v80 = v81;
+        if ( v81 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_5 - 1);
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v80, 0LL));
+          m_aElems = packetTokens.m_aElems;
+        }
+      }
+    }
+    else
+    {
+      CryFatalError("Live Edit Protocol Error: Unrecognized packet type. %s", m_str_4);
+    }
+LABEL_153:
+    CryStringT<char>::erase(p_m_Buffer, 0LL, v1->m_totalPendingRecieve);
+    v82 = (int *)(m_str_2 - 12);
+    v1->m_totalPendingRecieve = 0LL;
+    v83 = *((_DWORD *)m_str_2 - 3);
+    if ( v83 >= 0 )
+    {
+      v84 = v83 - 1;
+      *v82 = v84;
+      if ( v84 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_2 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v82, 0LL));
+        m_aElems = packetTokens.m_aElems;
+      }
+    }
+    v85 = *v74;
+    LODWORD(v85) = v85 & 0x7FFFFFFF;
+    m_aElems_2 = &m_aElems[v85];
+    while ( m_aElems_2 > m_aElems )
+    {
+      m_str_6 = m_aElems_2[-1].m_str;
+      --m_aElems_2;
+      v88 = *((_DWORD *)m_str_6 - 3);
+      v89 = (int *)(m_str_6 - 12);
+      if ( v88 >= 0 )
+      {
+        v90 = v88 - 1;
+        *v89 = v90;
+        if ( v90 <= 0 )
+        {
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v89[2];
+          _InterlockedExchangeAdd64(
+            (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+            _CryMemoryManagerPoolHelper::_CryFree(v89, 0LL));
+          m_aElems = packetTokens.m_aElems;
+        }
+      }
+    }
+    NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc>>::Store<CryStringT<char>,int>::resize_raw(
+      &packetTokens,
+      0,
+      0);
+    v91 = *((_DWORD *)v29 - 3);
+    v92 = (int *)(v29 - 12);
+    if ( v91 >= 0 )
+    {
+      v93 = v91 - 1;
+      *v92 = v93;
+      if ( v93 <= 0 )
+      {
+        `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v29 - 1);
+        _InterlockedExchangeAdd64(
+          (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+          _CryMemoryManagerPoolHelper::_CryFree(v92, 0LL));
+      }
+    }
+  }
+  p_m_str = (void **)&v1->m_Buffer.m_str;
+  m_str_7 = v1->m_Buffer.m_str;
+  m_str_8 = m_str_7;
+  m_str_9 = &m_str_7[*((int *)m_str_7 - 2)];
+  if ( m_str_7 != m_str_9 )
+  {
+    while ( 2 )
+    {
+      _0123456789 = "0123456789";
+      while ( *_0123456789 != *m_str_8 )
+      {
+        if ( ++_0123456789 == "" )
+        {
+          index = m_str_8 - m_str_7;
+          if ( index == -1LL )
+            goto LABEL_164;
+          if ( *CryStringT<char>::operator[](&v1->m_Buffer, index) != 124 )
+            CryFatalError("Live Edit Protocol Error: Invalid character in record size");
+          v12 = *p_m_str;
+          v13 = (const char *)&Count;
+          if ( *((_DWORD *)*p_m_str - 2) )
+          {
+            index_1 = index;
+            if ( index > *((int *)*p_m_str - 2) )
+              index_1 = *((int *)*p_m_str - 2);
+            if ( index_1 )
+            {
+              v15 = index_1 + 13;
+              if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                _CryMemoryManagerPoolHelper::Init();
+              v16 = _CryMemoryManagerPoolHelper::_CryMalloc(index_1 + 13, &v155, 0LL);
+              _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v155);
+              _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v15);
+              _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v15;
+              *v16 = 1;
+              v13 = (const char *)(v16 + 3);
+              v16[1] = index_1;
+              v16[2] = index_1;
+              *((_BYTE *)v16 + index_1 + 12) = 0;
+              if ( v16 + 3 != v12 )
+                memcpy_0(v16 + 3, v12, index_1);
+            }
+          }
+          v17 = index + 1;
+          v18 = *p_m_str;
+          if ( v17 > *((int *)*p_m_str - 2) )
+            v17 = *((int *)*p_m_str - 2);
+          if ( v17 && *((_DWORD *)*p_m_str - 2) )
+          {
+            v19 = *(v18 - 3);
+            if ( v19 > 1 )
+            {
+              if ( v19 >= 0 )
+              {
+                v20 = v19 - 1;
+                *(v18 - 3) = v20;
+                if ( v20 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *(v18 - 1);
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v18 - 3, 0LL));
+                }
+                *p_m_str = &Count;
+              }
+              CryStringT<char>::_AllocData(&v1->m_Buffer, (int)*(v18 - 2));
+              if ( *p_m_str != v18 )
+                memcpy_0(*p_m_str, v18, *(v18 - 2) + 1);
+            }
+            memmove(*p_m_str, (char *)*p_m_str + v17, *((int *)*p_m_str - 2) - v17 + 1);
+            *((_DWORD *)*p_m_str - 2) -= v17;
+          }
+          m_totalPendingRecieve_2 = strtoll(v13, 0LL, 0);
+          v22 = (int *)(v13 - 12);
+          v1->m_totalPendingRecieve = m_totalPendingRecieve_2;
+          v23 = *((_DWORD *)v13 - 3);
+          if ( v23 >= 0 )
+          {
+            v24 = v23 - 1;
+            *v22 = v24;
+            if ( v24 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)v13 - 1);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v22, 0LL));
+            }
+          }
+          goto LABEL_8;
+        }
+      }
+      if ( ++m_str_8 != m_str_9 )
+        continue;
+      break;
+    }
+  }
+LABEL_164:
+  if ( v168 != -28 )
+  {
+    if ( shutdown(v1->m_connSocket, 2) == -1 )
+    {
+      oserror_5 = WSAGetLastError();
+      CrySock::TranslateOSError(oserror_5);
+    }
+    if ( closesocket(v1->m_connSocket) == -1 )
+    {
+      oserror_6 = WSAGetLastError();
+      CrySock::TranslateOSError(oserror_6);
+    }
+    v1->m_connSocket = -1;
+    CryStringT<char>::clear(&v1->m_Buffer);
+    v1->m_totalPendingRecieve = 0LL;
+  }
+LABEL_194:
+  if ( v1->m_lanDiscoverySocket < 0 )
+  {
+    m_lanDiscoverySocket_1 = socket(2, 2, 17);
+    if ( m_lanDiscoverySocket_1 == -1LL )
+    {
+      oserror_7 = WSAGetLastError();
+      LODWORD(m_lanDiscoverySocket_1) = CrySock::TranslateOSError(oserror_7);
+    }
+    v1->m_lanDiscoverySocket = m_lanDiscoverySocket_1;
+    if ( (m_lanDiscoverySocket_1 & 0x80000000) != 0LL )
+    {
+      CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "CDataCore::NetUpdate() - failed to create a valid socket");
+    }
+    else
+    {
+      n0xA = 0;
+      while ( 1 )
+      {
+        name_.sa_family = 2;
+        *(_DWORD *)&name_.sa_data[2] = 0;
+        v132 = htons(n0xA + 7331);
+        m_lanDiscoverySocket_2 = v1->m_lanDiscoverySocket;
+        *(_WORD *)name_.sa_data = v132;
+        v134 = bind(m_lanDiscoverySocket_2, &name_, 16);
+        if ( v134 == -1 )
+        {
+          oserror_8 = WSAGetLastError();
+          v134 = CrySock::TranslateOSError(oserror_8);
+        }
+        if ( !v134 )
+          break;
+        if ( ++n0xA >= 0xA )
+          goto LABEL_227;
+      }
+      m_lanDiscoverySocket_3 = v1->m_lanDiscoverySocket;
+      argp = 1;
+      ioctlsocket(m_lanDiscoverySocket_3, -2147195266, &argp);
+      if ( n0xA < 0xA )
+        return;
+LABEL_227:
+      CryWarning(VALIDATOR_MODULE_SYSTEM, VALIDATOR_ERROR, "CDataCore::NetUpdate() - failed to bind socket");
+      if ( closesocket(v1->m_lanDiscoverySocket) == -1 )
+      {
+        oserror_9 = WSAGetLastError();
+        CrySock::TranslateOSError(oserror_9);
+      }
+      v1->m_lanDiscoverySocket = -1;
+    }
+  }
+  else
+  {
+    addr.sin_family = 2;
+    addr.sin_addr.S_un.S_addr = -1;
+    sin_port = htons(0);
+    addrLength = 16;
+    addr.sin_port = sin_port;
+    while ( 1 )
+    {
+      v114 = recvfrom(v1->m_lanDiscoverySocket, buf, 4096, 0, (struct sockaddr *)&addr, &addrLength);
+      if ( v114 == -1 )
+      {
+        oserror_10 = WSAGetLastError();
+        v114 = CrySock::TranslateOSError(oserror_10);
+      }
+      if ( v114 < 0 )
+        break;
+      buf[v114] = 0;
+      if ( !strcmp_0(buf, "LAN Discovery Request: DataForgeLiveEdit") && v1->m_listenerSocket > 0 )
+      {
+        m_listenerSocket_2 = v1->m_listenerSocket;
+        namelen = 16;
+        sockname_1 = getsockname(m_listenerSocket_2, &name__1, &namelen);
+        if ( sockname_1 == -1 )
+        {
+          oserror_11 = WSAGetLastError();
+          sockname_1 = CrySock::TranslateOSError(oserror_11);
+        }
+        if ( !sockname_1 )
+        {
+          response.m_str = (char *)&Count;
+          if ( gEnv.bEditor )
+          {
+            Editor = "Editor";
+          }
+          else
+          {
+            Editor = "Client";
+            if ( gEnv.bDedicated )
+              Editor = "Dedicated";
+          }
+          pNetwork = gEnv.pNetwork;
+          v121 = ntohs(*(u_short *)name__1.sa_data);
+          v122 = pNetwork->GetHostName(pNetwork);
+          CryStringT<char>::Format(
+            &response,
+            "%s|%s:%u - %s",
+            "LAN Discovery Response: DataForgeLiveEdit",
+            v122,
+            v121,
+            Editor);
+          m_str_10 = response.m_str;
+          v124 = sendto(
+                   v1->m_lanDiscoverySocket,
+                   response.m_str,
+                   *((_DWORD *)response.m_str - 2),
+                   0,
+                   (const struct sockaddr *)&addr,
+                   addrLength);
+          if ( v124 == -1 )
+          {
+            oserror_12 = WSAGetLastError();
+            v124 = CrySock::TranslateOSError(oserror_12);
+          }
+          if ( v124 != *((_DWORD *)m_str_10 - 2) )
+            CryWarning(
+              VALIDATOR_MODULE_SYSTEM,
+              VALIDATOR_ERROR,
+              "CDataCore::NetUpdate() - failed to send LAN Discovery Response");
+          v126 = *((_DWORD *)m_str_10 - 3);
+          v127 = (int *)(m_str_10 - 12);
+          if ( v126 >= 0 )
+          {
+            v128 = v126 - 1;
+            *v127 = v128;
+            if ( v128 <= 0 )
+            {
+              `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str_10 - 1);
+              _InterlockedExchangeAdd64(
+                (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                _CryMemoryManagerPoolHelper::_CryFree(v127, 0LL));
+            }
+          }
+        }
+      }
+    }
+    if ( v114 != -28 )
+    {
+      CrySock::closesocket(v1->m_lanDiscoverySocket);
+      v1->m_lanDiscoverySocket = -1;
+    }
+  }
+}
+
+// --- End Function: ?NetUpdate@CDataCore@@UEAAXXZ (0x151321980) ---
+
+// --- Function: ??A?$map@IPEAUIDataCoreRecordWrapper@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAUIDataCoreRecordWrapper@@@std@@@3@@std@@QEAAAEAPEAUIDataCoreRecordWrapper@@AEBI@Z (0x151322AC0) ---
+SubactivityTaskData **__fastcall std::map<unsigned int,IDataCoreRecordWrapper *>::operator[](
+        std::_Tree_buy<std::pair<int const ,SubactivityTaskData *>> *p_m_Records,
+        SubsumptionEvent *_Keyval)
+{
+  std::tuple<> *Myhead; // r9
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Parent; // rax
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Myhead; // rbx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *_Newnode; // rax
+  std::tuple<int const &> __Val_0__; // [rsp+40h] [rbp+8h] BYREF
+
+  Myhead = (std::tuple<> *)p_m_Records->_Myhead;
+  Parent = p_m_Records->_Myhead->_Parent;
+  _Myhead = p_m_Records->_Myhead;
+  while ( !Parent->_Isnil )
+  {
+    if ( Parent->_Myval.first >= _Keyval->senderId.id.saltedId )
+    {
+      _Myhead = Parent;
+      Parent = Parent->_Left;
+    }
+    else
+    {
+      Parent = Parent->_Right;
+    }
+  }
+  if ( _Myhead != (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)Myhead
+    && _Keyval->senderId.id.saltedId >= _Myhead->_Myval.first )
+  {
+    return &_Myhead->_Myval.second;
+  }
+  __Val_0__._Myfirst._Val = (const int *)_Keyval;
+  _Newnode = std::_Tree_buy<std::pair<unsigned int const,CEntityPool *>>::_Buynode<std::piecewise_construct_t const &,std::tuple<unsigned int const &>,std::tuple<>>(
+               p_m_Records,
+               _Keyval,
+               &__Val_0__,
+               Myhead);
+  std::_Tree<std::_Tmap_traits<unsigned int,EntityId,std::less<unsigned int>,std::allocator<std::pair<unsigned int const,EntityId>>,0>>::_Insert_hint<std::pair<unsigned int const,EntityId> &,std::_Tree_node<std::pair<unsigned int const,EntityId>,void *> *>(
+    (std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > *)p_m_Records,
+    (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<int const ,SubactivityTaskData *> > > > *)&__Val_0__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >)_Myhead,
+    (std::pair<unsigned int const ,IDataCoreRecordWrapper *> *)&_Newnode->_Myval,
+    _Newnode);
+  return (SubactivityTaskData **)(__Val_0__._Myfirst._Val + 10);
+}
+
+// --- End Function: ??A?$map@IPEAUIDataCoreRecordWrapper@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIPEAUIDataCoreRecordWrapper@@@std@@@3@@std@@QEAAAEAPEAUIDataCoreRecordWrapper@@AEBI@Z (0x151322AC0) ---
+
+// --- Function: ??A?$map@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@@std@@QEAAAEAUSDataCoreStruct@@$$QEAV?$CryStringT@D@@@Z (0x151322B50) ---
+CryStringT<char> *__fastcall std::map<CryStringT<char>,SDataCoreStruct>::operator[](
+        std::map<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> > > *this,
+        const std::piecewise_construct_t *_Keyval,
+        __int64 a3,
+        std::tuple<> *__Val_1_)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead; // r11
+  CryStringT<char> *_Keyval_1; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Parent; // r8
+  CryStringT<char> *_Myhead; // rbx
+  __int64 v9; // r10
+  char *m_str; // rax
+  int v11; // ecx
+  char *m_str_1; // rax
+  int v13; // ecx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Newnode; // rax
+  std::tuple<CryStringT<char> &&> __Val_0__; // [rsp+40h] [rbp+8h] BYREF
+
+  Myhead = this->_Myhead;
+  _Keyval_1 = (CryStringT<char> *)_Keyval;
+  Parent = this->_Myhead->_Parent;
+  _Myhead = (CryStringT<char> *)this->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    v9 = *(_QWORD *)_Keyval;
+    do
+    {
+      m_str = Parent->_Myval.first.m_str;
+      __Val_1_ = (std::tuple<> *)(v9 - (_QWORD)m_str);
+      do
+      {
+        v11 = (unsigned __int8)__Val_1_[(_QWORD)m_str];
+        _Keyval = (const std::piecewise_construct_t *)((unsigned int)(unsigned __int8)*m_str - v11);
+        if ( (_DWORD)_Keyval )
+          break;
+        ++m_str;
+      }
+      while ( v11 );
+      if ( (int)_Keyval >= 0 )
+      {
+        _Myhead = (CryStringT<char> *)Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead != (CryStringT<char> *)Myhead )
+  {
+    m_str_1 = _Keyval_1->m_str;
+    do
+    {
+      v13 = (unsigned __int8)m_str_1[(unsigned __int64)(_Myhead[4].m_str - _Keyval_1->m_str)];
+      _Keyval = (const std::piecewise_construct_t *)((unsigned int)(unsigned __int8)*m_str_1 - v13);
+      if ( (_DWORD)_Keyval )
+        break;
+      ++m_str_1;
+    }
+    while ( v13 );
+    if ( (int)_Keyval >= 0 )
+      return _Myhead + 5;
+  }
+  __Val_0__._Myfirst._Val = _Keyval_1;
+  _Newnode = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)std::_Tree_buy<std::pair<CryStringT<char> const,SDataCoreStruct>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+                                                                                             this,
+                                                                                             (std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *)_Keyval,
+                                                                                             &__Val_0__,
+                                                                                             __Val_1_);
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+    this,
+    (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *)&__Val_0__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >)_Myhead,
+    &_Newnode->_Myval,
+    _Newnode);
+  return __Val_0__._Myfirst._Val + 5;
+}
+
+// --- End Function: ??A?$map@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@@std@@QEAAAEAUSDataCoreStruct@@$$QEAV?$CryStringT@D@@@Z (0x151322B50) ---
+
+// --- Function: ??A?$map@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@@std@@QEAAAEAUUrlToStruct@CDataCore@@$$QEAV?$CryStringT@D@@@Z (0x151322C40) ---
+CryStringT<char> *__fastcall std::map<CryStringT<char>,CDataCore::UrlToStruct>::operator[](
+        std::map<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > *p_m_Structures,
+        const std::piecewise_construct_t *_Keyval,
+        __int64 nameHash,
+        std::tuple<> *__Val_1_)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // r11
+  CryStringT<char> *_Keyval_1; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Parent; // r8
+  CryStringT<char> *_Myhead; // rbx
+  __int64 v9; // r10
+  char *m_str; // rax
+  int v11; // ecx
+  char *m_str_1; // rax
+  int v13; // ecx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode; // rax
+  std::tuple<CryStringT<char> &&> __Val_0__; // [rsp+40h] [rbp+8h] BYREF
+
+  Myhead = p_m_Structures->_Myhead;
+  _Keyval_1 = (CryStringT<char> *)_Keyval;
+  Parent = p_m_Structures->_Myhead->_Parent;
+  _Myhead = (CryStringT<char> *)p_m_Structures->_Myhead;
+  if ( !Parent->_Isnil )
+  {
+    v9 = *(_QWORD *)_Keyval;
+    do
+    {
+      m_str = Parent->_Myval.first.m_str;
+      __Val_1_ = (std::tuple<> *)(v9 - (_QWORD)m_str);
+      do
+      {
+        v11 = (unsigned __int8)__Val_1_[(_QWORD)m_str];
+        _Keyval = (const std::piecewise_construct_t *)((unsigned int)(unsigned __int8)*m_str - v11);
+        if ( (_DWORD)_Keyval )
+          break;
+        ++m_str;
+      }
+      while ( v11 );
+      if ( (int)_Keyval >= 0 )
+      {
+        _Myhead = (CryStringT<char> *)Parent;
+        Parent = Parent->_Left;
+      }
+      else
+      {
+        Parent = Parent->_Right;
+      }
+    }
+    while ( !Parent->_Isnil );
+  }
+  if ( _Myhead != (CryStringT<char> *)Myhead )
+  {
+    m_str_1 = _Keyval_1->m_str;
+    do
+    {
+      v13 = (unsigned __int8)m_str_1[(unsigned __int64)(_Myhead[4].m_str - _Keyval_1->m_str)];
+      _Keyval = (const std::piecewise_construct_t *)((unsigned int)(unsigned __int8)*m_str_1 - v13);
+      if ( (_DWORD)_Keyval )
+        break;
+      ++m_str_1;
+    }
+    while ( v13 );
+    if ( (int)_Keyval >= 0 )
+      return _Myhead + 5;
+  }
+  __Val_0__._Myfirst._Val = _Keyval_1;
+  _Newnode = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)std::_Tree_buy<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+                                                                                                    (std::_Tree_buy<std::pair<StringHash const ,SubsumptionActivity *>> *)p_m_Structures,
+                                                                                                    _Keyval,
+                                                                                                    &__Val_0__,
+                                                                                                    __Val_1_);
+  std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(
+    p_m_Structures,
+    (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *)&__Val_0__,
+    (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >)_Myhead,
+    &_Newnode->_Myval,
+    _Newnode);
+  return __Val_0__._Myfirst._Val + 5;
+}
+
+// --- End Function: ??A?$map@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@@std@@QEAAAEAUUrlToStruct@CDataCore@@$$QEAV?$CryStringT@D@@@Z (0x151322C40) ---
+
+// --- Function: ?push_back@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@QEAAX$$QEAUUnresolvedRef@CDataCore@@@Z (0x151322D30) ---
+void __fastcall std::vector<CDataCore::UnresolvedRef>::push_back(
+        std::vector<CDataCore::UnresolvedWeakPtr> *p_m_UnresolvedRefs,
+        CDataCore::UnresolvedWeakPtr *_Val)
+{
+  CDataCore::UnresolvedWeakPtr *Mylast; // rax
+  CDataCore::UnresolvedWeakPtr *_Val_1; // rdi
+  CDataCore::UnresolvedWeakPtr *Myfirst; // rcx
+  signed __int64 v6; // rdi
+  CDataCore::UnresolvedWeakPtr *_Mylast; // rcx
+  char *m_str; // rax
+
+  Mylast = p_m_UnresolvedRefs->_Mylast;
+  _Val_1 = _Val;
+  if ( _Val >= Mylast || (Myfirst = p_m_UnresolvedRefs->_Myfirst, Myfirst > _Val) )
+  {
+    if ( Mylast == p_m_UnresolvedRefs->_Myend )
+      std::vector<CDataCore::UnresolvedRef>::_Reserve(p_m_UnresolvedRefs, (unsigned __int64)_Val);
+  }
+  else
+  {
+    v6 = (char *)_Val - (char *)Myfirst;
+    if ( Mylast == p_m_UnresolvedRefs->_Myend )
+      std::vector<CDataCore::UnresolvedRef>::_Reserve(p_m_UnresolvedRefs, (unsigned __int64)_Val);
+    _Val_1 = (CDataCore::UnresolvedWeakPtr *)((char *)p_m_UnresolvedRefs->_Myfirst + (v6 & 0xFFFFFFFFFFFFFFF0uLL));
+  }
+  _Mylast = p_m_UnresolvedRefs->_Mylast;
+  if ( _Mylast )
+  {
+    _Mylast->m_pStruct = _Val_1->m_pStruct;
+    m_str = _Val_1->m_URL.m_str;
+    if ( *((int *)m_str - 3) >= 0 )
+    {
+      _Mylast->m_URL.m_str = m_str;
+      ++*((_DWORD *)m_str - 3);
+      ++p_m_UnresolvedRefs->_Mylast;
+      return;
+    }
+    _Mylast->m_URL.m_str = (char *)&Count;
+  }
+  ++p_m_UnresolvedRefs->_Mylast;
+}
+
+// --- End Function: ?push_back@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@QEAAX$$QEAUUnresolvedRef@CDataCore@@@Z (0x151322D30) ---
+
+// --- Function: ?resize@?$DataCoreArray@UDataCoreRecordRefBase@@@@AEAAX_K@Z (0x151322DD0) ---
+void __fastcall DataCoreArray<DataCoreRecordRefBase>::resize(
+        DataCoreArray<DataCoreRecordRefBase> *this,
+        unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 v4; // rdi
+  char *m_pData_1; // rax
+  unsigned __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  v4 = 4 * this->m_Count;
+  if ( !is_mul_ok(this->m_Count, 4uLL) )
+    v4 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  m_pData_1 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v4, &v6, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v4);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  this->m_pData = m_pData_1;
+}
+
+// --- End Function: ?resize@?$DataCoreArray@UDataCoreRecordRefBase@@@@AEAAX_K@Z (0x151322DD0) ---
+
+// --- Function: ?resize@?$DataCoreArray@UIDataCoreStructPtrBase@@@@AEAAX_K@Z (0x151322E70) ---
+void __fastcall DataCoreArray<IDataCoreStructPtrBase>::resize(
+        DataCoreArray<IDataCoreStructPtrBase> *Srca,
+        unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 m_Count; // rsi
+  unsigned __int64 v5; // rdi
+  _WSABUF *buf; // rax
+  unsigned __int64 v7; // [rsp+30h] [rbp+8h] BYREF
+
+  Srca->m_Count = count;
+  m_pData = Srca->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    Srca->m_pData = 0LL;
+  }
+  m_Count = Srca->m_Count;
+  v5 = 8 * m_Count;
+  if ( !is_mul_ok(m_Count, 8uLL) )
+    v5 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  buf = _CryMemoryManagerPoolHelper::_CryMalloc(v5, &v7, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v7);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v5);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  if ( buf )
+  {
+    if ( (int)m_Count - 1 >= 0 )
+      memset(buf, 0, 8LL * (unsigned int)m_Count);
+    Srca->m_pData = (char *)buf;
+  }
+  else
+  {
+    Srca->m_pData = 0LL;
+  }
+}
+
+// --- End Function: ?resize@?$DataCoreArray@UIDataCoreStructPtrBase@@@@AEAAX_K@Z (0x151322E70) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@0@Z (0x151322F50) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::erase(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *p_m_Enums,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *result,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > _First,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > _Last)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Myhead; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Left; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *v9; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Ptr_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *j; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *i; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > resulta; // [rsp+30h] [rbp+8h] BYREF
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Ptr; // [rsp+40h] [rbp+18h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Ptr; // [rsp+48h] [rbp+20h]
+
+  Ptr = _Last._Ptr;
+  _Ptr = _First._Ptr;
+  Myhead = p_m_Enums->_Myhead;
+  if ( _First._Ptr == p_m_Enums->_Myhead->_Left && _Last._Ptr == Myhead )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Erase(
+      p_m_Enums,
+      Myhead->_Parent);
+    p_m_Enums->_Myhead->_Parent = p_m_Enums->_Myhead;
+    p_m_Enums->_Myhead->_Left = p_m_Enums->_Myhead;
+    p_m_Enums->_Myhead->_Right = p_m_Enums->_Myhead;
+    _Myhead = p_m_Enums->_Myhead;
+    p_m_Enums->_Mysize = 0LL;
+    Left = _Myhead->_Left;
+    v9 = result;
+    result->_Ptr = Left;
+  }
+  else
+  {
+    if ( _First._Ptr != _Last._Ptr )
+    {
+      do
+      {
+        _Ptr_1 = _First._Ptr;
+        if ( !_First._Ptr->_Isnil )
+        {
+          Right = _First._Ptr->_Right;
+          if ( Right->_Isnil )
+          {
+            for ( i = _First._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+            {
+              if ( _First._Ptr != i->_Right )
+                break;
+              _Ptr = i;
+              _First._Ptr = i;
+            }
+            _Ptr = i;
+          }
+          else
+          {
+            for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+              Right = j;
+            _Ptr = Right;
+          }
+        }
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::erase(
+          (std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *)p_m_Enums,
+          &resulta,
+          (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >)_Ptr_1);
+        _First._Ptr = _Ptr;
+      }
+      while ( _Ptr != Ptr );
+    }
+    result->_Ptr = _First._Ptr;
+    return result;
+  }
+  return v9;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@2@0@Z (0x151322F50) ---
+
+// --- Function: ?_Reserve@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@IEAAX_K@Z (0x151323050) ---
+void __fastcall std::vector<CDataCore::UnresolvedRef>::_Reserve(
+        std::vector<CDataCore::UnresolvedWeakPtr> *p_m_UnresolvedRefs,
+        unsigned __int64 _Count)
+{
+  CDataCore::UnresolvedWeakPtr *Mylast; // r8
+  __int64 v3; // r8
+  unsigned __int64 _Count_2; // r8
+  unsigned __int64 _First_1; // rdx
+  std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> > *_First; // r9
+  unsigned __int64 _Count_1; // rdx
+
+  Mylast = p_m_UnresolvedRefs->_Mylast;
+  if ( !(p_m_UnresolvedRefs->_Myend - Mylast) )
+  {
+    v3 = Mylast - p_m_UnresolvedRefs->_Myfirst;
+    if ( v3 == 0xFFFFFFFFFFFFFFFLL )
+      std::_Xlength_error("vector<T> too long");
+    _Count_2 = v3 + 1;
+    _First_1 = p_m_UnresolvedRefs->_Myend - p_m_UnresolvedRefs->_Myfirst;
+    _First = (std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> > *)(0xFFFFFFFFFFFFFFFLL - (_First_1 >> 1));
+    if ( (unsigned __int64)_First >= _First_1 )
+    {
+      _Count_1 = (_First_1 >> 1) + _First_1;
+      if ( _Count_1 < _Count_2 )
+        _Count_1 = _Count_2;
+    }
+    else
+    {
+      _Count_1 = 0LL;
+      if ( _Count_2 )
+        _Count_1 = _Count_2;
+    }
+    std::vector<CDataCore::UnresolvedWeakPtr>::_Reallocate(p_m_UnresolvedRefs, _Count_1, _Count_2, _First);
+  }
+}
+
+// --- End Function: ?_Reserve@?$vector@UUnresolvedRef@CDataCore@@V?$allocator@UUnresolvedRef@CDataCore@@@std@@@std@@IEAAX_K@Z (0x151323050) ---
+
+// --- Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@@Z (0x1513230E0) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::erase(
+        std::_Tree<std::_Tmap_traits<unsigned __int64,unsigned int,std::less<unsigned __int64>,std::allocator<std::pair<unsigned __int64 const ,unsigned int> >,1> > *p_m_Enums,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *p_resulta,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > _Where)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Ptr; // r14
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Right; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *j; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *i; // rax
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Right; // rdi
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Parent; // rbx
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *k; // rcx
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Left; // rax
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *Myhead; // rdx
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Right_1; // rax
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *m; // rcx
+  std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *_Parent; // rax
+  char Color; // cl
+  std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *_Left; // rcx
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *Ptr; // [rsp+50h] [rbp+18h]
+
+  Ptr = _Where._Ptr;
+  _Ptr = _Where._Ptr;
+  if ( !_Where._Ptr->_Isnil )
+  {
+    Right = _Where._Ptr->_Right;
+    if ( Right->_Isnil )
+    {
+      for ( i = _Where._Ptr->_Parent; !i->_Isnil; i = i->_Parent )
+      {
+        if ( _Where._Ptr != i->_Right )
+          break;
+        _Where._Ptr = i;
+      }
+      _Where._Ptr = i;
+      Ptr = i;
+    }
+    else
+    {
+      _Where._Ptr = _Where._Ptr->_Right;
+      for ( j = Right->_Left; !j->_Isnil; j = j->_Left )
+        _Where._Ptr = j;
+      Ptr = _Where._Ptr;
+    }
+  }
+  if ( _Ptr->_Left->_Isnil )
+  {
+    _Right = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr->_Right;
+LABEL_15:
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = Parent;
+    if ( (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)p_m_Enums->_Myhead->_Parent == _Ptr )
+    {
+      p_m_Enums->_Myhead->_Parent = _Right;
+    }
+    else if ( (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)Parent->_Left == _Ptr )
+    {
+      Parent->_Left = _Right;
+    }
+    else
+    {
+      Parent->_Right = _Right;
+    }
+    if ( p_m_Enums->_Myhead->_Left == (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        k = Parent;
+      }
+      else
+      {
+        Left = _Right->_Left;
+        for ( k = _Right; !Left->_Isnil; Left = Left->_Left )
+          k = Left;
+      }
+      p_m_Enums->_Myhead->_Left = k;
+    }
+    Myhead = p_m_Enums->_Myhead;
+    if ( (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)p_m_Enums->_Myhead->_Right == _Ptr )
+    {
+      if ( _Right->_Isnil )
+      {
+        Myhead->_Right = Parent;
+      }
+      else
+      {
+        _Right_1 = _Right->_Right;
+        for ( m = _Right; !_Right_1->_Isnil; _Right_1 = _Right_1->_Right )
+          m = _Right_1;
+        Myhead->_Right = m;
+      }
+    }
+    goto LABEL_45;
+  }
+  if ( _Ptr->_Right->_Isnil )
+  {
+    _Right = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Ptr->_Left;
+    goto LABEL_15;
+  }
+  _Right = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr->_Right;
+  if ( _Where._Ptr == _Ptr )
+    goto LABEL_15;
+  _Ptr->_Left->_Parent = _Where._Ptr;
+  _Where._Ptr->_Left = _Ptr->_Left;
+  if ( _Where._Ptr == _Ptr->_Right )
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr;
+  }
+  else
+  {
+    Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr->_Parent;
+    if ( !_Right->_Isnil )
+      _Right->_Parent = Parent;
+    Parent->_Left = _Right;
+    _Where._Ptr->_Right = _Ptr->_Right;
+    _Ptr->_Right->_Parent = _Where._Ptr;
+  }
+  if ( (std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *)p_m_Enums->_Myhead->_Parent == _Ptr )
+  {
+    p_m_Enums->_Myhead->_Parent = (std::_Tree_node<std::pair<unsigned __int64 const ,unsigned int>,void *> *)_Where._Ptr;
+  }
+  else
+  {
+    _Parent = (std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > > *)_Ptr->_Parent;
+    if ( _Parent->_Ptr == _Ptr )
+      _Parent->_Ptr = _Where._Ptr;
+    else
+      _Parent[2]._Ptr = _Where._Ptr;
+  }
+  _Where._Ptr->_Parent = _Ptr->_Parent;
+  Color = _Where._Ptr->_Color;
+  _Where._Ptr->_Color = _Ptr->_Color;
+  _Ptr->_Color = Color;
+LABEL_45:
+  if ( _Ptr->_Color == 1 )
+  {
+    for ( ; _Right != p_m_Enums->_Myhead->_Parent; Parent = Parent->_Parent )
+    {
+      if ( _Right->_Color != 1 )
+        break;
+      _Left = Parent->_Left;
+      if ( _Right == Parent->_Left )
+      {
+        _Left = Parent->_Right;
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            p_m_Enums,
+            Parent);
+          _Left = Parent->_Right;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Left->_Color != 1 || _Left->_Right->_Color != 1 )
+        {
+          if ( _Left->_Right->_Color == 1 )
+          {
+            _Left->_Left->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+              p_m_Enums,
+              _Left);
+            _Left = Parent->_Right;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Right->_Color = 1;
+          std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+            p_m_Enums,
+            Parent);
+          break;
+        }
+      }
+      else
+      {
+        if ( !_Left->_Color )
+        {
+          _Left->_Color = 1;
+          Parent->_Color = 0;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            p_m_Enums,
+            Parent);
+          _Left = Parent->_Left;
+        }
+        if ( _Left->_Isnil )
+          goto LABEL_63;
+        if ( _Left->_Right->_Color != 1 || _Left->_Left->_Color != 1 )
+        {
+          if ( _Left->_Left->_Color == 1 )
+          {
+            _Left->_Right->_Color = 1;
+            _Left->_Color = 0;
+            std::_Tree<std::_Tset_traits<CAllNodesContainer::Iterator *,std::less<CAllNodesContainer::Iterator *>,std::allocator<CAllNodesContainer::Iterator *>,0>>::_Lrotate(
+              p_m_Enums,
+              _Left);
+            _Left = Parent->_Left;
+          }
+          _Left->_Color = Parent->_Color;
+          Parent->_Color = 1;
+          _Left->_Left->_Color = 1;
+          std::_Tree<std::_Tset_traits<SmartObjectHelper *,std::less<SmartObjectHelper *>,std::allocator<SmartObjectHelper *>,0>>::_Rrotate(
+            p_m_Enums,
+            Parent);
+          break;
+        }
+      }
+      _Left->_Color = 0;
+LABEL_63:
+      _Right = Parent;
+    }
+    _Right->_Color = 1;
+  }
+  std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>((std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *)&_Ptr->_Myval);
+  _InterlockedExchangeAdd64(
+    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+    _CryMemoryManagerPoolHelper::_CryFree(_Ptr, 0LL));
+  Mysize = p_m_Enums->_Mysize;
+  if ( Mysize )
+    p_m_Enums->_Mysize = Mysize - 1;
+  p_resulta->_Ptr = Ptr;
+  return p_resulta;
+}
+
+// --- End Function: ?erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@U?$less@V?$CryStringT@D@@@3@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@3@$0A@@std@@@std@@QEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@V?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@@std@@@std@@@std@@@2@@Z (0x1513230E0) ---
+
+// --- Function: ?_Reallocate@?$vector@UUnresolvedWeakPtr@CDataCore@@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@@std@@IEAAX_K@Z (0x151323440) ---
+void __fastcall std::vector<CDataCore::UnresolvedWeakPtr>::_Reallocate(
+        std::vector<CDataCore::UnresolvedWeakPtr> *p_m_UnresolvedRefs,
+        unsigned __int64 _Count,
+        __int64 a3,
+        std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> > *_First)
+{
+  CDataCore::UnresolvedWeakPtr *_Dest; // rbx
+  std::vector<CVisRegTest::SCmd> *v7; // rcx
+  signed __int64 v8; // rsi
+  CDataCore::UnresolvedRef *_Last; // [rsp+20h] [rbp-38h]
+  std::_Nonscalar_ptr_iterator_tag _Dest_1; // [rsp+28h] [rbp-30h]
+  CDataCore::UnresolvedWeakPtr *_Dest_2; // [rsp+68h] [rbp+10h]
+
+  _Dest = 0LL;
+  _Dest_2 = 0LL;
+  if ( _Count )
+  {
+    if ( _Count > 0xFFFFFFFFFFFFFFFLL
+      || (_Dest = (CDataCore::UnresolvedWeakPtr *)`anonymous namespace'::custom_xml_malloc(16 * _Count),
+          (_Dest_2 = _Dest) == 0LL) )
+    {
+      std::_Xbad_alloc();
+    }
+  }
+  try
+  {
+    std::_Uninit_move<CDataCore::UnresolvedWeakPtr *,CDataCore::UnresolvedWeakPtr *,std::allocator<CDataCore::UnresolvedWeakPtr>,CDataCore::UnresolvedWeakPtr>(
+      (std::_Wrap_alloc<std::allocator<CVisRegTest::SCmd> > *)p_m_UnresolvedRefs->_Myfirst,
+      (std::_Wrap_alloc<std::allocator<CVisRegTest::SCmd> > *)p_m_UnresolvedRefs->_Mylast,
+      _Dest,
+      _First,
+      _Last,
+      _Dest_1);
+  }
+  catch ( ... )
+  {
+    if ( _Dest_2 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Dest_2, 0LL));
+    throw;
+  }
+  v8 = (char *)p_m_UnresolvedRefs->_Mylast - (char *)p_m_UnresolvedRefs->_Myfirst;
+  if ( p_m_UnresolvedRefs->_Myfirst )
+  {
+    std::vector<CDataCore::UnresolvedRef>::_Destroy(
+      v7,
+      (CVisRegTest::SCmd *)p_m_UnresolvedRefs->_Myfirst,
+      (CVisRegTest::SCmd *)p_m_UnresolvedRefs->_Mylast);
+    if ( p_m_UnresolvedRefs->_Myfirst )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(p_m_UnresolvedRefs->_Myfirst, 0LL));
+  }
+  p_m_UnresolvedRefs->_Myend = &_Dest[_Count];
+  p_m_UnresolvedRefs->_Mylast = (CDataCore::UnresolvedWeakPtr *)((char *)_Dest + (v8 & 0xFFFFFFFFFFFFFFF0uLL));
+  p_m_UnresolvedRefs->_Myfirst = _Dest;
+}
+
+// --- End Function: ?_Reallocate@?$vector@UUnresolvedWeakPtr@CDataCore@@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@@std@@IEAAX_K@Z (0x151323440) ---
+
+// --- Function: ?_Erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@Z (0x151323510) ---
+void __fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Erase(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > *p_m_Enums,
+        std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Rootnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Rootnode_1; // rdi
+  std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *i; // rbx
+
+  _Rootnode_1 = _Rootnode;
+  for ( i = _Rootnode; !i->_Isnil; _Rootnode_1 = i )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Erase(
+      p_m_Enums,
+      i->_Right);
+    i = i->_Left;
+    std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>((std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *)&_Rootnode_1->_Myval);
+    if ( _Rootnode_1 )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Rootnode_1, 0LL));
+  }
+}
+
+// --- End Function: ?_Erase@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAAXPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@Z (0x151323510) ---
+
+// --- Function: ??$LoadArray@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323580) ---
+void __fastcall CDataCore::LoadArray<char>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<bool> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *m_pData; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<bool> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<bool>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          m_pData = v7->m_pData;
+          m_pData[i] = DataCoreHelper::GetValFromAttrib<char>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323580) ---
+
+// --- Function: ??$LoadArray@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323710) ---
+void __fastcall CDataCore::LoadArray<short>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<unsigned short> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *v13; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<unsigned short> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<unsigned short>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = &v7->m_pData[2 * i];
+          *(_WORD *)v13 = DataCoreHelper::GetValFromAttrib<short>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323710) ---
+
+// --- Function: ??$LoadArray@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513238B0) ---
+void __fastcall CDataCore::LoadArray<int>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<float> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *v13; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<float> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<float>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = &v7->m_pData[4 * i];
+          *(_DWORD *)v13 = DataCoreHelper::GetValFromAttrib<int>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513238B0) ---
+
+// --- Function: ??$LoadArray@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323A50) ---
+void __fastcall CDataCore::LoadArray<__int64>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<unsigned __int64> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *v13; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<unsigned __int64> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<__int64>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = &v7->m_pData[8 * i];
+          *(_QWORD *)v13 = DataCoreHelper::GetValFromAttrib<__int64>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323A50) ---
+
+// --- Function: ??$LoadArray@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323BF0) ---
+void __fastcall CDataCore::LoadArray<unsigned char>(
+        CDataCore *second,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<bool> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *m_pData; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)second;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<bool> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<bool>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          m_pData = v7->m_pData;
+          m_pData[i] = DataCoreHelper::GetValFromAttrib<unsigned char>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323BF0) ---
+
+// --- Function: ??$LoadArray@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323D80) ---
+void __fastcall CDataCore::LoadArray<unsigned short>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<unsigned short> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *v13; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<unsigned short> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<unsigned short>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = &v7->m_pData[2 * i];
+          *(_WORD *)v13 = DataCoreHelper::GetValFromAttrib<unsigned short>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323D80) ---
+
+// --- Function: ??$LoadArray@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323F20) ---
+void __fastcall CDataCore::LoadArray<unsigned int>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<float> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *v13; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<float> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<float>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = &v7->m_pData[4 * i];
+          *(_DWORD *)v13 = DataCoreHelper::GetValFromAttrib<unsigned int>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151323F20) ---
+
+// --- Function: ??$LoadArray@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513240C0) ---
+void __fastcall CDataCore::LoadArray<unsigned __int64>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<unsigned __int64> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  __int64 *v13; // rbx
+  CryStringT<char> attr_; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  IXmlNode *p_1; // [rsp+88h] [rbp+20h] BYREF
+
+  attr_.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<unsigned __int64> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<__int64>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr_.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr_, 5uLL);
+          m_str = attr_.m_str;
+          if ( attr_.m_str != "Value" )
+          {
+            *(_DWORD *)attr_.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          p_1 = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          v13 = (__int64 *)&v7->m_pData[8 * i];
+          *v13 = DataCoreHelper::GetValFromAttrib<unsigned __int64>((XmlNodeRef)&p_1, (CryStringT<char>)&attr_);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513240C0) ---
+
+// --- Function: ??$LoadArray@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324260) ---
+void __fastcall CDataCore::LoadArray<float>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<float> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *m_pData; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<float> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<float>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          m_pData = v7->m_pData;
+          *(float *)&m_pData[4 * i] = DataCoreHelper::GetValFromAttrib<float>(
+                                        (XmlNodeRef)&node,
+                                        (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324260) ---
+
+// --- Function: ??$LoadArray@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513243F0) ---
+void __fastcall CDataCore::LoadArray<double>(
+        CDataCore *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<unsigned __int64> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *m_pData; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<unsigned __int64> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<__int64>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          m_pData = v7->m_pData;
+          *(double *)&m_pData[8 * i] = DataCoreHelper::GetValFromAttrib<double>(
+                                         (XmlNodeRef)&node,
+                                         (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x1513243F0) ---
+
+// --- Function: ??$LoadArray@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324580) ---
+void __fastcall CDataCore::LoadArray<bool>(
+        CDataCore *second,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  DataCoreArray<bool> *v7; // r14
+  int ChildCount; // eax
+  __int64 ChildCount_1; // rbp
+  int v10; // esi
+  __int64 i; // rdi
+  char *m_str; // rax
+  char *m_pData; // rbx
+  CryStringT<char> attr; // [rsp+70h] [rbp+8h] BYREF
+  XmlNodeRef child; // [rsp+78h] [rbp+10h] BYREF
+  XmlNodeRef ref; // [rsp+80h] [rbp+18h] BYREF
+  XmlNodeRef node; // [rsp+88h] [rbp+20h] BYREF
+
+  attr.m_str = (char *)second;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<bool> *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<bool>::resize(v7, ChildCount);
+      v10 = 0;
+      for ( i = 0LL; i < ChildCount_1; ++v10 )
+      {
+        ref.p->getChild(ref.p, &child, v10);
+        if ( child.p )
+        {
+          attr.m_str = (char *)&Count;
+          CryStringT<char>::_AllocData(&attr, 5uLL);
+          m_str = attr.m_str;
+          if ( attr.m_str != "Value" )
+          {
+            *(_DWORD *)attr.m_str = *(_DWORD *)"Value";
+            m_str[4] = aValue[4];
+          }
+          node.p = child.p;
+          if ( child.p )
+            child.p->AddRef(child.p);
+          m_pData = v7->m_pData;
+          m_pData[i] = DataCoreHelper::GetValFromAttrib<bool>((XmlNodeRef)&node, (CryStringT<char>)&attr);
+          if ( child.p )
+            child.p->Release(child.p);
+        }
+        ++i;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadArray@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324580) ---
+
+// --- Function: ??$LoadArray@V?$CryStringT@D@@@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324710) ---
+void __fastcall CDataCore::LoadArray<CryStringT<char>>(
+        CFlashUIBaseNodeDynPorts *p,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode *p_3; // rsi
+  DataCoreArray<CryStringT<char> > *v7; // r13
+  int ChildCount; // eax
+  __int64 ChildCount_1; // r12
+  int v10; // r15d
+  __int64 ChildCount_2; // r14
+  char *m_str; // rdi
+  IXmlNode *p_4; // rbx
+  int v14; // eax
+  int *v15; // rcx
+  int v16; // eax
+  CFlashUIBaseNodeDynPorts *p_5; // rcx
+  CFlashUIBaseNodeDynPorts **v18; // rdx
+  CFlashUIBaseNodeDynPorts *p_6; // rax
+  int m_str_high; // ecx
+  _DWORD *v21; // rbx
+  __int64 m_str_low; // rdi
+  unsigned __int64 v23; // rsi
+  _DWORD *v24; // rax
+  int *v25; // rcx
+  int v26; // eax
+  int v27; // eax
+  CryStringT<char> v28; // [rsp+20h] [rbp-60h] BYREF
+  unsigned __int64 v29[4]; // [rsp+28h] [rbp-58h] BYREF
+  CFlashUIBaseNodeDynPorts *p_2; // [rsp+90h] [rbp+10h] BYREF
+  XmlNodeRef child; // [rsp+98h] [rbp+18h] BYREF
+  XmlNodeRef ref; // [rsp+A0h] [rbp+20h] BYREF
+  IXmlNode *p_1; // [rsp+A8h] [rbp+28h]
+
+  p_1 = xmlRef.p;
+  p_2 = p;
+  p_3 = xmlRef.p;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, XmlNodeRef *, const char *))xmlRef.p->DeleteThis + 38))(
+    xmlRef.p->__vftable,
+    &ref,
+    pField->pName);
+  v7 = (DataCoreArray<CryStringT<char> > *)((char *)pRecord + pField->offset);
+  if ( ref.p )
+  {
+    ChildCount = ref.p->getChildCount(ref.p);
+    if ( ChildCount > 0 )
+    {
+      ChildCount_1 = ChildCount;
+      DataCoreArray<CryStringT<char>>::resize(v7, ChildCount);
+      v10 = 0;
+      ChildCount_2 = 0LL;
+      if ( ChildCount_1 > 0 )
+      {
+        do
+        {
+          ref.p->getChild(ref.p, &child, v10);
+          if ( child.p )
+          {
+            v28.m_str = (char *)&Count;
+            CryStringT<char>::_AllocData(&v28, 5uLL);
+            m_str = v28.m_str;
+            if ( v28.m_str != "Value" )
+            {
+              *(_DWORD *)v28.m_str = *(_DWORD *)"Value";
+              m_str[4] = aValue[4];
+            }
+            p_4 = child.p;
+            v29[1] = (unsigned __int64)child.p;
+            if ( child.p )
+              child.p->AddRef(child.p);
+            p_2 = &Count;
+            p_4->getAttr(p_4, m_str, (CryStringT<char> *)&p_2);
+            p_4->Release(p_4);
+            v14 = *((_DWORD *)m_str - 3);
+            v15 = (int *)(m_str - 12);
+            if ( v14 >= 0 )
+            {
+              v16 = v14 - 1;
+              *v15 = v16;
+              if ( v16 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - *((_DWORD *)m_str - 1);
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v15, 0LL));
+              }
+            }
+            p_5 = p_2;
+            v18 = (CFlashUIBaseNodeDynPorts **)&v7->m_pData[8 * ChildCount_2];
+            p_2 = *v18;
+            *v18 = p_5;
+            p_6 = p_2;
+            if ( LODWORD(p_2[-1].m_enumStr.m_str) )
+            {
+              m_str_high = HIDWORD(p_2[-1].m_category.m_str);
+              v21 = (_DWORD *)&p_2[-1].m_category.m_str + 1;
+              if ( m_str_high < 0 )
+              {
+                if ( m_str_high > 1 )
+                {
+                  m_str_low = SLODWORD(p_2[-1].m_enumStr.m_str);
+                  if ( LODWORD(p_2[-1].m_enumStr.m_str) )
+                  {
+                    v23 = m_str_low + 13;
+                    if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+                      _CryMemoryManagerPoolHelper::Init();
+                    v24 = _CryMemoryManagerPoolHelper::_CryMalloc(m_str_low + 13, v29, 0LL);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory,
+                      v29[0]);
+                    _InterlockedExchangeAdd64(
+                      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory,
+                      v23);
+                    _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+                    `CryStringT<char>::_usedMemory'::`2'::s_used_memory += v23;
+                    *v24 = 1;
+                    p_2 = (CFlashUIBaseNodeDynPorts *)(v24 + 3);
+                    v24[1] = m_str_low;
+                    v24[2] = m_str_low;
+                    *((_BYTE *)&p_2->__vftable + m_str_low) = 0;
+                    p_6 = p_2;
+                  }
+                  else
+                  {
+                    p_6 = &Count;
+                    p_2 = &Count;
+                  }
+                  if ( p_6 != (CFlashUIBaseNodeDynPorts *)(v21 + 3) )
+                  {
+                    memcpy_0(p_6, v21 + 3, v21[1] + 1);
+                    p_6 = p_2;
+                  }
+                }
+                if ( LODWORD(p_6[-1].m_enumStr.m_str) )
+                {
+                  LODWORD(p_6[-1].m_enumStr.m_str) = 0;
+                  *((_BYTE *)&p_2->__vftable + SLODWORD(p_2[-1].m_enumStr.m_str)) = 0;
+                  p_6 = p_2;
+                }
+              }
+              else
+              {
+                *v21 = m_str_high - 1;
+                if ( m_str_high - 1 <= 0 )
+                {
+                  `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v21[2];
+                  _InterlockedExchangeAdd64(
+                    (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                    _CryMemoryManagerPoolHelper::_CryFree(v21, 0LL));
+                }
+                p_6 = &Count;
+                p_2 = &Count;
+              }
+            }
+            v25 = (int *)&p_6[-1].m_category.m_str + 1;
+            v26 = HIDWORD(p_6[-1].m_category.m_str);
+            if ( v26 >= 0 )
+            {
+              v27 = v26 - 1;
+              *v25 = v27;
+              if ( v27 <= 0 )
+              {
+                `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v25[2];
+                _InterlockedExchangeAdd64(
+                  (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+                  _CryMemoryManagerPoolHelper::_CryFree(v25, 0LL));
+              }
+            }
+            if ( child.p )
+              child.p->Release(child.p);
+          }
+          ++ChildCount_2;
+          ++v10;
+        }
+        while ( ChildCount_2 < ChildCount_1 );
+        p_3 = p_1;
+      }
+    }
+    if ( ref.p )
+      ref.p->Release(ref.p);
+  }
+  if ( p_3->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))p_3->DeleteThis + 4))(p_3->__vftable);
+}
+
+// --- End Function: ??$LoadArray@V?$CryStringT@D@@@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324710) ---
+
+// --- Function: ??$LoadAtomic@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324A40) ---
+void __fastcall CDataCore::LoadAtomic<char>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  char ValFrom; // al
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 1 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<char>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LOBYTE(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@D@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324A40) ---
+
+// --- Function: ??$LoadAtomic@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324AE0) ---
+void __fastcall CDataCore::LoadAtomic<short>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  __int16 ValFrom; // ax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 2 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<short>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LOWORD(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@F@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324AE0) ---
+
+// --- Function: ??$LoadAtomic@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324B80) ---
+void __fastcall CDataCore::LoadAtomic<int>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  int ValFrom; // eax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 4 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<int>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LODWORD(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@H@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324B80) ---
+
+// --- Function: ??$LoadAtomic@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324C20) ---
+void __fastcall CDataCore::LoadAtomic<__int64>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  __int64 ValFrom; // rax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  __int64 tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = (__int64)temp;
+  if ( pField->size != 8 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (__int64)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<__int64>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  tempa = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@_J@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324C20) ---
+
+// --- Function: ??$LoadAtomic@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324CC0) ---
+void __fastcall CDataCore::LoadAtomic<unsigned char>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  char ValFrom; // al
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 1 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<unsigned char>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LOBYTE(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@E@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324CC0) ---
+
+// --- Function: ??$LoadAtomic@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324D60) ---
+void __fastcall CDataCore::LoadAtomic<unsigned short>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  __int16 ValFrom; // ax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 2 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<unsigned short>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LOWORD(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@G@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324D60) ---
+
+// --- Function: ??$LoadAtomic@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324E00) ---
+void __fastcall CDataCore::LoadAtomic<unsigned int>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  int ValFrom; // eax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 4 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<unsigned int>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LODWORD(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@I@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324E00) ---
+
+// --- Function: ??$LoadAtomic@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324EA0) ---
+void __fastcall CDataCore::LoadAtomic<unsigned __int64>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  unsigned __int64 ValFrom; // rax
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  unsigned __int64 tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = (unsigned __int64)temp;
+  if ( pField->size != 8 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (unsigned __int64)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<unsigned __int64>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  tempa = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@_K@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324EA0) ---
+
+// --- Function: ??$LoadAtomic@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324F40) ---
+void __fastcall CDataCore::LoadAtomic<float>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  float ValFrom; // xmm0_4
+  unsigned __int64 offset; // rcx
+  size_t size; // r8
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 4 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<float>((XmlNodeRef)&tempa, attr);
+  offset = pField->offset;
+  size = pField->size;
+  *(float *)&tempa = ValFrom;
+  memcpy_0((char *)pRecord + offset, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@M@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324F40) ---
+
+// --- Function: ??$LoadAtomic@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324FE0) ---
+void __fastcall CDataCore::LoadAtomic<double>(
+        CDataCore *temp_1,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *temp_2; // rcx
+  CryStringT<char> attr; // rax
+  double ValFrom; // xmm0_8
+  unsigned __int64 offset; // rcx
+  size_t size; // r8
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *temp; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  temp = temp_1;
+  if ( pField->size != 8 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  temp_2 = xmlRef.p->__vftable;
+  temp = (CDataCore *)temp_2;
+  if ( temp_2 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))temp_2->DeleteThis + 3))(temp_2);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<double>((XmlNodeRef)&temp, attr);
+  offset = pField->offset;
+  size = pField->size;
+  temp = *(CDataCore **)&ValFrom;
+  memcpy_0((char *)pRecord + offset, &temp, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151324FE0) ---
+
+// --- Function: ??$LoadAtomic@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151325080) ---
+void __fastcall CDataCore::LoadAtomic<bool>(
+        CDataCore *temp,
+        IDataCoreStructure *pRecord,
+        CDataCoreField *pField,
+        XmlNodeRef xmlRef)
+{
+  IXmlNode_vtbl *tempa_1; // rcx
+  CryStringT<char> attr; // rax
+  bool ValFrom; // al
+  size_t size; // r8
+  char *v11; // rcx
+  const char *v12; // [rsp+20h] [rbp-8h]
+  CDataCore *tempa; // [rsp+30h] [rbp+8h] BYREF
+  CryStringT<char> v14; // [rsp+38h] [rbp+10h] BYREF
+
+  tempa = temp;
+  if ( pField->size != 1 )
+    CryWarning(
+      VALIDATOR_MODULE_SYSTEM,
+      VALIDATOR_ERROR,
+      "Field Size Mismatch. Check registration of DataCore structure %s field %s",
+      pField->pName,
+      v12);
+  tempa_1 = xmlRef.p->__vftable;
+  tempa = (CDataCore *)tempa_1;
+  if ( tempa_1 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))tempa_1->DeleteThis + 3))(tempa_1);
+  CryStringT<char>::CryStringT<char>(&v14, (char *)pField->pName);
+  ValFrom = DataCoreHelper::GetValFromAttrib<bool>((XmlNodeRef)&tempa, attr);
+  size = pField->size;
+  v11 = (char *)pRecord + pField->offset;
+  LOBYTE(tempa) = ValFrom;
+  memcpy_0(v11, &tempa, size);
+  if ( xmlRef.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))xmlRef.p->DeleteThis + 4))(xmlRef.p->__vftable);
+}
+
+// --- End Function: ??$LoadAtomic@_N@CDataCore@@AEAAXPEAUIDataCoreStructure@@PEAUCDataCoreField@@VXmlNodeRef@@@Z (0x151325080) ---
+
+// --- Function: ?resize@?$DataCoreArray@_N@@AEAAX_K@Z (0x151325120) ---
+void __fastcall DataCoreArray<bool>::resize(DataCoreArray<bool> *this, unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 m_Count; // rdi
+  char *m_pData_1; // rax
+  unsigned __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  m_Count = this->m_Count;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  m_pData_1 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(m_Count, &v6, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, m_Count);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  this->m_pData = m_pData_1;
+}
+
+// --- End Function: ?resize@?$DataCoreArray@_N@@AEAAX_K@Z (0x151325120) ---
+
+// --- Function: ?resize@?$DataCoreArray@G@@AEAAX_K@Z (0x1513251B0) ---
+void __fastcall DataCoreArray<unsigned short>::resize(DataCoreArray<unsigned short> *this, unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 v4; // rbx
+  char *m_pData_1; // rax
+  unsigned __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  v4 = 2 * this->m_Count;
+  if ( !is_mul_ok(this->m_Count, 2uLL) )
+    v4 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  m_pData_1 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v4, &v6, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v4);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  this->m_pData = m_pData_1;
+}
+
+// --- End Function: ?resize@?$DataCoreArray@G@@AEAAX_K@Z (0x1513251B0) ---
+
+// --- Function: ?resize@?$DataCoreArray@M@@AEAAX_K@Z (0x151325250) ---
+void __fastcall DataCoreArray<float>::resize(DataCoreArray<float> *this, unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 v4; // rbx
+  char *m_pData_1; // rax
+  unsigned __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  v4 = 4 * this->m_Count;
+  if ( !is_mul_ok(this->m_Count, 4uLL) )
+    v4 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  m_pData_1 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v4, &v6, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v4);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  this->m_pData = m_pData_1;
+}
+
+// --- End Function: ?resize@?$DataCoreArray@M@@AEAAX_K@Z (0x151325250) ---
+
+// --- Function: ?resize@?$DataCoreArray@_J@@AEAAX_K@Z (0x1513252F0) ---
+void __fastcall DataCoreArray<__int64>::resize(DataCoreArray<unsigned __int64> *this, unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 v4; // rbx
+  char *m_pData_1; // rax
+  unsigned __int64 v6; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  v4 = 8 * this->m_Count;
+  if ( !is_mul_ok(this->m_Count, 8uLL) )
+    v4 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  m_pData_1 = (char *)_CryMemoryManagerPoolHelper::_CryMalloc(v4, &v6, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v6);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v4);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  this->m_pData = m_pData_1;
+}
+
+// --- End Function: ?resize@?$DataCoreArray@_J@@AEAAX_K@Z (0x1513252F0) ---
+
+// --- Function: ?resize@?$DataCoreArray@V?$CryStringT@D@@@@AEAAX_K@Z (0x151325390) ---
+void __fastcall DataCoreArray<CryStringT<char>>::resize(DataCoreArray<CryStringT<char> > *this, unsigned __int64 count)
+{
+  char *m_pData; // rcx
+  unsigned __int64 m_Count; // rsi
+  __int64 v5; // rdi
+  bool v6; // cf
+  unsigned __int64 v7; // rdi
+  _DWORD *v8; // rax
+  _WSABUF *buf; // rdx
+  unsigned __int64 v10; // [rsp+30h] [rbp+8h] BYREF
+
+  this->m_Count = count;
+  m_pData = this->m_pData;
+  if ( m_pData )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(m_pData, 0LL));
+    this->m_pData = 0LL;
+  }
+  m_Count = this->m_Count;
+  v5 = 8 * m_Count;
+  if ( !is_mul_ok(m_Count, 8uLL) )
+    v5 = -1LL;
+  v6 = __CFADD__(v5, 8LL);
+  v7 = v5 + 8;
+  if ( v6 )
+    v7 = -1LL;
+  if ( !_CryMemoryManagerPoolHelper::m_bInitialized )
+    _CryMemoryManagerPoolHelper::Init();
+  v8 = _CryMemoryManagerPoolHelper::_CryMalloc(v7, &v10, 0LL);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::allocatedMemory, v10);
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::requestedMemory, v7);
+  _InterlockedIncrement(&_CryMemoryManagerPoolHelper::numAllocations);
+  if ( v8 )
+  {
+    *v8 = m_Count;
+    buf = v8 + 2;
+    if ( (int)m_Count - 1 >= 0 )
+      memset64(buf, (unsigned __int64)&Count, (unsigned int)m_Count);
+    this->m_pData = (char *)buf;
+  }
+  else
+  {
+    this->m_pData = 0LL;
+  }
+}
+
+// --- End Function: ?resize@?$DataCoreArray@V?$CryStringT@D@@@@AEAAX_K@Z (0x151325390) ---
+
+// --- Function: ??$GetValFromAttrib@D@DataCoreHelper@@YADVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325480) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<char>(XmlNodeRef node, CryStringT<char> attr)
+{
+  char v4; // al
+  IXmlNode_vtbl *v5; // rcx
+  unsigned __int8 v6; // di
+  int v7; // edx
+  int *v8; // rcx
+  int v9; // edx
+  unsigned __int8 v11; // [rsp+30h] [rbp+8h] BYREF
+
+  v4 = (*((__int64 (__fastcall **)(IXmlNode_vtbl *, _QWORD, unsigned __int8 *))node.p->DeleteThis + 28))(
+         node.p->__vftable,
+         *(_QWORD *)attr.m_str,
+         &v11);
+  v5 = node.p->__vftable;
+  v6 = 0;
+  if ( v4 )
+    v6 = v11;
+  if ( v5 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))v5->DeleteThis + 4))(v5);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return v6;
+}
+
+// --- End Function: ??$GetValFromAttrib@D@DataCoreHelper@@YADVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325480) ---
+
+// --- Function: ??$GetValFromAttrib@F@DataCoreHelper@@YAFVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325520) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<short>(XmlNodeRef node, CryStringT<char> attr)
+{
+  unsigned __int16 v4; // di
+  char v5; // al
+  IXmlNode_vtbl *v6; // rcx
+  int v7; // edx
+  int *v8; // rcx
+  int v9; // edx
+  unsigned __int16 v11; // [rsp+30h] [rbp+8h] BYREF
+
+  v4 = 0;
+  v5 = (*((__int64 (__fastcall **)(IXmlNode_vtbl *, _QWORD, unsigned __int16 *))node.p->DeleteThis + 28))(
+         node.p->__vftable,
+         *(_QWORD *)attr.m_str,
+         &v11);
+  v6 = node.p->__vftable;
+  if ( v5 )
+    v4 = v11;
+  if ( v6 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))v6->DeleteThis + 4))(v6);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return v4;
+}
+
+// --- End Function: ??$GetValFromAttrib@F@DataCoreHelper@@YAFVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325520) ---
+
+// --- Function: ??$GetValFromAttrib@H@DataCoreHelper@@YAHVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513255B0) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<int>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  unsigned int val_1; // edi
+  int v6; // edx
+  int *v7; // rcx
+  int v8; // edx
+  int val; // [rsp+30h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  val = 0;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, _QWORD, int *))v3->DeleteThis + 28))(v3, *(_QWORD *)attr.m_str, &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v6 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v7 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v6 >= 0 )
+  {
+    v8 = v6 - 1;
+    *v7 = v8;
+    if ( v8 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@H@DataCoreHelper@@YAHVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513255B0) ---
+
+// --- Function: ??$GetValFromAttrib@_J@DataCoreHelper@@YA_JVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325640) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<__int64>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  __int64 val_1; // rdi
+  int v6; // edx
+  int *v7; // rcx
+  int v8; // edx
+  __int64 val; // [rsp+30h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  val = 0LL;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, _QWORD, __int64 *))v3->DeleteThis + 26))(v3, *(_QWORD *)attr.m_str, &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v6 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v7 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v6 >= 0 )
+  {
+    v8 = v6 - 1;
+    *v7 = v8;
+    if ( v8 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@_J@DataCoreHelper@@YA_JVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325640) ---
+
+// --- Function: ??$GetValFromAttrib@E@DataCoreHelper@@YAEVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513256E0) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<unsigned char>(XmlNodeRef node, CryStringT<char> attr)
+{
+  char v4; // al
+  IXmlNode_vtbl *v5; // rcx
+  unsigned __int8 v6; // di
+  int v7; // edx
+  int *v8; // rcx
+  int v9; // edx
+  unsigned __int8 v11; // [rsp+30h] [rbp+8h] BYREF
+
+  v4 = (*((__int64 (__fastcall **)(IXmlNode_vtbl *, _QWORD, unsigned __int8 *))node.p->DeleteThis + 27))(
+         node.p->__vftable,
+         *(_QWORD *)attr.m_str,
+         &v11);
+  v5 = node.p->__vftable;
+  v6 = 0;
+  if ( v4 )
+    v6 = v11;
+  if ( v5 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))v5->DeleteThis + 4))(v5);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return v6;
+}
+
+// --- End Function: ??$GetValFromAttrib@E@DataCoreHelper@@YAEVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513256E0) ---
+
+// --- Function: ??$GetValFromAttrib@G@DataCoreHelper@@YAGVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325780) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<unsigned short>(XmlNodeRef node, CryStringT<char> attr)
+{
+  unsigned __int16 v4; // di
+  char v5; // al
+  IXmlNode_vtbl *v6; // rcx
+  int v7; // edx
+  int *v8; // rcx
+  int v9; // edx
+  unsigned __int16 v11; // [rsp+30h] [rbp+8h] BYREF
+
+  v4 = 0;
+  v5 = (*((__int64 (__fastcall **)(IXmlNode_vtbl *, _QWORD, unsigned __int16 *))node.p->DeleteThis + 27))(
+         node.p->__vftable,
+         *(_QWORD *)attr.m_str,
+         &v11);
+  v6 = node.p->__vftable;
+  if ( v5 )
+    v4 = v11;
+  if ( v6 )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))v6->DeleteThis + 4))(v6);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return v4;
+}
+
+// --- End Function: ??$GetValFromAttrib@G@DataCoreHelper@@YAGVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325780) ---
+
+// --- Function: ??$GetValFromAttrib@I@DataCoreHelper@@YAIVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325810) ---
+__int64 __fastcall DataCoreHelper::GetValFromAttrib<unsigned int>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  unsigned int val_1; // edi
+  int v6; // edx
+  int *v7; // rcx
+  int v8; // edx
+  unsigned int val; // [rsp+30h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  val = 0;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, _QWORD, unsigned int *))v3->DeleteThis + 27))(
+    v3,
+    *(_QWORD *)attr.m_str,
+    &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v6 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v7 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v6 >= 0 )
+  {
+    v8 = v6 - 1;
+    *v7 = v8;
+    if ( v8 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@I@DataCoreHelper@@YAIVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325810) ---
+
+// --- Function: ??$GetValFromAttrib@M@DataCoreHelper@@YAMVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513258A0) ---
+float __fastcall DataCoreHelper::GetValFromAttrib<float>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  __int64 v5; // rdx
+  float val_1; // xmm6_4
+  int v7; // eax
+  int *v8; // rcx
+  int v9; // eax
+  float val; // [rsp+40h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  v5 = *(_QWORD *)attr.m_str;
+  val = 0.0;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, __int64, float *))v3->DeleteThis + 24))(v3, v5, &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@M@DataCoreHelper@@YAMVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513258A0) ---
+
+// --- Function: ??$GetValFromAttrib@N@DataCoreHelper@@YANVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325940) ---
+double __fastcall DataCoreHelper::GetValFromAttrib<double>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  __int64 v5; // rdx
+  double val_1; // xmm6_8
+  int v7; // eax
+  int *v8; // rcx
+  int v9; // eax
+  double val; // [rsp+40h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  v5 = *(_QWORD *)attr.m_str;
+  val = 0.0;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, __int64, double *))v3->DeleteThis + 23))(v3, v5, &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v7 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v8 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v7 >= 0 )
+  {
+    v9 = v7 - 1;
+    *v8 = v9;
+    if ( v9 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v8[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v8, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@N@DataCoreHelper@@YANVXmlNodeRef@@V?$CryStringT@D@@@Z (0x151325940) ---
+
+// --- Function: ??$GetValFromAttrib@_N@DataCoreHelper@@YA_NVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513259E0) ---
+_BOOL8 __fastcall DataCoreHelper::GetValFromAttrib<bool>(XmlNodeRef node, CryStringT<char> attr)
+{
+  IXmlNode_vtbl *v3; // rcx
+  bool val_1; // di
+  int v6; // edx
+  int *v7; // rcx
+  int v8; // edx
+  bool val; // [rsp+30h] [rbp+8h] BYREF
+
+  v3 = node.p->__vftable;
+  val = 0;
+  (*((void (__fastcall **)(IXmlNode_vtbl *, _QWORD, bool *))v3->DeleteThis + 15))(v3, *(_QWORD *)attr.m_str, &val);
+  val_1 = val;
+  if ( node.p->__vftable )
+    (*((void (__fastcall **)(IXmlNode_vtbl *))node.p->DeleteThis + 4))(node.p->__vftable);
+  v6 = *(_DWORD *)(*(_QWORD *)attr.m_str - 12LL);
+  v7 = (int *)(*(_QWORD *)attr.m_str - 12LL);
+  if ( v6 >= 0 )
+  {
+    v8 = v6 - 1;
+    *v7 = v8;
+    if ( v8 <= 0 )
+    {
+      `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -13 - v7[2];
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(v7, 0LL));
+    }
+  }
+  return val_1;
+}
+
+// --- End Function: ??$GetValFromAttrib@_N@DataCoreHelper@@YA_NVXmlNodeRef@@V?$CryStringT@D@@@Z (0x1513259E0) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x151325A70) ---
+std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,SDataCoreStruct>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+        std::_Tree_buy<std::pair<CryStringT<char> const ,SDataCoreStruct>> *this,
+        std::_Func_impl<std::_Callable_obj<std::_Bind<1,void,std::_Pmf_wrap<void (__cdecl Userspace::*)(Functor1<bool>,BlackboardPtr),void,Userspace,Functor1<bool>,BlackboardPtr>,Userspace * const,Functor1<bool> &,std::_Ph<1> &>,0>,std::allocator<std::_Func_class<void,BlackboardPtr> >,void,BlackboardPtr> *<_Val_1>,
+        std::tuple<CryStringT<char> &&> *<_Val_0>,
+        std::tuple<> *__Val_1_)
+{
+  std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *_Pnode_1; // rax
+  std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *_Pnode_2; // rdx
+  std::pair<IWeapon * const,ShipWeapons::WeaponInfo> *p_Myval; // r8
+  char *m_str; // rax
+  CryStringT<char> *Val; // [rsp+68h] [rbp+10h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Pnode; // [rsp+78h] [rbp+20h]
+
+  _Pnode_1 = std::_Tree_buy<std::pair<unsigned int const,CommunicationHandler::PlayingAnimation>>::_Buynode0(
+               (std::_Tree_buy<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>> *)this,
+               <_Val_1>);
+  _Pnode_2 = _Pnode_1;
+  _Pnode = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Pnode_1;
+  *(_WORD *)&_Pnode_1->_Color = 0;
+  try
+  {
+    p_Myval = &_Pnode_1->_Myval;
+    if ( _Pnode_1 != (std::_Tree_node<std::pair<IWeapon * const,ShipWeapons::WeaponInfo>,void *> *)-32LL )
+    {
+      Val = <_Val_0>->_Myfirst._Val;
+      p_Myval->first = (IWeapon *const)&Count;
+      m_str = Val->m_str;
+      Val->m_str = (char *)&Count;
+      p_Myval->first = (IWeapon *const)m_str;
+      *(_QWORD *)&p_Myval->second.bOverheated = 0LL;
+      *(_QWORD *)&p_Myval->second.speed = 0LL;
+      p_Myval->second.pTurret = 0LL;
+      p_Myval->second.itemBB.pBB = 0LL;
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Pnode, 0LL));
+    throw;
+  }
+  return _Pnode_2;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x151325A70) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z (0x151325B00) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *__Val_0_,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > _Where,
+        std::pair<CryStringT<char> const ,SDataCoreStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead; // rax
+  char *m_str; // rax
+  signed __int64 v11; // r9
+  int v12; // edx
+  int v13; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Right; // r9
+  char *m_str_1; // rax
+  char *v16; // r8
+  int v17; // ecx
+  int v18; // edx
+  char *m_str_2; // r10
+  char *m_str_3; // rax
+  signed __int64 v21; // r9
+  int v22; // edx
+  int v23; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Left; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Parent; // rdx
+  char *m_str_4; // rax
+  signed __int64 v28; // r11
+  int v29; // edx
+  int v30; // r8d
+  char *m_str_5; // rax
+  signed __int64 v32; // r10
+  int v33; // edx
+  int v34; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *i; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent; // rax
+  char *m_str_6; // rax
+  int v38; // edx
+  int v39; // r8d
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-38h]
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool> result; // [rsp+38h] [rbp-20h] BYREF
+
+  if ( !this->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+      this,
+      __Val_0_,
+      1,
+      (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead,
+      _Node,
+      _Newnode);
+    return __Val_0_;
+  }
+  Myhead = this->_Myhead;
+  if ( _Where._Ptr == this->_Myhead->_Left )
+  {
+    m_str = _Val->first.m_str;
+    v11 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+    do
+    {
+      v12 = (unsigned __int8)m_str[v11];
+      v13 = (unsigned __int8)*m_str - v12;
+      if ( v13 )
+        break;
+      ++m_str;
+    }
+    while ( v12 );
+    if ( v13 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Where._Ptr,
+        _Node,
+        _Newnode);
+      return __Val_0_;
+    }
+    goto LABEL_59;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Myhead->_Right;
+    m_str_1 = Right->_Myval.first.m_str;
+    v16 = (char *)(_Val->first.m_str - m_str_1);
+    do
+    {
+      v17 = (unsigned __int8)v16[(_QWORD)m_str_1];
+      v18 = (unsigned __int8)*m_str_1 - v17;
+      if ( v18 )
+        break;
+      ++m_str_1;
+    }
+    while ( v17 );
+    if ( v18 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        0,
+        Right,
+        _Node,
+        _Newnode);
+      return __Val_0_;
+    }
+    goto LABEL_59;
+  }
+  m_str_2 = _Val->first.m_str;
+  m_str_3 = _Val->first.m_str;
+  v21 = _Where._Ptr->_Myval.first.m_str - _Val->first.m_str;
+  do
+  {
+    v22 = (unsigned __int8)m_str_3[v21];
+    v23 = (unsigned __int8)*m_str_3 - v22;
+    if ( v23 )
+      break;
+    ++m_str_3;
+  }
+  while ( v22 );
+  if ( v23 >= 0 )
+    goto LABEL_37;
+  Ptr = _Where._Ptr;
+  if ( _Where._Ptr->_Isnil )
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Where._Ptr->_Right;
+  }
+  else
+  {
+    Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Where._Ptr->_Left;
+    if ( _Where._Ptr->_Left->_Isnil )
+    {
+      while ( 1 )
+      {
+        Parent = Ptr->_Parent;
+        if ( Parent->_Isnil || Ptr != Parent->_Left )
+          break;
+        Ptr = Ptr->_Parent;
+      }
+      Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Ptr;
+      if ( !Ptr->_Isnil )
+        Left = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Ptr->_Parent;
+    }
+    else
+    {
+      while ( !Left->_Right->_Isnil )
+        Left = Left->_Right;
+    }
+  }
+  m_str_4 = Left->_Myval.first.m_str;
+  v28 = m_str_2 - m_str_4;
+  do
+  {
+    v29 = (unsigned __int8)m_str_4[v28];
+    v30 = (unsigned __int8)*m_str_4 - v29;
+    if ( v30 )
+      break;
+    ++m_str_4;
+  }
+  while ( v29 );
+  if ( v30 >= 0 )
+  {
+LABEL_37:
+    m_str_5 = _Where._Ptr->_Myval.first.m_str;
+    v32 = m_str_2 - m_str_5;
+    do
+    {
+      v33 = (unsigned __int8)m_str_5[v32];
+      v34 = (unsigned __int8)*m_str_5 - v33;
+      if ( v34 )
+        break;
+      ++m_str_5;
+    }
+    while ( v33 );
+    if ( v34 >= 0 )
+      goto LABEL_59;
+    i = _Where._Ptr;
+    if ( !_Where._Ptr->_Isnil )
+    {
+      if ( _Where._Ptr->_Right->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = i->_Parent;
+          if ( _Parent->_Isnil || i != _Parent->_Right )
+            break;
+          i = i->_Parent;
+        }
+        i = i->_Parent;
+      }
+      else
+      {
+        for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+          ;
+      }
+    }
+    if ( i != this->_Myhead )
+    {
+      m_str_6 = _Val->first.m_str;
+      do
+      {
+        v38 = (unsigned __int8)m_str_6[(unsigned __int64)(i->_Myval.first.m_str - _Val->first.m_str)];
+        v39 = (unsigned __int8)*m_str_6 - v38;
+        if ( v39 )
+          break;
+        ++m_str_6;
+      }
+      while ( v38 );
+      if ( v39 >= 0 )
+      {
+LABEL_59:
+        __Val_0_->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(this, &result, 0, _Val, _Newnode)->first;
+        return __Val_0_;
+      }
+    }
+    if ( _Where._Ptr->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        0,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Where._Ptr,
+        _Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)i,
+        _Node,
+        _Newnode);
+    return __Val_0_;
+  }
+  else
+  {
+    if ( Left->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        0,
+        Left,
+        _Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        this,
+        __Val_0_,
+        1,
+        (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)_Where._Ptr,
+        _Node,
+        _Newnode);
+    return __Val_0_;
+  }
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z (0x151325B00) ---
+
+// --- Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x151325E20) ---
+std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *__fastcall std::_Tree_buy<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>::_Buynode<std::piecewise_construct_t const &,std::tuple<CryStringT<char> &&>,std::tuple<>>(
+        std::_Tree_buy<std::pair<StringHash const ,SubsumptionActivity *>> *p_m_Structures,
+        const std::piecewise_construct_t *<_Val_1>,
+        std::tuple<CryStringT<char> &&> *<_Val_0>,
+        std::tuple<> *__Val_1_)
+{
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Pnode_1; // rax
+  std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *_Pnode_2; // rdi
+  std::pair<StringHash const ,SubsumptionActivity *> *p_Myval; // rbx
+  std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *Myhead; // rax
+  std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const ,SubactivityTaskData *>> > *Val; // [rsp+68h] [rbp+10h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Pnode; // [rsp+78h] [rbp+20h]
+
+  _Pnode_1 = std::_Tree_buy<std::pair<boost::uuids::uuid const,EntityId>>::_Buynode0(p_m_Structures);
+  _Pnode_2 = _Pnode_1;
+  _Pnode = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)_Pnode_1;
+  *(_WORD *)&_Pnode_1->_Color = 0;
+  try
+  {
+    p_Myval = &_Pnode_1->_Myval;
+    if ( _Pnode_1 != (std::_Tree_node<std::pair<StringHash const ,SubsumptionActivity *>,void *> *)-32LL )
+    {
+      Val = (std::_Tree_alloc<0,std::_Tree_base_types<std::pair<int const ,SubactivityTaskData *>> > *)<_Val_0>->_Myfirst._Val;
+      *(_QWORD *)&p_Myval->first.m_hash = &Count;
+      Myhead = Val->_Myhead;
+      Val->_Myhead = (std::_Tree_node<std::pair<int const ,SubactivityTaskData *>,void *> *)&Count;
+      *(_QWORD *)&p_Myval->first.m_hash = Myhead;
+      p_Myval->first.m_str = 0LL;
+      p_Myval->second = 0LL;
+      p_Myval->first.m_str = (const char *)std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const,CDialogScript *>>>::_Buyheadnode(
+                                             Val,
+                                             (SubsumptionEvent *)&Count);
+    }
+  }
+  catch ( ... )
+  {
+    _InterlockedExchangeAdd64(
+      (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+      _CryMemoryManagerPoolHelper::_CryFree(_Pnode, 0LL));
+    throw;
+  }
+  return _Pnode_2;
+}
+
+// --- End Function: ??$_Buynode@AEBUpiecewise_construct_t@std@@V?$tuple@$$QEAV?$CryStringT@D@@@2@V?$tuple@$$$V@2@@?$_Tree_buy@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@2@@std@@QEAAPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@AEBUpiecewise_construct_t@1@$$QEAV?$tuple@$$QEAV?$CryStringT@D@@@1@$$QEAV?$tuple@$$$V@1@@Z (0x151325E20) ---
+
+// --- Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z (0x151325EC0) ---
+// Hidden C++ exception states: #try_helpers=1
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *p_m_Structures,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *__Val_0_,
+        std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > _Where,
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // rax
+  char *m_str_1; // rax
+  int v11; // edx
+  int v12; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Right; // r9
+  char *m_str_2; // rcx
+  char *v15; // r8
+  int v16; // eax
+  int v17; // edx
+  char *m_str_4; // r10
+  char *m_str_5; // rax
+  int v20; // edx
+  int v21; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Ptr; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Left; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Parent; // rdx
+  char *m_str_6; // rax
+  signed __int64 v26; // r11
+  int v27; // edx
+  int v28; // r8d
+  char *m_str_7; // rax
+  signed __int64 v30; // r10
+  int v31; // edx
+  int v32; // r8d
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *i; // r9
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent; // rax
+  char *m_str_8; // rax
+  int v36; // edx
+  int v37; // r8d
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-A8h]
+  char *m_str_3; // [rsp+80h] [rbp-48h]
+  char *m_str; // [rsp+A0h] [rbp-28h]
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool> result; // [rsp+A8h] [rbp-20h] BYREF
+
+  if ( !p_m_Structures->_Mysize )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+      p_m_Structures,
+      __Val_0_,
+      1,
+      p_m_Structures->_Myhead,
+      _Node,
+      _Newnode);
+    return __Val_0_;
+  }
+  Myhead = p_m_Structures->_Myhead;
+  if ( _Where._Ptr == p_m_Structures->_Myhead->_Left )
+  {
+    m_str = _Where._Ptr->_Myval.first.m_str;
+    m_str_1 = _Val->first.m_str;
+    do
+    {
+      v11 = (unsigned __int8)m_str_1[m_str - _Val->first.m_str];
+      v12 = (unsigned __int8)*m_str_1 - v11;
+      if ( v12 )
+        break;
+      ++m_str_1;
+    }
+    while ( v11 );
+    if ( v12 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        1,
+        _Where._Ptr,
+        _Node,
+        _Newnode);
+      return __Val_0_;
+    }
+    goto LABEL_59;
+  }
+  if ( _Where._Ptr == Myhead )
+  {
+    Right = Myhead->_Right;
+    m_str_2 = Right->_Myval.first.m_str;
+    v15 = (char *)(_Val->first.m_str - m_str_2);
+    do
+    {
+      v16 = (unsigned __int8)v15[(_QWORD)m_str_2];
+      v17 = (unsigned __int8)*m_str_2 - v16;
+      if ( v17 )
+        break;
+      ++m_str_2;
+    }
+    while ( v16 );
+    if ( v17 < 0 )
+    {
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        0,
+        Right,
+        _Node,
+        _Newnode);
+      return __Val_0_;
+    }
+    goto LABEL_59;
+  }
+  m_str_3 = _Where._Ptr->_Myval.first.m_str;
+  m_str_4 = _Val->first.m_str;
+  m_str_5 = _Val->first.m_str;
+  do
+  {
+    v20 = (unsigned __int8)m_str_5[m_str_3 - _Val->first.m_str];
+    v21 = (unsigned __int8)*m_str_5 - v20;
+    if ( v21 )
+      break;
+    ++m_str_5;
+  }
+  while ( v20 );
+  if ( v21 >= 0 )
+    goto LABEL_37;
+  Ptr = _Where._Ptr;
+  if ( _Where._Ptr->_Isnil )
+  {
+    Left = _Where._Ptr->_Right;
+  }
+  else
+  {
+    Left = _Where._Ptr->_Left;
+    if ( _Where._Ptr->_Left->_Isnil )
+    {
+      while ( 1 )
+      {
+        Parent = Ptr->_Parent;
+        if ( Parent->_Isnil || Ptr != Parent->_Left )
+          break;
+        Ptr = Ptr->_Parent;
+      }
+      Left = Ptr;
+      if ( !Ptr->_Isnil )
+        Left = Ptr->_Parent;
+    }
+    else
+    {
+      while ( !Left->_Right->_Isnil )
+        Left = Left->_Right;
+    }
+  }
+  m_str_6 = Left->_Myval.first.m_str;
+  v26 = m_str_4 - m_str_6;
+  do
+  {
+    v27 = (unsigned __int8)m_str_6[v26];
+    v28 = (unsigned __int8)*m_str_6 - v27;
+    if ( v28 )
+      break;
+    ++m_str_6;
+  }
+  while ( v27 );
+  if ( v28 >= 0 )
+  {
+LABEL_37:
+    m_str_7 = _Where._Ptr->_Myval.first.m_str;
+    v30 = m_str_4 - m_str_7;
+    do
+    {
+      v31 = (unsigned __int8)m_str_7[v30];
+      v32 = (unsigned __int8)*m_str_7 - v31;
+      if ( v32 )
+        break;
+      ++m_str_7;
+    }
+    while ( v31 );
+    if ( v32 >= 0 )
+      goto LABEL_59;
+    i = _Where._Ptr;
+    if ( !_Where._Ptr->_Isnil )
+    {
+      if ( _Where._Ptr->_Right->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = i->_Parent;
+          if ( _Parent->_Isnil || i != _Parent->_Right )
+            break;
+          i = i->_Parent;
+        }
+        i = i->_Parent;
+      }
+      else
+      {
+        for ( i = _Where._Ptr->_Right; !i->_Left->_Isnil; i = i->_Left )
+          ;
+      }
+    }
+    if ( i != p_m_Structures->_Myhead )
+    {
+      m_str_8 = _Val->first.m_str;
+      do
+      {
+        v36 = (unsigned __int8)m_str_8[(unsigned __int64)(i->_Myval.first.m_str - _Val->first.m_str)];
+        v37 = (unsigned __int8)*m_str_8 - v36;
+        if ( v37 )
+          break;
+        ++m_str_8;
+      }
+      while ( v36 );
+      if ( v37 >= 0 )
+      {
+LABEL_59:
+        __Val_0_->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *)std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(p_m_Structures, &result, 0, _Val, _Newnode)->first;
+        return __Val_0_;
+      }
+    }
+    if ( _Where._Ptr->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        0,
+        _Where._Ptr,
+        _Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        1,
+        i,
+        _Node,
+        _Newnode);
+    return __Val_0_;
+  }
+  else
+  {
+    if ( Left->_Right->_Isnil )
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        0,
+        Left,
+        _Node,
+        _Newnode);
+    else
+      std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+        p_m_Structures,
+        __Val_0_,
+        1,
+        _Where._Ptr,
+        _Node,
+        _Newnode);
+    return __Val_0_;
+  }
+}
+
+// --- End Function: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z (0x151325EC0) ---
+
+// --- Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@1@Z (0x151326260) ---
+std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> >,0> > *this,
+        std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *result,
+        bool _Addleft,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Wherenode,
+        std::pair<CryStringT<char> const ,SDataCoreStruct> *_Node,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Addleft_0)
+{
+  unsigned __int64 Mysize; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Addleft_1; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Parent; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Left; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Right; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_2; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Left; // r8
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Right_1; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_3; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Left_1; // rdx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Right_2; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_4; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_5; // rcx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Myhead; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_6; // rcx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *v27; // rax
+
+  Mysize = this->_Mysize;
+  if ( Mysize >= 0x38E38E38E38E38DLL )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)0x38E38E38E38E38DLL,
+      _Addleft_0);
+    std::_Xlength_error("map/set<T> too long");
+  }
+  this->_Mysize = Mysize + 1;
+  _Addleft_0->_Parent = _Wherenode;
+  if ( _Wherenode == (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead )
+  {
+    this->_Myhead->_Parent = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+    Myhead = this->_Myhead;
+LABEL_9:
+    Myhead->_Right = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+    goto LABEL_10;
+  }
+  if ( !_Addleft )
+  {
+    _Wherenode->_Right = _Addleft_0;
+    Myhead = this->_Myhead;
+    if ( _Wherenode != (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead->_Right )
+      goto LABEL_10;
+    goto LABEL_9;
+  }
+  _Wherenode->_Left = _Addleft_0;
+  if ( _Wherenode == (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead->_Left )
+    this->_Myhead->_Left = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+LABEL_10:
+  _Addleft_1 = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+  if ( !_Addleft_0->_Parent->_Color )
+  {
+    do
+    {
+      Parent = _Addleft_1->_Parent;
+      _Parent = Parent->_Parent;
+      Left = _Parent->_Left;
+      if ( Parent == _Parent->_Left )
+      {
+        Right = _Parent->_Right;
+        if ( Right->_Color )
+        {
+          if ( _Addleft_1 == Parent->_Right )
+          {
+            _Right = Parent->_Right;
+            _Addleft_1 = _Addleft_1->_Parent;
+            Parent->_Right = _Right->_Left;
+            if ( !_Right->_Left->_Isnil )
+              _Right->_Left->_Parent = Parent;
+            _Right->_Parent = Parent->_Parent;
+            if ( Parent == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Right;
+            }
+            else
+            {
+              _Parent_1 = Parent->_Parent;
+              if ( _Addleft_1 == _Parent_1->_Left )
+                _Parent_1->_Left = _Right;
+              else
+                _Parent_1->_Right = _Right;
+            }
+            _Right->_Left = _Addleft_1;
+            _Addleft_1->_Parent = _Right;
+          }
+          _Addleft_1->_Parent->_Color = 1;
+          _Addleft_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Addleft_1->_Parent->_Parent;
+          _Left = _Parent_2->_Left;
+          _Parent_2->_Left = _Parent_2->_Left->_Right;
+          _Right_1 = _Left->_Right;
+          if ( !_Right_1->_Isnil )
+            _Right_1->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+            _Left->_Right = _Parent_2;
+          }
+          else
+          {
+            _Parent_3 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_3->_Right )
+              _Parent_3->_Right = _Left;
+            else
+              _Parent_3->_Left = _Left;
+            _Left->_Right = _Parent_2;
+          }
+LABEL_50:
+          _Parent_2->_Parent = _Left;
+          continue;
+        }
+        Parent->_Color = 1;
+        Right->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Addleft_1 = _Addleft_1->_Parent->_Parent;
+      }
+      else
+      {
+        if ( Left->_Color )
+        {
+          if ( _Addleft_1 == Parent->_Left )
+          {
+            _Left_1 = Parent->_Left;
+            _Addleft_1 = _Addleft_1->_Parent;
+            Parent->_Left = Parent->_Left->_Right;
+            _Right_2 = _Left_1->_Right;
+            if ( !_Right_2->_Isnil )
+              _Right_2->_Parent = _Addleft_1;
+            _Left_1->_Parent = _Addleft_1->_Parent;
+            if ( _Addleft_1 == this->_Myhead->_Parent )
+            {
+              this->_Myhead->_Parent = _Left_1;
+            }
+            else
+            {
+              _Parent_4 = _Addleft_1->_Parent;
+              if ( _Addleft_1 == _Parent_4->_Right )
+                _Parent_4->_Right = _Left_1;
+              else
+                _Parent_4->_Left = _Left_1;
+            }
+            _Left_1->_Right = _Addleft_1;
+            _Addleft_1->_Parent = _Left_1;
+          }
+          _Addleft_1->_Parent->_Color = 1;
+          _Addleft_1->_Parent->_Parent->_Color = 0;
+          _Parent_2 = _Addleft_1->_Parent->_Parent;
+          _Left = _Parent_2->_Right;
+          _Parent_2->_Right = _Left->_Left;
+          if ( !_Left->_Left->_Isnil )
+            _Left->_Left->_Parent = _Parent_2;
+          _Left->_Parent = _Parent_2->_Parent;
+          if ( _Parent_2 == this->_Myhead->_Parent )
+          {
+            this->_Myhead->_Parent = _Left;
+          }
+          else
+          {
+            _Parent_5 = _Parent_2->_Parent;
+            if ( _Parent_2 == _Parent_5->_Left )
+              _Parent_5->_Left = _Left;
+            else
+              _Parent_5->_Right = _Left;
+          }
+          _Left->_Left = _Parent_2;
+          goto LABEL_50;
+        }
+        Parent->_Color = 1;
+        Left->_Color = 1;
+        _Addleft_1->_Parent->_Parent->_Color = 0;
+        _Addleft_1 = _Addleft_1->_Parent->_Parent;
+      }
+    }
+    while ( !_Addleft_1->_Parent->_Color );
+  }
+  _Myhead = this->_Myhead;
+  result->_Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)_Addleft_0;
+  _Parent_6 = _Myhead->_Parent;
+  v27 = result;
+  _Parent_6->_Color = 1;
+  return v27;
+}
+
+// --- End Function: ??$_Insert_at@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@_NPEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@1@Z (0x151326260) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z (0x151326510) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> >,0> > *this,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool> *result,
+        bool _Leftish,
+        std::pair<CryStringT<char> const ,SDataCoreStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *Myhead; // r11
+  char *m_str_1; // rax
+  signed __int64 v10; // r8
+  int v11; // ecx
+  int v12; // edx
+  bool _Addleft; // r8
+  char *m_str_3; // rax
+  int v15; // ecx
+  int v16; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Right; // rbx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *v19; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *Ptr; // rcx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool> *v21; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent; // rax
+  char *m_str_5; // rax
+  signed __int64 v24; // r9
+  int v25; // ecx
+  int v26; // edx
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > *v27; // rax
+  int v28; // eax
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-A8h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > resulta; // [rsp+58h] [rbp-70h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > v31; // [rsp+60h] [rbp-68h] BYREF
+  char *m_str; // [rsp+68h] [rbp-60h]
+  std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> *p_Myval; // [rsp+70h] [rbp-58h]
+  __int64 v34; // [rsp+78h] [rbp-50h]
+  _smart_ptr<BlockyXmlBlocks> *Ptr_1; // [rsp+80h] [rbp-48h]
+  char *m_str_4; // [rsp+88h] [rbp-40h]
+  __int64 v37; // [rsp+90h] [rbp-38h]
+  std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Parent_1; // [rsp+98h] [rbp-30h]
+  unsigned __int64 v39; // [rsp+A0h] [rbp-28h]
+  char *m_str_2; // [rsp+A8h] [rbp-20h]
+  unsigned __int64 v41; // [rsp+B0h] [rbp-18h]
+
+  v34 = -2LL;
+  try
+  {
+    Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead;
+    Parent = this->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)Parent;
+      if ( _Leftish )
+      {
+        m_str = _Val->first.m_str;
+        m_str_1 = Parent->_Myval.first.m_str;
+        v10 = m_str - m_str_1;
+        do
+        {
+          v11 = (unsigned __int8)m_str_1[v10];
+          v12 = (unsigned __int8)*m_str_1 - v11;
+          if ( v12 )
+            break;
+          ++m_str_1;
+        }
+        while ( v11 );
+        _Addleft = v12 >= 0;
+      }
+      else
+      {
+        m_str_2 = Parent->_Myval.first.m_str;
+        m_str_3 = _Val->first.m_str;
+        do
+        {
+          v15 = (unsigned __int8)m_str_3[m_str_2 - _Val->first.m_str];
+          v16 = (unsigned __int8)*m_str_3 - v15;
+          if ( v16 )
+            break;
+          ++m_str_3;
+        }
+        while ( v15 );
+        _Addleft = v16 < 0;
+      }
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == (std::_Tree_node<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo>,void *> *)this->_Myhead->_Left )
+      {
+        v19 = std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+                this,
+                &resulta,
+                1,
+                Myhead,
+                _Node,
+                _Newnode);
+        Ptr = v19->_Ptr;
+        result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >)v19->_Ptr;
+        result->second = 1;
+        return result;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          _Parent_1 = _Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = _Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = _Parent;
+      }
+      else
+      {
+        for ( Right = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)Myhead->_Left;
+              !Right->_Right->_Isnil;
+              Right = Right->_Right )
+        {
+          ;
+        }
+      }
+    }
+    m_str_4 = _Val->first.m_str;
+    m_str_5 = Right->_Myval.first.m_str;
+    v24 = m_str_4 - m_str_5;
+    do
+    {
+      v25 = (unsigned __int8)m_str_5[v24];
+      v26 = (unsigned __int8)*m_str_5 - v25;
+      if ( v26 )
+        break;
+      ++m_str_5;
+    }
+    while ( v25 );
+    if ( v26 >= 0 )
+    {
+      p_Myval = &_Newnode->_Myval;
+      Ptr = (std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *)(_Newnode->_Myval.first.m_str
+                                                                                         - 12);
+      Ptr_1 = Ptr;
+      if ( SLODWORD(Ptr->_Left) >= 0 )
+      {
+        v28 = LODWORD(Ptr->_Left) - 1;
+        LODWORD(Ptr->_Left) = v28;
+        if ( v28 <= 0 )
+        {
+          v37 = LODWORD(Ptr->_Parent) + 1 + 12LL;
+          `CryStringT<char>::_usedMemory'::`2'::s_used_memory += -(int)v37;
+          v39 = _CryMemoryManagerPoolHelper::_CryFree(Ptr, 0LL);
+          _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v39);
+        }
+      }
+      if ( _Newnode )
+      {
+        v41 = _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v41);
+      }
+      result->first._Ptr = Right;
+      result->second = 0;
+      v21 = result;
+    }
+    else
+    {
+      v27 = std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_at<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(
+              this,
+              &v31,
+              _Addleft,
+              Myhead,
+              _Node,
+              _Newnode);
+      Ptr = v27->_Ptr;
+      result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >)v27->_Ptr;
+      result->second = 1;
+      v21 = result;
+    }
+  }
+  catch ( ... )
+  {
+    std::_Tree<std::_Tmap_traits<CryStringT<char>,int,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,int>>,1>>::_Destroy_if_not_nil(
+      (std::_Tree<std::_Tmap_traits<CryStringT<char>,CLocalizedStringsManager::SFileInfo,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CLocalizedStringsManager::SFileInfo> >,0> > *)Ptr,
+      _Newnode);
+    throw;
+  }
+  return v21;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z (0x151326510) ---
+
+// --- Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z (0x151326790) ---
+std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool> *__fastcall std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(
+        std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> >,0> > *p_m_Structures,
+        std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool> *result,
+        bool _Leftish,
+        std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *_Val,
+        std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Newnode)
+{
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Myhead; // r11
+  char *m_str_1; // rax
+  signed __int64 v10; // r8
+  int v11; // ecx
+  int v12; // edx
+  bool _Addleft; // r8
+  char *m_str_2; // rax
+  int v15; // ecx
+  int v16; // edx
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Parent; // r10
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *Right; // rbx
+  std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool> *v19; // rax
+  std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Parent; // rax
+  char *m_str_3; // rax
+  char *v22; // r9
+  int v23; // ecx
+  int v24; // edx
+  std::_Tree_node<std::pair<IMaterial * const,CCompoundRenderNode::SMergedMeshData *>,void *> *_Node; // [rsp+20h] [rbp-98h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > v26; // [rsp+78h] [rbp-40h] BYREF
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *v27; // [rsp+80h] [rbp-38h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > *v28; // [rsp+88h] [rbp-30h]
+  std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > resulta; // [rsp+90h] [rbp-28h] BYREF
+  std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *p_Myval; // [rsp+98h] [rbp-20h]
+  char *m_str; // [rsp+A0h] [rbp-18h]
+  unsigned __int64 v32; // [rsp+A8h] [rbp-10h]
+
+  try
+  {
+    Myhead = p_m_Structures->_Myhead;
+    Parent = p_m_Structures->_Myhead->_Parent;
+    _Addleft = 1;
+    while ( !Parent->_Isnil )
+    {
+      Myhead = Parent;
+      if ( _Leftish )
+      {
+        m_str = _Val->first.m_str;
+        m_str_1 = Parent->_Myval.first.m_str;
+        v10 = m_str - m_str_1;
+        do
+        {
+          v11 = (unsigned __int8)m_str_1[v10];
+          v12 = (unsigned __int8)*m_str_1 - v11;
+          if ( v12 )
+            break;
+          ++m_str_1;
+        }
+        while ( v11 );
+        _Addleft = v12 >= 0;
+      }
+      else
+      {
+        m_str_2 = _Val->first.m_str;
+        do
+        {
+          v15 = (unsigned __int8)m_str_2[(unsigned __int64)(Parent->_Myval.first.m_str - _Val->first.m_str)];
+          v16 = (unsigned __int8)*m_str_2 - v15;
+          if ( v16 )
+            break;
+          ++m_str_2;
+        }
+        while ( v15 );
+        _Addleft = v16 < 0;
+      }
+      if ( _Addleft )
+        Parent = Parent->_Left;
+      else
+        Parent = Parent->_Right;
+    }
+    Right = Myhead;
+    if ( _Addleft )
+    {
+      if ( Myhead == p_m_Structures->_Myhead->_Left )
+      {
+        v27 = std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+                p_m_Structures,
+                &resulta,
+                1,
+                Myhead,
+                _Node,
+                _Newnode);
+        result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >)v27->_Ptr;
+        result->second = 1;
+        return result;
+      }
+      if ( Myhead->_Isnil )
+      {
+        Right = Myhead->_Right;
+      }
+      else if ( Myhead->_Left->_Isnil )
+      {
+        while ( 1 )
+        {
+          _Parent = Right->_Parent;
+          if ( _Parent->_Isnil || Right != _Parent->_Left )
+            break;
+          Right = Right->_Parent;
+        }
+        if ( !Right->_Isnil )
+          Right = Right->_Parent;
+      }
+      else
+      {
+        for ( Right = Myhead->_Left; !Right->_Right->_Isnil; Right = Right->_Right )
+          ;
+      }
+    }
+    m_str_3 = Right->_Myval.first.m_str;
+    v22 = (char *)(_Val->first.m_str - m_str_3);
+    do
+    {
+      v23 = (unsigned __int8)v22[(_QWORD)m_str_3];
+      v24 = (unsigned __int8)*m_str_3 - v23;
+      if ( v24 )
+        break;
+      ++m_str_3;
+    }
+    while ( v23 );
+    if ( v24 >= 0 )
+    {
+      p_Myval = &_Newnode->_Myval;
+      std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>(&_Newnode->_Myval);
+      if ( _Newnode )
+      {
+        v32 = _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL);
+        _InterlockedExchangeAdd64((volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory, v32);
+      }
+      result->first._Ptr = Right;
+      result->second = 0;
+      v19 = result;
+    }
+    else
+    {
+      v28 = std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_at<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(
+              p_m_Structures,
+              &v26,
+              _Addleft,
+              Myhead,
+              _Node,
+              _Newnode);
+      result->first = (std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >)v28->_Ptr;
+      result->second = 1;
+      v19 = result;
+    }
+  }
+  catch ( ... )
+  {
+    std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>::~pair<CryStringT<char> const,std::map<CryStringT<char>,int>>(&_Newnode->_Myval);
+    if ( _Newnode )
+      _InterlockedExchangeAdd64(
+        (volatile signed __int64 *)&_CryMemoryManagerPoolHelper::freedMemory,
+        _CryMemoryManagerPoolHelper::_CryFree(_Newnode, 0LL));
+    throw;
+  }
+  return v19;
+}
+
+// --- End Function: ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z (0x151326790) ---
+
+// --- Function: ??$_Uninit_move@PEAUUnresolvedWeakPtr@CDataCore@@PEAU12@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@U12@@std@@YAPEAUUnresolvedWeakPtr@CDataCore@@PEAU12@00AEAU?$_Wrap_alloc@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@@0@0U_Nonscalar_ptr_iterator_tag@0@@Z (0x1513269F0) ---
+CDataCore::UnresolvedWeakPtr *__fastcall std::_Uninit_move<CDataCore::UnresolvedWeakPtr *,CDataCore::UnresolvedWeakPtr *,std::allocator<CDataCore::UnresolvedWeakPtr>,CDataCore::UnresolvedWeakPtr>(
+        std::_Wrap_alloc<std::allocator<CVisRegTest::SCmd> > *_First,
+        std::_Wrap_alloc<std::allocator<CVisRegTest::SCmd> > *_Last,
+        CDataCore::UnresolvedWeakPtr *_Dest,
+        std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> > *a4,
+        CDataCore::UnresolvedRef *_Last_0,
+        std::_Nonscalar_ptr_iterator_tag _Dest_0)
+{
+  char *m_str; // rax
+  CVisRegTest::SCmd *_Next_1; // rbx
+  CDataCore::UnresolvedWeakPtr *_Dest_1; // [rsp+50h] [rbp+18h]
+  CDataCore::UnresolvedWeakPtr *_Next; // [rsp+58h] [rbp+20h]
+
+  _Dest_1 = _Dest;
+  _Next = _Dest;
+  try
+  {
+    while ( _First != _Last )
+    {
+      if ( _Dest )
+      {
+        _Dest->m_pStruct = *(IDataCoreStructure ***)&_First->std::_Allocator_base<CVisRegTest::SCmd>;
+        m_str = *(char **)&_First[8].std::_Allocator_base<CVisRegTest::SCmd>;
+        if ( *((int *)m_str - 3) < 0 )
+        {
+          _Dest->m_URL.m_str = (char *)&Count;
+        }
+        else
+        {
+          _Dest->m_URL.m_str = m_str;
+          ++*((_DWORD *)m_str - 3);
+        }
+      }
+      _Dest_1 = ++_Dest;
+      _First += 16;
+    }
+  }
+  catch ( ... )
+  {
+    _Next_1 = (CVisRegTest::SCmd *)_Next;
+    if ( _Next != _Dest_1 )
+    {
+      do
+        std::_Wrap_alloc<std::allocator<cig::RSIBayItem>>::destroy<cig::RSIBayItem>(_First, _Next_1++);
+      while ( _Next_1 != (CVisRegTest::SCmd *)_Dest_1 );
+    }
+    throw;
+  }
+  return _Dest;
+}
+
+// --- End Function: ??$_Uninit_move@PEAUUnresolvedWeakPtr@CDataCore@@PEAU12@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@U12@@std@@YAPEAUUnresolvedWeakPtr@CDataCore@@PEAU12@00AEAU?$_Wrap_alloc@V?$allocator@UUnresolvedWeakPtr@CDataCore@@@std@@@0@0U_Nonscalar_ptr_iterator_tag@0@@Z (0x1513269F0) ---
+
+// --- Function: CryMalloc (0x15135DDC0) ---
+BucketAllocatorDetail::AllocHeader *__fastcall CryMalloc(
+        unsigned __int64 size,
+        unsigned __int64 *allocated,
+        unsigned __int64 alignment)
+{
+  unsigned __int64 alignment_1; // rdi
+  unsigned __int64 size_1; // rbx
+  BucketAllocatorDetail::AllocHeader *ptr_1; // rsi
+  BucketAllocatorDetail::AllocHeader *ptr_2; // rax
+  unsigned int v9; // edi
+  BucketAllocatorDetail::AllocHeader *ptr; // rax
+  BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *memblock; // rcx
+
+  alignment_1 = alignment;
+  size_1 = size;
+  if ( !size )
+  {
+    *allocated = 0LL;
+    return 0LL;
+  }
+  if ( alignment )
+  {
+    if ( size > 0x200
+      || (0x400 % size || size % alignment)
+      && ((size & 0xF) != 0 || alignment > 0x10)
+      && ((size & 7) != 0 || alignment > 8) )
+    {
+      if ( alignment < 0x10 )
+        alignment_1 = 16LL;
+      size_1 = alignment_1 + size;
+      ptr_2 = (BucketAllocatorDetail::AllocHeader *)malloc(alignment_1 + size);
+      ptr_1 = ptr_2;
+      if ( alignment_1 )
+      {
+        if ( !ptr_2 )
+        {
+LABEL_24:
+          *allocated = 0LL;
+          gEnv.bIsOutOfMemory = 1;
+          CryFatalError("*** Memory allocation for %I64u bytes failed ****", size_1);
+          return 0LL;
+        }
+        v9 = -((unsigned int)ptr_2 | -(int)alignment_1);
+        ptr_1 = (BucketAllocatorDetail::AllocHeader *)((char *)ptr_2 + v9);
+        HIDWORD(ptr_1[-1].next) = v9;
+      }
+    }
+    else if ( 0x400 % alignment )
+    {
+      ptr_1 = (BucketAllocatorDetail::AllocHeader *)CryModuleMemalign(size, alignment);
+    }
+    else
+    {
+      ptr_1 = BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::AllocateFromBucket(
+                &g_GlobPageBucketAllocator,
+                size);
+    }
+  }
+  else
+  {
+    if ( size <= 0x200 )
+    {
+      ptr = BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::AllocateFromBucket(
+              &g_GlobPageBucketAllocator,
+              size);
+    }
+    else
+    {
+      _CryMemoryManagerPoolHelper::Init();
+      ptr = (BucketAllocatorDetail::AllocHeader *)_CryMemoryManagerPoolHelper::_CryCrtMalloc(size_1);
+    }
+    ptr_1 = ptr;
+    size_1 = BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::getSize(
+               memblock,
+               ptr);
+  }
+  if ( !ptr_1 )
+    goto LABEL_24;
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&g_TotalAllocatedMemory, size_1);
+  *allocated = size_1;
+  return ptr_1;
+}
+
+// --- End Function: CryMalloc (0x15135DDC0) ---
+
+// --- Function: CryGetMemSize (0x15135DF30) ---
+unsigned __int64 __fastcall CryGetMemSize(
+        BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *memblock,
+        unsigned __int64 sourceSize)
+{
+  return BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::getSize(
+           memblock,
+           memblock);
+}
+
+// --- End Function: CryGetMemSize (0x15135DF30) ---
+
+// --- Function: CryRealloc (0x15135DF40) ---
+BucketAllocatorDetail::AllocHeader *__fastcall CryRealloc(
+        char *memblock,
+        size_t size,
+        unsigned __int64 *allocated,
+        unsigned __int64 *oldsize,
+        unsigned __int64 alignment)
+{
+  size_t size_1; // rsi
+  BucketAllocatorDetail::AllocHeader *v9; // rbp
+  int v10; // eax
+  __int64 v11; // rdx
+  BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *n0x10000000; // rcx
+  size_t Size@?$BucketAllocator@U?$DefaultTraits@$0BAAAAAAA@USyncPolicyL; // rax
+
+  size_1 = size;
+  if ( memblock )
+  {
+    v9 = CryMalloc(size, allocated, alignment);
+    v10 = 0;
+    v11 = 0LL;
+    if ( g_GlobPageBucketAllocator.m_numSegments )
+    {
+      while ( 1 )
+      {
+        n0x10000000 = (BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *)&memblock[-g_GlobPageBucketAllocator.m_segmentsHot[v11].m_baseAddress];
+        if ( (unsigned __int64)n0x10000000 < 0x10000000 )
+          break;
+        if ( ++v11 == g_GlobPageBucketAllocator.m_numSegments )
+          goto LABEL_6;
+      }
+      Size@?$BucketAllocator@U?$DefaultTraits@$0BAAAAAAA@USyncPolicyL = BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::getSize(
+                                                                          n0x10000000,
+                                                                          memblock);
+    }
+    else
+    {
+LABEL_6:
+      if ( alignment )
+        v10 = *((_DWORD *)memblock - 1);
+      Size@?$BucketAllocator@U?$DefaultTraits@$0BAAAAAAA@USyncPolicyL = _msize(&memblock[-v10]) - v10;
+    }
+    *oldsize = Size@?$BucketAllocator@U?$DefaultTraits@$0BAAAAAAA@USyncPolicyL;
+    if ( v9 || !size_1 )
+    {
+      if ( size_1 > *oldsize )
+        size_1 = *oldsize;
+      memcpy_0(v9, memblock, size_1);
+      CryFree(memblock, alignment);
+      return v9;
+    }
+    else
+    {
+      gEnv.bIsOutOfMemory = 1;
+      CryFatalError("*** Memory allocation for %I64u bytes failed ****", size_1);
+      return 0LL;
+    }
+  }
+  else
+  {
+    *oldsize = 0LL;
+    return CryMalloc(size, allocated, alignment);
+  }
+}
+
+// --- End Function: CryRealloc (0x15135DF40) ---
+
+// --- Function: CryFree (0x15135E060) ---
+size_t __fastcall CryFree(char *p, unsigned __int64 alignment)
+{
+  BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *v3; // rcx
+  size_t v4; // rdi
+
+  v3 = 0LL;
+  if ( !p )
+    return 0LL;
+  if ( g_GlobPageBucketAllocator.m_numSegments )
+  {
+    while ( (unsigned __int64)&p[-g_GlobPageBucketAllocator.m_segmentsHot[(_QWORD)v3].m_baseAddress] >= 0x10000000 )
+    {
+      v3 = (BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *)((char *)v3 + 1);
+      if ( v3 == (BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8> > *)(int)g_GlobPageBucketAllocator.m_numSegments )
+        goto LABEL_5;
+    }
+    v4 = BucketAllocator<BucketAllocatorDetail::DefaultTraits<268435456,BucketAllocatorDetail::SyncPolicyLocked,1,8>>::deallocate(
+           v3,
+           p);
+  }
+  else
+  {
+LABEL_5:
+    if ( alignment )
+      p -= *((unsigned int *)p - 1);
+    v4 = _msize(p);
+    CrySystemCrtFree(p);
+  }
+  _InterlockedExchangeAdd64((volatile signed __int64 *)&g_TotalAllocatedMemory, -(__int64)v4);
+  return v4;
+}
+
+// --- End Function: CryFree (0x15135E060) ---
+
+// --- Function: CrySystemCrtMalloc (0x15135E100) ---
+// attributes: thunk
+void *__cdecl CrySystemCrtMalloc(size_t Size)
+{
+  return malloc(Size);
+}
+
+// --- End Function: CrySystemCrtMalloc (0x15135E100) ---
+
+// --- Function: CrySystemCrtRealloc (0x15135E110) ---
+// attributes: thunk
+void *__cdecl CrySystemCrtRealloc(void *Block, size_t Size)
+{
+  return realloc(Block, Size);
+}
+
+// --- End Function: CrySystemCrtRealloc (0x15135E110) ---
+
+// --- Function: CrySystemCrtFree (0x15135E120) ---
+size_t __fastcall CrySystemCrtFree(void *p)
+{
+  size_t v2; // rbx
+
+  v2 = _msize(p);
+  free(p);
+  return v2;
+}
+
+// --- End Function: CrySystemCrtFree (0x15135E120) ---
+
+// --- Function: CrySystemCrtSize (0x15135E150) ---
+// attributes: thunk
+size_t __cdecl CrySystemCrtSize(void *Block)
+{
+  return _msize(Block);
+}
+
+// --- End Function: CrySystemCrtSize (0x15135E150) ---
+
+// --- Function: CryGetIMemoryManagerInterface (0x15135FE20) ---
+void __fastcall CryGetIMemoryManagerInterface(void **pIMemoryManager)
+{
+  if ( (_S21_8 & 1) != 0 )
+  {
+    *pIMemoryManager = &qword_153A27DE8;
+  }
+  else
+  {
+    _S21_8 |= 1u;
+    qword_153A27DE8 = (__int64)&CCryMemoryManager::`vftable';
+    atexit(CCryMemoryManager::GetInstance_::_2_::_dynamic_atexit_destructor_for__memman__);
+    *pIMemoryManager = &qword_153A27DE8;
+  }
+}
+
+// --- End Function: CryGetIMemoryManagerInterface (0x15135FE20) ---
+
+// --- Function: strcmp_0 (0x152058330) ---
+// attributes: thunk
+int __cdecl strcmp_0(const char *Str1, const char *Str2)
+{
+  return strcmp(Str1, Str2);
+}
+
+// --- End Function: strcmp_0 (0x152058330) ---
+
+// --- Function: _alloca_probe (0x152058360) ---
+unsigned __int64 __fastcall alloca_probe()
+{
+  unsigned __int64 result; // rax
+  char *v1; // r10
+  char *v2; // r11
+  char v3; // [rsp+18h] [rbp+8h] BYREF
+
+  v1 = &v3 - result;
+  if ( (unsigned __int64)&v3 < result )
+    v1 = 0LL;
+  v2 = (char *)NtCurrentTeb()->Reserved1[2];
+  if ( v1 < v2 )
+  {
+    LOWORD(v1) = (unsigned __int16)v1 & 0xF000;
+    do
+    {
+      v2 -= 4096;
+      *v2 = 0;
+    }
+    while ( v1 != v2 );
+  }
+  return result;
+}
+
+// --- End Function: _alloca_probe (0x152058360) ---
+
+// --- Function: memcpy_0 (0x1520583B4) ---
+// attributes: thunk
+void *__cdecl memcpy_0(void *a1, const void *Src, size_t Size)
+{
+  return memcpy(a1, Src, Size);
+}
+
+// --- End Function: memcpy_0 (0x1520583B4) ---
+
+enum EDCFieldType : __int32
+{                                       // XREF: CDataCoreField/r
+    eDCT_None   = 0x0,                  // XREF: .data:CDataCoreField near * `SChatEmoteAnimData::Register(char const *,IDataCore *)'::`2'::defs/s
+                                        // .data:CDataCoreField near * `SChatEmoteData::Register(char const *,IDataCore *)'::`2'::defs/s ...
+    eDCT_Bool   = 0x1,
+    eDCT_Int8   = 0x2,
+    eDCT_Int16  = 0x3,
+    eDCT_Int32  = 0x4,
+    eDCT_Int64  = 0x5,
+    eDCT_UInt8  = 0x6,
+    eDCT_UInt16 = 0x7,
+    eDCT_UInt32 = 0x8,
+    eDCT_UInt64 = 0x9,
+    eDCT_String = 0xA,
+    eDCT_Float  = 0xB,
+    eDCT_Double = 0xC,
+    eDCT_LocId  = 0xD,
+    eDCT_Enum   = 0xE,
+    eDCT_Struct = 0xF,
+    eDCT_Record = 0x10,
+};
+enum EDCFieldOption : __int32
+{                                       // XREF: CDataCoreField/r
+    eDCO_None        = 0x0,             // XREF: .data:CDataCoreField near * `SChatEmoteAnimData::Register(char const *,IDataCore *)'::`2'::defs/s
+                                        // .data:CDataCoreField near * `SChatEmoteData::Register(char const *,IDataCore *)'::`2'::defs/s ...
+    eDCO_Optional    = 0x1,
+    eDCO_WeakPointer = 0x2,
+    eDCO_Reference   = 0x3,
+};
+typedef std::_Tree<std::_Tmap_traits<IRenderMesh *,IRenderer::SDrawCallCountInfo,std::less<IRenderMesh *>,std::allocator<std::pair<IRenderMesh * const,IRenderer::SDrawCallCountInfo> >,0> >::<unnamed_enum__Multi> std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0>::<unnamed_enum__Multi>;
+struct __cppobj __declspec(align(8)) std::pair<CryStringT<char> const ,int> // sizeof=0x10
+{                                       // XREF: std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *>/r
+                                        // ??$DataCoreGetEnums@W4EGameModuleType@@@@YAPEAV?$map@V?$CryStringT@D@@HU?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@H@std@@@3@@std@@XZ/r ...
+    const CryStringT<char> first;       // XREF: DataCoreGetEnums<EGameModuleType>(void)+44/r
+                                        // CVehicleSystem::RegisterVehicleObject(CryStringT<char> const &,uint)+D/w ...
+    int second;                         // XREF: DataCoreGetEnums<EGameModuleType>(void)+79/w
+                                        // CVehicleSystem::RegisterVehicleObject(CryStringT<char> const &,uint)+2A/w ...
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct __cppobj std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,int> > > : std::_Container_base0 // sizeof=0x10
+{                                       // XREF: std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const ,int>> >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,int>,void *> *_Myhead;
+                                        // XREF: _dynamic_initializer_for__CSmartObject__CState__g_mapStateIds__+17/w
+                                        // DataCoreGetEnums<EFlowDataTypes>(void)+158/w ...
+    unsigned __int64 _Mysize;           // XREF: DataCoreGetEnums<EFlowDataTypes>(void)+15F/w
+                                        // DataCoreGetEnums<EGameModuleType>(void)+142/w ...
+};
+const struct __cppobj IDataCoreStructure // sizeof=0x8
+{                                       // XREF: SDialogResponseDef/r
+                                        // SMissionObjectiveDef/r ...
+    IDataCoreStructure_vtbl *__vftable;
+};
+struct /*VFT*/ IDataCoreStructure_vtbl // sizeof=0x18
+{
+    void (__fastcall *~IDataCoreStructure)(IDataCoreStructure *this);
+    const char *(__fastcall *GetClassName)(IDataCoreStructure *this);
+    const char *(__fastcall *GetInheritsFromName)(IDataCoreStructure *this);
+};
+const struct __cppobj IDataCoreRecordWrapper // sizeof=0x8
+{                                       // XREF: DataCoreRecordWrapper/r
+    IDataCoreRecordWrapper_vtbl *__vftable;
+};
+struct /*VFT*/ IDataCoreRecordWrapper_vtbl // sizeof=0x18
+{
+    const IDataCoreStructure *(__fastcall *GetRaw)(IDataCoreRecordWrapper *this);
+    const CryStringT<char> *(__fastcall *GetHash)(IDataCoreRecordWrapper *this);
+    const CryStringT<char> *(__fastcall *GetName)(IDataCoreRecordWrapper *this);
+};
+struct __cppobj IDataCoreBase // sizeof=0x8
+{                                       // XREF: IDataCore/r
+    IDataCoreBase_vtbl *__vftable;
+};
+struct /*VFT*/ IDataCoreBase_vtbl // sizeof=0x8
+{
+    const IDataCoreRecordWrapper *(__fastcall *GetRecord)(IDataCoreBase *this, unsigned int);
+};
+struct __cppobj IDataCore : IDataCoreBase // sizeof=0x38
+{                                       // XREF: CDataCore/r
+    std::map<unsigned int,IDataCoreRecordWrapper *> m_Records;
+    std::list<DataCoreRecordObserver *> m_pObservers;
+    std::map<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > m_Enums;
+};
+struct __cppobj IRecordCreator // sizeof=0x8
+{                                       // XREF: SRecordCreator<SResponseRuleDef>/r
+                                        // SRecordCreator<SDialogResponseDef>/r ...
+    IRecordCreator_vtbl *__vftable;     // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+C0/w
+                                        // CForceFeedBackSystem::SDCDataEnvelope::Register(char const *,IDataCore *)+C0/w ...
+};
+struct /*VFT*/ IRecordCreator_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(IRecordCreator *this, unsigned __int64);
+};
+struct CDataCoreField // sizeof=0x30
+{                                       // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+3E/w
+                                        // CForceFeedBackSystem::SDCDataEnvelope::Register(char const *,IDataCore *)+3E/w ...
+    const char *pName;                  // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+7E/w
+                                        // CForceFeedBackSystem::SDCDataEnvelope::Register(char const *,IDataCore *)+7E/w ...
+    unsigned __int64 offset;            // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+4B/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+85/w ...
+    unsigned __int64 size;              // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+56/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+8C/w ...
+    EDCFieldType type;                  // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+21/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+61/w ...
+    bool isArray;                       // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+2B/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+6B/w ...
+    // padding byte
+    // padding byte
+    // padding byte
+    EDCFieldOption option;              // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+31/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+71/w ...
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    const char *className;              // XREF: CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+37/w
+                                        // CForceFeedBackSystem::SDCDataPattern::Register(char const *,IDataCore *)+77/w ...
+};
+struct __cppobj NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<char const *,int> : NAlloc::AllocCompatible<NAlloc::ModuleAlloc> // sizeof=0x8
+{                                       // XREF: Array<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > >/r
+    const char **m_aElems;              // XREF: CAttachmentVCLOTH::RecreateDefaultSkeleton(CCharInstance *,uint)+1C9/w
+                                        // CAttachmentVCLOTH::RecreateDefaultSkeleton(CCharInstance *,uint):loc_150C42ED5/r ...
+};
+struct __cppobj Array<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > : NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> >::Store<char const *,int> // sizeof=0x8
+{                                       // XREF: DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > >/r
+};
+struct __cppobj DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > : Array<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > // sizeof=0x8
+{                                       // XREF: .data:arrNotMatchingSkins/r
+                                        // .data:arrNotMatchingSkins_0/r ...
+};
+struct __cppobj std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> // sizeof=0x30
+{
+    std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Left;
+    std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Parent;
+    std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Right;
+    char _Color;
+    char _Isnil;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    std::pair<unsigned int const ,IDataCoreRecordWrapper *> _Myval;
+};
+struct __cppobj std::pair<unsigned int const ,IDataCoreRecordWrapper *> // sizeof=0x10
+{                                       // XREF: std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *>/r
+    const unsigned int first;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    IDataCoreRecordWrapper *second;
+};
+struct __cppobj std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > : std::_Container_base0 // sizeof=0x10
+{                                       // XREF: std::_Tree_alloc<0,std::_Tree_base_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *>> >/r
+    std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Myhead;
+    unsigned __int64 _Mysize;
+};
+struct __cppobj std::_Tree_alloc<0,std::_Tree_base_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *>> > : std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > // sizeof=0x10
+{                                       // XREF: std::_Tree_buy<std::pair<unsigned int const ,IDataCoreRecordWrapper *>>/r
+};
+struct __cppobj std::_Tree_buy<std::pair<unsigned int const ,IDataCoreRecordWrapper *>> : std::_Tree_alloc<0,std::_Tree_base_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *>> > // sizeof=0x10
+{                                       // XREF: std::_Tree_comp<0,std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> >/r
+};
+struct __cppobj std::_Tree_comp<0,std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > : std::_Tree_buy<std::pair<unsigned int const ,IDataCoreRecordWrapper *>> // sizeof=0x10
+{                                       // XREF: std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> >/r
+};
+struct __cppobj std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > : std::_Tree_comp<0,std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > // sizeof=0x10
+{                                       // XREF: std::map<unsigned int,IDataCoreRecordWrapper *>/r
+};
+struct __cppobj std::map<unsigned int,IDataCoreRecordWrapper *> : std::_Tree<std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> > // sizeof=0x10
+{                                       // XREF: IDataCore/r
+};
+struct std::_List_node<DataCoreRecordObserver *,void *> // sizeof=0x18
+{
+    std::_List_node<DataCoreRecordObserver *,void *> *_Next;
+    std::_List_node<DataCoreRecordObserver *,void *> *_Prev;
+    DataCoreRecordObserver *_Myval;
+};
+struct __cppobj Functor2<char const *,enum RecordUpdateType> : FunctorBase // sizeof=0x20
+{                                       // XREF: DataCoreRecordObserver/r
+                                        // CBMemberTranslator2<char const *,enum RecordUpdateType,CContextualResponseSystem,void (__cdecl CContextualResponseSystem::*)(char const *,enum RecordUpdateType)>/r ...
+    void (__fastcall *thunk)(const FunctorBase *, const char *, RecordUpdateType);
+};
+struct __cppobj DataCoreRecordObserver // sizeof=0x30
+{                                       // XREF: CVehicleVisorHud/r
+                                        // CBaseUIOwner/r ...
+    Functor2<char const *,enum RecordUpdateType> m_Funk;
+    IDataCore *m_pDataCore;
+    CryStringT<char> m_ObservedType;
+};
+struct __cppobj std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > : std::_Container_base0 // sizeof=0x10
+{                                       // XREF: std::_List_alloc<0,std::_List_base_types<DataCoreRecordObserver *> >/r
+    std::_List_node<DataCoreRecordObserver *,void *> *_Myhead;
+    unsigned __int64 _Mysize;
+};
+struct __cppobj std::_List_alloc<0,std::_List_base_types<DataCoreRecordObserver *> > : std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > // sizeof=0x10
+{                                       // XREF: std::_List_buy<DataCoreRecordObserver *>/r
+};
+struct __cppobj std::_List_buy<DataCoreRecordObserver *> : std::_List_alloc<0,std::_List_base_types<DataCoreRecordObserver *> > // sizeof=0x10
+{                                       // XREF: std::list<DataCoreRecordObserver *>/r
+};
+struct __cppobj std::list<DataCoreRecordObserver *> : std::_List_buy<DataCoreRecordObserver *> // sizeof=0x10
+{                                       // XREF: IDataCore/r
+};
+struct __cppobj std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> // sizeof=0x38
+{
+    std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Left;
+    std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Parent;
+    std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Right;
+    char _Color;
+    char _Isnil;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > _Myval;
+};
+struct __cppobj std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > // sizeof=0x18
+{                                       // XREF: std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *>/r
+    const CryStringT<char> first;
+    std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > second;
+};
+struct __cppobj std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > : std::_Container_base0 // sizeof=0x10
+{                                       // XREF: std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Myhead;
+    unsigned __int64 _Mysize;
+};
+struct __cppobj std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> > : std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > // sizeof=0x10
+{                                       // XREF: std::_Tree_buy<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >>/r
+};
+struct __cppobj std::_Tree_buy<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> : std::_Tree_alloc<0,std::_Tree_base_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> > // sizeof=0x10
+{                                       // XREF: std::_Tree_comp<0,std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> >/r
+};
+struct __cppobj std::_Tree_comp<0,std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > : std::_Tree_buy<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >> // sizeof=0x10
+{                                       // XREF: std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> >/r
+};
+struct __cppobj std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > : std::_Tree_comp<0,std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > // sizeof=0x10
+{                                       // XREF: std::map<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > >/r
+};
+struct __cppobj std::map<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > : std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> > // sizeof=0x10
+{                                       // XREF: IDataCore/r
+};
+struct /*VFT*/ IDataCore_vtbl // sizeof=0x50
+{
+    const IDataCoreRecordWrapper *(__fastcall *GetRecord)(struct IDataCore *this, unsigned int);
+    void (__fastcall *~IDataCore)(IDataCore *this);
+    bool (__fastcall *Initialize)(IDataCore *this);
+    void (__fastcall *Shutdown)(IDataCore *this);
+    void (__fastcall *NetUpdate)(IDataCore *this);
+    bool (__fastcall *InheritsFrom)(IDataCore *this, const char *, const char *);
+    XmlNodeRef *(__fastcall *LoadRecordDeprecated)(IDataCore *this, XmlNodeRef *result, const char *);
+    void (__fastcall *RegisterStruct)(IDataCore *this, const char *, IRecordCreator *, CDataCoreField *, unsigned __int64, const char *);
+    DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *(__fastcall *GetRecordNamesForSchema)(IDataCore *this, DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *result, const char *);
+    const IDataCoreStructure *(__fastcall *LoadStruct)(IDataCore *this, IDataCoreStructure *, const char *, const char *, const char *, XmlNodeRef, bool);
+};
+struct __cppobj IGame // sizeof=0x8
+{                                       // XREF: CGame/r
+    IGame_vtbl *__vftable;
+};
+struct __cppobj IGameObjectExtensionCreatorBase // sizeof=0x8
+{                                       // XREF: IGameFramework::IGameObjectExtensionCreator/r
+                                        // IGameFramework::IItemCreator/r ...
+    IGameObjectExtensionCreatorBase_vtbl *__vftable;
+                                        // XREF: CSeatFactory::RegisterFactories(IGameFramework *)+12A/w
+                                        // CVehicleSystem::RegisterVehicles(IGameFramework *)+AF/w ...
+};
+struct __cppobj std::_Ptr_base<IGameObjectExtension> // sizeof=0x10
+{                                       // XREF: std::shared_ptr<IGameObjectExtension>/r
+    IGameObjectExtension *_Ptr;         // XREF: CGameObject::ChangeExtension(char const *,IGameObject::EChangeExtension)+2D/w
+                                        // CGameObject::ChangeExtension(char const *,IGameObject::EChangeExtension):loc_1508C746F/r ...
+    std::_Ref_count_base *_Rep;         // XREF: CGameObject::Update(SEntityUpdateContext &)+49C/o
+                                        // CGameObject::ChangeExtension(char const *,IGameObject::EChangeExtension):loc_1508C7601/r ...
+};
+struct __cppobj DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: DataCoreArray<SResponseRuleDef>/r
+                                        // DataCoreArray<SDialogResponseDef>/r ...
+    DataCoreArrayBase_vtbl *__vftable;
+    char *m_pData;
+    unsigned __int64 m_Count;
+    unsigned __int64 m_ElementSize;
+};
+struct /*VFT*/ DataCoreArrayBase_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArrayBase)(DataCoreArrayBase *this);
+};
+struct __cppobj DataCoreArray<SResponseRuleDef> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SResponseEntryDef/r
+};
+struct /*VFT*/ DataCoreArray<SResponseRuleDef>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<SResponseRuleDef>)(struct DataCoreArray<SResponseRuleDef> *this);
+};
+struct __cppobj DataCoreArray<SDialogResponseDef> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SResponseDef/r
+};
+struct /*VFT*/ DataCoreArray<SDialogResponseDef>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<SDialogResponseDef>)(struct DataCoreArray<SDialogResponseDef> *this);
+};
+struct __cppobj SResponseDef : IDataCoreStructure // sizeof=0x28
+{                                       // XREF: SResponseEntryDef/r
+    DataCoreArray<SDialogResponseDef> m_dialogResponses;
+};
+struct __cppobj DataCoreArray<SResponseMemoryDef> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SResponseEntryDef/r
+};
+struct /*VFT*/ DataCoreArray<SResponseMemoryDef>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<SResponseMemoryDef>)(struct DataCoreArray<SResponseMemoryDef> *this);
+};
+const struct __cppobj SResponseEntryDef : IDataCoreStructure // sizeof=0x90
+{
+    CryStringT<char> m_name;
+    EResponseConceptType m_concept;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    CryStringT<char> m_customConcept;
+    float m_refireDelay;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    DataCoreArray<SResponseRuleDef> m_rules;
+    SResponseDef m_responses;
+    DataCoreArray<SResponseMemoryDef> m_memory;
+};
+struct /*VFT*/ SResponseEntryDef_vtbl // sizeof=0x18
+{
+    void (__fastcall *~SResponseEntryDef)(struct SResponseEntryDef *this);
+    const char *(__fastcall *GetClassName)(struct SResponseEntryDef *this);
+    const char *(__fastcall *GetInheritsFromName)(struct SResponseEntryDef *this);
+};
+struct __cppobj IDataCoreStructPtrBase // sizeof=0x8
+{                                       // XREF: IDataCoreStructPtr<CForceFeedBackSystem::SDCDataMotor>/r
+                                        // IDataCoreStructPtr<DCBTNode>/r ...
+    IDataCoreStructure *m_Ptr;
+};
+struct __cppobj std::_Allocator_base<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >/r
+};
+struct __cppobj std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > : std::_Allocator_base<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Tmap_traits<unsigned int,IDataCoreRecordWrapper *,std::less<unsigned int>,std::allocator<std::pair<unsigned int const ,IDataCoreRecordWrapper *> >,0> // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > // sizeof=0x0
+{                                       // XREF: std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >/r
+};
+struct __cppobj std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > : std::_Allocator_base<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > // sizeof=0x0
+{
+};
+struct __cppobj std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > >,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > >,0> // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,std::pair<unsigned int const ,IDataCoreRecordWrapper *>,__int64,std::pair<unsigned int const ,IDataCoreRecordWrapper *> const *,std::pair<unsigned int const ,IDataCoreRecordWrapper *> const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,std::pair<unsigned int const ,IDataCoreRecordWrapper *>,__int64,std::pair<unsigned int const ,IDataCoreRecordWrapper *> const *,std::pair<unsigned int const ,IDataCoreRecordWrapper *> const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >/r
+    std::_Tree_node<std::pair<unsigned int const ,IDataCoreRecordWrapper *>,void *> *_Ptr;
+                                        // XREF: std::_Tree<std::_Tmap_traits<uint,CFlowGraphModule *,std::less<uint>,std::allocator<std::pair<uint const,CFlowGraphModule *>>,0>>::_Insert_nohint<std::pair<uint const,CFlowGraphModule *> &,std::_Tree_node<std::pair<uint const,CFlowGraphModule *>,void *> *>(bool,std::pair<uint const,CFlowGraphModule *> &,std::_Tree_node<std::pair<uint const,CFlowGraphModule *>,void *> *)+7F/w
+                                        // std::_Tree<std::_Tmap_traits<uint,CFlowGraphModule *,std::less<uint>,std::allocator<std::pair<uint const,CFlowGraphModule *>>,0>>::_Insert_nohint<std::pair<uint const,CFlowGraphModule *> &,std::_Tree_node<std::pair<uint const,CFlowGraphModule *>,void *> *>(bool,std::pair<uint const,CFlowGraphModule *> &,std::_Tree_node<std::pair<uint const,CFlowGraphModule *>,void *> *)+127/w ...
+};
+struct __cppobj std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > : std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >/r
+                                        // ??$_Insert_hint@AEAU?$pair@$$CBIVEntityId@@@std@@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@IVEntityId@@U?$less@I@std@@V?$allocator@U?$pair@$$CBIVEntityId@@@std@@@3@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBIVEntityId@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBIVEntityId@@@1@PEAU?$_Tree_node@U?$pair@$$CBIVEntityId@@@std@@PEAX@1@@Z/r
+};
+struct __cppobj std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > : std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > // sizeof=0x8
+{                                       // XREF: std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,bool>/r
+                                        // std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > >,std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<unsigned int const ,IDataCoreRecordWrapper *> > > > >/r ...
+};
+struct __cppobj std::_Allocator_base<std::_List_node<DataCoreRecordObserver *,void *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::_List_node<DataCoreRecordObserver *,void *> >/r
+};
+struct __cppobj std::allocator<std::_List_node<DataCoreRecordObserver *,void *> > : std::_Allocator_base<std::_List_node<DataCoreRecordObserver *,void *> > // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<std::_List_node<DataCoreRecordObserver *,void *> > >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<std::_List_node<DataCoreRecordObserver *,void *> > > : std::allocator<std::_List_node<DataCoreRecordObserver *,void *> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<DataCoreRecordObserver *> // sizeof=0x0
+{                                       // XREF: std::allocator<DataCoreRecordObserver *>/r
+};
+struct __cppobj std::allocator<DataCoreRecordObserver *> : std::_Allocator_base<DataCoreRecordObserver *> // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,DataCoreRecordObserver *,__int64,DataCoreRecordObserver * const *,DataCoreRecordObserver * const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_List_unchecked_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_List_unchecked_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,DataCoreRecordObserver *,__int64,DataCoreRecordObserver * const *,DataCoreRecordObserver * const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_List_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > >/r
+                                        // std::_List_unchecked_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > >/r
+    std::_List_node<DataCoreRecordObserver *,void *> *_Ptr;
+};
+struct __cppobj std::_List_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > > : std::_List_unchecked_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_List_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > >/r
+};
+struct __cppobj std::_List_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > > : std::_List_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > > // sizeof=0x8
+{
+};
+struct __cppobj std::_List_unchecked_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> > > : std::_List_unchecked_const_iterator<std::_List_val<std::_List_simple_types<DataCoreRecordObserver *> >,std::_Iterator_base0> // sizeof=0x8
+{
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,__int64,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > const *,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,__int64,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > const *,std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > > > > >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> *_Ptr;
+                                        // XREF: std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(bool,std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *)+E9/w
+                                        // std::_Tree<std::_Tmap_traits<CryStringT<char>,std::map<CryStringT<char>,int>,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *>(bool,std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>> &,std::_Tree_node<std::pair<CryStringT<char> const,std::map<CryStringT<char>,int>>,void *> *)+197/w ...
+};
+struct __cppobj std::allocator_traits<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,std::map<CryStringT<char>,int,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,int> > > >,void *> > > // sizeof=0x0
+{
+};
+struct /*VFT*/ SRecordCreator<SResponseRuleDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SResponseRuleDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SResponseRuleDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SResponseRuleDef> `SResponseRuleDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct /*VFT*/ SRecordCreator<SDialogResponseDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SDialogResponseDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SDialogResponseDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SDialogResponseDef> `SDialogResponseDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct /*VFT*/ SRecordCreator<SResponseDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SResponseDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SResponseDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SResponseDef> `SResponseDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct __cppobj __declspec(align(8)) SResponseMemoryDef : IDataCoreStructure // sizeof=0x28
+{
+    CryStringT<char> m_criteriaName;
+    bool m_global;
+    // padding byte
+    // padding byte
+    // padding byte
+    EMemoryResponseType m_type;
+    CryStringT<char> m_stringValue;
+    float m_numberValue;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct /*VFT*/ SResponseMemoryDef_vtbl // sizeof=0x18
+{
+    void (__fastcall *~SResponseMemoryDef)(struct SResponseMemoryDef *this);
+    const char *(__fastcall *GetClassName)(struct SResponseMemoryDef *this);
+    const char *(__fastcall *GetInheritsFromName)(struct SResponseMemoryDef *this);
+};
+struct /*VFT*/ SRecordCreator<SResponseMemoryDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SResponseMemoryDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SResponseMemoryDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SResponseMemoryDef> `SResponseMemoryDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct /*VFT*/ SRecordCreator<SResponseEntryDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SResponseEntryDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SResponseEntryDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SResponseEntryDef> `SResponseEntryDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct __cppobj DataCoreArray<SResponseEntryDef> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SResponseRecordDef/r
+};
+struct /*VFT*/ DataCoreArray<SResponseEntryDef>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<SResponseEntryDef>)(struct DataCoreArray<SResponseEntryDef> *this);
+};
+struct __cppobj SResponseRecordDef : IDataCoreStructure // sizeof=0x28
+{
+    DataCoreArray<SResponseEntryDef> m_responseEntries;
+};
+struct /*VFT*/ SResponseRecordDef_vtbl // sizeof=0x18
+{
+    void (__fastcall *~SResponseRecordDef)(struct SResponseRecordDef *this);
+    const char *(__fastcall *GetClassName)(struct SResponseRecordDef *this);
+    const char *(__fastcall *GetInheritsFromName)(struct SResponseRecordDef *this);
+};
+struct /*VFT*/ SRecordCreator<SResponseRecordDef>_vtbl // sizeof=0x8
+{
+    IDataCoreStructure *(__fastcall *Create)(struct SRecordCreator<SResponseRecordDef> *this, unsigned __int64);
+};
+struct __cppobj SRecordCreator<SResponseRecordDef> : IRecordCreator // sizeof=0x8
+{                                       // XREF: .data:SRecordCreator<SResponseRecordDef> `SResponseRecordDef::Register(char const *,IDataCore *)'::`2'::creator/r
+};
+struct __cppobj std::equal_to<unsigned int> : std::binary_function<unsigned int,unsigned int,bool> // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<std::pair<unsigned int const ,float> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::pair<unsigned int const ,float> >/r
+};
+struct __cppobj std::allocator<std::pair<unsigned int const ,float> > : std::_Allocator_base<std::pair<unsigned int const ,float> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<std::_List_node<std::pair<unsigned int const ,float>,void *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::_List_node<std::pair<unsigned int const ,float>,void *> >/r
+};
+struct __cppobj std::allocator<std::_List_node<std::pair<unsigned int const ,float>,void *> > : std::_Allocator_base<std::_List_node<std::pair<unsigned int const ,float>,void *> > // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<std::_List_node<std::pair<unsigned int const ,float>,void *> > >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<std::_List_node<std::pair<unsigned int const ,float>,void *> > > : std::allocator<std::_List_node<std::pair<unsigned int const ,float>,void *> > // sizeof=0x0
+{
+};
+struct __cppobj std::_List_const_iterator<std::_List_val<std::_List_simple_types<std::pair<unsigned int const ,float> > > > : std::_List_unchecked_const_iterator<std::_List_val<std::_List_simple_types<std::pair<unsigned int const ,float> > >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_List_iterator<std::_List_val<std::_List_simple_types<std::pair<unsigned int const ,float> > > >/r
+};
+struct __cppobj SDataCoreStruct // sizeof=0x20
+{                                       // XREF: std::pair<CryStringT<char> const ,SDataCoreStruct>/r
+    CDataCoreField *m_pFields;
+    unsigned __int64 m_numFields;
+    IRecordCreator *m_pCreator;
+    const char *m_inherits;
+};
+struct /*VFT*/ DataCoreRecordWrapper_vtbl // sizeof=0x18
+{
+    const IDataCoreStructure *(__fastcall *GetRaw)(struct DataCoreRecordWrapper *this);
+    const CryStringT<char> *(__fastcall *GetHash)(struct DataCoreRecordWrapper *this);
+    const CryStringT<char> *(__fastcall *GetName)(struct DataCoreRecordWrapper *this);
+};
+struct __cppobj DataCoreRecordWrapper : IDataCoreRecordWrapper // sizeof=0x20
+{
+    IDataCoreStructure *m_pRecord;
+    CryStringT<char> m_UniqueHash;
+    CryStringT<char> m_Name;
+};
+struct __cppobj std::pair<CryStringT<char> const ,SDataCoreStruct> // sizeof=0x28
+{                                       // XREF: std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *>/r
+    const CryStringT<char> first;
+    SDataCoreStruct second;
+};
+struct __cppobj std::_Allocator_base<std::pair<CryStringT<char> const ,SDataCoreStruct> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> >/r
+};
+struct __cppobj std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> > : std::_Allocator_base<std::pair<CryStringT<char> const ,SDataCoreStruct> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> >,0> // sizeof=0x0
+{
+};
+struct __cppobj std::pair<CryStringT<char> const ,IDataCoreStructure *> // sizeof=0x10
+{                                       // XREF: std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *>/r
+    const CryStringT<char> first;
+    IDataCoreStructure *second;
+};
+struct __cppobj std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> // sizeof=0x30
+{
+    std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *_Left;
+    std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *_Parent;
+    std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *_Right;
+    char _Color;
+    char _Isnil;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    std::pair<CryStringT<char> const ,IDataCoreStructure *> _Myval;
+};
+struct __cppobj std::_Vector_alloc<0,std::_Vec_base_types<IDataCoreStructure *> > : std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > // sizeof=0x18
+{                                       // XREF: std::vector<IDataCoreStructure *>/r
+};
+struct __cppobj std::vector<IDataCoreStructure *> : std::_Vector_alloc<0,std::_Vec_base_types<IDataCoreStructure *> > // sizeof=0x18
+{                                       // XREF: CDataCore/r
+};
+struct __cppobj CDataCore::UnresolvedRef // sizeof=0x10
+{
+    DataCoreRecordRefBase *pStruct;
+    CryStringT<char> hash;
+};
+struct __cppobj std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > : std::_Container_base0 // sizeof=0x18
+{                                       // XREF: std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedRef> >/r
+    CDataCore::UnresolvedRef *_Myfirst;
+    CDataCore::UnresolvedRef *_Mylast;
+    CDataCore::UnresolvedRef *_Myend;
+};
+struct __cppobj std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedRef> > : std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > // sizeof=0x18
+{                                       // XREF: std::vector<CDataCore::UnresolvedRef>/r
+};
+struct __cppobj std::vector<CDataCore::UnresolvedRef> : std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedRef> > // sizeof=0x18
+{                                       // XREF: CDataCore/r
+};
+struct __cppobj CDataCore::UnresolvedWeakPtr // sizeof=0x10
+{                                       // XREF: ?LoadFields@CDataCore@@AEAAXVXmlNodeRef@@PEBD1PEAUIDataCoreStructure@@AEAUSDataCoreStruct@@1@Z/r
+                                        // ?LoadFields@CDataCore@@AEAAXVXmlNodeRef@@PEBD1PEAUIDataCoreStructure@@AEAUSDataCoreStruct@@1@Z/r ...
+    IDataCoreStructure **m_pStruct;     // XREF: CDataCore::LoadFields(XmlNodeRef,char const *,char const *,IDataCoreStructure *,SDataCoreStruct &,char const *)+20F/w
+                                        // CDataCore::LoadFields(XmlNodeRef,char const *,char const *,IDataCoreStructure *,SDataCoreStruct &,char const *)+33C/w ...
+    CryStringT<char> m_URL;             // XREF: CDataCore::LoadFields(XmlNodeRef,char const *,char const *,IDataCoreStructure *,SDataCoreStruct &,char const *):loc_15131EFAB/w
+                                        // CDataCore::LoadFields(XmlNodeRef,char const *,char const *,IDataCoreStructure *,SDataCoreStruct &,char const *)+284/r ...
+};
+struct __cppobj std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > : std::_Container_base0 // sizeof=0x18
+{                                       // XREF: std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedWeakPtr> >/r
+    CDataCore::UnresolvedWeakPtr *_Myfirst;
+    CDataCore::UnresolvedWeakPtr *_Mylast;
+    CDataCore::UnresolvedWeakPtr *_Myend;
+};
+struct __cppobj std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedWeakPtr> > : std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > // sizeof=0x18
+{                                       // XREF: std::vector<CDataCore::UnresolvedWeakPtr>/r
+};
+struct __cppobj std::vector<CDataCore::UnresolvedWeakPtr> : std::_Vector_alloc<0,std::_Vec_base_types<CDataCore::UnresolvedWeakPtr> > // sizeof=0x18
+{                                       // XREF: CDataCore/r
+};
+struct __cppobj __declspec(align(8)) CDataCore : IDataCore // sizeof=0x190
+{
+    unsigned __int64 (__fastcall *m_fnGetSchemaStruct)(const char *);
+    unsigned __int64 (__fastcall *m_fnGetSchemaStruct_FieldByName)(unsigned __int64, const char *, bool, unsigned __int64);
+    unsigned __int64 (__fastcall *m_fnGetSchemaStruct_FieldByIndex)(unsigned __int64, int, bool, unsigned __int64);
+    const char *(__fastcall *m_fnGetSchemaStruct_GetName)(unsigned __int64);
+    int (__fastcall *m_fnGetSchemaStruct_FieldCount)(unsigned __int64, bool, unsigned __int64);
+    const char *(__fastcall *m_fnGetSchemaField_GetName)(unsigned __int64);
+    const char *(__fastcall *m_fnGetSchemaField_GetEnumName)(unsigned __int64);
+    int (__fastcall *m_fnGetSchemaField_GetFieldOption)(unsigned __int64);
+    int (__fastcall *m_fnGetSchemaField_GetFieldStorageType)(unsigned __int64);
+    int (__fastcall *m_fnGetSchemaField_GetFieldType)(unsigned __int64);
+    unsigned __int64 (__fastcall *m_fnLoadRecord)(const char *);
+    int (__fastcall *m_fnGetRecordCount)();
+    const unsigned __int64 *(__fastcall *m_fnGetRecords)();
+    unsigned __int64 (__fastcall *m_fnGetRecordByHandle)(unsigned __int64);
+    unsigned __int64 (__fastcall *m_fnGetRecordByName)(const char *);
+    unsigned __int64 (__fastcall *m_fnGetRecordByHash)(const char *);
+    const char *(__fastcall *m_fnExportRecord)(unsigned __int64);
+    const char *(__fastcall *m_fnGetRecordName)(unsigned __int64);
+    const char *(__fastcall *m_fnGetRecordHash)(unsigned __int64);
+    const char *(__fastcall *m_fnGetRecordSchemaName)(unsigned __int64);
+    const char *(__fastcall *m_fnGetRecordFilename)(unsigned __int64);
+    void *m_hDAL;
+    bool (__fastcall *m_hReload)(const char *);
+    void (__fastcall *m_hRegisterForLogging)(bool (__fastcall *)(const unsigned int, const char *));
+    bool (__fastcall *m_fnLoad)(bool (__fastcall *)(const char *, void *), unsigned int (__fastcall *)(const char *), void (__fastcall *)(const int, const char *), const unsigned int, const char **, const unsigned int, const char **);
+    void (__fastcall *m_fnUnload)();
+    std::map<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,SDataCoreStruct> > > m_GameStructures;
+    std::map<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char> >,std::allocator<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > m_Structures;
+    std::vector<IDataCoreStructure *> m_DestructMeStructs;
+    std::vector<CDataCore::UnresolvedRef> m_UnresolvedRefs;
+    std::vector<CDataCore::UnresolvedWeakPtr> m_UnresolvedWeakPtrs;
+    int m_listenerSocket;
+    int m_connSocket;
+    __int64 m_totalPendingRecieve;
+    CryStringT<char> m_Buffer;
+    int m_lanDiscoverySocket;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct /*VFT*/ CDataCore_vtbl // sizeof=0x50
+{
+    const IDataCoreRecordWrapper *(__fastcall *GetRecord)(struct CDataCore *this, unsigned int);
+    void (__fastcall *~CDataCore)(struct CDataCore *this);
+    bool (__fastcall *Initialize)(struct CDataCore *this);
+    void (__fastcall *Shutdown)(struct CDataCore *this);
+    void (__fastcall *NetUpdate)(struct CDataCore *this);
+    bool (__fastcall *InheritsFrom)(struct CDataCore *this, const char *, const char *);
+    XmlNodeRef *(__fastcall *LoadRecordDeprecated)(struct CDataCore *this, XmlNodeRef *result, const char *);
+    void (__fastcall *RegisterStruct)(struct CDataCore *this, const char *, IRecordCreator *, CDataCoreField *, unsigned __int64, const char *);
+    DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *(__fastcall *GetRecordNamesForSchema)(struct CDataCore *this, DynArray<char const *,int,NArray::SmallDynStorage<NAlloc::AllocCompatible<NAlloc::ModuleAlloc> > > *result, const char *);
+    const IDataCoreStructure *(__fastcall *LoadStruct)(struct CDataCore *this, IDataCoreStructure *, const char *, const char *, const char *, XmlNodeRef, bool);
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,SDataCoreStruct>,__int64,std::pair<CryStringT<char> const ,SDataCoreStruct> const *,std::pair<CryStringT<char> const ,SDataCoreStruct> const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,SDataCoreStruct>,__int64,std::pair<CryStringT<char> const ,SDataCoreStruct> const *,std::pair<CryStringT<char> const ,SDataCoreStruct> const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> *_Ptr;
+                                        // XREF: std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(bool,std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *)+C9/w
+                                        // std::_Tree<std::_Tmap_traits<CryStringT<char>,SDataCoreStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,SDataCoreStruct>>,0>>::_Insert_nohint<std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *>(bool,std::pair<CryStringT<char> const,SDataCoreStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,SDataCoreStruct>,void *> *)+16A/w ...
+};
+struct __cppobj std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > : std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >/r
+};
+struct __cppobj std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > : std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > // sizeof=0x8
+{                                       // XREF: std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool>/r
+                                        // ??$_Insert_nohint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AU?$pair@V?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@std@@_N@1@_NAEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z/r ...
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,__int64,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> const *,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,__int64,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> const *,std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> *_Ptr;
+                                        // XREF: std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>>>,std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *)+171/w
+                                        // std::_Tree<std::_Tmap_traits<CryStringT<char>,CDataCore::UrlToStruct,std::less<CryStringT<char>>,std::allocator<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>,0>>::_Insert_hint<std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *>(std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>>>>,std::pair<CryStringT<char> const,CDataCore::UrlToStruct> &,std::_Tree_node<std::pair<CryStringT<char> const,CDataCore::UrlToStruct>,void *> *)+1C7/w ...
+};
+struct __cppobj std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > : std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >/r
+                                        // ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z/r
+};
+struct __cppobj std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > : std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > // sizeof=0x8
+{                                       // XREF: std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool>/r
+                                        // std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > >/r ...
+};
+struct __cppobj std::_Allocator_base<IDataCoreStructure *> // sizeof=0x0
+{                                       // XREF: std::allocator<IDataCoreStructure *>/r
+};
+struct __cppobj std::allocator<IDataCoreStructure *> : std::_Allocator_base<IDataCoreStructure *> // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<IDataCoreStructure *> >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<IDataCoreStructure *> > : std::allocator<IDataCoreStructure *> // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::random_access_iterator_tag,IDataCoreStructure *,__int64,IDataCoreStructure * const *,IDataCoreStructure * const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > >/r
+};
+struct __cppobj std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > > : std::_Iterator012<std::random_access_iterator_tag,IDataCoreStructure *,__int64,IDataCoreStructure * const *,IDataCoreStructure * const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Vector_iterator<std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > >/r
+    IDataCoreStructure **_Ptr;
+};
+struct __cppobj std::_Vector_iterator<std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > > : std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<IDataCoreStructure *> > > // sizeof=0x8
+{
+};
+struct __cppobj std::_Allocator_base<CDataCore::UnresolvedRef> // sizeof=0x0
+{                                       // XREF: std::allocator<CDataCore::UnresolvedRef>/r
+};
+struct __cppobj std::allocator<CDataCore::UnresolvedRef> : std::_Allocator_base<CDataCore::UnresolvedRef> // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedRef> >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedRef> > : std::allocator<CDataCore::UnresolvedRef> // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::random_access_iterator_tag,CDataCore::UnresolvedRef,__int64,CDataCore::UnresolvedRef const *,CDataCore::UnresolvedRef const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > >/r
+};
+struct __cppobj std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > > : std::_Iterator012<std::random_access_iterator_tag,CDataCore::UnresolvedRef,__int64,CDataCore::UnresolvedRef const *,CDataCore::UnresolvedRef const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Vector_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > >/r
+    CDataCore::UnresolvedRef *_Ptr;
+};
+struct __cppobj std::_Vector_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > > : std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedRef> > > // sizeof=0x8
+{
+};
+struct __cppobj std::_Allocator_base<CDataCore::UnresolvedWeakPtr> // sizeof=0x0
+{                                       // XREF: std::allocator<CDataCore::UnresolvedWeakPtr>/r
+};
+struct __cppobj std::allocator<CDataCore::UnresolvedWeakPtr> : std::_Allocator_base<CDataCore::UnresolvedWeakPtr> // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> > : std::allocator<CDataCore::UnresolvedWeakPtr> // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::random_access_iterator_tag,CDataCore::UnresolvedWeakPtr,__int64,CDataCore::UnresolvedWeakPtr const *,CDataCore::UnresolvedWeakPtr const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > >/r
+};
+struct __cppobj std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > > : std::_Iterator012<std::random_access_iterator_tag,CDataCore::UnresolvedWeakPtr,__int64,CDataCore::UnresolvedWeakPtr const *,CDataCore::UnresolvedWeakPtr const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Vector_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > >/r
+    CDataCore::UnresolvedWeakPtr *_Ptr;
+};
+struct __cppobj std::_Vector_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > > : std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<CDataCore::UnresolvedWeakPtr> > > // sizeof=0x8
+{
+};
+struct __cppobj std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> >/r
+};
+struct __cppobj std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > : std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > > : std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > // sizeof=0x0
+{
+};
+struct __cppobj __declspec(align(8)) std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > >,bool> // sizeof=0x10
+{                                       // XREF: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@USDataCoreStruct@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@4@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@USDataCoreStruct@@@std@@PEAX@1@@Z/r
+    std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,SDataCoreStruct> > > > first;
+    bool second;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct __cppobj std::allocator_traits<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,SDataCoreStruct>,void *> > > // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> >/r
+};
+struct __cppobj std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > : std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > > : std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > // sizeof=0x0
+{
+};
+struct __cppobj __declspec(align(8)) std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,bool> // sizeof=0x10
+{                                       // XREF: ??$_Insert_hint@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@2@@?$_Tree@V?$_Tmap_traits@V?$CryStringT@D@@UUrlToStruct@CDataCore@@U?$less@V?$CryStringT@D@@@std@@V?$allocator@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@5@$0A@@std@@@std@@IEAA?AV?$_Tree_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@V?$_Tree_const_iterator@V?$_Tree_val@U?$_Tree_simple_types@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@@std@@@std@@@1@AEAU?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@1@PEAU?$_Tree_node@U?$pair@$$CBV?$CryStringT@D@@UUrlToStruct@CDataCore@@@std@@PEAX@1@@Z/r
+    std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > first;
+    bool second;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct __cppobj std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > >,std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > > // sizeof=0x10
+{
+    std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > first;
+    std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> > > > second;
+};
+struct __cppobj std::allocator_traits<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct>,void *> > > // sizeof=0x0
+{
+};
+struct __cppobj std::allocator_traits<std::allocator<IDataCoreStructure *> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<IDataCoreStructure *> >::rebind<IDataCoreStructure *> // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<IDataCoreStructure *> >::rebind<IDataCoreStructure * *> // sizeof=0x0
+{
+};
+struct __cppobj std::allocator_traits<std::allocator<CDataCore::UnresolvedRef> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedRef> >::rebind<CDataCore::UnresolvedRef> // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedRef> >::rebind<CDataCore::UnresolvedRef *> // sizeof=0x0
+{
+};
+struct __cppobj std::allocator_traits<std::allocator<CDataCore::UnresolvedWeakPtr> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> >::rebind<CDataCore::UnresolvedWeakPtr> // sizeof=0x0
+{
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<CDataCore::UnresolvedWeakPtr> >::rebind<CDataCore::UnresolvedWeakPtr *> // sizeof=0x0
+{
+};
+struct __cppobj std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > // sizeof=0x0
+{                                       // XREF: std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> >/r
+};
+struct __cppobj std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > : std::_Allocator_base<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > // sizeof=0x0
+{                                       // XREF: std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > >/r
+};
+struct __cppobj std::_Wrap_alloc<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > > : std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > // sizeof=0x0
+{
+};
+struct __cppobj std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,IDataCoreStructure *>,__int64,std::pair<CryStringT<char> const ,IDataCoreStructure *> const *,std::pair<CryStringT<char> const ,IDataCoreStructure *> const &,std::_Iterator_base0> : std::_Iterator_base0 // sizeof=0x0
+{                                       // XREF: std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > >,std::_Iterator_base0>/r
+};
+struct __cppobj std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > >,std::_Iterator_base0> : std::_Iterator012<std::bidirectional_iterator_tag,std::pair<CryStringT<char> const ,IDataCoreStructure *>,__int64,std::pair<CryStringT<char> const ,IDataCoreStructure *> const *,std::pair<CryStringT<char> const ,IDataCoreStructure *> const &,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > >/r
+    std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> *_Ptr;
+                                        // XREF: CDataCore::ResolveWeakPtrs(char const *)+231/r
+};
+struct __cppobj std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > > : std::_Tree_unchecked_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > >,std::_Iterator_base0> // sizeof=0x8
+{                                       // XREF: std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > >/r
+};
+struct __cppobj std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > > : std::_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > > // sizeof=0x8
+{                                       // XREF: std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > >,bool>/r
+                                        // ?ResolveWeakPtrs@CDataCore@@AEAAXPEBD@Z/r
+};
+struct __cppobj __declspec(align(8)) std::pair<std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > >,bool> // sizeof=0x10
+{
+    std::_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<CryStringT<char> const ,IDataCoreStructure *> > > > first;
+    bool second;
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
+struct __cppobj std::allocator_traits<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > > // sizeof=0x0
+{
+};
+struct __cppobj DataCoreArray<DataCoreRecordRefBase> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<DataCoreRecordRefBase>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<DataCoreRecordRefBase>)(struct DataCoreArray<DataCoreRecordRefBase> *this);
+};
+struct __cppobj DataCoreArray<IDataCoreStructPtrBase> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<IDataCoreStructPtrBase>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<IDataCoreStructPtrBase>)(struct DataCoreArray<IDataCoreStructPtrBase> *this);
+};
+struct tcp_keepalive // sizeof=0xC
+{                                       // XREF: ?NetUpdate@CDataCore@@UEAAXXZ/r
+    unsigned int onoff;                 // XREF: CDataCore::NetUpdate(void)+C26/w
+                                        // CDataCore::NetUpdate(void)+C48/w
+    unsigned int keepalivetime;         // XREF: CDataCore::NetUpdate(void)+C2F/w
+    unsigned int keepaliveinterval;     // XREF: CDataCore::NetUpdate(void)+C4F/w
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *> // sizeof=0x0
+{
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,IDataCoreStructure *> *> // sizeof=0x0
+{
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,SDataCoreStruct> *> // sizeof=0x0
+{
+};
+struct __cppobj DataCoreArray<char> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<char>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<char>)(struct DataCoreArray<char> *this);
+};
+struct __cppobj DataCoreArray<short> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<short>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<short>)(struct DataCoreArray<short> *this);
+};
+struct __cppobj DataCoreArray<int> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<int>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<int>)(struct DataCoreArray<int> *this);
+};
+struct __cppobj DataCoreArray<__int64> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<__int64>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<__int64>)(struct DataCoreArray<__int64> *this);
+};
+struct __cppobj DataCoreArray<unsigned char> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned char>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned char>)(struct DataCoreArray<unsigned char> *this);
+};
+struct __cppobj DataCoreArray<unsigned short> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned short>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned short>)(struct DataCoreArray<unsigned short> *this);
+};
+struct __cppobj DataCoreArray<unsigned int> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned int>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned int>)(struct DataCoreArray<unsigned int> *this);
+};
+struct __cppobj DataCoreArray<unsigned __int64> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned __int64>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned __int64>)(struct DataCoreArray<unsigned __int64> *this);
+};
+struct __cppobj DataCoreArray<float> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<float>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<float>)(struct DataCoreArray<float> *this);
+};
+struct __cppobj DataCoreArray<double> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<double>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<double>)(struct DataCoreArray<double> *this);
+};
+struct __cppobj DataCoreArray<bool> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<bool>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<bool>)(struct DataCoreArray<bool> *this);
+};
+struct __cppobj DataCoreArray<CryStringT<char> > : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: CDFMScoreMessage::SConfigDef/r
+                                        // CDFMScoreMessage::SConfigDef/r ...
+};
+struct /*VFT*/ DataCoreArray<CryStringT<char> >_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<CryStringT<char> >)(struct DataCoreArray<CryStringT<char> > *this);
+};
+struct __cppobj std::allocator_traits<std::allocator<std::_Tree_node<std::pair<CryStringT<char> const ,IDataCoreStructure *>,void *> > > // sizeof=0x0
+{
+};
+struct __cppobj DataCoreArray<DataCoreRecordRefBase> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<DataCoreRecordRefBase>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<DataCoreRecordRefBase>)(struct DataCoreArray<DataCoreRecordRefBase> *this);
+};
+struct __cppobj DataCoreArray<IDataCoreStructPtrBase> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<IDataCoreStructPtrBase>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<IDataCoreStructPtrBase>)(struct DataCoreArray<IDataCoreStructPtrBase> *this);
+};
+struct tcp_keepalive // sizeof=0xC
+{                                       // XREF: ?NetUpdate@CDataCore@@UEAAXXZ/r
+    unsigned int onoff;                 // XREF: CDataCore::NetUpdate(void)+C26/w
+                                        // CDataCore::NetUpdate(void)+C48/w
+    unsigned int keepalivetime;         // XREF: CDataCore::NetUpdate(void)+C2F/w
+    unsigned int keepaliveinterval;     // XREF: CDataCore::NetUpdate(void)+C4F/w
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,CDataCore::UrlToStruct> *> // sizeof=0x0
+{
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,IDataCoreStructure *> *> // sizeof=0x0
+{
+};
+struct __cppobj std::pointer_traits<std::pair<CryStringT<char> const ,SDataCoreStruct> *> // sizeof=0x0
+{
+};
+struct __cppobj DataCoreArray<char> : DataCoreArrayBase // sizeof=0x20
+{
+};
+struct /*VFT*/ DataCoreArray<char>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<char>)(struct DataCoreArray<char> *this);
+};
+struct __cppobj DataCoreArray<short> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<short>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<short>)(struct DataCoreArray<short> *this);
+};
+struct __cppobj DataCoreArray<int> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<int>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<int>)(struct DataCoreArray<int> *this);
+};
+struct __cppobj DataCoreArray<__int64> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<__int64>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<__int64>)(struct DataCoreArray<__int64> *this);
+};
+struct __cppobj DataCoreArray<unsigned char> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned char>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned char>)(struct DataCoreArray<unsigned char> *this);
+};
+struct __cppobj DataCoreArray<unsigned short> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned short>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned short>)(struct DataCoreArray<unsigned short> *this);
+};
+struct __cppobj DataCoreArray<unsigned int> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned int>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned int>)(struct DataCoreArray<unsigned int> *this);
+};
+struct __cppobj DataCoreArray<unsigned __int64> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<unsigned __int64>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<unsigned __int64>)(struct DataCoreArray<unsigned __int64> *this);
+};
+struct __cppobj DataCoreArray<float> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<float>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<float>)(struct DataCoreArray<float> *this);
+};
+struct __cppobj DataCoreArray<double> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<double>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<double>)(struct DataCoreArray<double> *this);
+};
+struct __cppobj DataCoreArray<bool> : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: SDCUnitTest_ArraysDef/r
+};
+struct /*VFT*/ DataCoreArray<bool>_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<bool>)(struct DataCoreArray<bool> *this);
+};
+struct __cppobj DataCoreArray<CryStringT<char> > : DataCoreArrayBase // sizeof=0x20
+{                                       // XREF: CDFMScoreMessage::SConfigDef/r
+                                        // CDFMScoreMessage::SConfigDef/r ...
+};
+struct /*VFT*/ DataCoreArray<CryStringT<char> >_vtbl // sizeof=0x8
+{
+    void (__fastcall *~DataCoreArray<CryStringT<char> >)(struct DataCoreArray<CryStringT<char> > *this);
+};
+struct __cppobj CAsyncIOFileRequest_TransferPtr // sizeof=0x8
+{                                       // XREF: ?DecompressBlockEntry@CAsyncIOFileRequest@@QEAAXUSStreamJobEngineState@@H@Z/r
+                                        // ?DecryptBlockEntry@CAsyncIOFileRequest@@QEAAXUSStreamJobEngineState@@H@Z/r ...
+    CAsyncIOFileRequest *m_p;           // XREF: CAsyncIOFileRequest::DecompressBlockEntry(SStreamJobEngineState,int):loc_15132702B/r
+                                        // CAsyncIOFileRequest::DecryptBlockEntry(SStreamJobEngineState,int)+7D/w ...
+};
+
+------------------------- OLD VERSION END -------------------------
