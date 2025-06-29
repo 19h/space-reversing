@@ -1,0 +1,7 @@
+{
+  "IDAMetadataDescriptorVersion": 1,
+  "plugin": {
+    "name": "frIDA.py",
+    "entryPoint": "frIDA.py"
+  }
+}
