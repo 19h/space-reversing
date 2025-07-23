@@ -34,7 +34,7 @@ function callVFunc(thisPtr, index, returnType, argTypes, args = [], name = null)
             throw new Error(`Null function pointer at vtable index ${index}`);
         }
 
-        console.log(`Calling ${fnPtr} (${name}) at index ${index} with args ${args.join(', ')}`);
+        // console.log(`Calling ${fnPtr} (${name}) at index ${index} with args ${args.join(', ')}`); // Verbose logging
 
         const fn = new NativeFunction(fnPtr, returnType, ["pointer", ...argTypes]);
         // console.log(fnPtr, name); // Uncomment for debugging vfunc calls
@@ -77,7 +77,7 @@ class CEntityClass {
     }
 }
 
-// Wrapper for CZone (size: 0x513D0)
+// Wrapper for CZone
 class CZone {
     constructor(ptr) {
         this.ptr = ptr;
@@ -623,7 +623,7 @@ class IComponentRender {
 
     // Method to call the native AddGlowForSlot function
     addGlow(glowParams, glowStyle = 0, slotIndex = -1) {
-        // UPDATED: Address from StarCitizenFunctions.hpp (FunctionOffsets::CRenderProxy__AddGlowForSlot)
+        // RVA for CRenderProxy__AddGlowForSlot
         const addGlowFuncAddr = Module.findBaseAddress("StarCitizen.exe").add(0x69CB6D0);
         const addGlowFunc = new NativeFunction(addGlowFuncAddr, 'char', ['pointer', 'pointer', 'uint32', 'uint32']);
 
@@ -640,63 +640,27 @@ class IComponentRender {
     }
 }
 
-class Actor {
-    constructor(ptr) {
-        this.ptr = ptr;
-    }
-
-    get actor_action_handler() {
-        return this.ptr.add(ptr(0x270)).readPointer();
-    }
-
-    get actor_stats() {
-        return this.actor_action_handler.add(ptr(0x6F70));
-    }
-
-    get q() {
-        const actor_stats = this.actor_stats;
-        return callVFunc(actor_stats, 7, "float", [], []);
-    }
-
-    get p() {
-        const actor_stats = this.actor_stats;
-        return callVFunc(actor_stats, 8, "int", [], []);
-    }
-
-    get z() {
-        const actor_stats = this.actor_stats;
-        return callVFunc(actor_stats, 10, "char", [], []);
-    }
-
-    get x() {
-        const actor_stats = this.actor_stats;
-        return callVFunc(actor_stats, 11, "bool", [], []);
-    }
-
-    get y() {
-        const actor_stats = this.actor_stats;
-        return callVFunc(actor_stats, 12, "bool", [], []);
-    }
-}
-
+// Wrapper for CSCBodyHealthComponent
 class CHealthComponent {
     constructor(ptr) {
         this.ptr = ptr;
     }
 
-    get is_dead() {
-        return this.ptr.add(ptr(0x05C0)).readU8();
+    // is_dead_ at offset 0x05C0
+    get isDead() {
+        return this.ptr.add(0x05C0).readU8() !== 0;
     }
 
-    get is_incapacitated() {
-        return this.ptr.add(ptr(0x06E0)).readU8();
+    // is_incapacitated_ at offset 0x06E0
+    get isIncapacitated() {
+        return this.ptr.add(0x06E0).readU8() !== 0;
     }
 
-    get actor() {
-        // UPDATED: Offset for parent_actor_ from CSCBodyHealthComponent is 0x270
-        const actor_ptr = this.ptr.add(ptr(0x0270)).readPointer();
-
-        return actor_ptr.isNull() ? null : new Actor(actor_ptr);
+    // parent_actor_ at offset 0x0270
+    get parentActor() {
+        const actorPtr = this.ptr.add(0x0270).readPointer();
+        // The CActor class is complex and not fully defined; returning raw pointer for now.
+        return actorPtr.isNull() ? null : actorPtr;
     }
 }
 
@@ -721,7 +685,7 @@ class CRenderProxy {
     }
 }
 
-// Wrapper for CEntity (size: 0x04F0)
+// Wrapper for CEntity (size: 0x0FD8)
 class CEntity {
     constructor(ptr) {
         this.ptr = ptr;
@@ -748,19 +712,9 @@ class CEntity {
         return clsPtr.isNull() ? null : new CEntityClass(clsPtr);
     }
 
-    // // render_handle_ at 0x1E0 - COMMENTED OUT: This offset is likely incorrect for the current version.
-    // // Use the `get renderProxy()` method to access the render proxy component instead.
-    // get renderHandlePtr() {
-    //     return this.ptr.add(0x1E0);
-    // }
-    //
-    // get renderHandle() {
-    //     return this.renderHandlePtr.readPointer();
-    // }
-
     // x_local_pos_, y_local_pos_, z_local_pos_
     get zonePos() {
-        // UPDATED: Offsets from CEntity in StarCitizenClasses.hpp
+        // Offsets from CEntity in StarCitizenClasses.hpp
         const x = this.ptr.add(0x00F0).readDouble();
         const y = this.ptr.add(0x00F8).readDouble();
         const z = this.ptr.add(0x0100).readDouble();
@@ -769,14 +723,14 @@ class CEntity {
 
     // name_ at 0x290 (const char*)
     get name() {
-        // UPDATED: Offset from CEntity in StarCitizenClasses.hpp
+        // Offset from CEntity in StarCitizenClasses.hpp
         const namePtr = this.ptr.add(0x0290).readPointer();
         return readCString(namePtr);
     }
 
     // zone_ at 0x2A8 (CZone*)
     get zoneFromMemory() {
-        // UPDATED: Offset from CEntity in StarCitizenClasses.hpp
+        // Offset from CEntity in StarCitizenClasses.hpp
         const ptr = this.ptr.add(0x02A8).readPointer();
         return ptr.isNull() ? null : new CZone(extractLower48(ptr));
     }
@@ -968,10 +922,10 @@ class CEntity {
         }
     }
 
-    // vfunc 199: Get zone this entity is in
+    // vfunc 201: Get zone this entity is in
     getZone() {
         const ptr = callVFunc(this.ptr, 201, "pointer", [], [], 'getZone');
-        return ptr.isNull() ? null : new CZone(ptr);
+        return ptr.isNull() ? null : new CZone(extractLower48(ptr));
     }
 
     // vfunc 203: Get zone hosted by this entity
@@ -985,13 +939,11 @@ class CEntity {
         callVFunc(this.ptr, 206, "void", ["pointer", "pointer", "uint32"], [targetZone, transform, flags], 'setLocalTransform');
     }
 
-    get health_component() {
+    get healthComponent() {
         let comp_ptr = ptr(0);
-
         try {
-            comp_ptr = ptr(this.getComponentByName('CSCBodyHealthComponent'));
+            comp_ptr = this.getComponentByName('CSCBodyHealthComponent');
         } catch (e) {}
-
         return comp_ptr.isNull() ? null : new CHealthComponent(comp_ptr);
     }
 
@@ -1135,7 +1087,7 @@ class CEntityClassRegistry {
         try {
             console.log(`CEntityClassRegistry instance address: ${this.ptr}`);
 
-            // UPDATED: Logic to find the map's head and size based on C++ code.
+            // Logic to find the map's head and size based on C++ code.
             // The pointer to the head node of the std::map's internal tree is at offset 0x28.
             const headNodePtrOffset = 0x28;
             const mapHeadNodePtrPtr = this.ptr.add(headNodePtrOffset); // Address of the pointer to the head node
@@ -1224,14 +1176,14 @@ class CEntitySystem {
 
     // entity_array_ at offset 0x0118
     get entityArray() {
-        // UPDATED: Offset from CEntitySystem in StarCitizenClasses.hpp
+        // Offset from CEntitySystem in StarCitizenClasses.hpp
         const arrPtr = this.ptr.add(0x0118);
         return new CEntityArray(arrPtr);
     }
 
     // entity_class_registry_ at 0x06D8
     get classRegistry() {
-        // UPDATED: Offset from CEntitySystem in StarCitizenClasses.hpp
+        // Offset from CEntitySystem in StarCitizenClasses.hpp
         const registryPtr = this.ptr.add(0x06D8).readPointer();
         return new CEntityClassRegistry(registryPtr);
     }
@@ -1249,7 +1201,7 @@ class CEntitySystem {
 
     // Direct call to spawn entity function (CreateEntityOfType)
     spawnEntity(entityParams) {
-        // UPDATED: RVA from FunctionOffsets::CreateEntityOfType
+        // RVA for CreateEntityOfType
         const moduleBase = Process.enumerateModulesSync()[0].base;
         const spawnFuncAddr = moduleBase.add(0x65F5EC0);
 
@@ -1327,8 +1279,6 @@ class CRenderer {
         const outZ = outVec.add(8);
 
         // Call the native ProjectToScreen function (vtable slot 66)
-        // NOTE: C++ uses a direct address, but vtable call is kept for script consistency.
-        // The direct address is StarCitizen.exe + 0x97AB20
         const result = callVFunc(
             this.ptr,
             66,
@@ -1427,6 +1377,7 @@ class GEnv {
         return ptr.isNull() ? null : new CRenderer(ptr);
     }
 
+    // zone_system_ at 0x8 (Note: Not present in provided C++ GEnv struct, may be outdated)
     get cZoneSystem() {
         const ptr = this.ptr.add(0x8).readPointer();
         return ptr.isNull() ? null : new CZoneSystem(ptr);
@@ -1439,10 +1390,10 @@ class CGame {
         this.ptr = ptr;
     }
 
-    // player_ at 0x0C00
+    // player_ at 0x0C08
     get player() {
         // UPDATED: Offset from CGame in StarCitizenClasses.hpp
-        const ptr = this.ptr.add(0x0C00).readPointer();
+        const ptr = this.ptr.add(0x0C08).readPointer();
         return ptr.isNull() ? null : new CSCPlayer(ptr);
     }
 }
@@ -1468,8 +1419,8 @@ class CSCPlayer {
 
 // === Main polling loop ===
 
-// Replace with the actual static address of GEnv
-const GENV_ADDR = Process.enumerateModulesSync()[0].base.add("0x9A0A270");
+// UPDATED: RVA for GEnv from SCOffsets
+const GENV_ADDR = Process.enumerateModules()[0].base.add("0x9AF6720");
 const gEnv = new GEnv(GENV_ADDR);
 
 console.log("[*] Frida Entity System bridge initialized.");
@@ -2653,35 +2604,3 @@ const hookApplyStateFromNetwork = () => {
 
 // RPC export to enable the hook
 rpc.exports.hookApplyStateFromNetwork = hookApplyStateFromNetwork;
-
-var networkStateIgnorePtrs = [];
-
-try {
-    const moduleBase = Process.enumerateModulesSync()[0].base;
-
-    // You'll need to replace this with the actual RVA for CRigidEntity::ApplyStateFromNetwork
-    // This is a placeholder - find the actual address from your analysis
-    const funcAddr = moduleBase.add(0x6782C30);
-
-    console.log(`[*] Hooking CRigidEntity::ApplyStateFromNetwork at: ${funcAddr}`);
-
-    Interceptor.replace(funcAddr, new NativeCallback(function(args0, args1) {
-        const a1 = args0; // _QWORD *a1 (CRigidEntity*)
-        const a2 = args1; // __int64 a2
-
-        for (let i = 0; i < networkStateIgnorePtrs.length; i++) {
-            if (a2.equals(networkStateIgnorePtrs[i])) {
-                console.log(`[INFO] Ignoring network state update for entity ${a1}`);
-                return; // Return early if ignoring
-            }
-        }
-
-        // Call original function if not ignoring
-        const originalFunc = new NativeFunction(funcAddr, 'pointer', ['pointer', 'pointer']);
-        return originalFunc(a1, a2);
-    }, 'pointer', ['pointer', 'pointer']));
-
-    console.log("[*] CRigidEntity::ApplyStateFromNetwork hook installed successfully");
-} catch (e) {
-    console.log(`[!] Failed to hook CRigidEntity::ApplyStateFromNetwork: ${e.message}`);
-}
