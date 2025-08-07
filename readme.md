@@ -860,3 +860,179 @@ Allocator is a thin wrapper over the engine’s global `MemoryMgr`, delivering 1
           key = type name                       key = member name
           val = {typeCode, Map*}                val = int32_t
 ```
+
+## gRPC Internals & Transport Layer Deep Dive
+
+This section provides a comprehensive breakdown of gRPC's architecture and message flow within StarCitizen.exe. Understanding this pipeline is crucial for effective interception and analysis.
+
+### Core Architecture Overview
+
+gRPC implements a layered communication stack designed for efficiency and extensibility. In StarCitizen.exe, the stack follows this general flow:
+
+```
+[Application] ⇄ [gRPC C++ API] ⇄ [Filter Stack] ⇄ [CHTTP2 Transport] ⇄ [TCP Socket]
+```
+
+#### Key Components
+
+**C-Core Transport (`chttp2_transport`)**
+The CHTTP2 transport handles HTTP/2 framing and serves as the bridge between high-level gRPC operations and low-level socket I/O. This layer manages:
+- Stream multiplexing (using HTTP/2 streams with unique IDs)
+- Data framing (DATA, HEADERS, SETTINGS frames etc.)
+- Flow control and connection management
+
+**Filter Stack**
+A chain of modular filters that can inspect, compress, or modify data as it flows. Common filters include:
+- `client_channel` – routing and load balancing
+- `http_client_filter` – metadata conversion
+- `message_compress` – optional payload compression
+
+**Stream Operations (Batch Model)**
+All traffic flows via `grpc_transport_stream_op_batch` structs which denote one or more operations in a single atomic payload. Each batch consists of:
+- **On Complete**: Callback that fires when non-receive operations finish
+- **Payload Pointer**: Reference to metadata-message bundles
+- **Bitfields**: Flags marking presence of message ops (e.g. `send_message=1`, `recv_initial_metadata=1`)
+
+```c
+typedef struct grpc_transport_stream_op_batch {
+    grpc_closure* on_complete;
+    grpc_transport_stream_op_batch_payload* payload;
+    uint8_t cancel_stream : 1;
+    uint8_t send_initial_metadata : 1;
+    uint8_t send_message : 1;
+    uint8_t send_trailing_metadata : 1;
+    uint8_t recv_initial_metadata : 1;
+    uint8_t recv_message : 1;
+    uint8_t recv_trailing_metadata : 1;
+} grpc_transport_stream_op_batch;
+```
+
+### Outgoing Message Flow (SEND)
+
+1. **Serialization**
+   The application serializes Protobuf objects into a `grpc_slice_buffer`—a dynamic list of `grpc_slice` memory chunks.
+
+2. **Filter Chain Descent**
+   The serialized payload is wrapped in a batch struct, passed down through the filter stack for transformations.
+
+3. **Transport Layer Entry**
+   Final batch reaches `chttp2_transport_perform_stream_op` where:
+   - Message length gets prepended as a 5-byte gRPC header
+   - DATA frame wraps the message with a 9-byte HTTP/2 header
+
+4. **Socket Transmission**
+   Resulting buffer gets sent to the TCP socket via async writes, multiplexed by stream ID.
+
+### Incoming Message Flow (RECV)
+
+1. **TCP Read**
+   Raw byte stream from the socket enters `chttp2_transport_do_read`.
+
+2. **HTTP/2 Parsing**
+   Fragmented payloads are reassembled by `grpc_chttp2_perform_read`, reconstructing complete DATA frames.
+
+3. **gRPC Deframing**
+   Payloads strip 9-byte HTTP/2 headers to reveal gRPC data. Internal deframer strips 5-byte gRPC headers (compression/type info), reconstructing clean `grpc_slice_buffer` outputs.
+
+4. **Filter Chain Ascent**
+   Clean message data travels upward through the filter stack and into the application deserializers.
+
+### Memory-Level gRPC Structures
+
+Detailed memory layouts for intercepted structures based on StarCitizen's build (gRPC v1.49.2).
+
+> **Tip:** Structs here are validated via runtime memory dumps; field order is ABI-sensitive.
+
+#### `grpc_slice`
+*Size: 32 bytes*
+
+```
+[0x00] grpc_slice_refcount* refcount  → NULL = inline data; ptr = shared buffer
+[0x08] union data {
+         struct {
+           size_t length
+           uint8_t* bytes
+         } refcounted;
+         struct {
+           uint8_t length
+           uint8_t bytes[...]
+         } inlined;
+       }
+```
+
+#### `grpc_slice_buffer`
+*Size varies; minimum 40 bytes*
+
+```
+[0x00] grpc_slice* base_slices     → Memory block holding preallocated slices
+[0x08] grpc_slice* slices          → Pointer to current slice-array (mutable)
+[0x10] size_t count                → Number of slices in payload
+[0x18] size_t capacity             → Allocated number of slices (≥ count)
+[0x20] size_t length               → Number of total payload bytes across slices
+```
+
+#### `chttp2_stream`
+*Non-fixed size structure with known offsets*
+
+```
+[0x00] grpc_stream_refcount ref    → Stream reference tracking
+[...]                              → Stream state (metadata, etc.)
+[0x28] uint32_t id                 → HTTP/2 Stream ID
+[...]                              → Flow control, compression data
+[0x6B0] grpc_slice_buffer frame_storage  → Incoming frame buffer holding raw slices
+```
+
+### HTTP/2 Wire Format Primer
+
+Below are canonical representations of the intercepted HTTP/2 and gRPC framing headers, which are manually reassembled in the Frida script to maintain output symmetry.
+
+#### HTTP/2 Frame Header (9 bytes)
+```
++-----------------------------------------------+
+|             Length (24 bits)                     |
++---------------+---------------+---------------+
+|   Type (8)    |   Flags (8)   |
++---------------+---------------+---------------+
+|R|        Stream Identifier (31 bits)          |
++-----------------------------------------------+
+```
+
+**Fields**:
+- `Length`: 24-bit big-endian value indicating frame payload size (after this header).
+- `Type`: 0x0 = DATA, 0x1 = HEADERS, 0x4 = SETTINGS, 0x6 = PING, etc.
+- `Flags`: Bitflags for frame-specific options (e.g. END_STREAM, ACK).
+- `Stream Identifier (ID)`: 31-bit integer; multiplexing key.
+
+#### gRPC Message Header (5 bytes)
+```
++-----------------------------------------------+
+|C|         Message Length (31 bits)             |
++-----------------------------------------------+
+```
+
+**Fields**:
+- `Compression Flag (C)`: 0 = uncompressed, 1 = compressed.
+- `Message Length`: 32-bit big-endian indicating protobuf message size.
+
+> **Note**: The gRPC header lives *inside* HTTP/2 DATA frame payloads. This double-encapsulation is stripped during RECV but artificially restored in logging for clarity.
+
+---
+
+### Practical RE Notes
+
+#### Stream Stability
+- Stream IDs are consistent per RPC method during a session; ideal for coarse traffic tagging.
+- Payload interception occurs *before* final TCP write (`SEND`) and *after* CHTTP2 reassembly (`RECV`), ensuring data integrity.
+
+#### Memory Safety
+- Slices must be parsed carefully; union layout is ABI-sensitive.
+- Buffer length checks prevent Frida hangs from oversized reads.
+- Async logging bypasses gRPC internal locks—essential due to engine’s multi-threaded poll model.
+
+#### Versioning Signals
+StarCitizen uses gRPC v1.49.2 (2022); field offsets (`0x6B0`, `0x28`) may shift in future binaries. Check:
+- Slice struct size (should be 0x20)
+- Batch struct bitfield layout (send_message = 1<<2)
+- Frame deframe function return structure (Poll<T>)
+
+With these artifacts in hand, reverse-engineers can cleanly reconstruct or manipulate full session transcripts—either for telemetry, gameplay modification, or behavioral analysis.
