@@ -34,19 +34,19 @@
 \*─────────────────────────────────────────────────────────────────────────*/
 
 const CONFIG = {
-    // --- RVAs for Star Citizen 3.23 ---
+    // --- RVAs for Star Citizen 4.3 ---
     REL_GENV_RVA:
         typeof REL_GENV_RVA !== "undefined"
             ? ptr(REL_GENV_RVA)
-            : ptr("0x9F99E40"),
+            : ptr("0xa0377e0"),
     REL_GET_STRUCT_FPTRS_RVA:
         typeof REL_GET_STRUCT_FPTRS_RVA !== "undefined"
             ? ptr(REL_GET_STRUCT_FPTRS_RVA)
-            : ptr("0x77DFF80"),
+            : ptr("0x7867EB0"),
     REL_GET_STRUCTDESC_BY_NAME_RVA:
         typeof REL_GET_STRUCTDESC_BY_NAME_RVA !== "undefined"
             ? ptr(REL_GET_STRUCTDESC_BY_NAME_RVA)
-            : ptr("0x77E0370"),
+            : ptr("0x78682A0"),
 
     // --- OFFSETS for Star Citizen 3.23 ---
     OFFSET_DATACORE_IN_GENV: ptr("0x78"), // ***VERIFIED*** Offset of DataCore pointer within gEnv
