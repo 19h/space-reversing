@@ -6,6 +6,8 @@
 
 const PTR_SIZE = Process.pointerSize;
 
+const GENV_ADDR = Process.enumerateModules()[0].base.add('0x9feb000');
+
 // Helper to extract lower 48 bits of a pointer
 function extractLower48(ptrVal) {
     // Mask with 0xFFFFFFFFFFFF
@@ -14,7 +16,15 @@ function extractLower48(ptrVal) {
 
 // Helper to read a C-style UTF-8 string pointer
 function readCString(ptr) {
-    return ptr.isNull() ? null : ptr.readUtf8String();
+    try {
+        return ptr.isNull() ? null : ptr.readUtf8String();
+    } catch (e) {
+        try {
+            return ptr.readString();
+        } catch (e) {}
+    }
+
+    return null;
 }
 
 // Helper to call a virtual method by vtable index
@@ -41,6 +51,7 @@ function callVFunc(thisPtr, index, returnType, argTypes, args = [], name = null)
         return fn(thisPtr, ...args);
     } catch (e) {
         console.log(`callVFunc error at index ${index}${name ? ` (${name})` : ''}: ${e.message}`);
+        console.log(e.stack);
         throw e;
     }
 }
@@ -616,6 +627,8 @@ class EntityComponent {
     }
 }
 
+globalThis.entcomp = (ptr, componentName = 'Unknown') => new EntityComponent(ptr(ptr), componentName);
+
 class IComponentRender {
     constructor(ptr) {
         this.ptr = ptr;
@@ -682,6 +695,169 @@ class CRenderProxy {
     get componentRender() {
         const subObjectPtr = this.ptr.add(0x78);
         return new IComponentRender(subObjectPtr);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SLOT ARRAY HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Packed handle format: (index/flags << 48-56) | pointer
+// Sentinel values: 0xffffffffffffffff or 0xffffffff00000000
+
+globalThis.SENTINEL_64 = uint64("0xffffffffffffffff");
+globalThis.SENTINEL_32_HIGH = uint64("0xffffffff00000000");
+
+globalThis.isSlotSentinel = (value) => {
+    if (typeof value === 'object' && value.equals) {
+        return value.equals(SENTINEL_64) ||
+               value.and(SENTINEL_32_HIGH).equals(SENTINEL_32_HIGH);
+    }
+    return value === 0xffffffffffffffff || (value & 0xffffffff00000000) === 0xffffffff00000000;
+};
+
+globalThis.parsePackedHandle = (addr) => {
+    const v = ptr(addr).readU64();
+
+    // Check sentinels
+    if (v.equals(SENTINEL_64)) {
+        return { valid: false, reason: 'sentinel_0xFFFFFFFFFFFFFFFF', raw: v };
+    }
+    if (v.and(SENTINEL_32_HIGH).equals(SENTINEL_32_HIGH)) {
+        return { valid: false, reason: 'sentinel_high32_0xFFFFFFFF', raw: v };
+    }
+
+    // Check for null
+    if (v.equals(uint64(0))) {
+        return { valid: false, reason: 'null', raw: v };
+    }
+
+    const lower48 = v.and(uint64("0x0000FFFFFFFFFFFF"));
+    const highWord = v.shr(48).and(0xFFFF).toNumber();
+
+    // Heuristic: valid heap pointer range
+    const isLikelyPointer = lower48.compare(uint64("0x700000000000")) > 0 &&
+                            lower48.compare(uint64("0x800000000000")) < 0;
+
+    if (!isLikelyPointer) {
+        return {
+            valid: false,
+            reason: 'not_in_heap_range',
+            raw: v,
+            lower48: lower48.toString(16),
+            highWord: highWord
+        };
+    }
+
+    return {
+        valid: true,
+        reason: 'valid_packed_ptr',
+        index: highWord,
+        pointer: ptr(lower48),
+        raw: v
+    };
+};
+
+// Slot structure identified from dump (appears every ~0x38 bytes in some regions)
+// Pattern at 0x378+:
+//   +0x00: sentinel or flags (0xffffffffffffffff or 0x2000000000000000)
+//   +0x08: sentinel (-1) or null
+//   +0x10: null or small value
+//   +0x18: sentinel (0xffffffff)
+//   +0x20: packed handle or null
+//   +0x28: packed handle or null
+
+class EntitySlot {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    get sentinel1() { return this.ptr.readU64(); }
+    get field_08() { return this.ptr.add(0x08).readU64(); }
+    get field_10() { return this.ptr.add(0x10).readU64(); }
+    get flags() { return this.ptr.add(0x18).readU32(); }
+    get handle1() { return parsePackedHandle(this.ptr.add(0x20)); }
+    get handle2() { return parsePackedHandle(this.ptr.add(0x28)); }
+
+    get isValid() {
+        const h1 = this.handle1;
+        const h2 = this.handle2;
+        return h1.valid || h2.valid;
+    }
+
+    get entities() {
+        const result = [];
+        const h1 = this.handle1;
+        const h2 = this.handle2;
+        if (h1.valid && !h1.pointer.isNull()) result.push(h1);
+        if (h2.valid && !h2.pointer.isNull()) result.push(h2);
+        return result;
+    }
+
+    toString() {
+        const h1 = this.handle1;
+        const h2 = this.handle2;
+        return `Slot[h1=${h1.valid ? h1.pointer : 'invalid'}, h2=${h2.valid ? h2.pointer : 'invalid'}]`;
+    }
+}
+
+// Smaller slot pattern seen at 0x770+ (0x30 bytes each)
+// Resource/component slots with std::vector
+class ResourceSlot {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    static SIZE = 0x38;
+
+    get scale() { return this.ptr.readFloat(); }
+    get field_04() { return this.ptr.add(0x04).readFloat(); }
+    get resourcePtr() { return this.ptr.add(0x08).readPointer(); }
+
+    // std::vector at 0x18
+    get vectorBegin() { return this.ptr.add(0x18).readPointer(); }
+    get vectorEnd() { return this.ptr.add(0x20).readPointer(); }
+    get vectorCapacity() { return this.ptr.add(0x28).readPointer(); }
+
+    get vectorSize() {
+        const begin = this.vectorBegin;
+        const end = this.vectorEnd;
+        if (begin.isNull() || end.isNull()) return 0;
+        return end.sub(begin).toInt32();
+    }
+
+    get count() { return this.ptr.add(0x30).readU32(); }
+    get flags() { return this.ptr.add(0x34).readU32(); }
+
+    get isValid() {
+        return !this.resourcePtr.isNull() || this.vectorSize > 0;
+    }
+
+    toString() {
+        return `ResourceSlot[res=${this.resourcePtr}, vecSize=${this.vectorSize}, count=${this.count}]`;
+    }
+}
+
+// String/Asset table entry (0x28 bytes each)
+class AssetTableEntry {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    static SIZE = 0x28;
+
+    get typeInfo() { return this.ptr.readPointer(); }
+    get flags() { return this.ptr.add(0x08).readU32(); }
+    get stringTableBase() { return this.ptr.add(0x10).readPointer(); }
+    get stringIndex() { return this.ptr.add(0x18).readU32(); }
+    get dataPtr() { return this.ptr.add(0x20).readPointer(); }
+
+    get isValid() {
+        return !this.stringTableBase.isNull() && this.stringIndex !== 0;
+    }
+
+    toString() {
+        return `Asset[idx=0x${this.stringIndex.toString(16)}, data=${this.dataPtr}]`;
     }
 }
 
@@ -893,35 +1069,6 @@ class CEntity {
         return ptr.isNull() ? null : new CRenderProxy(ptr);
     }
 
-    // NEW: High-level method to add a glow effect
-    addGlow(glowParams = { r: 1.0, g: 0.0, b: 0.0 }, slotIndex = -1, glowStyle = 0) {
-        try {
-            const pRenderProxy = this.renderProxy;
-            if (!pRenderProxy) {
-                // console.log(`[!] Entity ${this.ptr} has no RenderProxy component.`);
-                return;
-            }
-
-            // Perform the game's safety checks
-            const isHandleValidFunc = new NativeFunction(Module.findBaseAddress("StarCitizen.exe").add(0x30EC00), 'bool', ['pointer']);
-            if (!isHandleValidFunc(pRenderProxy.renderHandlePtr)) {
-                // console.log(`[!] Entity ${this.ptr} has an invalid render handle.`);
-                return;
-            }
-
-            if (this.isHiddenOrDestroyed()) {
-                // console.log(`[!] Entity ${this.ptr} is hidden or being destroyed.`);
-                return;
-            }
-
-            // If checks pass, call the glow function on the sub-object
-            pRenderProxy.componentRender.addGlow(glowParams, glowStyle, slotIndex);
-
-        } catch (e) {
-            console.log(`[!] Error in addGlow for entity ${this.ptr}: ${e.message}`);
-        }
-    }
-
     // vfunc 201: Get zone this entity is in
     getZone() {
         const ptr = callVFunc(this.ptr, 201, "pointer", [], [], 'getZone');
@@ -939,14 +1086,364 @@ class CEntity {
         callVFunc(this.ptr, 206, "void", ["pointer", "pointer", "uint32"], [targetZone, transform, flags], 'setLocalTransform');
     }
 
+    // Iterate entity slots (pattern at ~0x378)
+    // These appear to be linked/contained entity references
+    iterateEntitySlots(startOffset = 0x378, count = 20, slotSize = 0x38) {
+        const slots = [];
+        for (let i = 0; i < count; i++) {
+            const slotPtr = this.ptr.add(startOffset + i * slotSize);
+            const slot = new EntitySlot(slotPtr);
+            slots.push({
+                index: i,
+                offset: startOffset + i * slotSize,
+                slot: slot,
+                valid: slot.isValid,
+                entities: slot.entities
+            });
+        }
+        return slots;
+    }
+
+    // Get only valid entity slots
+    getValidEntitySlots(startOffset = 0x378, count = 20, slotSize = 0x38) {
+        return this.iterateEntitySlots(startOffset, count, slotSize)
+            .filter(s => s.valid);
+    }
+
+    // Iterate resource slots (pattern at ~0x770)
+    iterateResourceSlots(startOffset = 0x770, count = 10) {
+        const slots = [];
+        for (let i = 0; i < count; i++) {
+            const slotPtr = this.ptr.add(startOffset + i * ResourceSlot.SIZE);
+            const slot = new ResourceSlot(slotPtr);
+            slots.push({
+                index: i,
+                offset: startOffset + i * ResourceSlot.SIZE,
+                slot: slot,
+                valid: slot.isValid
+            });
+        }
+        return slots;
+    }
+
+    // Iterate asset table entries (pattern at ~0x918)
+    iterateAssetTable(startOffset = 0x918, count = 30) {
+        const entries = [];
+        for (let i = 0; i < count; i++) {
+            const entryPtr = this.ptr.add(startOffset + i * AssetTableEntry.SIZE);
+            const entry = new AssetTableEntry(entryPtr);
+            entries.push({
+                index: i,
+                offset: startOffset + i * AssetTableEntry.SIZE,
+                entry: entry,
+                valid: entry.isValid
+            });
+        }
+        return entries;
+    }
+
+    // Find all packed handles in a range
+    findPackedHandles(startOffset = 0, endOffset = 0x1000, step = 8) {
+        const handles = [];
+        for (let off = startOffset; off < endOffset; off += step) {
+            const handle = parsePackedHandle(this.ptr.add(off));
+            if (handle.valid && handle.type === 'packed_ptr') {
+                handles.push({
+                    offset: off,
+                    offsetHex: '0x' + off.toString(16),
+                    handle: handle
+                });
+            }
+        }
+        return handles;
+    }
+
+    // Find all valid pointers in a range (useful for discovery)
+    findPointers(startOffset = 0, endOffset = 0x1000, step = 8) {
+        const pointers = [];
+        const minHeap = uint64("0x700000000000");
+        const maxHeap = uint64("0x800000000000");
+
+        for (let off = startOffset; off < endOffset; off += step) {
+            try {
+                const val = this.ptr.add(off).readU64();
+                // Check if looks like heap pointer
+                if (val.compare(minHeap) > 0 && val.compare(maxHeap) < 0) {
+                    pointers.push({
+                        offset: off,
+                        offsetHex: '0x' + off.toString(16),
+                        pointer: ptr(val)
+                    });
+                }
+            } catch (e) {}
+        }
+        return pointers;
+    }
+
+    // Find std::vector patterns (3 consecutive pointers in valid heap range)
+    findVectors(startOffset = 0, endOffset = 0x1000) {
+        const vectors = [];
+        const minHeap = uint64("0x10000000");  // Lower bound for valid pointers
+
+        for (let off = startOffset; off < endOffset - 24; off += 8) {
+            try {
+                const p1 = this.ptr.add(off).readPointer();
+                const p2 = this.ptr.add(off + 8).readPointer();
+                const p3 = this.ptr.add(off + 16).readPointer();
+
+                // Check if looks like begin <= end <= capacity
+                if (p1.isNull() && p2.isNull() && p3.isNull()) continue;
+
+                // All three should be in similar memory region
+                const v1 = p1.toString();
+                const v2 = p2.toString();
+                const v3 = p3.toString();
+
+                // Heuristic: begin and end should be close, capacity >= end
+                if (!p1.isNull() && !p2.isNull()) {
+                    const size = p2.sub(p1).toInt32();
+                    const cap = p3.sub(p1).toInt32();
+
+                    // Reasonable vector: positive size, size <= capacity, not huge
+                    if (size >= 0 && size <= cap && cap < 0x1000000 && cap > 0) {
+                        vectors.push({
+                            offset: off,
+                            offsetHex: '0x' + off.toString(16),
+                            begin: p1,
+                            end: p2,
+                            capacity: p3,
+                            size: size,
+                            capacityBytes: cap
+                        });
+                    }
+                }
+            } catch (e) {}
+        }
+        return vectors;
+    }
+
+    // Find 1.0f floats (often indicate scale or normalized values)
+    findUnitFloats(startOffset = 0, endOffset = 0x1000) {
+        const results = [];
+        const ONE_F = 0x3f800000;
+        const NEG_ONE_F = 0xbf800000;
+
+        for (let off = startOffset; off < endOffset; off += 4) {
+            try {
+                const val = this.ptr.add(off).readU32();
+                if (val === ONE_F || val === NEG_ONE_F) {
+                    results.push({
+                        offset: off,
+                        offsetHex: '0x' + off.toString(16),
+                        value: val === ONE_F ? 1.0 : -1.0
+                    });
+                }
+            } catch (e) {}
+        }
+        return results;
+    }
+
+    // Scan for repeating structure patterns
+    findRepeatingPattern(startOffset, patternSize, count, validator) {
+        const matches = [];
+        for (let i = 0; i < count; i++) {
+            const offset = startOffset + i * patternSize;
+            try {
+                if (validator(this.ptr.add(offset))) {
+                    matches.push({
+                        index: i,
+                        offset: offset,
+                        offsetHex: '0x' + offset.toString(16)
+                    });
+                }
+            } catch (e) {}
+        }
+        return matches;
+    }
+
+    // Improved slot dump
+    dumpSlots() {
+        console.log("=== Vectors Found ===");
+        const vectors = this.findVectors(0x700, 0xA00);
+        vectors.forEach(v => {
+            console.log(`  [${v.offsetHex}] size=${v.size}, cap=${v.capacityBytes}, begin=${v.begin}`);
+        });
+
+        console.log("\n=== Unit Floats (1.0f) ===");
+        const floats = this.findUnitFloats(0x700, 0xA00);
+        floats.forEach(f => {
+            console.log(`  [${f.offsetHex}] = ${f.value}`);
+        });
+
+        console.log("\n=== Valid Entity Slots ===");
+        const slots = this.getValidEntitySlots(0x378, 30, 0x38);
+        slots.forEach(s => {
+            console.log(`  [0x${s.offset.toString(16)}]`);
+            s.entities.forEach(e => {
+                console.log(`    idx=${e.index}, ptr=${e.pointer}`);
+                try {
+                    const ent = new CEntity(extractLower48(e.pointer));
+                    console.log(`    name: ${ent.name}`);
+                } catch(ex) {}
+            });
+        });
+    }
+
+    // Analyze the actual structure layout
+    analyzeStructure() {
+        console.log("=== ZONE/CONTAINER REFERENCES ===");
+
+        // Known entity reference offsets based on your class
+        const knownRefs = [
+            { off: 0x4b8, name: 'containingEntity' },
+            { off: 0x4c0, name: 'pilotingShip' },
+            { off: 0x4e8, name: 'containingShip' },
+            { off: 0xff0, name: 'actorEntity' },
+        ];
+
+        knownRefs.forEach(ref => {
+            try {
+                const p = this.ptr.add(ref.off).readPointer();
+                if (!p.isNull()) {
+                    const ent = new CEntity(extractLower48(p));
+                    console.log(`  ${ref.name} [0x${ref.off.toString(16)}]: ${ent.name || '<no name>'}`);
+                }
+            } catch(e) {}
+        });
+
+        console.log("\n=== DISCOVERED ENTITY REFERENCES ===");
+        // Scan for pointers that resolve to valid CEntity with names
+        for (let off = 0x400; off < 0x600; off += 8) {
+            try {
+                const p = this.ptr.add(off).readPointer();
+                if (p.isNull()) continue;
+
+                const extracted = extractLower48(p);
+                // Try to read as entity
+                const ent = new CEntity(extracted);
+                const name = ent.name;
+                if (name && name.length > 0 && name.length < 100) {
+                    const highBits = p.shr(48).toNumber();
+                    console.log(`  [0x${off.toString(16)}] (idx=${highBits}): "${name}"`);
+                }
+            } catch(e) {}
+        }
+
+        console.log("\n=== COMPONENT/RESOURCE ARRAYS (0x770+) ===");
+        // These appear to be resource slots with scale + vector
+        const slotStart = 0x770;
+        const slotStride = 0x40;
+
+        for (let i = 0; i < 6; i++) {
+            const base = slotStart + i * slotStride;
+            const scale = this.ptr.add(base).readFloat();
+            const vecBegin = this.ptr.add(base + 0x18).readPointer();
+            const vecEnd = this.ptr.add(base + 0x20).readPointer();
+
+            let vecSize = 0;
+            if (!vecBegin.isNull() && !vecEnd.isNull()) {
+                vecSize = vecEnd.sub(vecBegin).toInt32();
+            }
+
+            if (scale !== 0 || vecSize > 0) {
+                console.log(`  Slot ${i} [0x${base.toString(16)}]: scale=${scale.toFixed(2)}, vecSize=${vecSize}`);
+            }
+        }
+
+        console.log("\n=== STD::VECTORS FOUND ===");
+        const vectors = this.findVectors(0x700, 0x950);
+        vectors.forEach(v => {
+            // Try to identify vector element type by size
+            let elemGuess = '';
+            if (v.size % 8 === 0) elemGuess = `${v.size/8} ptrs`;
+            if (v.size % 12 === 0) elemGuess += ` or ${v.size/12} vec3s`;
+            if (v.size % 16 === 0) elemGuess += ` or ${v.size/16} vec4s`;
+            console.log(`  [${v.offsetHex}] ${v.size} bytes (${elemGuess})`);
+        });
+    }
+
+    // Get actual entity references (not vector data)
+    getRealEntityReferences() {
+        const refs = [];
+
+        // Scan region where we found named entities
+        for (let off = 0x480; off < 0x550; off += 8) {
+            try {
+                const p = this.ptr.add(off).readPointer();
+                if (p.isNull()) continue;
+
+                const extracted = extractLower48(p);
+                const highBits = p.shr(48).toNumber();
+
+                const ent = new CEntity(extracted);
+                const name = ent.name;
+
+                if (name && name.length > 0 && name.length < 100) {
+                    refs.push({
+                        offset: off,
+                        offsetHex: '0x' + off.toString(16),
+                        index: highBits,
+                        pointer: extracted,
+                        name: name,
+                        entity: ent
+                    });
+                }
+            } catch(e) {}
+        }
+
+        return refs;
+    }
+
+    // Get linked entities from slots
+    getLinkedEntities() {
+        const entities = [];
+        const slots = this.getValidEntitySlots();
+
+        for (const slotInfo of slots) {
+            for (const handle of slotInfo.entities) {
+                try {
+                    const entity = new CEntity(extractLower48(handle.pointer));
+                    entities.push({
+                        slotOffset: slotInfo.offset,
+                        slotIndex: handle.index,
+                        entity: entity,
+                        name: entity.name
+                    });
+                } catch (e) {
+                    // Invalid entity pointer
+                }
+            }
+        }
+        return entities;
+    }
+
     get healthComponent() {
         let comp_ptr = ptr(0);
         try {
-            comp_ptr = this.getComponentByName('CSCBodyHealthComponent');
+            comp_ptr = this.getComponentByName('SCBodyHealthComponent');
         } catch (e) {}
         return comp_ptr.isNull() ? null : new CHealthComponent(comp_ptr);
     }
 
+    get containingEntity() {
+        const containingEntity = this.ptr.add(0x4b8).readPointer();
+        return containingEntity.isNull() ? null : new CEntity(extractLower48(containingEntity));
+    }
+
+    get pilotingShip() {
+        const pilotedShip = this.ptr.add(0x4c0).readPointer();
+        return pilotedShip.isNull() ? null : new CEntity(extractLower48(pilotedShip));
+    }
+
+    get containingShip() {
+        const containingShip = this.ptr.add(0x4e8).readPointer();
+        return containingShip.isNull() ? null : new CEntity(extractLower48(containingShip));
+    }
+
+    get actorEntity() {
+        const actorEntity = this.ptr.add(0xff0).readPointer();
+        return actorEntity.isNull() ? null : new CEntity(extractLower48(actorEntity));
+    }
 }
 
 // Wrapper for CEntityArray<T> where T = CEntity*
@@ -1093,13 +1590,13 @@ class CEntityClassRegistry {
             const mapHeadNodePtrPtr = this.ptr.add(headNodePtrOffset); // Address of the pointer to the head node
             const mapHeadNodePtr = mapHeadNodePtrPtr.readPointer(); // The actual head node pointer
             if (mapHeadNodePtr.isNull()) {
-                console.error("Error: Map's _Head node pointer (at registry_addr+0x28) is NULL.");
+                console.error("Error: Map's _Head node pointer (at registry_addr+0x30) is NULL.");
                 return [];
             }
             console.log(`Map _Head node address: ${mapHeadNodePtr}`);
 
             // The size of the map is typically stored right after the head pointer in MSVC std::map's _Tree.
-            const mapSizeOffset = headNodePtrOffset + PTR_SIZE; // 0x28 + 0x8 = 0x30
+            const mapSizeOffset = headNodePtrOffset + PTR_SIZE; // 0x30 + 0x8 = 0x30
             const mapSize = this.ptr.add(mapSizeOffset).readULong();
             console.log(`Map size reported by std::map object: ${mapSize}`);
 
@@ -1392,9 +1889,8 @@ class CGame {
 
     // player_ at 0x0C08
     get player() {
-        // UPDATED: Offset from CGame in StarCitizenClasses.hpp
         const ptr = this.ptr.add(0x0C08).readPointer();
-        return ptr.isNull() ? null : new CSCPlayer(ptr);
+        return ptr.isNull() ? null : new CSCPlayer(extractLower48(ptr));
     }
 }
 
@@ -1407,7 +1903,7 @@ class CSCPlayer {
     // owning_entity_ at 0x08
     get owningEntity() {
         const ptr = this.ptr.add(0x08).readPointer();
-        return ptr.isNull() ? null : new CEntity(ptr);
+        return ptr.isNull() ? null : new CEntity(extractLower48(ptr));
     }
 
     // name_ at 0x3E8
@@ -1417,15 +1913,29 @@ class CSCPlayer {
     }
 }
 
-// === Main polling loop ===
+const convenience_mapping = [
+    ['zone', CZone],
+    ['physent', CPhysicalEntity],
+    ['rigent', CRigidEntity],
+    ['healthcomp', CHealthComponent],
+    ['ent', CEntity],
+    ['entclass', CEntityClass],
+];
 
-// UPDATED: RVA for GEnv from SCOffsets
-const GENV_ADDR = Process.enumerateModules()[0].base.add("0x9AF6720");
+convenience_mapping.forEach(([name, cls]) => {
+    globalThis[name] = iptr => new cls(ptr(iptr));
+
+    NativePointer.prototype[name] = function() {
+        return new cls(this);
+    };
+});
+
+// === Main polling loop ===
 const gEnv = new GEnv(GENV_ADDR);
 
 console.log("[*] Frida Entity System bridge initialized.");
 
-rpc.exports.getGEnv = () => gEnv;
+const player = () => gEnv.game.player.owningEntity;
 
 const run = () => {
     const es = gEnv.entitySystem;
@@ -2396,211 +2906,71 @@ rpc.exports.addGlowToEntitiesRegex = function(classNameRegex, glowParams = { r: 
     }
 };
 
-// Frida hook for add_glow_effect function at 0x14038DCA0
-const hookAddGlowEffect = () => {
-    try {
-        const moduleBase = Process.enumerateModulesSync()[0].base;
-        const addGlowEffectAddr = moduleBase.add(0x38DCA0);
+rpc.exports.hookRun = () => {
+    // Capture the local player's actor pointer at the time of hooking.
+    // Note: If the player respawns, this pointer may change, requiring a re-hook.
+    const p = player();
+    const localActor = p.actorEntity.ptr;
 
-        console.log(`[*] Hooking add_glow_effect at: ${addGlowEffectAddr}`);
+    // Configuration
+    const SPEED_MULTIPLIER = 5.5;
+    const FUNC_OFFSET = 0x6CE3090; // CActorEntity::Step offset (0x146CE3090 - 0x140000000)
 
-        Interceptor.attach(addGlowEffectAddr, {
-            onEnter: function(args) {
-                this.pGlowObject = args[0];
-                this.pGlowConfig = args[1];
-                this.glowId = args[2].toInt32();
+    // Resolve address
+    const base = Process.enumerateModules()[0].base;
+    const target = base.add(FUNC_OFFSET);
 
-                let output = `[HOOK] add_glow_effect called:\n`;
-                output += `  p_glow_object: ${this.pGlowObject}\n`;
-                output += `  p_glow_config: ${this.pGlowConfig}\n`;
-                output += `  glow_id: ${this.glowId}\n`;
+    console.log(`[+] Hooking CActorEntity::Step at ${target} for Local Actor: ${localActor}`);
 
-                // Read glow config data if pointer is valid
-                if (this.pGlowConfig && !this.pGlowConfig.isNull()) {
-                    try {
-                        // Assuming glow config contains RGB values as first 3 bytes
-                        const r = this.pGlowConfig.readU8();
-                        const g = this.pGlowConfig.add(1).readU8();
-                        const b = this.pGlowConfig.add(2).readU8();
-                        output += `  glow_config RGB: (${r}, ${g}, ${b})\n`;
-                    } catch (e) {
-                        output += `  glow_config: [Unable to read: ${e.message}]\n`;
-                    }
-                }
+    Interceptor.attach(target, {
+        onEnter: function(args) {
+            this.entity = args[0]; // rcx = this pointer
 
-                // Print stack trace
-                output += `  Stack trace:\n`;
-                Thread.backtrace(this.context, Backtracer.ACCURATE)
-                    .map(DebugSymbol.fromAddress)
-                    .forEach((symbol, index) => {
-                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
-                    });
-
-                console.log(output);
-            },
-
-            onLeave: function(retval) {
-                console.log(`[HOOK] add_glow_effect returned: ${retval}`);
+            // Filter: Only apply to local player
+            // We use .equals() for NativePointer comparison
+            if (!this.entity.equals(localActor)) {
+                this.isLocal = false;
+                return;
             }
-        });
+            this.isLocal = true;
 
-        console.log("[*] add_glow_effect hook installed successfully");
+            // Define offsets based on assembly analysis of SetParams/Step
+            // 0x494: MaxVelGround (Base Speed)
+            // 0x49C: Speed Multiplier (Sprint/Stance modifier)
+            // 0x4B4: Acceleration/Inertia (Required to reach new max speed)
+            this.pBaseSpeed = this.entity.add(0x494);
+            this.pSpeedMult = this.entity.add(0x49C);
+            this.pAccel = this.entity.add(0x4B4);
 
-    } catch (e) {
-        console.log(`[!] Failed to hook add_glow_effect: ${e.message}`);
-    }
-};
+            // Read current values
+            this.oldBaseSpeed = this.pBaseSpeed.readFloat();
+            this.oldSpeedMult = this.pSpeedMult.readFloat();
+            this.oldAccel = this.pAccel.readFloat();
 
-// RPC export to enable/disable the hook
-rpc.exports.hookAddGlowEffect = hookAddGlowEffect;
+            // Apply multiplier (Temporary modification for this step)
+            // We check isFinite to prevent injecting NaNs which cause physics crashes
+            if (isFinite(this.oldBaseSpeed))
+                this.pBaseSpeed.writeFloat(this.oldBaseSpeed * SPEED_MULTIPLIER);
 
-// Frida hook for function at 0x4C8900
-const hookSub1404C8900 = () => {
-    try {
-        const moduleBase = Process.enumerateModulesSync()[0].base;
-        const funcAddr = moduleBase.add(0x4C8900);
+            if (isFinite(this.oldSpeedMult))
+                this.pSpeedMult.writeFloat(this.oldSpeedMult * SPEED_MULTIPLIER);
 
-        console.log(`[*] Hooking sub_1404C8900 at: ${funcAddr}`);
+            if (isFinite(this.oldAccel))
+                this.pAccel.writeFloat(this.oldAccel * SPEED_MULTIPLIER);
+        },
+        onLeave: function(retval) {
+            // Restore original values immediately after Step() returns.
+            // This prevents permanent state corruption and conflicts with server updates.
+            if (this.isLocal) {
+                if (isFinite(this.oldBaseSpeed))
+                    this.pBaseSpeed.writeFloat(this.oldBaseSpeed);
 
-        Interceptor.attach(funcAddr, {
-            onEnter: function(args) {
-                this.a1 = args[0];
-                this.a2 = args[1];
-                this.a3 = args[2];
+                if (isFinite(this.oldSpeedMult))
+                    this.pSpeedMult.writeFloat(this.oldSpeedMult);
 
-                let output = `[HOOK] sub_1404C8900 called:\n`;
-                output += `  a1: ${this.a1}\n`;
-                output += `  a2 (QWORD*): ${this.a2}\n`;
-                output += `  a3 (char**): ${this.a3}\n`;
-
-                // Try to read the QWORD value if a2 is valid
-                if (this.a2 && !this.a2.isNull()) {
-                    try {
-                        const qwordValue = this.a2.readU64();
-                        output += `  *a2 (QWORD value): 0x${qwordValue.toString(16)}\n`;
-                    } catch (e) {
-                        output += `  *a2: [Unable to read: ${e.message}]\n`;
-                    }
-                }
-
-                // Try to read the char* pointer if a3 is valid
-                if (this.a3 && !this.a3.isNull()) {
-                    try {
-                        const charPtr = this.a3.readPointer();
-                        if (charPtr && !charPtr.isNull()) {
-                            const stringValue = charPtr.readCString();
-                            output += `  *a3 (char*): "${stringValue || '[empty/null string]'}"\n`;
-                        } else {
-                            output += `  *a3 (char*): [null pointer]\n`;
-                        }
-                    } catch (e) {
-                        output += `  *a3: [Unable to read: ${e.message}]\n`;
-                    }
-                }
-
-                // Print stack trace
-                output += `  Stack trace:\n`;
-                Thread.backtrace(this.context, Backtracer.ACCURATE)
-                    .map(DebugSymbol.fromAddress)
-                    .slice(0, 10) // Limit to first 10 frames
-                    .forEach((symbol, index) => {
-                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
-                    });
-
-                console.log(output);
-            },
-
-            onLeave: function(retval) {
-                console.log(`[HOOK] sub_1404C8900 returned: ${retval.toInt32()} (char)`);
+                if (isFinite(this.oldAccel))
+                    this.pAccel.writeFloat(this.oldAccel);
             }
-        });
-
-        console.log("[*] sub_1404C8900 hook installed successfully");
-
-    } catch (e) {
-        console.log(`[!] Failed to hook sub_1404C8900: ${e.message}`);
-    }
-};
-
-// RPC export to enable the hook
-rpc.exports.hookSub1404C8900 = hookSub1404C8900;
-
-// Frida hook for CRigidEntity::ApplyStateFromNetwork function
-const hookApplyStateFromNetwork = () => {
-    try {
-        const moduleBase = Process.enumerateModulesSync()[0].base;
-
-        // You'll need to replace this with the actual RVA for CRigidEntity::ApplyStateFromNetwork
-        // This is a placeholder - find the actual address from your analysis
-        const funcAddr = moduleBase.add(0x6782C30);
-
-        console.log(`[*] Hooking CRigidEntity::ApplyStateFromNetwork at: ${funcAddr}`);
-
-        Interceptor.attach(funcAddr, {
-            onEnter: function(args) {
-                this.a1 = args[0]; // _QWORD *a1 (CRigidEntity*)
-                this.a2 = args[1]; // __int64 a2
-
-                let output = `[HOOK] CRigidEntity::ApplyStateFromNetwork called:\n`;
-                output += `  a1 (CRigidEntity*): ${this.a1}\n`;
-                output += `  a2 (__int64): ${this.a2} (0x${this.a2.toString(16)})\n`;
-
-                // Dump interesting fields from a1 (CRigidEntity)
-                if (this.a1 && !this.a1.isNull()) {
-                    try {
-                        // a1[0x41] & 0x40000000 check
-                        const flagsAt0x41 = this.a1.add(0x41 * 8).readU64();
-                        output += `  a1[0x41] (flags): 0x${flagsAt0x41.toString(16)}\n`;
-                        output += `  a1[0x41] & 0x40000000: ${(flagsAt0x41.toNumber() & 0x40000000) !== 0}\n`;
-
-                        // *((_BYTE *)a1 + 0x94E) check
-                        const byteAt0x94E = this.a1.add(0x94E).readU8();
-                        output += `  *((_BYTE *)a1 + 0x94E): ${byteAt0x94E}\n`;
-
-                        // *((float *)a1 + 0x252) check
-                        const floatAt0x252 = this.a1.add(0x252 * 4).readFloat();
-                        output += `  *((float *)a1 + 0x252): ${floatAt0x252}\n`;
-
-                        // *((unsigned __int8 *)a1 + 0x94D) check
-                        const byteAt0x94D = this.a1.add(0x94D).readU8();
-                        output += `  *((unsigned __int8 *)a1 + 0x94D): ${byteAt0x94D}\n`;
-
-                        // a1[0x11D] check
-                        const qwordAt0x11D = this.a1.add(0x11D * 8).readU64();
-                        output += `  a1[0x11D]: 0x${qwordAt0x11D.toString(16)}\n`;
-
-                        // Lock field at a1 + 0x11E
-                        const lockField = this.a1.add(0x11E * 8).readU64();
-                        output += `  a1[0x11E] (m_netDesiredStateLock): 0x${lockField.toString(16)}\n`;
-
-                    } catch (e) {
-                        output += `  [Error reading a1 fields: ${e.message}]\n`;
-                    }
-                }
-
-                // Print stack trace
-                output += `  Stack trace:\n`;
-                Thread.backtrace(this.context, Backtracer.ACCURATE)
-                    .map(DebugSymbol.fromAddress)
-                    .slice(0, 8) // Limit to first 8 frames
-                    .forEach((symbol, index) => {
-                        output += `    ${index.toString().padStart(2, ' ')}: ${symbol.address} ${symbol.name || '<unknown>'}\n`;
-                    });
-
-                console.log(output);
-            },
-
-            onLeave: function(retval) {
-                console.log(`[HOOK] CRigidEntity::ApplyStateFromNetwork returned: 0x${retval.toString(16)} (${retval})`);
-            }
-        });
-
-        console.log("[*] CRigidEntity::ApplyStateFromNetwork hook installed successfully");
-
-    } catch (e) {
-        console.log(`[!] Failed to hook CRigidEntity::ApplyStateFromNetwork: ${e.message}`);
-    }
-};
-
-// RPC export to enable the hook
-rpc.exports.hookApplyStateFromNetwork = hookApplyStateFromNetwork;
+        }
+    });
+}
