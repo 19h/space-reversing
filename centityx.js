@@ -5,8 +5,36 @@
 "use strict";
 
 const PTR_SIZE = Process.pointerSize;
+const MODULE_BASE = Process.enumerateModules()[0].base;
 
-const GENV_ADDR = Process.enumerateModules()[0].base.add('0x9feb000');
+function gameAddr(abs) {
+    return MODULE_BASE.add(ptr(abs).sub(ptr('0x140000000')));
+}
+
+const GENV_ADDR = MODULE_BASE.add('0x99261b0');
+
+function dumpSpawnParams(params) {
+    if (!params || ptr(params).isNull()) {
+        return null;
+    }
+
+    params = ptr(params);
+    return {
+        ptr: params.toString(),
+        classPtr0x00: params.readPointer().toString(),
+        parentId0x28: params.add(0x28).readU64().toString(),
+        parentAttachId0x30: params.add(0x30).readU32(),
+        entityId0x38: params.add(0x38).readU64().toString(),
+        posX0x58: params.add(0x58).readDouble(),
+        posY0x60: params.add(0x60).readDouble(),
+        posZ0x68: params.add(0x68).readDouble(),
+        transformKind0x80: params.add(0x80).readU32(),
+        context0x88: params.add(0x88).readPointer().toString(),
+        flags0xB0: params.add(0xB0).readU32(),
+        qword0x138: params.add(0x138).readPointer().toString(),
+        qword0x148: params.add(0x148).readPointer().toString()
+    };
+}
 
 // Helper to extract lower 48 bits of a pointer
 function extractLower48(ptrVal) {
@@ -861,6 +889,94 @@ class AssetTableEntry {
     }
 }
 
+const bones = [
+    ['root', 0],
+    ['pelvis', 1],
+    ['spine_01', 2],
+    ['spine_02', 3],
+    ['spine_03', 4],
+    ['neck', 5],
+    ['r_eye', 6],
+    ['l_eye', 7],
+    ['r_foot', 10],
+    ['l_foot', 11],
+    ['r_shoulder', 12],
+    ['l_shoulder', 13],
+    ['r_elbow', 14],
+    ['left_elbow', 15],
+    ['r_hand', 16],
+    ['l_hand', 17],
+    ['r_knee', 18],
+    ['l_knee', 19],
+    ['head', 20],
+    ['r_hip', 21],
+    ['l_hip', 22],
+];
+
+class CActor {
+    constructor(ptr) {
+        this.ptr = ptr;
+    }
+
+    // Get bone transform for a specific bone by ID
+    getBoneTransform(boneId) {
+        try {
+            // Allocate buffer for transform (7 floats: quaternion + position)
+            const transformBuffer = Memory.alloc(7 * 4);
+
+            // Get the bone transform function
+            const getBoneTransformFunc = new NativeFunction(
+                ptr(0x142B6A5F0),
+                'pointer',
+                ['pointer', 'pointer', 'int']
+            );
+
+            // Call the function
+            const result = getBoneTransformFunc(this.ptr, transformBuffer, boneId);
+
+            if (!result.isNull()) {
+                // Read the transform data
+                return {
+                    quaternion: {
+                        x: transformBuffer.readFloat(),
+                        y: transformBuffer.add(4).readFloat(),
+                        z: transformBuffer.add(8).readFloat(),
+                        w: transformBuffer.add(12).readFloat()
+                    },
+                    position: {
+                        x: transformBuffer.add(16).readFloat(),
+                        y: transformBuffer.add(20).readFloat(),
+                        z: transformBuffer.add(24).readFloat()
+                    }
+                };
+            }
+
+            // Return identity transform if failed
+            return {
+                quaternion: { x: 0, y: 0, z: 0, w: 1 },
+                position: { x: 0, y: 0, z: 0 }
+            };
+        } catch (e) {
+            console.log(`[!] Error in getBoneTransform: ${e.message}`);
+            return {
+                quaternion: { x: 0, y: 0, z: 0, w: 1 },
+                position: { x: 0, y: 0, z: 0 }
+            };
+        }
+    }
+
+    // Get all bone transforms
+    getAllBoneTransforms() {
+        const transforms = {};
+
+        for (const [boneName, boneId] of bones) {
+            transforms[boneName] = this.getBoneTransform(boneId);
+        }
+
+        return transforms;
+    }
+}
+
 // Wrapper for CEntity (size: 0x0FD8)
 class CEntity {
     constructor(ptr) {
@@ -975,7 +1091,7 @@ class CEntity {
     getWorldPos(flags = 0) {
         try {
             const outPos = Memory.alloc(24); // sizeof(Vec3)
-            callVFunc(this.ptr, 89, "void", ["pointer", "uint32"], [outPos, flags], 'getWorldPos');
+            callVFunc(this.ptr, 88, "void", ["pointer", "uint32"], [outPos, flags], 'getWorldPos');
             const x = outPos.readDouble();
             const y = outPos.add(8).readDouble();
             const z = outPos.add(16).readDouble();
@@ -1425,25 +1541,69 @@ class CEntity {
         return comp_ptr.isNull() ? null : new CHealthComponent(comp_ptr);
     }
 
+    // BROKEN OFFSETS - These return invalid pointers
+    // TODO: Find correct offsets via reverse engineering
     get containingEntity() {
-        const containingEntity = this.ptr.add(0x4b8).readPointer();
-        return containingEntity.isNull() ? null : new CEntity(extractLower48(containingEntity));
+        console.log("[WARNING] CActor.containingEntity offset is BROKEN (0x4b8 is wrong)");
+        return null;
+        // const containingEntity = this.ptr.add(0x4b8).readPointer();
+        // return containingEntity.isNull() ? null : new CEntity(extractLower48(containingEntity));
     }
 
     get pilotingShip() {
-        const pilotedShip = this.ptr.add(0x4c0).readPointer();
-        return pilotedShip.isNull() ? null : new CEntity(extractLower48(pilotedShip));
+        console.log("[WARNING] CActor.pilotingShip offset is BROKEN (0x4c0 is wrong)");
+        return null;
+        // const pilotedShip = this.ptr.add(0x4c0).readPointer();
+        // return pilotedShip.isNull() ? null : new CEntity(extractLower48(pilotedShip));
     }
 
     get containingShip() {
-        const containingShip = this.ptr.add(0x4e8).readPointer();
-        return containingShip.isNull() ? null : new CEntity(extractLower48(containingShip));
+        console.log("[WARNING] CActor.containingShip offset is BROKEN (0x4e8 is wrong)");
+        return null;
+        // const containingShip = this.ptr.add(0x4e8).readPointer();
+        // return containingShip.isNull() ? null : new CEntity(extractLower48(containingShip));
     }
 
     get actorEntity() {
-        const actorEntity = this.ptr.add(0xff0).readPointer();
-        return actorEntity.isNull() ? null : new CEntity(extractLower48(actorEntity));
+        console.log("[WARNING] CActor.actorEntity offset is BROKEN (0xff0 returns null)");
+        return null;
+        // const actorEntity = this.ptr.add(0xff0).readPointer();
+        // return actorEntity.isNull() ? null : new CEntity(extractLower48(actorEntity));
     }
+
+    get actor() {
+        const actor = this.getComponentByName('Actor');
+        return actor.isNull() ? null : new CActor(extractLower48(actor));
+    }
+
+    // actorEntity at 0xfd8 -> CActorEntity (physical entity for actors)
+    get actorEntity() {
+        const ptr = this.ptr.add(0xfd8).readPointer();
+        return ptr.isNull() ? null : new CActorEntity(extractLower48(ptr));
+    }
+
+    // containingShip/Proxy at 0x4e8 - points to ship entity or CPhysicalProxy
+    get containingShip() {
+        const ptr = this.ptr.add(0x4e8).readPointer();
+        return ptr.isNull() ? null : new CEntity(extractLower48(ptr));
+    }
+}
+
+// Wrapper for CActorEntity (physical entity for player/NPC actors)
+// VTable: 0x148338cc8
+class CActorEntity extends CPhysicalEntity {
+    constructor(ptr) {
+        super(ptr);
+    }
+
+    // parentEntity at 0xc0 -> points back to the Player/NPC entity
+    get parentEntity() {
+        const ptr = this.ptr.add(0xc0).readPointer();
+        return ptr.isNull() ? null : new CEntity(extractLower48(ptr));
+    }
+
+    // TODO: Find ship relationship pointers in CActorEntity
+    // These may only be populated when player is in a ship
 }
 
 // Wrapper for CEntityArray<T> where T = CEntity*
@@ -1494,6 +1654,10 @@ class CEntityClassRegistry {
 
     // vtable index 4 => FindClass(const char*): CEntityClass*
     findClass(name) {
+        if (!name) {
+            name = 'crlf_consumable_ea_medicateAll_01';
+        }
+
         // allocate native CString
         const nameBuf = Memory.allocUtf8String(name);
         const clsPtr = callVFunc(
@@ -1598,9 +1762,10 @@ class CEntityClassRegistry {
             // The size of the map is typically stored right after the head pointer in MSVC std::map's _Tree.
             const mapSizeOffset = headNodePtrOffset + PTR_SIZE; // 0x30 + 0x8 = 0x30
             const mapSize = this.ptr.add(mapSizeOffset).readULong();
+            const mapSizeNumber = typeof mapSize === 'number' ? mapSize : mapSize.toNumber();
             console.log(`Map size reported by std::map object: ${mapSize}`);
 
-            if (mapSize.toUInt32() === 0) {
+            if (mapSizeNumber === 0) {
                 console.log("Class registry map is empty (size is 0). No classes to retrieve.");
                 return [];
             }
@@ -1616,8 +1781,9 @@ class CEntityClassRegistry {
             console.log(`Tree root node address: ${treeRootPtr}`);
 
             const classes = [];
-            this.traverseRBTree(treeRootPtr, mapHeadNodePtr, (className, classPtr) => {
+            this.traverseRBTree(treeRootPtr, mapHeadNodePtr, (mapKey, classPtr) => {
                 const classInst = new CEntityClass(classPtr);
+                const className = classInst.name || mapKey;
                 classes.push({
                     name: className,
                     ptr: classPtr,
@@ -1626,7 +1792,7 @@ class CEntityClassRegistry {
                 });
             });
 
-            if (classes.length !== mapSize.toUInt32()) {
+            if (classes.length !== mapSizeNumber) {
                 console.warn(`Warning: Number of traversed classes (${classes.length}) does not match map's reported size (${mapSize}). Traversal might be incomplete or map structure assumptions might be slightly off.`);
             } else {
                 console.log(`Successfully retrieved ${classes.length} classes.`);
@@ -1680,9 +1846,14 @@ class CEntitySystem {
 
     // entity_class_registry_ at 0x06D8
     get classRegistry() {
-        // Offset from CEntitySystem in StarCitizenClasses.hpp
+        const registry = this.getClassRegistryV();
+        if (registry) {
+            return registry;
+        }
+
+        // Fallback only; current builds have moved this member.
         const registryPtr = this.ptr.add(0x06D8).readPointer();
-        return new CEntityClassRegistry(registryPtr);
+        return registryPtr.isNull() ? null : new CEntityClassRegistry(registryPtr);
     }
 
     // Virtual slot 24 => GetClassRegistry(): CEntityClassRegistry*
@@ -1693,71 +1864,137 @@ class CEntitySystem {
 
     // Convenience: find class by name via built-in registry
     getClassByName(name) {
-        return this.classRegistry.findClass(name);
+        if (!name) {
+            name = 'crlf_consumable_ea_medicateAll_01';
+        }
+
+        const registry = this.classRegistry;
+        return registry ? registry.findClass(name) : null;
     }
 
-    // Direct call to spawn entity function (CreateEntityOfType)
-    spawnEntity(entityParams) {
-        // RVA for CreateEntityOfType
-        const moduleBase = Process.enumerateModulesSync()[0].base;
-        const spawnFuncAddr = moduleBase.add(0x65F5EC0);
+    static get native() {
+        if (!this._native) {
+            this._native = {
+                initSpawnParams: new NativeFunction(gameAddr('0x140462880'), 'void', ['pointer']),
+                setSpawnClass: new NativeFunction(gameAddr('0x1403B8AC0'), 'void', ['pointer', 'pointer']),
+                addSpawnFlags: new NativeFunction(gameAddr('0x14036AEF0'), 'void', ['pointer', 'uint32']),
+                setSpawnTransform: new NativeFunction(gameAddr('0x1403BBB30'), 'pointer', ['pointer', 'pointer', 'pointer', 'double']),
+                createCreationBatch: new NativeFunction(gameAddr('0x1462E3990'), 'void', ['pointer', 'pointer', 'pointer', 'uint8', 'uint32']),
+                submitCreationBatch: new NativeFunction(gameAddr('0x14632CA00'), 'void', ['pointer', 'pointer'])
+            };
+        }
+        return this._native;
+    }
 
-        // Create native function directly
-        const spawnFunc = new NativeFunction(spawnFuncAddr, "bool", ["pointer", "pointer"]);
+    buildSpawnTransform(position, rotation = null, scale = 1.0) {
+        const transform = Memory.alloc(0x40);
+        transform.writeByteArray(new Array(0x40).fill(0));
 
-        // Call with this pointer and entityParams
-        return spawnFunc(this.ptr, entityParams);
+        // Quaternion x/y/z/w followed by double position x/y/z and double scale.
+        transform.add(0x00).writeDouble(rotation?.x || 0.0);
+        transform.add(0x08).writeDouble(rotation?.y || 0.0);
+        transform.add(0x10).writeDouble(rotation?.z || 0.0);
+        transform.add(0x18).writeDouble(rotation?.w === undefined ? 1.0 : rotation.w);
+        transform.add(0x20).writeDouble(position.x);
+        transform.add(0x28).writeDouble(position.y);
+        transform.add(0x30).writeDouble(position.z);
+        transform.add(0x38).writeDouble(scale);
+        return transform;
+    }
+
+    createCreationBatch(callerName = 'centityx.js', batchKind = 0x14, flags = 0) {
+        const outBatch = Memory.alloc(PTR_SIZE);
+        outBatch.writePointer(NULL);
+        const callerNamePtr = Memory.allocUtf8String(callerName);
+        CEntitySystem.native.createCreationBatch(this.ptr, outBatch, callerNamePtr, batchKind, flags);
+        const batch = outBatch.readPointer();
+        return batch.isNull() ? null : { batch, outBatch };
+    }
+
+    spawnEntityBatch(className, options = {}) {
+        if (!className) {
+            className = 'crlf_consumable_ea_medicateAll_01';
+        }
+
+        const entityClass = this.getClassByName(className);
+        if (!entityClass) {
+            throw new Error(`Could not find entity class: ${className}`);
+        }
+
+        const referencePos = options.position || gEnv.cSystem?.cameraWorldPos || player()?.worldPos;
+        if (!referencePos) {
+            throw new Error('No usable camera/player position for spawn');
+        }
+
+        let spawnPos = new DVec3(referencePos.x, referencePos.y, referencePos.z);
+        if (!options.position) {
+            const forward = gEnv.cSystem?.cameraForward;
+            const distance = options.distance === undefined ? 2.0 : Number(options.distance);
+            if (forward) {
+                spawnPos = new DVec3(
+                    referencePos.x + forward.x * distance,
+                    referencePos.y + forward.y * distance,
+                    referencePos.z + forward.z * distance
+                );
+            } else {
+                spawnPos.z += 1.0;
+            }
+        }
+
+        const spawnParams = Memory.alloc(0x200);
+        spawnParams.writeByteArray(new Array(0x200).fill(0));
+        CEntitySystem.native.initSpawnParams(spawnParams);
+        CEntitySystem.native.setSpawnClass(spawnParams, entityClass.ptr);
+        CEntitySystem.native.addSpawnFlags(spawnParams, options.flags === undefined ? 0x1000 : Number(options.flags));
+
+        const contextPtr = options.contextPtr ? ptr(options.contextPtr) : NULL;
+        const transform = this.buildSpawnTransform(spawnPos, options.rotation, options.scale || 1.0);
+        CEntitySystem.native.setSpawnTransform(spawnParams, transform, contextPtr, 0.0);
+
+        const debugSpawnParams = {
+            entityId0x38: spawnParams.add(0x38).readU64().toString(),
+            parentOrContext0x28: spawnParams.add(0x28).readU64().toString(),
+            attachOrFlags0x30: spawnParams.add(0x30).readU32(),
+            transformKind0x80: spawnParams.add(0x80).readU32(),
+            context0x88: spawnParams.add(0x88).readPointer().toString(),
+            flags0xB0: spawnParams.add(0xB0).readU32()
+        };
+
+        const batchInfo = this.createCreationBatch(options.callerName || 'centityx.js', options.batchKind === undefined ? 0x14 : Number(options.batchKind), options.batchFlags || 0);
+        if (!batchInfo) {
+            throw new Error('CEntitySystem::CreateEntityCreationBatch returned null');
+        }
+
+        const outEntityId = Memory.alloc(8);
+        outEntityId.writeU64(uint64(0));
+        const addContext = options.addContextPtr ? ptr(options.addContextPtr) : NULL;
+        callVFunc(batchInfo.batch, 2, 'pointer', ['pointer', 'pointer', 'pointer'], [outEntityId, spawnParams, addContext], 'CEntityCreationBatch::AddEntity');
+
+        const entityId = outEntityId.readU64();
+        CEntitySystem.native.submitCreationBatch(this.ptr, batchInfo.outBatch);
+
+        return {
+            success: entityId.compare(uint64(0)) !== 0,
+            error: entityId.compare(uint64(0)) === 0 ? 'CEntityCreationBatch::AddEntity returned entity id 0' : undefined,
+            className,
+            classPtr: entityClass.ptr.toString(),
+            batch: batchInfo.batch.toString(),
+            entityId: entityId.toString(),
+            contextPtr: contextPtr.toString(),
+            addContextPtr: addContext.toString(),
+            spawnParams: debugSpawnParams,
+            position: { x: spawnPos.x, y: spawnPos.y, z: spawnPos.z }
+        };
     }
 
     // Helper method to create and spawn an entity by class name
     createEntity(className, spawnParams = {}) {
         try {
-            // Get the entity class
-            const entityClass = this.getClassByName(className);
-            if (!entityClass) {
-                console.log(`[!] Could not find entity class: ${className}`);
-                return null;
-            }
-
-            // Allocate memory for spawn parameters structure
-            const paramsPtr = Memory.alloc(0x200);
-            paramsPtr.writeByteArray(new Array(0x200).fill(0));
-
-            // Set entity class pointer at offset 0x00
-            paramsPtr.writePointer(entityClass.ptr);
-
-            // Set parent entity at offset 0x13 * 8 = 0x98 (based on the check in decompiled code)
-            if (spawnParams.parent) {
-                paramsPtr.add(0x98).writePointer(spawnParams.parent);
-                // Also set at offset 0x8 * 8 = 0x40 (zone/context field)
-                paramsPtr.add(0x40).writePointer(spawnParams.parent);
-            }
-
-            // Set entity name at offset 0x17 * 8 = 0xB8
-            if (spawnParams.name) {
-                const namePtr = Memory.allocUtf8String(spawnParams.name);
-                paramsPtr.add(0xB8).writePointer(namePtr);
-            }
-
-            // Set flags at offset 0x18 * 8 = 0xC0
-            if (spawnParams.flags !== undefined) {
-                paramsPtr.add(0xC0).writeU64(spawnParams.flags);
-            }
-
-            // Call the spawn function
-            const success = this.spawnEntity(paramsPtr);
-
-            if (success) {
-                console.log(`[+] Successfully spawned entity of class: ${className}`);
-                return true;
-            } else {
-                console.log(`[!] Failed to spawn entity of class: ${className}`);
-                return false;
-            }
-
+            return this.spawnEntityBatch(className, spawnParams);
         } catch (e) {
             console.log(`[!] Error creating entity: ${e.message}`);
-            return false;
+            console.log(e.stack);
+            return { success: false, error: e.message, className };
         }
     }
 }
@@ -1846,37 +2083,37 @@ class GEnv {
 
     // game_ at 0x98
     get game() {
-        const ptr = this.ptr.add(0x98).readPointer();
+        const ptr = this.ptr.add(0xa0).readPointer();
         return ptr.isNull() ? null : new CGame(ptr);
     }
 
     // entity_system_ at 0x00A0
     get entitySystem() {
-        const sysPtr = this.ptr.add(0x00a0).readPointer();
+        const sysPtr = this.ptr.add(0xa8).readPointer();
         return sysPtr.isNull() ? null : new CEntitySystem(sysPtr);
     }
 
     // engine_component_scheduler_ at 0x00A8
     get engineComponentScheduler() {
-        const ptr = this.ptr.add(0x00A8).readPointer();
+        const ptr = this.ptr.add(0xb0).readPointer();
         return ptr.isNull() ? null : new CEngineComponentScheduler(ptr);
     }
 
     // system_ at 0xC0
     get cSystem() {
-        const ptr = this.ptr.add(0xc0).readPointer();
+        const ptr = this.ptr.add(0xc8).readPointer();
         return ptr.isNull() ? null : new CSystem(ptr);
     }
 
     // renderer_ at 0xF8
     get cRenderer() {
-        const ptr = this.ptr.add(0xf8).readPointer();
+        const ptr = this.ptr.add(0x100).readPointer();
         return ptr.isNull() ? null : new CRenderer(ptr);
     }
 
     // zone_system_ at 0x8 (Note: Not present in provided C++ GEnv struct, may be outdated)
     get cZoneSystem() {
-        const ptr = this.ptr.add(0x8).readPointer();
+        const ptr = this.ptr.add(0x10).readPointer();
         return ptr.isNull() ? null : new CZoneSystem(ptr);
     }
 }
@@ -1906,9 +2143,9 @@ class CSCPlayer {
         return ptr.isNull() ? null : new CEntity(extractLower48(ptr));
     }
 
-    // name_ at 0x3E8
+    // name_ at 0x388
     get name() {
-        const namePtr = this.ptr.add(0x3E8).readPointer();
+        const namePtr = this.ptr.add(0x388).readPointer();
         return readCString(namePtr);
     }
 }
@@ -2573,10 +2810,14 @@ rpc.exports.spawnEntityByClass = function(className, options = {}) {
     }
 
     try {
+        if (!className) {
+            className = 'crlf_consumable_ea_medicateAll_01';
+        }
+
         // Default spawn parameters
         const spawnParams = {
             name: options.name || `Spawned_${className}_${Date.now()}`,
-            flags: options.flags || 0,
+            flags: options.flags === undefined ? 0x1000 : options.flags,
             zone: options.zone || null,
             parent: options.parent || null,
             ...options
@@ -2586,21 +2827,17 @@ rpc.exports.spawnEntityByClass = function(className, options = {}) {
 
         const result = entitySystem.createEntity(className, spawnParams);
 
-        if (result) {
+        if (result && result.success) {
             console.log(`[+] Successfully spawned entity of class '${className}'`);
-            return {
-                success: true,
-                className: className,
-                spawnParams: spawnParams
-            };
-        } else {
-            console.log(`[!] Failed to spawn entity of class '${className}'`);
-            return {
-                success: false,
-                error: "Spawn function returned false",
-                className: className
-            };
+            return result;
         }
+
+        console.log(`[!] Failed to spawn entity of class '${className}'`);
+        return result || {
+            success: false,
+            error: "Spawn function returned false",
+            className: className
+        };
 
     } catch (e) {
         console.log(`[!] Error spawning entity of class '${className}': ${e.message}`);
@@ -2974,3 +3211,218 @@ rpc.exports.hookRun = () => {
         }
     });
 }
+
+// builds a dependency tree based on all entities of a class (entity -> containingEntity -> containingEntity -> etc.)
+rpc.exports.buildClassEntitiesDepTree = (entityClassPattern, options = {}) => {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        console.log("[!] Entity system not available");
+        return { success: false, error: "Entity system not available" };
+    }
+
+    try {
+        const {
+            useRegex = true,
+            maxDepth = 100,
+            outputPath = `/tmp/entity_dep_tree_${Date.now()}.dot`,
+            includeZone = true,
+            includePtr = true
+        } = options;
+
+        // Find all entities matching the class pattern
+        const allEntities = entitySystem.entityArray.toArray();
+        let matchingEntities;
+
+        if (useRegex) {
+            const regex = new RegExp(entityClassPattern);
+            matchingEntities = allEntities.filter(entity => {
+                try {
+                    const entityClass = entity.entityClass;
+                    if (!entityClass) return false;
+                    return regex.test(entityClass.name);
+                } catch (e) {
+                    return false;
+                }
+            });
+        } else {
+            matchingEntities = allEntities.filter(entity => {
+                try {
+                    const entityClass = entity.entityClass;
+                    if (!entityClass) return false;
+                    return entityClass.name === entityClassPattern;
+                } catch (e) {
+                    return false;
+                }
+            });
+        }
+
+        console.log(`[*] Found ${matchingEntities.length} entities matching pattern '${entityClassPattern}'`);
+
+        if (matchingEntities.length === 0) {
+            return {
+                success: true,
+                pattern: entityClassPattern,
+                matchingEntities: 0,
+                totalNodes: 0,
+                totalEdges: 0,
+                filename: null,
+                dotContent: null
+            };
+        }
+
+        // Node storage: ptr string -> node data
+        const nodes = new Map();
+        // Edge storage: Set of "fromPtr->toPtr" strings
+        const edgeSet = new Set();
+        // Track which nodes are target class entities
+        const targetNodes = new Set();
+
+        const getPtrKey = (entity) => entity.ptr.toString();
+
+        const getNodeLabel = (entity) => {
+            const className = entity.entityClass ? entity.entityClass.name : "<unknown>";
+            const name = entity.name || "<no-name>";
+            const id = entity.id;
+
+            let label = `${className}\\n${name}\\nID: ${id}`;
+
+            if (includePtr) {
+                label += `\\n${entity.ptr}`;
+            }
+
+            if (includeZone) {
+                try {
+                    const zone = entity.zone;
+                    if (zone) {
+                        const zoneName = zone.name || "<unnamed-zone>";
+                        label += `\\nZone: ${zoneName}`;
+                    }
+                } catch (e) {}
+            }
+
+            return label;
+        };
+
+        const ensureNode = (entity) => {
+            const key = getPtrKey(entity);
+            if (!nodes.has(key)) {
+                nodes.set(key, {
+                    ptr: key,
+                    label: getNodeLabel(entity),
+                    className: entity.entityClass ? entity.entityClass.name : "<unknown>"
+                });
+            }
+            return key;
+        };
+
+        // Traverse upward from each matching entity
+        for (const entity of matchingEntities) {
+            let current = entity;
+            let depth = 0;
+
+            const startKey = ensureNode(current);
+            targetNodes.add(startKey);
+
+            while (current && depth < maxDepth) {
+                const currentKey = ensureNode(current);
+
+                let containing = null;
+                try {
+                    containing = current.containingEntity;
+                } catch (e) {
+                    console.log(`[!] Error getting containingEntity for ${current.ptr}: ${e.message}`);
+                }
+
+                if (containing && !containing.ptr.isNull()) {
+                    const containingKey = ensureNode(containing);
+                    const edgeKey = `${currentKey}->${containingKey}`;
+
+                    if (!edgeSet.has(edgeKey)) {
+                        edgeSet.add(edgeKey);
+                    }
+
+                    current = containing;
+                    depth++;
+                } else {
+                    break;
+                }
+            }
+
+            if (depth >= maxDepth) {
+                console.log(`[!] Max depth reached for entity ${entity.ptr}`);
+            }
+        }
+
+        console.log(`[*] Built graph with ${nodes.size} nodes and ${edgeSet.size} edges`);
+
+        // Generate DOT file content
+        const dotLines = [
+            'digraph EntityDependencyTree {',
+            '    rankdir=BT;',
+            '    node [shape=box, fontname="Consolas", fontsize=9];',
+            '    edge [color=gray50];',
+            ''
+        ];
+
+        // Escape DOT special characters in labels
+        const escapeDotLabel = (label) => {
+            return label.replace(/"/g, '\\"');
+        };
+
+        // Generate unique node IDs (DOT doesn't like hex addresses as IDs)
+        const nodeIdMap = new Map();
+        let nodeCounter = 0;
+        for (const [ptrKey, _] of nodes) {
+            nodeIdMap.set(ptrKey, `n${nodeCounter++}`);
+        }
+
+        // Add nodes
+        for (const [ptrKey, nodeData] of nodes) {
+            const nodeId = nodeIdMap.get(ptrKey);
+            const isTarget = targetNodes.has(ptrKey);
+            const style = isTarget
+                ? ', style=filled, fillcolor=lightblue, penwidth=2'
+                : '';
+            dotLines.push(`    ${nodeId} [label="${escapeDotLabel(nodeData.label)}"${style}];`);
+        }
+
+        dotLines.push('');
+
+        // Add edges
+        for (const edgeKey of edgeSet) {
+            const [fromPtr, toPtr] = edgeKey.split('->');
+            const fromId = nodeIdMap.get(fromPtr);
+            const toId = nodeIdMap.get(toPtr);
+            if (fromId && toId) {
+                dotLines.push(`    ${fromId} -> ${toId};`);
+            }
+        }
+
+        dotLines.push('}');
+
+        const dotContent = dotLines.join('\n');
+
+        // Write to disk
+        const file = new File(outputPath, 'w');
+        file.write(dotContent);
+        file.close();
+
+        console.log(`[+] DOT file written to: ${outputPath}`);
+        console.log(`[*] Render with: dot -Tpng ${outputPath} -o output.png`);
+
+        return {
+            success: true,
+            pattern: entityClassPattern,
+            matchingEntities: matchingEntities.length,
+            totalNodes: nodes.size,
+            totalEdges: edgeSet.size,
+            filename: outputPath,
+            dotContent: dotContent
+        };
+
+    } catch (e) {
+        console.log(`[!] Error building dependency tree: ${e.message}`);
+        console.log(e.stack);
+        return { success: false, error: e.message };
+    }
+};
