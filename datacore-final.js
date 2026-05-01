@@ -34,24 +34,27 @@
 \*─────────────────────────────────────────────────────────────────────────*/
 
 const CONFIG = {
-    // --- RVAs for Star Citizen 4.3 ---
+    // --- RVAs for current Star Citizen LIVE build ---
     REL_GENV_RVA:
         typeof REL_GENV_RVA !== "undefined"
             ? ptr(REL_GENV_RVA)
-            : ptr("0xa0377e0"),
+            : ptr("0x99261b0"),
+
+    // DATACORE VTABLE IS 0x14886F030!
+
     REL_GET_STRUCT_FPTRS_RVA:
         typeof REL_GET_STRUCT_FPTRS_RVA !== "undefined"
             ? ptr(REL_GET_STRUCT_FPTRS_RVA)
-            : ptr("0x7867EB0"),
+            : ptr("0x6C9C950"),
     REL_GET_STRUCTDESC_BY_NAME_RVA:
         typeof REL_GET_STRUCTDESC_BY_NAME_RVA !== "undefined"
             ? ptr(REL_GET_STRUCTDESC_BY_NAME_RVA)
-            : ptr("0x78682A0"),
+            : ptr("0x6C9CD20"),
 
-    // --- OFFSETS for Star Citizen 3.23 ---
-    OFFSET_DATACORE_IN_GENV: ptr("0x78"), // ***VERIFIED*** Offset of DataCore pointer within gEnv
-    OFFSET_ENUM_REGISTRY_IN_DC: ptr("0x120"), // ***VERIFIED*** Offset of EnumRegistry map within DataCore
-    OFFSET_STRUCT_MAP_IN_DC: ptr("0x130"), // ***VERIFIED*** Offset of Struct map within DataCore
+    // --- OFFSETS for current Star Citizen LIVE build ---
+    OFFSET_DATACORE_IN_GENV: ptr("0x80"), // ***VERIFIED*** Offset of DataCore pointer within gEnv
+    OFFSET_ENUM_REGISTRY_IN_DC: ptr("0x128"), // ***VERIFIED*** Offset of EnumRegistry map within DataCore
+    OFFSET_STRUCT_MAP_IN_DC: ptr("0x138"), // ***VERIFIED*** Offset of Struct map within DataCore
 
     // --- STRUCTURE LAYOUTS ---
     // Red-Black Tree Node Offsets (relative to node pointer)
@@ -73,8 +76,8 @@ const CONFIG = {
         offset: 0x08, // uint64_t offset within the struct
         size: 0x10, // uint64_t size of the field's type
         type: 0x18, // uint8_t enum representing the field type (see fieldTypeName)
-        flags: 0x19, // uint8_t field flags
-        isArrayOrPointer: 0x1a, // uint8_t: 1 if it's a DynArray (or potentially other pointer types?)
+        storageKind: 0x19, // uint8_t: type 16 uses 0=inline struct, 1=pointer/reference to struct, other values are terminal references
+        isArray: 0x1a, // uint8_t: 1 if this field is a DataCore array
         typeSpecificIndex: 0x1c, // uint32_t: Index for enum types, potentially other uses
         defaultValue: 0x20, // Pointer: Usage depends on type (e.g., points to struct name for type 16)
     },
@@ -693,8 +696,8 @@ const StructWalker = (() => {
                     offset: fPtr.add(fi.offset).readU64().toNumber(),
                     originalSize: fPtr.add(fi.size).readU64().toNumber(),
                     type: fPtr.add(fi.type).readU8(),
-                    flags: fPtr.add(fi.flags).readU8(),
-                    isArray: fPtr.add(fi.isArrayOrPointer).readU8() === 1,
+                    storageKind: fPtr.add(fi.storageKind).readU8(),
+                    isArray: fPtr.add(fi.isArray).readU8() === 1,
                     typeIdx: fPtr.add(fi.typeSpecificIndex).readU32(),
                     defPtr: rp(fPtr.add(fi.defaultValue)),
                 });
@@ -731,6 +734,7 @@ const StructWalker = (() => {
             let isOpaque =
                 rf.type === 16 && baseTypeNameForField === "UnknownStruct";
             let isPointerForced = false;
+            let structStorageKind = null;
 
             if (isOpaque) {
                 if (rf.isArray) {
@@ -754,44 +758,27 @@ const StructWalker = (() => {
                     }
                 } else if (rf.type === 16) {
                     isPointerForced = false;
-                    if (baseTypeNameForField === sanitizedStructName) {
+                    if (rf.storageKind === 0) {
+                        structStorageKind = "inline";
+                        final_dtype = baseTypeNameForField;
+                        final_layout_size = rf.originalSize;
+                        if (
+                            baseTypeNameForField &&
+                            baseTypeNameForField !== sanitizedStructName &&
+                            baseTypeNameForField !== "UnknownStruct"
+                        ) {
+                            dependencies.add(baseTypeNameForField);
+                        }
+                    } else if (rf.storageKind === 1) {
+                        structStorageKind = "pointer";
                         final_dtype = baseTypeNameForField + "*";
                         final_layout_size = ptrSize;
                         isPointerForced = true;
-                        dprint(
-                            `  Self-ref field ${sanitizedStructName}.${sanFieldName} forced to pointer.`,
-                        );
                     } else {
-                        const nextField =
-                            i + 1 < rawFields.length ? rawFields[i + 1] : null;
-                        if (
-                            nextField &&
-                            rf.offset + rf.originalSize > nextField.offset
-                        ) {
-                            final_dtype = baseTypeNameForField + "*";
-                            final_layout_size = ptrSize;
-                            isPointerForced = true;
-                            dprint(
-                                `  Overlap heuristic: ${sanitizedStructName}.${sanFieldName} (size 0x${rf.originalSize.toString(16)}) forced to pointer due to next field at 0x${nextField.offset.toString(16)} (current offset 0x${rf.offset.toString(16)}).`,
-                            );
-                        } else if (rf.originalSize === ptrSize) {
-                            final_dtype = baseTypeNameForField + "*";
-                            final_layout_size = ptrSize;
-                            isPointerForced = true;
-                            dprint(
-                                `  Size-match heuristic: ${sanitizedStructName}.${sanFieldName} (size 0x${rf.originalSize.toString(16)}) treated as pointer.`,
-                            );
-                        } else {
-                            final_dtype = baseTypeNameForField;
-                            final_layout_size = rf.originalSize;
-                        }
-                    }
-                    if (
-                        baseTypeNameForField &&
-                        baseTypeNameForField !== sanitizedStructName &&
-                        baseTypeNameForField !== "UnknownStruct"
-                    ) {
-                        dependencies.add(baseTypeNameForField);
+                        structStorageKind = "reference";
+                        final_dtype = "uint8_t";
+                        final_layout_size =
+                            rf.originalSize > 0 ? rf.originalSize : ptrSize;
                     }
                 } else if ([10, 13, 14].includes(rf.type)) {
                     final_dtype = baseTypeNameForField + "*";
@@ -810,7 +797,8 @@ const StructWalker = (() => {
                 originalSize: rf.originalSize,
                 type: rf.type,
                 isArray: rf.isArray,
-                flags: rf.flags,
+                flags: rf.storageKind,
+                storageKind: rf.storageKind,
                 dtype: final_dtype,
                 baseDtype: baseTypeNameForField,
                 enumRef:
@@ -819,6 +807,7 @@ const StructWalker = (() => {
                         : null,
                 isOpaque: isOpaque,
                 isPointerOverride: isPointerForced,
+                structStorageKind: structStorageKind,
             });
         }
 
@@ -938,10 +927,10 @@ function generateDynArrayStructs(allStructsData) {
 function sortStructsTopologically(
     structsData,
     iteration = 1,
-    forcePointerHeuristicForDependencies = false,
+    recomputeDependenciesForSubset = false,
 ) {
     dprint(
-        `Topological Sort: Starting iteration ${iteration}... ForcePointerHeuristic: ${forcePointerHeuristicForDependencies}`,
+        `Topological Sort: Starting iteration ${iteration}... RecomputeSubsetDeps: ${recomputeDependenciesForSubset}`,
     );
     const adj = new Map();
     const inDegree = new Map();
@@ -990,35 +979,22 @@ function sortStructsTopologically(
 
         const currentDependencies = new Set();
         s.fields.forEach((f) => {
-            let isConsideredPointer =
-                f.isArray ||
-                f.dtype.endsWith("*") ||
-                ([10, 13, 14].includes(f.type) && !f.isArray);
-            if (
-                forcePointerHeuristicForDependencies &&
-                f.type === 16 &&
-                !f.isArray &&
-                !f.isOpaque
-            ) {
-                isConsideredPointer = true;
-            }
             if (
                 f.baseDtype &&
                 f.baseDtype !== "UnknownStruct" &&
                 f.baseDtype !== dependentName
             ) {
-                if (f.isArray) {
-                    currentDependencies.add(getDynArrayName(f.baseDtype));
-                } else if (isConsideredPointer) {
+                if (
+                    f.type === 16 &&
+                    !f.isArray &&
+                    !f.isOpaque &&
+                    f.structStorageKind === "inline"
+                ) {
                     currentDependencies.add(f.baseDtype);
-                } else {
-                    if (!forcePointerHeuristicForDependencies) {
-                        if (f.type === 16) currentDependencies.add(f.baseDtype);
-                    }
                 }
             }
         });
-        const dependenciesToUse = forcePointerHeuristicForDependencies
+        const dependenciesToUse = recomputeDependenciesForSubset
             ? Array.from(currentDependencies)
             : s.dependencies;
 
@@ -1181,12 +1157,12 @@ function iterativeTopologicalSort(allStructsData) {
     let remainingForNextIteration = [];  // Declare outside for post-loop access
     while (currentStructsToProcess.length > 0 && iteration <= MAX_ITERATIONS) {
         dprint(`--- Starting Iterative Sort - Iteration ${iteration} ---`);
-        const forcePointerHeuristic = iteration > 1;
+        const recomputeSubsetDeps = iteration > 1;
         const { sortedThisIteration, remainingForNextIteration: nextRemaining } =
             sortStructsTopologically(
                 currentStructsToProcess,
                 iteration,
-                forcePointerHeuristic,
+                recomputeSubsetDeps,
             );
         remainingForNextIteration = nextRemaining;  // Update the outer variable
         finalSortedList.push(...sortedThisIteration);
@@ -1342,7 +1318,11 @@ function generateHeader(
     });
     out.push("\n");
 
-    const generateStructDefinition = (s, isUnprocessedBlock = false) => {
+    const generateStructDefinition = (
+        s,
+        isUnprocessedBlock = false,
+        unresolvedInlineNames = new Set(),
+    ) => {
         const structLines = [];
         const sn = s.sanitizedName;
 
@@ -1358,9 +1338,6 @@ function generateHeader(
         if (isUnprocessedBlock) {
             structLines.push(
                 `// WARNING: This struct was part of a cycle or had missing dependencies.`,
-            );
-            structLines.push(
-                `// Pointer heuristic may have been applied to its type 16 fields for ordering.`,
             );
         }
 
@@ -1393,22 +1370,20 @@ function generateHeader(
             let finalDtypeForField = f.dtype;
 
             if (
-                isUnprocessedBlock &&
                 f.type === 16 &&
                 !f.isArray &&
-                !f.isOpaque &&
-                !f.dtype.endsWith("*") &&
-                !f.isPointerOverride
+                f.structStorageKind === "inline" &&
+                isUnprocessedBlock &&
+                unresolvedInlineNames.has(f.baseDtype)
             ) {
-                finalDtypeForField = f.baseDtype + "*";
-                fieldLayoutSize = Process.pointerSize;
-                sizeAndTypeComment = ` /* CYCLIC_HEURISTIC: Forced to pointer. Original size: 0x${f.originalSize.toString(16)} */`;
-                dprint(
-                    `Applying cyclic heuristic to ${sn}.${f.name}, changing type to ${finalDtypeForField}`,
-                );
-            }
-
-            if (f.isOpaque && !f.isArray) {
+                fieldDefinition = `    uint8_t ${f.name}[0x${fieldLayoutSize.toString(16)}];${nameComment} // Unresolved inline DataCore struct ${f.baseDtype}; emitted as bytes to break C/C++ incomplete-type cycle${offsetComment}`;
+            } else if (
+                f.type === 16 &&
+                !f.isArray &&
+                f.structStorageKind === "reference"
+            ) {
+                fieldDefinition = `    uint8_t ${f.name}[0x${fieldLayoutSize.toString(16)}];${nameComment} // DataCore terminal reference to ${f.baseDtype}, storageKind=${f.storageKind}${offsetComment}`;
+            } else if (f.isOpaque && !f.isArray) {
                 fieldDefinition = `    uint8_t ${f.name}[0x${fieldLayoutSize.toString(16)}];${nameComment} // Opaque struct field (type resolution failed)${offsetComment}`;
             } else {
                 const arrayMarker =
@@ -1418,8 +1393,8 @@ function generateHeader(
                           ? " // Pointer to array of opaque structs"
                           : "";
                 if (f.type === 16 && !f.isArray && !f.isOpaque) {
-                    if (finalDtypeForField.endsWith("*")) {
-                        sizeAndTypeComment += ` /* Target struct size: 0x${f.originalSize.toString(16)} */`;
+                    if (f.structStorageKind === "pointer") {
+                        sizeAndTypeComment += ` /* DataCore pointer/reference to struct; target struct size: 0x${f.originalSize.toString(16)} */`;
                     } else {
                         if (
                             f.originalSize === Process.pointerSize &&
@@ -1478,13 +1453,16 @@ function generateHeader(
         unprocessedStructs.sort((a, b) =>
             a.sanitizedName.localeCompare(b.sanitizedName),
         );
+        const unresolvedInlineNames = new Set(
+            unprocessedStructs.map((s) => s.sanitizedName),
+        );
         for (const s of unprocessedStructs) {
             if (
                 s.sanitizedName &&
                 !s.sanitizedName.startsWith("UnknownStruct") &&
                 !s.sanitizedName.startsWith("sanitizeName_")
             ) {
-                out.push(generateStructDefinition(s, true));
+                out.push(generateStructDefinition(s, true, unresolvedInlineNames));
             } else {
                 dprint(
                     `Skipping definition for unprocessed struct with invalid name: ${s.name} -> ${s.sanitizedName}`,
