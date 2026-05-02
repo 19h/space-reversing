@@ -179,12 +179,17 @@ const SIGNATURES = {
 
 // Configuration used to filter or include specific message contents based on keyword matching
 // Currently empty but can be populated for targeted interception if needed.
-const FILTER_EXCLUDE = ['presence']; // Array of keywords for message exclusion
+const FILTER_EXCLUDE = ['presence', 'TraceProduct', 'TraceParentId', 'TraceContext'].map(a => a.toLowerCase()); // Array of keywords for message exclusion
 const FILTER_INCLUDE = []; // Array of keywords for focused message inclusion
 
 // Flag that determines whether detailed payload visualization should be logged.
 // When enabled, messages are displayed with breakdown of HTTP/2 and gRPC framing information.
 const VISUALISE_PAYLOADS = true;
+
+// Inflate gzip-wrapped message bodies when the captured payload itself starts with
+// a gzip header. This is separate from the synthetic gRPC compression flag below.
+const DECOMPRESS_GZIP_PAYLOADS = true;
+const MAX_DECOMPRESSED_SIZE = 0x2000000; // 32MB safety cutoff
 
 // The maximum number of bytes to dump per payload in hexdump format. This prevents extremely large
 // outputs when inspecting message contents.
@@ -468,6 +473,248 @@ function dumpSliceBuffer(sliceBufferPtr) {
         }
     }
     return { payload: fullPayload.buffer, totalLength: totalLength };
+}
+
+function isGzipPayload(buf) {
+    const u8 = new Uint8Array(buf);
+    return u8.length >= 3 && u8[0] === 0x1f && u8[1] === 0x8b && u8[2] === 0x08;
+}
+
+function cloneArrayBuffer(u8) {
+    const out = new Uint8Array(u8.length);
+    out.set(u8);
+    return out.buffer;
+}
+
+function BitReader(bytes) {
+    this.bytes = bytes;
+    this.pos = 0;
+    this.bitbuf = 0;
+    this.bitcnt = 0;
+}
+
+BitReader.prototype.readBits = function (n) {
+    while (this.bitcnt < n) {
+        if (this.pos >= this.bytes.length) throw new Error('unexpected end of deflate stream');
+        this.bitbuf |= this.bytes[this.pos++] << this.bitcnt;
+        this.bitcnt += 8;
+    }
+    const val = this.bitbuf & ((1 << n) - 1);
+    this.bitbuf >>>= n;
+    this.bitcnt -= n;
+    return val;
+};
+
+BitReader.prototype.alignByte = function () {
+    this.bitbuf = 0;
+    this.bitcnt = 0;
+};
+
+function reverseBits(code, len) {
+    let out = 0;
+    for (let i = 0; i < len; i++) {
+        out = (out << 1) | (code & 1);
+        code >>>= 1;
+    }
+    return out;
+}
+
+function buildHuffman(lengths) {
+    const maxLen = Math.max.apply(null, lengths);
+    if (maxLen === 0) return { maxLen: 0, table: [] };
+
+    const counts = new Array(maxLen + 1).fill(0);
+    const nextCode = new Array(maxLen + 1).fill(0);
+    const table = new Array(maxLen + 1);
+
+    for (let i = 0; i < lengths.length; i++) counts[lengths[i]]++;
+    counts[0] = 0;
+
+    let code = 0;
+    for (let bits = 1; bits <= maxLen; bits++) {
+        code = (code + counts[bits - 1]) << 1;
+        nextCode[bits] = code;
+        table[bits] = [];
+    }
+
+    for (let sym = 0; sym < lengths.length; sym++) {
+        const len = lengths[sym];
+        if (len === 0) continue;
+        table[len][reverseBits(nextCode[len]++, len)] = sym;
+    }
+
+    return { maxLen, table };
+}
+
+function decodeHuffman(br, tree) {
+    let code = 0;
+    for (let len = 1; len <= tree.maxLen; len++) {
+        code |= br.readBits(1) << (len - 1);
+        const bucket = tree.table[len];
+        if (bucket && bucket[code] !== undefined) return bucket[code];
+    }
+    throw new Error('invalid deflate huffman code');
+}
+
+const DEFLATE_LEN_BASE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258];
+const DEFLATE_LEN_EXTRA = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0];
+const DEFLATE_DIST_BASE = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577];
+const DEFLATE_DIST_EXTRA = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13];
+
+function fixedHuffmanTrees() {
+    const litLens = new Array(288);
+    const distLens = new Array(32).fill(5);
+    for (let i = 0; i <= 143; i++) litLens[i] = 8;
+    for (let i = 144; i <= 255; i++) litLens[i] = 9;
+    for (let i = 256; i <= 279; i++) litLens[i] = 7;
+    for (let i = 280; i <= 287; i++) litLens[i] = 8;
+    return { lit: buildHuffman(litLens), dist: buildHuffman(distLens) };
+}
+
+function dynamicHuffmanTrees(br) {
+    const hlit = br.readBits(5) + 257;
+    const hdist = br.readBits(5) + 1;
+    const hclen = br.readBits(4) + 4;
+    const order = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+    const codeLens = new Array(19).fill(0);
+
+    for (let i = 0; i < hclen; i++) codeLens[order[i]] = br.readBits(3);
+
+    const codeTree = buildHuffman(codeLens);
+    const lengths = [];
+    while (lengths.length < hlit + hdist) {
+        const sym = decodeHuffman(br, codeTree);
+        if (sym <= 15) {
+            lengths.push(sym);
+        } else if (sym === 16) {
+            if (lengths.length === 0) throw new Error('deflate repeat with no previous length');
+            const repeat = br.readBits(2) + 3;
+            const prev = lengths[lengths.length - 1];
+            for (let i = 0; i < repeat; i++) lengths.push(prev);
+        } else if (sym === 17) {
+            const repeat = br.readBits(3) + 3;
+            for (let i = 0; i < repeat; i++) lengths.push(0);
+        } else if (sym === 18) {
+            const repeat = br.readBits(7) + 11;
+            for (let i = 0; i < repeat; i++) lengths.push(0);
+        } else {
+            throw new Error('invalid deflate code length symbol');
+        }
+    }
+
+    return {
+        lit: buildHuffman(lengths.slice(0, hlit)),
+        dist: buildHuffman(lengths.slice(hlit, hlit + hdist))
+    };
+}
+
+function inflateRaw(deflated, maxOutputSize) {
+    const br = new BitReader(deflated);
+    const out = [];
+    let finalBlock = 0;
+
+    while (!finalBlock) {
+        finalBlock = br.readBits(1);
+        const blockType = br.readBits(2);
+
+        if (blockType === 0) {
+            br.alignByte();
+            const len = br.readBits(16);
+            const nlen = br.readBits(16);
+            if (((len ^ 0xffff) & 0xffff) !== nlen) throw new Error('invalid deflate stored block length');
+            for (let i = 0; i < len; i++) {
+                if (br.pos >= br.bytes.length) throw new Error('unexpected end of stored block');
+                out.push(br.bytes[br.pos++]);
+                if (out.length > maxOutputSize) throw new Error('decompressed payload too large');
+            }
+            continue;
+        }
+
+        if (blockType === 3) throw new Error('reserved deflate block type');
+
+        const trees = blockType === 1 ? fixedHuffmanTrees() : dynamicHuffmanTrees(br);
+        while (true) {
+            const sym = decodeHuffman(br, trees.lit);
+            if (sym < 256) {
+                out.push(sym);
+                if (out.length > maxOutputSize) throw new Error('decompressed payload too large');
+            } else if (sym === 256) {
+                break;
+            } else {
+                const lenIndex = sym - 257;
+                if (lenIndex < 0 || lenIndex >= DEFLATE_LEN_BASE.length) throw new Error('invalid deflate length symbol');
+                const length = DEFLATE_LEN_BASE[lenIndex] + br.readBits(DEFLATE_LEN_EXTRA[lenIndex]);
+                const distSym = decodeHuffman(br, trees.dist);
+                if (distSym < 0 || distSym >= DEFLATE_DIST_BASE.length) throw new Error('invalid deflate distance symbol');
+                const distance = DEFLATE_DIST_BASE[distSym] + br.readBits(DEFLATE_DIST_EXTRA[distSym]);
+                if (distance > out.length) throw new Error('invalid deflate distance');
+                for (let i = 0; i < length; i++) {
+                    out.push(out[out.length - distance]);
+                    if (out.length > maxOutputSize) throw new Error('decompressed payload too large');
+                }
+            }
+        }
+    }
+
+    return new Uint8Array(out);
+}
+
+function gunzipPayload(gzipBytes) {
+    if (gzipBytes.length < 18 || gzipBytes[0] !== 0x1f || gzipBytes[1] !== 0x8b || gzipBytes[2] !== 0x08) {
+        throw new Error('not a gzip deflate stream');
+    }
+
+    const flags = gzipBytes[3];
+    let pos = 10;
+
+    if (flags & 0x04) {
+        if (pos + 2 > gzipBytes.length) throw new Error('truncated gzip extra field');
+        const xlen = gzipBytes[pos] | (gzipBytes[pos + 1] << 8);
+        pos += 2 + xlen;
+    }
+    if (flags & 0x08) {
+        while (pos < gzipBytes.length && gzipBytes[pos++] !== 0) {}
+    }
+    if (flags & 0x10) {
+        while (pos < gzipBytes.length && gzipBytes[pos++] !== 0) {}
+    }
+    if (flags & 0x02) pos += 2;
+    if (pos >= gzipBytes.length - 8) throw new Error('truncated gzip body');
+
+    const body = gzipBytes.subarray(pos, gzipBytes.length - 8);
+    const inflated = inflateRaw(body, MAX_DECOMPRESSED_SIZE);
+    const isize = gzipBytes[gzipBytes.length - 4] |
+        (gzipBytes[gzipBytes.length - 3] << 8) |
+        (gzipBytes[gzipBytes.length - 2] << 16) |
+        (gzipBytes[gzipBytes.length - 1] << 24);
+
+    if (((inflated.length - isize) | 0) !== 0) throw new Error('gzip size check failed');
+    return inflated;
+}
+
+function maybeDecompressPayload(payload) {
+    if (!DECOMPRESS_GZIP_PAYLOADS || !isGzipPayload(payload)) return null;
+
+    try {
+        const inflated = gunzipPayload(new Uint8Array(payload));
+        return { encoding: 'gzip', payload: cloneArrayBuffer(inflated), totalLength: inflated.length };
+    } catch (e) {
+        return { encoding: 'gzip', error: e.message };
+    }
+}
+
+function decompressedLogFields(decoded, streamId) {
+    if (!decoded) return {};
+    if (decoded.error) {
+        return { decompressionNote: `[${decoded.encoding} decompression failed] ${decoded.error}` };
+    }
+
+    const framed = constructFakeFramedBuffer(decoded.payload, streamId);
+    return {
+        decompressedHeader: `[${decoded.encoding} decompressed body] Length=${decoded.totalLength}`,
+        decompressedHexdump: hexdump(framed, { length: Math.min(framed.byteLength, MAX_DUMP_SIZE), ansi: true }),
+        decompressedOmitted: framed.byteLength > MAX_DUMP_SIZE ? colour(C.RESET, `… (${framed.byteLength - MAX_DUMP_SIZE} more decompressed bytes omitted)`) : null
+    };
 }
 
 /**
@@ -860,6 +1107,18 @@ function logPacket(logObject) {
         console.log(logObject.omitted);
     }
 
+    if (logObject.decompressionNote) {
+        console.log(colour(C.RAW, logObject.decompressionNote));
+    }
+
+    if (logObject.decompressedHeader) {
+        console.log(logObject.decompressedHeader);
+        console.log(logObject.decompressedHexdump);
+        if (logObject.decompressedOmitted) {
+            console.log(logObject.decompressedOmitted);
+        }
+    }
+
     if (logObject.visualization) {
         console.log(colour(C.RESET, "\n--- Encapsulation view ------------------------------------------------"));
         console.log(logObject.visualization);
@@ -976,18 +1235,20 @@ function installHooks() {
                         // Perform all memory reads and data processing synchronously
                         const streamId = streamPtr.add(STREAM_ID_OFFSET).readU32();
                         const framedData = constructFakeFramedBuffer(result.payload, streamId);
+                        const decoded = maybeDecompressPayload(result.payload);
+                        const filterPayload = decoded && decoded.payload ? decoded.payload : result.payload;
 
                         // Filter now to avoid unnecessary work
-                        if (!shouldLog(new Uint8Array(result.payload))) return;
+                        if (!shouldLog(new Uint8Array(filterPayload))) return;
 
                         // Pre-format all strings for the log object
                         const timestamp = new Date().toISOString();
-                        const logObject = {
+                        const logObject = Object.assign({
                             header: `\n[${timestamp}] --> [SEND] Payload @ ${sliceBufferPtr}: Length=${result.totalLength}`,
                             hexdump: hexdump(framedData, { length: Math.min(framedData.byteLength, MAX_DUMP_SIZE), ansi: true }),
                             omitted: framedData.byteLength > MAX_DUMP_SIZE ? colour(C.RESET, `… (${framedData.byteLength - MAX_DUMP_SIZE} more bytes omitted)`) : null,
                             visualization: VISUALISE_PAYLOADS ? visualisePayload(framedData) : null
-                        };
+                        }, decompressedLogFields(decoded, streamId));
 
                         // Defer only the slow console I/O operation
                         setTimeout(() => logPacket(logObject), 0);
@@ -1036,18 +1297,20 @@ function installHooks() {
                     // Perform all memory reads and data processing synchronously
                     const streamId = this.streamPtr.add(STREAM_ID_OFFSET).readU32();
                     const framedData = constructFakeFramedBuffer(result.payload, streamId);
+                    const decoded = maybeDecompressPayload(result.payload);
+                    const filterPayload = decoded && decoded.payload ? decoded.payload : result.payload;
 
                     // Filter now to avoid unnecessary work
-                    if (!shouldLog(new Uint8Array(result.payload))) return;
+                    if (!shouldLog(new Uint8Array(filterPayload))) return;
 
                     // Pre-format all strings for the log object
                     const timestamp = new Date().toISOString();
-                    const logObject = {
+                    const logObject = Object.assign({
                         header: `\n[${timestamp}] <-- [RECV] Payload @ ${this.streamPtr}: Length=${result.totalLength}`,
                         hexdump: hexdump(framedData, { length: Math.min(framedData.byteLength, MAX_DUMP_SIZE), ansi: true }),
                         omitted: framedData.byteLength > MAX_DUMP_SIZE ? colour(C.RESET, `… (${framedData.byteLength - MAX_DUMP_SIZE} more bytes omitted)`) : null,
                         visualization: VISUALISE_PAYLOADS ? visualisePayload(framedData) : null
-                    };
+                    }, decompressedLogFields(decoded, streamId));
 
                     // Defer only the slow console I/O operation
                     setTimeout(() => logPacket(logObject), 0);
