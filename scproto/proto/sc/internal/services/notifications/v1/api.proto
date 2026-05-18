@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+/*
+  Notifications Service API
+
+  Service responsible for sending and retrieving cross-platform notifications to
+  end-users.
+*/
+package sc.internal.services.notifications.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/notifications/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Notifcations Service"
+      version: "1.0",
+      description: "Star Citizen notifications Service"
+    }
+};
+
+message SendRequest {
+  // A list of notifications requests
+  repeated sc.external.services.notifications.v1.NotificationRequest requests = 1;
+}
+
+message SendResponse {
+  // A list of sent notification UUIDs
+  repeated string ids = 1;
+}
+
+message RemoveRequest {
+  // List of notification UUIDs
+  repeated string ids = 1;
+}
+
+message RemoveResponse {}
+
+message GetRequest {
+  // List of notification UUIDs
+  repeated string ids = 1;
+}
+
+message GetResponse { repeated sc.external.services.notifications.v1.Notification notifications = 1; }
+
+message FindRequest {
+  // A notification query for searching 
+  sc.external.common.api.v1.Query query = 2;
+  reserved 1;
+}
+
+message FindResponse {
+  // Notifications results
+  repeated sc.external.services.notifications.v1.Notification results = 1;
+  // Pagination information
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+service NotificationsService {
+  /*
+    Send
+
+    Submit notifications to recipients
+  */
+  rpc Send(SendRequest) returns (SendResponse) {
+    option (google.api.http) = {
+      post : "/v1/notifications",
+      body : "*"
+    };
+  }
+
+  /*
+    Remove
+
+    Removes notification by ids
+  */
+  rpc Remove(RemoveRequest) returns (RemoveResponse) {
+    option (google.api.http) = {
+      delete : "/v1/notifications",
+      body : "*"
+    };
+  }
+
+  /*
+    Get
+
+    Gets notification by ids
+  */
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+      get : "/v1/notifications"
+    };
+  }
+
+  /*
+    Find
+
+    Allows players to search for their own notifications.
+  */
+  rpc Find(FindRequest) returns (FindResponse) {
+    option (google.api.http) = {
+      get : "/v1/notifications/find",
+    };
+  }
+}

@@ -1,0 +1,6 @@
+version: v1
+directories:
+  - proto
+  - vendor/google/api-common-protos
+  - vendor/grpc-gateway
+  - vendor/opentelemetry

@@ -1,0 +1,302 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+// overall mission state
+enum MissionState {
+  MISSION_STATE_UNSPECIFIED = 0;
+  MISSION_STATE_PENDING = 1;
+  MISSION_STATE_ACTIVE = 2;
+  MISSION_STATE_SUSPENDED = 3;
+  MISSION_STATE_COMPLETED = 4;
+  MISSION_STATE_FAILED = 5;
+  MISSION_STATE_EXPIRED = 6;
+  MISSION_STATE_ENDED = 7;
+  MISSION_STATE_WITHDRAWN = 8;
+}
+
+// represents active mission
+message ActiveMission {
+  // identifier for this mission
+  string mission_id = 1;
+
+  // contract id that spawned this mission
+  string contract_id = 2;
+
+  // mission template that was used to create this mission
+  MissionTemplate mission_template = 3;
+
+  // reserved locations
+  repeated sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 4;
+
+  // primary owner of the mission
+  // can be player or shard or global universe root
+  string mission_owner_urn = 5;
+
+  // mission participants - includes owner
+  repeated MissionParticipant participants = 6;
+
+  // time when mission accepted
+  google.protobuf.Timestamp creation = 7;
+
+  // optional time to complete the current mission
+  google.protobuf.Timestamp expiry = 8;
+
+  // overall mission state
+  MissionState mission_state = 9;
+
+  // active mission key
+  // updates to missions require active_mission_key
+  // active_mission_key is set to newly generated UUID when mission is activated (or re-activated)
+  // active_mission_key is cleared when mission is suspended
+  string active_mission_key = 10;
+
+  // list of all mission phases
+  repeated MissionPhase mission_phases = 11;
+
+  // list of all mission objectives
+  repeated MissionObjective mission_objectives = 12;
+
+  // final mission reward
+  MissionReward reward = 13;
+
+  // active shard id
+  string active_shard_id = 14;
+
+  // ignore contributers and only track overall progess - defaults to false
+  bool ignore_objective_contributors = 15;
+
+  // can the mission be paused/resumed when leaving/joining a shard
+  bool suspendable = 16;
+
+  // owner salt used by the mission factory to create the mission
+  uint64 owner_mission_salt = 17;
+}
+
+// player facing mission info for an active mission
+message ActiveMissionInfo {
+  // identifier for this mission
+  string mission_id = 1;
+
+  // contract id that spawned this mission
+  string contract_id = 2;
+
+  // mission template that was used to create this mission
+  sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+
+  // primary owner of the mission
+  // can be player or shard or global universe root
+  string mission_owner_urn = 4;
+
+  // mission participants - includes owner
+  repeated sc.external.common.mission.v1.MissionParticipant participants = 5;
+
+  // time when mission accepted
+  google.protobuf.Timestamp creation = 6;
+
+  // optional time to complete the current mission
+  google.protobuf.Timestamp expiry = 7;
+
+  // overall mission state
+  MissionState mission_state = 8;
+
+  // list of all mission objectives
+  repeated sc.external.common.mission.v1.MissionObjective mission_objectives = 9;
+
+  // final mission reward
+  MissionReward reward = 10;
+}
+
+// state for the mission objective
+enum MissionObjectiveState {
+  MISSION_OBJECTIVE_STATE_UNSPECIFIED = 0;
+  MISSION_OBJECTIVE_STATE_INPROGRESS = 1;
+  MISSION_OBJECTIVE_STATE_COMPLETED = 2;
+  MISSION_OBJECTIVE_STATE_FAILED = 3;
+  reserved 4;
+  reserved "MISSION_OBJECTIVE_STATE_EXPIRED";
+  MISSION_OBJECTIVE_STATE_WITHDRAWN = 5;
+}
+
+// mission objective contributor
+message MissionObjectiveContributor {
+  string player_urn = 1;
+  int64 contribution_counter = 2;
+  bool active = 3;
+}
+
+enum AutoCompletePolicy {
+  AUTO_COMPLETE_POLICY_INVALID_UNSPECIFIED = 0;
+  AUTO_COMPLETE_POLICY_AND = 1;
+  AUTO_COMPLETE_POLICY_OR = 2;
+}
+
+// mission objective 
+// this will be on the mission directly, repeated/hireachy
+// API to create/update/delete/query these directly
+message MissionObjective {
+  // identifier for this objective
+  string objective_id = 1;
+
+  // parent objective id
+  string parent_objective_id = 2;
+
+  // mission id that spawned this mission phase
+  string mission_id = 3;
+
+  // start time when the objective was activated
+  google.protobuf.Timestamp timer_start = 4;
+
+  // time when the objective expires
+  google.protobuf.Timestamp expiry = 5;
+
+  // objective state
+  MissionObjectiveState state = 6;
+
+  // description id
+  uint32 short_desc_id = 7;
+
+  // long description id
+  uint32 long_desc_id = 8;
+
+  // list of marker that belong to this objective
+  repeated uint64 marker_ids = 9;
+
+  // current progress counter
+  int64 progress_counter_current = 10;
+
+  // maximum progress count
+  // if set (> 0) this objective auto completes when max counter is reached
+  int64 progress_counter_max = 11;
+
+  // additional optional reward for objective
+  MissionReward reward = 12;
+
+  // specify various settings on the objective, such as whether it should display in the HUD/mobiGlas/notifications
+  uint32 flags = 13;
+
+  // priority value for controlling which objectives display in the HUD and in what order
+  int32 ui_display_priority = 14;
+
+  // additional text id for use in the HUD
+  uint32 ui_display_text_id = 15;
+
+  // list of contributors
+  repeated MissionObjectiveContributor contributors = 16;
+
+  // ignore contributers and only track overall progess - defaults to false
+  bool ignore_objective_contributors = 17;
+  
+  // additional text id for use in the HUD, used to seperate entries
+  uint32 ui_extended_text_item_index = 18;
+  
+  // auto complete policy when phase should complete it
+  AutoCompletePolicy auto_complete_policy = 19;
+}
+
+message MissionPhaseData {
+  // phase data
+  oneof data {
+      MissionPhaseMissionEntity mission_entity = 1;
+      MissionPhaseHauling hauling = 2;
+  }
+}
+
+
+// state for the mission phase
+enum MissionPhaseState {
+  MISSION_PHASE_STATE_UNSPECIFIED = 0;
+  MISSION_PHASE_STATE_PENDING = 1;
+  MISSION_PHASE_STATE_ACTIVE = 2;
+  MISSION_PHASE_STATE_SUSPENDED = 3;
+  MISSION_PHASE_STATE_COMPLETED = 4;
+  MISSION_PHASE_STATE_EXPIRED = 5;
+  MISSION_PHASE_STATE_ENDED = 6;
+  MISSION_PHASE_STATE_FAILED = 7;
+}
+
+// represets a mission phase
+message MissionPhase {
+  // dc guid for this mission phase
+  string mission_phase_guid = 1;
+
+  // mission id that spawned this mission phase
+  string mission_id = 2;
+
+  // state of the mission phase
+  MissionPhaseState state = 3;
+
+  // active mission phase key
+  // updates to phase is done via active_phase_key
+  // active_phase_key is set to newly generated UUID when phase is activated (or re-activated)
+  // active_phase_key is cleared when phase is suspended
+  string active_phase_key = 4;
+
+  // active shard id
+  // shard id where this phase is currently active
+  // TODO: might be only needed for certain types of phases?
+  string active_shard_id = 5;
+
+  // start time when the objective was activated
+  google.protobuf.Timestamp timer_start = 6;
+
+  // time when the phase expires
+  google.protobuf.Timestamp expiry = 7;
+
+  // optional objective id that will complete this phase when the objective completed/failed
+  string autocomplete_objective_id = 8;
+
+  // phase data
+  MissionPhaseData data = 9;
+
+  // mission phase id
+  string mission_phase_id = 10;
+}
+
+// phase represented by mission entity with subsumption logic (executed on dgs)
+message MissionPhaseMissionEntity { 
+  // seed for the phase
+  uint32 seed = 1;
+
+  // variables that are set as 'input/output' between phases
+  MissionVariables variables = 2;
+}
+
+// phase represented by mission entity with subsumption logic (executed on dgs)
+message MissionPhaseHauling { 
+  // seed for the phase
+  uint32 seed = 1;
+
+  // variables that are set as 'input/output' between phases
+  MissionVariables variables = 2;
+}
+
+// represents mission log entry
+message MissionLog {
+  // identifier for this mission
+  string mission_id = 1;
+
+  // reserved locations
+  repeated MissionLocationReservation reserved_locations = 2;
+
+  // primary owner of the mission
+  // can be player or shard or global universe root
+  string mission_owner_urn = 3;
+
+  // overall mission state
+  MissionState mission_state = 4;
+
+  // active mission key
+  // updates to missions require active_mission_key
+  // active_mission_key is set to newly generated UUID when mission is activated (or re-activated)
+  // active_mission_key is cleared when mission is suspended
+  string active_mission_key = 5;
+
+  // reason or description of action for the log
+  string reason = 6;
+}

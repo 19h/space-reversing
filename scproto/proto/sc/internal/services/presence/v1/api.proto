@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package sc.internal.services.presence.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/presence/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Presence Internal Service"
+    version: "1.0",
+    description: "Track presence information for accounts"
+  }
+};
+
+message GetPresenceByAccountIdsRequest {
+  repeated uint32 account_ids = 1;
+}
+
+message GetPresenceByAccountIdsResponse {
+  message AccountPresence {
+    uint32 account_id = 1;
+    sc.external.services.presence.v1.Presence presence = 2;
+  }
+  repeated AccountPresence results = 1;
+}
+
+message SetPresenceRequest {
+  message Body {
+    sc.external.services.presence.v1.Presence presence = 1;
+    uint32 account_id = 2;
+    string environment = 3;
+  }
+  repeated Body bodies = 1;
+}
+
+message SetPresenceResponse {}
+
+service PresenceService {
+  /*
+      SetPresence
+
+      Set the presence information for the specified accounts
+  */
+  rpc SetPresence(SetPresenceRequest) returns (SetPresenceResponse) {
+    option (google.api.http) = {
+      post: "/v1/presence/set",
+      body: "*"
+    };
+  }
+
+
+  /*
+      GetPresenceByAccountIds
+
+      Get the presence information for the specified accounts
+
+  */
+  rpc GetPresenceByAccountIds(GetPresenceByAccountIdsRequest) returns (GetPresenceByAccountIdsResponse) {
+    option (google.api.http) = {
+      post: "/v1/presence/get",
+      body: "*"
+    };
+  }
+
+}

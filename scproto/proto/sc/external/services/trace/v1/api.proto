@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+/*
+  Trace Service API
+
+  Service responsible for collecting and persisting cigTrace traces from game
+  clients.
+*/
+package sc.external.services.trace.v1;
+
+import "google/api/annotations.proto";
+
+option csharp_namespace = "SC.Service.Trace";
+option php_namespace = "SC\\Service\\Trace";
+
+message CollectRequest {
+  // cigTrace traces as properly encoded JSON string
+  repeated string traces = 1;
+}
+message CollectResponse {}
+
+message CollectionStreamRequest {
+  // cigTrace traces as properly encoded JSON string
+  repeated string traces = 1;
+}
+message CollectionStreamResponse {}
+
+service TraceService {
+  /*
+    Collect traces
+
+    Submit a batch of traces as a unary call
+  */
+  rpc Collect(CollectRequest) returns (CollectResponse) {
+    option (google.api.http) = {
+      post : "/v1/collect",
+      body : "*"
+    };
+  }
+
+  /**
+    Collect traces stream
+
+    Open a persistent stream to submit traces continuously
+  */
+  rpc CollectionStream(stream CollectionStreamRequest)
+      returns (CollectionStreamResponse) {
+    option (google.api.http) = {
+      post : "/v1/collectStream",
+      body : "*"
+    };
+  }
+}

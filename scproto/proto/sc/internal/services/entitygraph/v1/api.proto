@@ -1,0 +1,1080 @@
+syntax = "proto3";
+
+package sc.internal.services.entitygraph.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/entitygraph/v1/rpc_messages.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "EntityGraph service"
+      version: "1.0",
+      description: "Service responsible for querying and mutating the entity graph in persistent storage."
+    }
+};
+
+message ContainerQueryRequest {
+    sc.external.services.entitygraph.v1.ContainerQueryRequestBody body = 1;
+}
+
+message ContainerQueryResponse {
+    sc.external.services.entitygraph.v1.ContainerQueryResponseBody body = 1;
+}
+
+message EntityQueryRequest {
+    sc.external.services.entitygraph.v1.EntityQueryRequestBody body = 1;
+}
+
+message EntityQueryResponse {
+    sc.external.services.entitygraph.v1.EntityQueryResponseBody body = 1;
+}
+
+message MutateEntitiesRequest {
+    sc.external.services.entitygraph.v1.MutateEntitiesRequestBody body = 1;
+}
+
+message MutateEntitiesResponse {
+    sc.external.services.entitygraph.v1.MutateEntitiesResponseBody body = 1;
+}
+
+message EntityMutationStreamRequest {
+    sc.external.services.entitygraph.v1.EntityMutationStreamRequestBody body = 1;
+}
+
+message EntityMutationStreamResponse {
+    sc.external.services.entitygraph.v1.EntityMutationStreamResponseBody body = 1;
+}
+
+message StowRequest {
+    sc.external.services.entitygraph.v1.StowRequestBody body = 1;
+}
+
+message StowResponse {
+    sc.external.services.entitygraph.v1.StowResponseBody body = 1;
+}
+
+message UnstowRequest {
+    sc.external.services.entitygraph.v1.UnstowRequestBody body = 1;
+}
+
+message UnstowResponse {
+    sc.external.services.entitygraph.v1.UnstowResponseBody body = 1;
+}
+
+message BuryRequest {
+    sc.external.services.entitygraph.v1.BuryRequestBody body = 1;
+}
+
+message BuryResponse {
+    sc.external.services.entitygraph.v1.BuryResponseBody body = 1;
+}
+
+// Deprecated
+message ChangeInventoryConfigurationRequest {
+    sc.external.services.entitygraph.v1.ChangeInventoryConfigurationRequestBody body = 1;
+}
+
+// Deprecated
+message ChangeInventoryConfigurationResponse {
+    sc.external.services.entitygraph.v1.ChangeInventoryConfigurationResponseBody body = 1;
+}
+
+message LoadAllRequest {
+    sc.external.services.entitygraph.v1.LoadAllRequestBody body = 1;
+}
+
+message LoadAllResponse {
+    sc.external.services.entitygraph.v1.LoadAllResponseBody body = 1;
+}
+
+message SnapshotQueryRequest {
+    sc.external.services.entitygraph.v1.SnapshotQueryRequestBody body = 1;
+}
+
+message SnapshotQueryResponse {
+    sc.external.services.entitygraph.v1.SnapshotQueryResponseBody body = 1;
+}
+
+message MutateContainerGraphRequest {
+    sc.external.services.entitygraph.v1.MutateContainerGraphRequestBody body = 1;
+}
+
+message MutateContainerGraphResponse {
+    sc.external.services.entitygraph.v1.MutateContainerGraphResponseBody body = 1;
+}
+
+message ContainerMutationStreamRequest {
+    sc.external.services.entitygraph.v1.ContainerMutationStreamRequestBody body = 1;
+}
+
+message ContainerMutationStreamResponse {
+    sc.external.services.entitygraph.v1.ContainerMutationStreamResponseBody body = 1;
+}
+
+message CreateMetaRecordsRequest {
+    sc.external.services.entitygraph.v1.CreateMetaRecordsRequestBody body = 1;
+}
+
+message CreateMetaRecordsResponse {
+    sc.external.services.entitygraph.v1.CreateMetaRecordsResponseBody body = 1;
+}
+
+message EraseMetaRecordsRequest {
+    sc.external.services.entitygraph.v1.EraseMetaRecordsRequestBody body = 1;
+}
+
+message EraseMetaRecordsResponse {
+    sc.external.services.entitygraph.v1.EraseMetaRecordsResponseBody body = 1;
+}
+
+message QueryMetaRecordsRequest {
+    sc.external.services.entitygraph.v1.QueryMetaRecordsRequestBody body = 1;
+}
+
+message QueryMetaRecordsResponse {
+    sc.external.services.entitygraph.v1.QueryMetaRecordsResponseBody body = 1;
+}
+
+message GetEntitiesOwnersRequest {
+    sc.external.services.entitygraph.v1.GetEntitiesOwnersRequestBody body = 1;
+}
+
+message GetEntitiesOwnersResponse {
+    sc.external.services.entitygraph.v1.GetEntitiesOwnersResponseBody body = 1;
+}
+
+message CreateEntityClassesRequest {
+    sc.external.services.entitygraph.v1.CreateEntityClassesRequestBody body = 1;
+}
+
+message CreateEntityClassesResponse {
+    sc.external.services.entitygraph.v1.CreateEntityClassesResponseBody body = 1;
+}
+
+message EraseEntityClassesRequest {
+    sc.external.services.entitygraph.v1.EraseEntityClassesRequestBody body = 1;
+}
+
+message EraseEntityClassesResponse {
+    sc.external.services.entitygraph.v1.EraseEntityClassesResponseBody body = 1;
+}
+
+message QueryEntityClassesRequest {
+    sc.external.services.entitygraph.v1.QueryEntityClassesRequestBody body = 1;
+}
+
+message QueryEntityClassesResponse {
+    sc.external.services.entitygraph.v1.QueryEntityClassesResponseBody body = 1;
+}
+
+message CreateShardRequest {
+    sc.external.services.entitygraph.v1.CreateShardRequestBody body = 1;
+}
+
+message CreateShardResponse {
+    sc.external.services.entitygraph.v1.CreateShardResponseBody body = 1;
+}
+
+message DestroyShardRequest {
+    sc.external.services.entitygraph.v1.DestroyShardRequestBody body = 1;
+}
+
+message DestroyShardResponse {
+    sc.external.services.entitygraph.v1.DestroyShardResponseBody body = 1;
+}
+
+message QueryShardsRequest {
+    sc.external.services.entitygraph.v1.QueryShardsRequestBody body = 1;
+}
+
+message QueryShardsResponse {
+    sc.external.services.entitygraph.v1.QueryShardsResponseBody body = 1;
+}
+
+message GetShardRequest {
+    sc.external.services.entitygraph.v1.GetShardRequestBody body = 1;
+}
+
+message GetShardResponse {
+    sc.external.services.entitygraph.v1.GetShardResponseBody body = 1;
+}
+
+message AcquireShardRequest {
+    sc.external.services.entitygraph.v1.AcquireShardRequestBody body = 1;
+}
+
+message  AcquireShardResponse {
+    sc.external.services.entitygraph.v1.AcquireShardResponseBody body = 1;
+}
+
+message ChangeShardStatusRequest {
+    sc.external.services.entitygraph.v1.ChangeShardStatusRequestBody body = 1;
+}
+
+message ChangeShardStatusResponse {
+    sc.external.services.entitygraph.v1.ChangeShardStatusResponseBody body = 1;
+}
+
+message StowShardRequest {
+    sc.external.services.entitygraph.v1.StowShardRequestBody body = 1;
+}
+
+message StowShardResponse {
+    sc.external.services.entitygraph.v1.StowShardResponseBody body = 1;
+}
+
+message RepairShardRequest {
+    sc.external.services.entitygraph.v1.RepairShardRequestBody body = 1;
+}
+
+message RepairShardResponse {
+    sc.external.services.entitygraph.v1.RepairShardResponseBody body = 1;
+}
+
+message RepairShardSchemaRequest {
+    sc.external.services.entitygraph.v1.RepairShardSchemaRequestBody body = 1;
+}
+
+message RepairShardSchemaResponse {
+    sc.external.services.entitygraph.v1.RepairShardSchemaResponseBody body = 1;
+}
+
+message GetShardHostsMapRequest {}
+
+message GetShardHostsMapResponse {
+    message Host {
+        string host = 1;
+        repeated string shards = 2;
+    }
+    repeated Host hosts = 1;
+}
+
+// Deprecated
+message MutateInventoriesRequest {
+    sc.external.services.entitygraph.v1.MutateInventoriesRequestBody body = 1;
+}
+
+// Deprecated
+message MutateInventoriesResponse {
+    sc.external.services.entitygraph.v1.MutateInventoriesResponseBody body = 1;
+}
+
+message InventoryQueryRequest {
+    sc.external.services.entitygraph.v1.InventoryQueryRequestBody body = 1;
+}
+
+message InventoryQueryResponse {
+    sc.external.services.entitygraph.v1.InventoryQueryResponseBody body = 1;
+}
+
+message MeltRequest {
+    sc.external.services.entitygraph.v1.MeltRequestBody body = 1;
+}
+
+message MeltResponse {
+    sc.external.services.entitygraph.v1.MeltResponseBody body = 1;
+}
+
+message EntityQueryStreamRequest {
+    sc.external.services.entitygraph.v1.EntityQueryStreamRequestBody body = 1;
+}
+
+message EntityQueryStreamResponse {
+    sc.external.services.entitygraph.v1.EntityQueryStreamResponseBody body = 1;
+}
+
+message GetOverloadControlMetricsRequest {
+    sc.external.services.entitygraph.v1.GetOverloadControlMetricsRequestBody body = 1;
+}
+message GetOverloadControlMetricsResponse {
+    sc.external.services.entitygraph.v1.GetOverloadControlMetricsResponseBody body = 1;
+}
+
+message ContainerQueryStreamRequest {
+  sc.external.services.entitygraph.v1.ContainerQueryStreamRequestBody body = 1;
+}
+
+message ContainerQueryStreamResponse {
+  sc.external.services.entitygraph.v1.ContainerQueryStreamResponseBody body = 1;
+}
+
+message InventoryQueryStreamRequest {
+  sc.external.services.entitygraph.v1.InventoryQueryStreamRequestBody body = 1;
+}
+
+message InventoryQueryStreamResponse {
+  sc.external.services.entitygraph.v1.InventoryQueryStreamResponseBody body = 1;
+}
+
+message GetEntitiesRootsRequest {
+	sc.external.services.entitygraph.v1.GetEntitiesRootsRequestBody body = 1;
+}
+
+message GetEntitiesRootsResponse {
+	sc.external.services.entitygraph.v1.GetEntitiesRootsResponseBody body = 1;
+}
+
+message MoveAllRequest {
+    sc.external.services.entitygraph.v1.MoveAllRequestBody body = 1;
+}
+
+message MoveAllResponse {
+    sc.external.services.entitygraph.v1.MoveAllResponseBody body = 1;
+}
+
+message GetEntityStowContextsByGeidsRequest {
+	sc.external.services.entitygraph.v1.GetEntityStowContextsByGeidsRequestBody body = 1;
+}
+message GetEntityStowContextsByGeidsResponse {
+	sc.external.services.entitygraph.v1.GetEntityStowContextsByGeidsResponseBody body = 1;
+}
+
+message GetEntityStowContextsByParentUrnsRequest {
+	sc.external.services.entitygraph.v1.GetEntityStowContextsByParentUrnsRequestBody body = 1;
+}
+message GetEntityStowContextsByParentUrnsResponse {
+	sc.external.services.entitygraph.v1.GetEntityStowContextsByParentUrnsResponseBody body = 1;
+}
+
+message GetEntitiesByStowContextRequest {
+	sc.external.services.entitygraph.v1.GetEntitiesByStowContextRequestBody body = 1;
+}
+message GetEntitiesByStowContextResponse {
+	sc.external.services.entitygraph.v1.GetEntitiesByStowContextResponseBody body = 1;
+}
+
+message UpdateEntitiesByStowContextRequest {
+    sc.external.services.entitygraph.v1.UpdateEntitiesByStowContextRequestBody body = 1;
+}
+message UpdateEntitiesByStowContextResponse {
+    sc.external.services.entitygraph.v1.UpdateEntitiesByStowContextResponseBody body = 1;
+}
+
+message SnapshotQueryByStowContextRequest {
+    sc.external.services.entitygraph.v1.SnapshotQueryByStowContextRequestBody body = 1;
+}
+message SnapshotQueryByStowContextResponse {
+    sc.external.services.entitygraph.v1.SnapshotQueryByStowContextResponseBody body = 1;
+}
+
+message ChangeSnapshotsByStowContextRequest {
+    sc.external.services.entitygraph.v1.ChangeSnapshotsByStowContextRequestBody body = 1;
+}
+message ChangeSnapshotsByStowContextResponse {
+    sc.external.services.entitygraph.v1.ChangeSnapshotsByStowContextResponseBody body = 1;
+}
+
+message SetDatabaseVersionRequest {
+    sc.external.services.entitygraph.v1.SetDatabaseVersionRequestBody body = 1;
+}
+message SetDatabaseVersionResponse {
+    sc.external.services.entitygraph.v1.SetDatabaseVersionResponseBody body = 1;
+}
+
+service EntityGraphService {
+
+    /*
+        MutateEntities
+
+        Submit a group of commands to to mutate the entity graph *transactionally*.
+
+        This is the primary method to perform graph mutations like appending new nodes
+        and edges, breaking existing relationships or updating node properties.
+
+        This method is transactional meaning that the group of commands submitted to
+        `Mutate` are guaranteed to be executed in order and committed together in a
+        single transaction, or rolled back entirely upon failure. Use this property
+        to group together updates that **must** be performed together.
+
+        For example, creating a new node, detaching anotherand attaching it to the
+        new parent submitted in the same call to `Mutate` would be guaranteed to be
+        written to the data store together.
+
+        If the `enqueue` parameter is passed, the service will acknowledge the request and enqueue
+        the mutation. This method allows to submit mutations when the caller does not need to know the result
+        of the writes. This is useful to use in a "fire-and-forget" scenario as well as when
+        the caller is submitting many writes. The transactional properties of each submitted mutation are still
+        maintained even when `enqueue` is used.
+    */
+    rpc MutateEntities(MutateEntitiesRequest) returns (MutateEntitiesResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/mutate",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        EntityMutationStream
+
+        Submit a stream of group of commands to to mutate the entity graph *transactionally*.
+
+        When streaming in mutations, the service will acknowledge the request and enqueue
+        the mutation. This method allows to submit mutations when the caller does not need to know the result
+        of the writes. This is useful to use in a "fire-and-forget" scenario as well as when
+        the caller is submitting many writes. The transactional properties & ordering guarantees of each submitted mutation are still
+        maintained.
+    */
+    rpc EntityMutationStream(stream EntityMutationStreamRequest) returns (stream EntityMutationStreamResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/mutationStream",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    rpc Stow(StowRequest) returns (StowResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/stow",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    rpc Unstow(UnstowRequest) returns (UnstowResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/unstow",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    rpc Bury(BuryRequest) returns (BuryResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/bury",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        EntityQuery
+
+        Query and retrieve entity sub-graphs.
+    */
+    rpc EntityQuery(EntityQueryRequest) returns (EntityQueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+
+    /*
+        LoadAll
+
+        Retrieve entire graph.
+    */
+    rpc LoadAll(LoadAllRequest) returns (LoadAllResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/loadAll",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        SnapshotQuery
+
+        Query and retrieve data from entity snapshots.
+    */
+    rpc SnapshotQuery(SnapshotQueryRequest) returns (SnapshotQueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/snapshots/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        MutateContainerGraph
+
+        Submit a group of commands to to mutate the static object container hierarchy of the current shard.
+
+        Part of the seeding process of a new shard must submit a static OC hierarchy dataset for new servers joining the mesh.
+
+        This endpoint allows manipulation of the static OC data, either to create or modify or migrate the existing hierarchy.
+
+        This method is transactional meaning that the group of commands submitted to
+        `Mutate` are guaranteed to be executed in order and committed together in a
+        single transaction, or rolled back entirely upon failure. Use this property
+        to group together updates that **must** be performed together.
+    */
+    rpc MutateContainerGraph(MutateContainerGraphRequest) returns (MutateContainerGraphResponse) {
+        option (google.api.http) = {
+            post : "/v1/containers/mutate",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Containers"
+        };
+    }
+
+    /*
+        ContainerMutationStream
+
+        Submit a stream of group of commands to to mutate the container graph *transactionally*.
+
+        When streaming in mutations, the service will acknowledge the request and enqueue
+        the mutation. This method allows to submit mutations when the caller does not need to know the result
+        of the writes. This is useful to use in a "fire-and-forget" scenario as well as when
+        the caller is submitting many writes. The transactional properties & ordering guarantees of each submitted mutation are still
+        maintained.
+    */
+    rpc ContainerMutationStream(stream ContainerMutationStreamRequest) returns (stream ContainerMutationStreamResponse) {
+        option (google.api.http) = {
+            post : "/v1/containers/mutationStream",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Containers"
+        };
+    }
+
+    /*
+        ContainerQuery
+
+        Query and retrieve static object container hierachy for the current shard.
+    */
+    rpc ContainerQuery(ContainerQueryRequest) returns (ContainerQueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/containers/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Containers"
+        };
+    }
+
+    /*
+        CreateMetaRecords
+
+        Add new meta records.
+    */
+    rpc CreateMetaRecords(CreateMetaRecordsRequest) returns (CreateMetaRecordsResponse) {
+        option (google.api.http) = {
+            post : "/v1/meta-records",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Meta Records"
+        };
+    }
+
+    /*
+        EraseMetaRecords
+
+        Remove meta records.
+    */
+    rpc EraseMetaRecords(EraseMetaRecordsRequest) returns (EraseMetaRecordsResponse) {
+        option (google.api.http) = {
+            delete : "/v1/meta-records",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Meta Records"
+        };
+    }
+
+
+    /*
+        QueryMetaRecords
+
+        Query meta records.
+    */
+    rpc QueryMetaRecords(QueryMetaRecordsRequest) returns (QueryMetaRecordsResponse) {
+        option (google.api.http) = {
+            post : "/v1/meta-records/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Meta Records"
+        };
+    }
+
+        /*
+        GetEntityOwners
+
+        Get owners for entities by their ids.
+    */
+    rpc GetEntitiesOwners(GetEntitiesOwnersRequest) returns (GetEntitiesOwnersResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/owners",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        CreateEntityClasses
+
+        Add new entity class nodes.
+    */
+    rpc CreateEntityClasses(CreateEntityClassesRequest) returns (CreateEntityClassesResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-classes",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entity Classes"
+        };
+    }
+
+    /*
+        EraseEntityClasses
+
+        Remove entity class nodes.
+    */
+    rpc EraseEntityClasses(EraseEntityClassesRequest) returns (EraseEntityClassesResponse) {
+        option (google.api.http) = {
+            delete : "/v1/entity-classes",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entity Classes"
+        };
+    }
+
+
+    /*
+        QueryEntityClasses
+
+        Query entity class nodes.
+    */
+    rpc QueryEntityClasses(QueryEntityClassesRequest) returns (QueryEntityClassesResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-classes/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entity Classes"
+        };
+    }
+
+    /*
+        CreateShard
+
+        Create a new universe shard. This will provision a database and its schema
+        for the new shard.
+    */
+    rpc CreateShard(CreateShardRequest) returns (CreateShardResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        DestroyShard
+
+        Delete a new universe shard. This will destroy a shard database, erasing all of its content.
+        WARNING: Unstowed items will be destroyed.
+    */
+    rpc DestroyShard(DestroyShardRequest) returns (DestroyShardResponse) {
+        option (google.api.http) = {
+            delete : "/v1/shards"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        QueryShards
+
+        Query known shards.
+    */
+    rpc QueryShards(QueryShardsRequest) returns (QueryShardsResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        GetShard
+
+        Query a specific shard.
+    */
+    rpc GetShard(GetShardRequest) returns (GetShardResponse) {
+        option (google.api.http) = {
+            get : "/v1/shards"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        AcquireShard
+
+       Acquire a shard for simulation
+    */
+    rpc AcquireShard(AcquireShardRequest) returns (AcquireShardResponse) {
+        option (google.api.http) = {
+            get : "/v1/shards/acquire"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+
+    /*
+        ChangeShardStatus
+
+        Change a shard status.
+    */
+    rpc ChangeShardStatus(ChangeShardStatusRequest) returns (ChangeShardStatusResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards/status"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        StowShard
+
+        Stow the shard by querying it for playing characters and stowable entities
+        and immediately stow them.
+    */
+    rpc StowShard(StowShardRequest) returns (StowShardResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards/stow"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        RepairShard
+
+        Repairs a universe shard. This will take the options provided and attempt to repair the shard.
+    */
+    rpc RepairShard(RepairShardRequest) returns (RepairShardResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        RepairShardSchema
+
+        Repairs a universe shard schema. This will ensure the schema is created
+    */
+    rpc RepairShardSchema(RepairShardSchemaRequest) returns (RepairShardSchemaResponse) {
+        option (google.api.http) = {
+            post : "/v1/shards",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        GetShardHostsMap
+
+        Obtain a map of database hosts to shards
+    */
+    rpc GetShardHostsMap(GetShardHostsMapRequest) returns (GetShardHostsMapResponse) {
+        option (google.api.http) = {
+            get : "/v1/shards/host-map"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Shards"
+        };
+    }
+
+    /*
+        MutateInventories (DEPREACTED)
+
+        Submit a group of commands to to mutate inventories in the entity graph *transactionally*.
+
+        If the `enqueue` parameter is passed, the service will acknowledge the request and enqueue
+        the mutation. This method allows to submit mutations when the caller does not need to know the result
+        of the writes. This is useful to use in a "fire-and-forget" scenario as well as when
+        the caller is submitting many writes. The transactional properties of each submitted mutation are still
+        maintained even when `enqueue` is used.
+    */
+    rpc MutateInventories(MutateInventoriesRequest) returns (MutateInventoriesResponse) {
+        option (google.api.http) = {
+            post : "/v1/inventories"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Inventories"
+        };
+    }
+
+    /*
+        InventoryQuery
+
+        Query and retrieve inventories.
+    */
+    rpc InventoryQuery(InventoryQueryRequest) returns (InventoryQueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/inventories/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Inventories"
+        };
+    }
+
+    /*
+      ChangeInventoryConfiguration
+
+      Modify the type, and configuration of an inventory
+    */
+    rpc ChangeInventoryConfiguration(ChangeInventoryConfigurationRequest) returns (ChangeInventoryConfigurationResponse) {
+        option (google.api.http) = {
+            post : "/v1/inventories",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Inventories"
+        };
+    }
+
+    /*
+        Melt
+
+        'Melt' (bury) entities by their parentUrn
+    */
+    rpc Melt(MeltRequest) returns (MeltResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/melt"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        EntityQueryStream
+
+        Query and retrieve entity sub-graphs, and recieve them over stream
+    */
+    rpc EntityQueryStream(EntityQueryStreamRequest) returns (stream EntityQueryStreamResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/query",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    rpc GetOverloadControlMetrics(GetOverloadControlMetricsRequest) returns (GetOverloadControlMetricsResponse) {
+        option (google.api.http) = {
+            get : "/v1/overloadcontrol/metrics"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Overload Control"
+        };
+    }
+
+  /*
+    ContainerQueryStream
+
+    Query and retrieve container sub-graphs, and recieve them over stream
+  */
+  rpc ContainerQueryStream(
+    ContainerQueryStreamRequest
+  ) returns (stream ContainerQueryStreamResponse) {
+    option (google.api.http) = {
+      post : "/v1/containers/query",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Containers"
+    };
+  }
+
+  /*
+    InventoryQueryStream
+
+    Stream all entities and edges stowed inside a given inventory
+  */
+  rpc InventoryQueryStream(
+    InventoryQueryStreamRequest
+  ) returns (stream InventoryQueryStreamResponse) {
+    option (google.api.http) = {
+      post : "/v1/inventories/query/stream",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Inventories"
+    };
+  }
+
+    /*
+        GetEntitiesRoots
+
+      Get aggregate roots for entities by their ids.
+    */
+    rpc GetEntitiesRoots(GetEntitiesRootsRequest) returns (GetEntitiesRootsResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/roots",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+    
+    /*
+        MoveAllRequest
+
+        Move all items between inventories owned by the same owner.
+    */
+    rpc MoveAll(MoveAllRequest) returns (MoveAllResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/move-all",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        GetEntityStowContextsByGeids
+
+        Get records for entities unstowed in shards by geids.
+    */
+    rpc GetEntityStowContextsByGeids(GetEntityStowContextsByGeidsRequest) returns (GetEntityStowContextsByGeidsResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/unstowed/geids",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        GetEntityStowContextsByParentUrns
+
+        Get records for entities unstowed in shards by parentUrns.
+    */
+    rpc GetEntityStowContextsByParentUrns(GetEntityStowContextsByParentUrnsRequest) returns (GetEntityStowContextsByParentUrnsResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/unstowed/parentUrns",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        GetEntitiesByStowContext
+
+        Get entities for first loading stow context, then querying graph of where it is.
+    */
+    rpc GetEntitiesByStowContext(GetEntitiesByStowContextRequest) returns (GetEntitiesByStowContextResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/unstowed",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        UpdateEntitiesByStowContext
+
+        allows up update list of entites via stow context
+        only certain fields can be updated (ParentURN, Ownership).
+    */
+    rpc UpdateEntitiesByStowContext(UpdateEntitiesByStowContextRequest) returns (UpdateEntitiesByStowContextResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/update-by-stow-context",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Entities"
+        };
+    }
+
+    /*
+        SnapshotQueryByStowContext
+
+        Get snapshots for entities by their stow context.
+    */
+    rpc SnapshotQueryByStowContext(SnapshotQueryByStowContextRequest) returns (SnapshotQueryByStowContextResponse) {
+        option (google.api.http) = {
+            get : "/v1/entities/unstowed/snapshots"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Snapshots"
+        };
+    }
+
+    /*
+        ChangeSnapshotsByStowContext
+
+        Change snapshots for entities by their stow context.
+    */
+    rpc ChangeSnapshotsByStowContext(ChangeSnapshotsByStowContextRequest) returns (ChangeSnapshotsByStowContextResponse) {
+        option (google.api.http) = {
+            post : "/v1/entities/unstowed/snapshots",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Snapshots"
+        };
+    }
+
+    /*
+        SetDatabaseVersion
+
+        Set the database version string in the global database. Calling this again
+        overwrites the previously stored value and invalidates the cache.
+    */
+    rpc SetDatabaseVersion(SetDatabaseVersionRequest) returns (SetDatabaseVersionResponse) {
+        option (google.api.http) = {
+            post: "/v1/database-version",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Database Version"
+        };
+    }
+}

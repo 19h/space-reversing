@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package sc.internal.services.login.v1;
+
+import "sc/internal/services/login/v1/query.proto";
+import "sc/external/services/login/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+message GetQueueStatsRequest {}
+message GetQueueStatsResponse {
+  message Queue {
+    sc.external.services.login.v1.LoginQueue queue = 1;
+    sc.external.services.login.v1.LoginQueueStats stats = 2;
+  }
+  repeated Queue queues = 1;
+}
+
+message ConfigureQueueRequest {
+  string queue_name = 1;
+  uint32 max_processing_queue_size = 2;
+  uint32 max_players_in_queue = 3;
+}
+message ConfigureQueueResponse {}
+
+enum QueueType {
+  QUEUE_TYPE_UNSPECIFIED = 0;
+  // Login queue
+  QUEUE_TYPE_LOGIN_QUEUE = 1;
+  // Processing Queue
+  QUEUE_TYPE_PROCESSING_QUEUE = 2;
+}
+
+message QueryPendingLoginsRequest {
+  // Queue name to query
+  string queue_name = 4;
+  // Queue type to query (login vs processing queue)
+  QueueType queue_type = 5;
+  // Query filters and pagination
+  sc.external.common.api.v1.Query query = 6;
+
+  reserved 1, 2, 3;
+}
+
+message QueryPendingLoginsResponse {
+  // List of units found according to filters
+  repeated sc.external.services.login.v1.LoginRequestStatus results = 1;
+  // Pagination and cursors
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message QueryLoginLogsRequest {
+  LoginLogsQuery query = 1;
+}
+message QueryLoginLogsResponse {
+  sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated LoginLogs results = 2;
+}
+
+service LoginService {
+
+  rpc GetQueueStats(GetQueueStatsRequest) returns (GetQueueStatsResponse) {
+      option (google.api.http) = {
+        post : "/v1/login-queue/stats",
+        body: "*"
+      };
+  }
+
+  rpc ConfigureQueue(ConfigureQueueRequest) returns (ConfigureQueueResponse) {
+      option (google.api.http) = {
+        post : "/v1/login-queue/configure",
+        body: "*"
+      };
+  }
+
+  rpc QueryPendingLogins(QueryPendingLoginsRequest) returns (QueryPendingLoginsResponse) {
+      option (google.api.http) = {
+        post : "/v1/login-queue/pending",
+        body: "*"
+      };
+  }
+
+  rpc QueryLoginLogs(QueryLoginLogsRequest) returns (QueryLoginLogsResponse)  {
+    option (google.api.http) = {
+      post : "/v1/login-logs/query",
+      body: "*"
+    };
+  }
+}

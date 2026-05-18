@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package sc.internal.services.push.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+// A Push Request to submit a message to connected clients.
+message PushRequest {
+  // Batch of push envelopes to submit 
+  repeated sc.external.services.push.v1.PublishRequest envelopes = 1;
+}
+
+message PushResponse {
+  repeated string envelope_ids = 1;
+}
+
+
+// A Push Request to submit a message to connected clients.
+message BroadcastRequest {
+  // Envelope to broadcast 
+  sc.external.services.push.v1.PublishRequest envelope = 1;
+}
+
+message BroadcastResponse {
+  string envelope_id = 1;
+}
+
+
+/*
+  Push Publisher
+
+  Part of the Push System, the Push Publisher API allows services to submit real-time messages to
+  connected clients.
+*/
+service PushPublisherService {
+  /*
+    Push
+
+    Submit a push message to recipients
+  */
+  rpc Push(PushRequest) returns (PushResponse) {
+    option (google.api.http) = {
+      post : "/v1/publish/push",
+      body : "*"
+    };
+  }
+
+  /*
+    Broadcast
+
+    Submit a broadcast message to all connected clients
+  */
+  rpc Broadcast(BroadcastRequest) returns (BroadcastResponse) {
+    option (google.api.http) = {
+      post : "/v1/publish/broadcast",
+      body : "*"
+    };
+  }
+}

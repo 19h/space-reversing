@@ -1,0 +1,422 @@
+syntax = "proto3";
+package sc.internal.services.reputation.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+import "sc/external/services/reputation/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Reputation Service internal API"
+    version: "1.0",
+    description: "Definitions of the internal API of the reputation service"
+  }
+};
+
+message VaryRequest {
+  message VaryReputation {
+    enum VaryAction {
+      VARY_ACTION_INVALID_UNSPECIFIED = 0;
+      VARY_ACTION_INCREASED = 1;
+      VARY_ACTION_DECREASED = 2;
+    }
+  // Subject Urn 
+  string subject = 1;
+  // Entity Urn
+  string entity = 2;
+  // Scope of the variation
+  string scope = 3;
+  // Standings id
+  string standings_id = 4;
+  // Amount of reputation vary
+  uint32 amount = 5;
+  // Action if it increased or decreased
+  VaryAction action = 6;
+  // Context Messages
+  sc.external.services.reputation.v1.LogContext log_context = 7;
+  }
+  repeated VaryReputation reputations = 1;
+}
+
+message VaryResponse {
+  repeated sc.external.services.reputation.v1.ReputationInitialized reputations = 1;
+} 
+
+message SetRequest {
+  message SetReputation {
+  // Urn Subject
+  string subject = 1;
+  // Urn Entity
+  string entity = 2;
+  // The scope of the reputation
+  string scope = 3;
+  // Identifier of the Standings
+  string standings_id = 4;
+  // how much reputation
+  uint32 amount = 5;
+  // Context Message
+  sc.external.services.reputation.v1.LogContext log_context = 6;
+  // Reputation lock object
+  sc.external.services.reputation.v1.ReputationLock lock = 7;
+  }
+  repeated SetReputation reputations = 1;
+}
+
+message SetResponse {
+  repeated sc.external.services.reputation.v1.ReputationInitialized reputations = 1;
+}
+
+message ResetRequest {
+  message ResetReputation {
+  // Urn subject
+  string subject = 1;
+  // Urn entity
+  string entity = 2;
+  // Scope of Reset Reputation
+  string scope = 3;
+  // Identifier of the Standings
+  string standings_id = 4;
+  // Reputation lock object
+  sc.external.services.reputation.v1.ReputationLock lock = 5;
+  // Context Message
+  sc.external.services.reputation.v1.LogContext log_context = 6;
+  }
+  repeated ResetReputation reputations = 1; 
+}
+
+message ResetResponse {}
+
+message CopyRequest {
+  string from_subject = 1;
+  string to_subject = 2;
+}
+
+message CopyResponse {
+
+}
+
+message MGetRequest {
+  message ReputationMGet {
+  // Urn Subject
+  string subject = 1;
+  // Urn Entity
+  string entity = 2;
+  // Scope of the reputation
+  string scope = 3;
+  }
+  repeated ReputationMGet reputations = 1;
+}
+
+message MGetResponse {
+  repeated sc.external.services.reputation.v1.VersionedReputation reputations = 1;
+}
+
+message GetByIdsRequest {
+  repeated string reputation_ids = 1;
+}
+
+message GetByIdsResponse {
+  repeated sc.external.services.reputation.v1.VersionedReputation reputations = 1;
+}
+
+message QueryRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryResponse {
+  repeated sc.external.services.reputation.v1.Reputation results = 1;
+  repeated sc.external.services.reputation.v1.VersionedReputation versioned_results = 3;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message LockRequest {
+  // Lock Identifiers
+ string id = 1;
+  // min lock time in ms
+ uint32 min = 2;
+  // max lock time in ms
+ uint32 max = 3;
+}
+
+message LockResponse {}
+
+message UnlockRequest {
+  // Lock Identifiers
+  string id = 1;
+}
+
+message UnlockResponse {}
+
+message QueryHistoryRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryHistoryResponse {
+  repeated sc.external.services.reputation.v1.ReputationHistory results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+// STANDINGS
+
+message CreateStandingsRequest {
+  // Name of the Standings
+  string name = 1;
+  // Initiale value
+  int32 initial = 2;
+  // Ceiling value
+  int32 ceiling = 3;
+  //Standing array of the Standings
+  repeated sc.external.services.reputation.v1.Standing standings = 4;
+}
+
+message CreateStandingsResponse {
+  sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message ChangeStandingsRequest {
+  // Identifier of the Standings to change
+  string id = 1;
+  // Name of the Standings
+  string name = 2;
+  // Initial value
+  int32 initial = 3;
+  // Ceiling value
+  int32 ceiling = 4;
+  //Standing array of the Standings
+  repeated sc.external.services.reputation.v1.Standing standings = 5;
+}
+
+message ChangeStandingsResponse {
+  sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message DeleteStandingsRequest {
+  string id = 1;
+}
+
+message DeleteStandingsResponse {}
+
+message ListStandingsRequest {}
+
+message ListStandingsResponse {
+ repeated sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message GetStandingsRequest {
+  // Identifier of Standings
+ string id = 1;
+}
+
+message GetStandingsResponse {
+  // Standings list
+  sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+message GetStandingsByNameRequest {
+  // name of the Standings
+ string name = 1;
+}
+
+message GetStandingsByNameResponse {
+  // Standings list
+ repeated sc.external.services.reputation.v1.Standings standings = 1;
+}
+
+// STATE 
+message GetStateRequest {
+    message SubjectEntity {
+        // Urn subject
+        string subject = 1;
+        // Urn subject
+        string entity = 2;
+    }
+    repeated SubjectEntity subjects_entities = 1;
+}
+
+message GetStateResponse {
+  repeated sc.external.services.reputation.v1.State states = 1;
+}
+
+message SetStateRequest {
+  message SubjectEntityState {
+    message StateValuePairs {
+        // KeyValue
+        map<string, string> key_value = 1;
+    }
+  // Urn subject
+  string subject = 1;
+  // Urn entity
+  string entity = 2;
+  // KeyValue Pairs
+  StateValuePairs pairs = 3;
+  // Message State
+  string message = 4;
+  }
+  repeated SubjectEntityState subjects = 1;
+}
+
+message SetStateResponse {}
+
+// SCORE HISTORY
+
+message GetScoreHistoryRequest {
+    message ScoreHistory {
+    // reputation identifier
+    string reputation_id = 1;
+    // days in days
+    uint32 days = 2;
+    }
+   repeated ScoreHistory reputation_scores = 1;
+}
+
+message GetScoreHistoryResponse {
+  message ScoresHistory {
+    message Score {
+      // Score amount
+      uint64 score = 1;
+      // Time in ms
+      uint32 timestamp = 2;
+    }
+    // reputation identifier
+    string reputation_id = 1;
+    // Scores history
+    repeated Score scores = 2;
+  }
+  repeated ScoresHistory reputation_scores = 1;
+}
+
+
+
+service ReputationService {
+
+  rpc Vary(VaryRequest) returns (VaryResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/vary"
+      body : "*"
+    };
+  }
+
+  rpc Set(SetRequest) returns (SetResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation",
+      body : "*"
+    };
+  }
+
+  rpc Reset(ResetRequest) returns (ResetResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/reset",
+      body : "*"
+    };
+  }
+
+  rpc Copy(CopyRequest) returns (CopyResponse) {
+    option (google.api.http) = {
+      post: "/v1/reputation/copy",
+      body: "*"
+    };
+  }
+
+  rpc MGet(MGetRequest) returns (MGetResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputation/mget"
+    };
+  }
+
+  rpc GetByIds(GetByIdsRequest) returns (GetByIdsResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputations/ids"
+    };
+  }
+
+  rpc Query(QueryRequest) returns (QueryResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputations/find"
+    };
+  }
+
+  rpc QueryHistory(QueryHistoryRequest) returns (QueryHistoryResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputation/history"
+    };
+  }
+
+  rpc GetScoreHistory(GetScoreHistoryRequest) returns (GetScoreHistoryResponse) {
+    option (google.api.http) = {
+      get : "/v1/reputation/score-history"
+    };
+    }
+
+  rpc Lock(LockRequest) returns (LockResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/lock",
+      body : "*"
+    };
+  }
+
+  rpc Unlock(UnlockRequest) returns (UnlockResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/unlock",
+      body : "*"
+    };
+  }
+
+  rpc CreateStandings(CreateStandingsRequest) returns (CreateStandingsResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/standings",
+      body : "*"
+    };
+  }
+
+  rpc ChangeStandings(ChangeStandingsRequest) returns (ChangeStandingsResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/standings/change",
+      body : "*"
+    };
+  }
+
+  rpc DeleteStandings(DeleteStandingsRequest) returns (DeleteStandingsResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/standings/delete",
+      body : "*"
+    };
+  }
+
+  rpc ListStandings(ListStandingsRequest) returns (ListStandingsResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputation/standings"
+    };
+  }
+
+  rpc GetStandings(GetStandingsRequest) returns (GetStandingsResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputation/standings"
+    };
+  }
+
+  rpc GetStandingsByName(GetStandingsByNameRequest) returns (GetStandingsByNameResponse) {
+    option (google.api.http) = {  
+      get : "/v1/reputation/standings/by-name"
+    };
+  }
+
+  rpc GetState(GetStateRequest) returns (GetStateResponse) {
+    option (google.api.http) = {
+      get : "/v1/reputation/state"
+    };
+  }
+
+  rpc SetState(SetStateRequest) returns (SetStateResponse) {
+    option (google.api.http) = {
+      post : "/v1/reputation/state",
+      body : "*"
+    };
+  }
+}

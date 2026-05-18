@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sc.external.services.longterm.v1;
+import "sc/external/services/entitygraph/v1/types.proto";
+
+enum OwnershipRecordStatus {
+  OWNERSHIP_RECORD_STATUS_UNSPECIFIED = 0;
+  OWNERSHIP_RECORD_STATUS_STOWED = 1;
+  OWNERSHIP_RECORD_STATUS_UNSTOWED = 2;
+}
+
+message OwnershipRecord {
+  // URN of the ownership record
+  string urn = 1;
+  // Item class GUID crc
+  uint32 class_guid_crc = 3;
+  // Stack size of the entity if the entity is a Stack
+  uint32 stack_size = 4;
+  // (Optional) Inventory id this item was stowed into
+  string inventory_id = 5;
+  // Stow status of the item
+  OwnershipRecordStatus status = 6;
+  // URN of the owner of the record
+  uint64 owner_id = 7;
+  // entity persistent properties (current snapshot)
+  optional sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 8;
+
+  reserved "owner_urn";
+  reserved 2;
+}

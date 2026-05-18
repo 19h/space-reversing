@@ -1,0 +1,262 @@
+syntax = "proto3";
+
+package sc.external.services.entity_document.v1;
+
+import "sc/external/services/entity_document/v1/types.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/common/types/v1/loadout.proto";
+
+message EntityDocument {
+  DocumentHeader header = 1;
+  EntityDocumentBody body = 2;
+}
+
+message EntityDocumentBody {
+  oneof class {
+    EntityTestDocument test = 1;
+    EntityClassArenaCommanderLoadoutsDocument entity_class_loadouts_ac = 2;
+    EntityClassStarMarineLoadoutsDocument entity_class_loadouts_ea = 3;
+    EntityClassCharacterCustomizerDocument character_customizer_loadouts = 4;
+    PlayerHomeLocationDocument player_home_location = 5;
+    PlayerSpawnLocationDocument player_spawn_location = 6;
+    PlayerTutorialDocument player_tutorial = 7;
+    ShopLicensesDocument shop_licenses = 8;
+    PlayerCombatLogout combat_logout = 9;
+    PlayerWarehouseOrderDocument player_warehouse_order = 11;
+    VehicleStateDocument vehicle_state = 12;
+  }
+
+  reserved 10;
+  reserved "ship_last_spawn_location";
+}
+
+/*
+  EntityTestDocument
+
+  A test document message for the EDS
+*/
+message EntityTestDocument {
+  message Sub {
+    string name = 1;
+    string description = 2;
+  }
+  message Record {
+    string property = 1;
+    repeated string locations = 2;
+    Sub main_sub = 3;
+    repeated Sub subs = 4;
+  }
+
+  message Meta {
+    oneof class {
+      string foo = 1;
+      string bar = 2;
+    }
+  }
+
+  string id = 1;
+  string name = 2;
+  Record sub = 3;
+  Meta meta = 4;
+}
+
+message EntityClassStarMarineLoadoutsDocument {
+  sc.external.common.types.v1.EntityClassLoadout elimination = 1;
+  sc.external.common.types.v1.EntityClassLoadout marine = 2;
+  sc.external.common.types.v1.EntityClassLoadout slaver = 3;
+  sc.external.common.types.v1.EntityClassLoadout pilot = 4;
+  sc.external.common.types.v1.EntityClassLoadout marine_soldier = 5;
+  sc.external.common.types.v1.EntityClassLoadout marine_assault = 6;
+  sc.external.common.types.v1.EntityClassLoadout marine_sniper = 7;
+  sc.external.common.types.v1.EntityClassLoadout marine_antivehicle = 8;
+  sc.external.common.types.v1.EntityClassLoadout outlaw_soldier = 9;
+  sc.external.common.types.v1.EntityClassLoadout outlaw_assault = 10;
+  sc.external.common.types.v1.EntityClassLoadout outlaw_sniper = 11;
+  sc.external.common.types.v1.EntityClassLoadout outlaw_antivehicle = 12;
+}
+
+message EntityClassArenaCommanderLoadoutsDocument {
+  sc.external.common.types.v1.EntityClassLoadout base = 1;
+}
+
+message EntityClassCharacterCustomizerDocument {
+  sc.external.common.types.v1.EntityClassLoadout customization = 1;
+}
+
+message PlayerHomeLocationDocument {
+  // location id
+  uint32 home_location_id = 1;
+}
+
+message PlayerSpawnLocationDocument {
+
+  // spawn the player at a custom location (for debugging/GM purposes)
+  message PlayerSpawnZonePosition {
+    // Parent relative orientation
+    sc.external.common.types.v1.Quatd orientation = 2;
+    // Parent relative position
+    sc.external.common.types.v1.Vec3d position = 3;
+    // Parent location id
+    uint32 location_id = 4;
+
+    reserved "zone_geid";
+    reserved 1;
+  }
+
+  // spawn the player at a given location id (will find a HUB at that location)
+  message PlayerSpawnLocation {
+    // location id
+    uint32 location_id = 1;
+  }
+
+  // spawn the player inside a given ship seat/bed. ship is unstowed at the zone
+  // position Now deprecated: Spawning in ship is part of spawning in-place. To
+  // be removed once "new" spawning is the default.
+  message PlayerSpawnInShip {
+    // ship geid
+    uint64 ship_id = 1;
+    // Usable logout object entity id to spawn the player into
+    uint64 logout_entity_id = 3;
+    // Parent relative orientation
+    sc.external.common.types.v1.Quatd orientation = 4;
+    // Parent relative position
+    sc.external.common.types.v1.Vec3d position = 5;
+    // Fallback location
+    PlayerSpawnLocation fallback_location = 6;
+    // Parent location id
+    uint32 location_id = 7;
+
+    reserved "zone_geid";
+    reserved 2;
+  }
+
+  // spawn the player "in-place" where they logged out, (including a vehicle
+  // bed).
+  message PlayerSpawnInPlace {
+    // shard id in which the player logged out (as parent entity id or
+    // transform/zone is only valid if logging back into the same shard).
+    string logout_shard_id = 1;
+
+    // entity parent of the player when they logged out, if they were attached
+    // to a parent entity.
+    uint64 logout_parent_entity_id = 2;
+    // zone orientation of the player when they logged out, if they weren't
+    // attached to a parent entity.
+    sc.external.common.types.v1.Quatd logout_orientation = 3;
+    // zone position of the player when they logged out, if they weren't
+    // attached to a parent entity.
+    sc.external.common.types.v1.Vec3d logout_position = 4;
+    // owning entity id of the zone in which the player logged out, if they
+    // weren't attached to a parent entity.
+    uint64 logout_zone_host_id = 5;
+
+    // entity id of the vehicle in which the player logged out, if they logged
+    // out and explicitly stowed it.
+    uint64 stowed_vehicle_id = 6;
+    // orientation within the specified location, of the vehicle in which the
+    // player logged out, if they logged out and explicitly stowed it.
+    sc.external.common.types.v1.Quatd stowed_vehicle_orientation = 7;
+    // orientation within the specified location, of the vehicle in which the
+    // player logged out, if they logged out and explicitly stowed it.
+    sc.external.common.types.v1.Vec3d stowed_vehicle_position = 8;
+    // location id of the vehicle in which the player logged out, if they logged
+    // out and explicitly stowed it.
+    uint32 stowed_vehicle_location_id = 9;
+
+    // fallback location for if we fail to spawn in-place.
+    PlayerSpawnLocation fallback_location = 10;
+  }
+
+  // spawn the player in a stowed parent entity. (ie: personal hangar, ship bed, etc
+  message PlayerSpawnStowedParent {
+    // Entity id of the parent, which was stowed when the player logged out.
+    uint64 stowed_parent_entity_id = 1;
+
+    // Inventory which the parent entity was stowed into.
+    string stowed_parent_inventory_id = 2;
+
+    // If the stowed parent entity was itself attached to an entity in the world,
+		// the super GUID of the entity it was attached to.
+    string stowed_parent_parent_super_guid = 3;
+
+    // If the stowed parent entity was "loose" in a zone, the super GUID of the
+		// zone host, and the zone orientation/position it was at.
+    string stowed_parent_zone_host_super_guid = 4;
+    // orientation of the parent entity
+    sc.external.common.types.v1.Quatd stowed_parent_orientation = 5;
+    // position of the parent entity
+    sc.external.common.types.v1.Vec3d stowed_parent_position = 6;
+
+    // Fallback location, if we fail to unstow the parent entity.
+    PlayerSpawnLocation fallback_location = 7;
+  }
+
+  oneof spawn_info {
+    PlayerSpawnZonePosition spawn_zone_position = 1;
+    PlayerSpawnLocation spawn_location = 2;
+    PlayerSpawnInShip spawn_in_ship = 3;
+    PlayerSpawnInPlace spawn_in_place = 4;
+    PlayerSpawnStowedParent spawn_stowed_parent = 5;
+  }
+}
+
+message ShipLastSpawnLocationDocument {
+  // Last spawn location available for ships
+  uint32 location_id = 1;
+}
+
+message PlayerTutorialDocument {
+  // Tutorial available
+  bool tutorial_available = 1;
+  // Player in tutorial mode
+  bool tutorial_mode = 2;
+}
+
+message PlayerWarehouseOrder
+{
+    uint64 player_id = 1;
+    uint32 location_id = 2;
+    uint64 vehicle_id = 3;
+    string entity_guid = 4;
+    int32 entity_count = 5;
+    int32 type = 6;
+    double price = 7;
+    int32 num_entities_processed = 8;
+    int32 packing_num_entities_processed = 9;
+    int32 order_progress = 10;
+    uint64 pickup_inventory_id = 11;
+    uint64 removal_personal_inventory_id = 12;
+    int64 begin_time = 13;
+    int64 duration = 14;
+    string mission_giver_guid = 15;
+    string mission_guid = 16;
+    repeated uint64 repack_entity_ids = 17;
+    double debug_rate_per_scu = 18;
+    int64 debug_batch_size = 19;
+    repeated uint64 owner_id_selling_from = 20;
+    oneof vehicle_stowage_state {
+        string inventory_id = 21;
+        string shard_id = 22;
+    }
+    string mission_objective_id = 23;
+}
+
+
+message PlayerWarehouseOrderDocument
+{
+    repeated PlayerWarehouseOrder orders = 1;
+}
+
+message ShopLicensesDocument
+{
+  // Shop Licenses
+  uint64 shop_licenses = 1;
+}
+
+message PlayerCombatLogout {
+  bool was_in_combat = 1;
+}
+
+message VehicleStateDocument {
+  bool is_vehicle_destroyed = 1;
+}

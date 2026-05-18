@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package sc.external.services.blueprint_library.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum BlueprintSource {
+  BLUEPRINT_SOURCE_UNSPECIFIED = 0;
+  BLUEPRINT_SOURCE_GAMEPLAY = 1;
+  BLUEPRINT_SOURCE_PLATFORM = 2;
+}
+
+enum BlueprintProcessType {
+  BLUEPRINT_PROCESS_TYPE_UNSPECIFIED = 0;
+  BLUEPRINT_PROCESS_TYPE_CREATE = 1;
+  BLUEPRINT_PROCESS_TYPE_REFINE = 2;
+  BLUEPRINT_PROCESS_TYPE_REPAIR = 3;
+  BLUEPRINT_PROCESS_TYPE_UPGRADE = 4;
+  BLUEPRINT_PROCESS_TYPE_DISMANTLE = 5;
+  BLUEPRINT_PROCESS_TYPE_RESEARCH = 6;
+}
+
+message BlueprintEntry {
+  string blueprint_id = 1;
+  string category_id = 2;
+  string item_class_id = 3;
+  uint32 tier = 4;
+  int32 remaining_uses = 5;
+  BlueprintSource source = 6;
+  google.protobuf.Timestamp last_used_at = 7;
+  BlueprintProcessType process_type = 8;
+}

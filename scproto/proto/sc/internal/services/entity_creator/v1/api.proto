@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_creator.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/services/reputation/v1/types.proto";
+import "sc/external/common/types/v1/customization.proto";
+import "sc/external/services/instance_manager/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Entity Creator Service"
+      version: "1.0",
+      description: "Service responsible for creating, attributing and persisting entity hierarchies."
+    }
+};
+
+message CreatePlayerRequest {
+    message Body {
+        uint64 player_id = 1;
+        uint32 account_id = 2;
+        // Character name
+        string name = 3;
+        sc.external.common.types.v1.CharacterCustomization character_customizations = 7;
+
+        reserved 4, 5, 6;
+        reserved "dna", "sex", "race";
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    reserved 2;
+    reserved "creates";
+    Body create = 3;
+}
+
+message CreatePlayerResponse {
+}
+
+message DeletePlayerRequest {
+    message Body {
+        uint64 player_id = 1;
+        // On full reset of a player, also need to delete all the entitlements
+        bool all_owned_entities = 2;
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body delete = 3;
+    reserved 2;
+    reserved "deletes";
+}
+
+message DeletePlayerResponse {
+}
+
+message CreateInstanceRequest {
+    // oc path of instance
+    string oc_path = 1;
+
+    // owner id of the entity
+    uint64 owner_id = 2;
+
+    // target destination for the instance
+    sc.external.services.entitygraph.v1.EntityGraphDestination destination = 3;
+
+    // entity graph properties
+    sc.external.common.command.v1.CommandArguments arguments = 4;
+    sc.external.services.entitygraph.v1.Purpose purpose = 5;
+
+    // snapshot data
+    sc.external.services.instance_manager.v1.InstanceEntitySnapshot instance_snapshot = 6; // map<slot, EntitySnapshot>
+}
+
+message CreateInstanceResponse {
+    // map of slot name and created instance GEID    
+    map<string, uint64> created_instance_slots = 1; // map<slot, entity_geid>
+}
+
+message CheckMissingEntityClassRequest {
+    repeated string entity_class_guid = 1;
+}
+
+message CheckMissingEntityClassResponse {
+    repeated string invalid_entity_class_guid = 1;
+}
+
+message RepairPlayerRequest {
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    uint64 player_id = 2;
+
+    enum Strategy {
+        STRATEGY_UNSPECIFIED = 0;
+        // Only force stow the player
+        STRATEGY_FORCE_STOW = 1;
+        // FORCE_STOW + creating only missing entities from the default loadout
+        STRATEGY_REPAIR = 2;
+    }
+    Strategy strategy = 3;
+}
+
+message RepairPlayerResponse {
+}
+
+message GetCurrentGenerationRequest {
+
+}
+
+message GetCurrentGenerationResponse {
+  string generation = 1;
+  string database_version = 2;
+}
+
+// Reputation standing seeding types
+message GetReputationStandingsSeedsRequest {
+}
+
+message GetReputationStandingsSeedsResponse {
+    repeated sc.external.services.reputation.v1.StandingsSeed standing_seeds = 1;
+}
+
+service EntityCreatorService {
+
+    /*
+      Create instance
+
+      Create an instance via their objection container path
+    */
+    rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-creator/create-instance",
+            body: "*"
+        };
+    }
+
+    /*
+      CheckMissingEntityClass
+
+      Returns which entity class GUIDs from the incoming list that doesn't exist.
+    */
+    rpc CheckMissingEntityClass(CheckMissingEntityClassRequest) returns (CheckMissingEntityClassResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-creator/check-missing-entity",
+            body: "*"
+        };
+    }
+
+    /*
+      CreatePlayer
+
+      Create player entity and all its default items
+    */
+    rpc CreatePlayer(CreatePlayerRequest) returns (CreatePlayerResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-creator/create-player",
+            body: "*"
+        };
+    }
+
+    /*
+      CreatePlayer
+
+      Create player entity and all its default items
+    */
+    rpc DeletePlayer(DeletePlayerRequest) returns (DeletePlayerResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-creator/delete-player",
+            body: "*"
+        };
+    }
+
+
+    /*
+      RepairPlayer
+
+      Will attempt to repair a player entity
+    */
+    rpc RepairPlayer(RepairPlayerRequest) returns (RepairPlayerResponse) {
+        option (google.api.http) = {
+            post : "/v1/entity-creator/repair-player",
+            body: "*"
+        };
+    }
+
+    /*
+    GetCurrentGeneration
+
+    to get the current generation used by Identity in order to properly fetch the Character Customizations
+    the generation is a string built of Service identifiers -> ex Service Version + CL | md5("321.2.1-812373") this can be changed in the future
+    */
+    rpc GetCurrentGeneration(GetCurrentGenerationRequest) returns (GetCurrentGenerationResponse) {
+        option (google.api.http) = {
+        get : "/v1/characterCustomizer/GetCurrentGeneration",
+        };
+    }
+
+    /*
+      GetReputationStandingsSeeds
+
+      used to obtain the reputation standing seeds
+    */
+    rpc GetReputationStandingsSeeds(GetReputationStandingsSeedsRequest) returns (GetReputationStandingsSeedsResponse) {
+        option (google.api.http) = {
+            get : "/v1/entity-creator/get-reputation-standings-seeds",
+        };
+    }
+}

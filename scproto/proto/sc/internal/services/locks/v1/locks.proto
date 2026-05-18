@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package sc.internal.services.locks.v1;
+
+import "google/api/annotations.proto";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Locks Service"
+      version: "1.0",
+      description: "Provides distributed locks to services in the mesh"
+    }
+};
+
+
+// A lock request
+message LockRequest {
+    // The requestor that wants to hold the lock
+    string holder = 1;
+    // Timeout in seconds to hold the lock for the holder
+    int32 timeout = 2;
+    // List of locking keys to hold, if any are alerady held, an error is returned
+    repeated string keys = 3;
+}
+
+
+message VersionedLock {
+    string key = 1;
+    uint64 version = 2;
+    int32 timeout = 3;
+    string holder = 4;
+}
+
+message LockResponse {
+    // List of the successfully acquired versioned locks
+    repeated VersionedLock versioned_locks = 1;
+}
+
+// A release lock request
+message ReleaseRequest {
+    // The requestor that wants to release the lock
+    string holder = 1;
+    // The key that the requestor would like to release
+    repeated string keys = 2;
+}
+
+message LockRelease {
+    // The key that was attempted to be released
+    string key = 1;
+    // The success of the release
+    bool success = 2;
+    // The message for the release success
+    string message = 3;
+}
+
+message ReleaseResponse {
+    repeated LockRelease released_locks = 1;
+}
+
+// A check lock request
+message CheckRequest {
+    // The lock keys to retrieve
+    repeated string keys = 1;
+}
+
+message CheckResponse {
+    // Versioned locks that are currently active
+    repeated VersionedLock versioned_locks = 1;
+}
+
+service LockService {
+
+    rpc Lock(LockRequest) returns (LockResponse) {
+        option (google.api.http) = {
+            post : "/v1/lock/lock",
+            body: "*"
+        };
+    }
+
+    rpc Release(ReleaseRequest) returns (ReleaseResponse) {
+        option (google.api.http) = {
+            post : "/v1/lock/release",
+            body: "*"
+        };
+    }
+
+    rpc Check(CheckRequest) returns (CheckResponse) {
+        option (google.api.http) = {
+            post : "/v1/lock/check",
+            body: "*"
+        };
+    }
+}

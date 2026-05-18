@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sc.internal.services.ledger.v1;
+
+message Account {
+    int32 id = 1;
+    string username = 2;
+    string email = 3;
+    string firstname = 4;
+}
+
+enum PlatformCurrency {
+  PLATFORM_CURRENCY_UNSPECIFIED = 0;
+  PLATFORM_CURRENCY_REC = 1;
+  PLATFORM_CURRENCY_UEC = 2;
+  PLATFORM_CURRENCY_SPM = 3;
+  PLATFORM_CURRENCY_CREDIT = 4;
+}
+
+message Money {
+  PlatformCurrency currency = 1;
+  int32 amount = 2;
+}
+
+message MoneyCredited {
+  Money money = 1;
+  Account account = 2;
+}
+
+message MoneyDebited {
+  Money money = 1;
+  Account account = 2;
+}

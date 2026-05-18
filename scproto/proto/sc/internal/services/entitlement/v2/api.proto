@@ -1,0 +1,463 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v2;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+
+import "sc/internal/services/entitlement/v2/commands.proto";
+import "sc/external/services/entitlement/v2/types.proto";
+
+import "sc/external/services/entitygraph/v1/query.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title:       "Entitlement service"
+    version:     "2.0"
+    description: "Service responsible for processing and persisting player entitlements and snapshots."
+  }
+};
+
+message QueryEntitlementsStreamRequest {
+  // required filter by player GEID
+  uint64 player_id = 1;
+  // (Optional) filter, if not set, all this player entitlements will be returned
+  optional sc.external.services.entitlement.v2.EntitlementFilter filter = 2;
+}
+
+message QueryEntitlementsStreamResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement results = 1;
+}
+
+message QuerySnapshotsStreamRequest {
+  // Required, as a partitioning key for the query
+  uint64 player_id = 1;
+  optional sc.external.services.entitlement.v2.SnapshotFilter filter = 2;
+}
+
+message QuerySnapshotsStreamResponse {
+  repeated sc.external.services.entitlement.v2.SnapshotRecord results = 1;
+}
+
+message QuerySnapshotsWithEntitlementsStreamRequest {
+  // Required, as a partitioning key for the query
+  uint64 player_id = 1;
+  optional sc.external.services.entitlement.v2.SnapshotFilter filter = 2;
+}
+
+message QuerySnapshotsWithEntitlementsStreamResponse {
+  repeated sc.external.services.entitlement.v2.SnapshotWithEntitlement results = 1;
+}
+
+message QueryEntitlementsHistoryRequest {
+  string entitlement_urn = 1;
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message QueryEntitlementsHistoryResponse {
+  sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated sc.external.services.entitlement.v2.EntitlementHistory results = 2;
+}
+
+
+message CreateEntitlementRequest {
+  CreateEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message CreateEntitlementResponse {}
+
+message UpsertSnapshotsRequest {
+  UpsertSnapshotsCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message UpsertSnapshotsResponse {}
+
+message DeliverEntitlementRequest {
+  DeliverEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message DeliverEntitlementResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement created_vehicle_entitlements = 1;
+}
+
+message RevokeAllPlayerEntitlementsRequest {
+  RevokeAllPlayerEntitlementsCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message RevokeAllPlayerEntitlementsResponse {}
+
+message CreateAndDeliverEntitlementRequest {
+  CreateAndDeliverEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message CreateAndDeliverEntitlementResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement created_vehicle_entitlements = 1;
+}
+
+message ClaimEntitlementRequest {
+  ClaimEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message ClaimEntitlementResponse {
+  repeated uint64 created_entities_geids = 1;
+  // The list of bricked entities geids is filtered
+  repeated uint64 bricked_entities_geids = 2;
+}
+
+message ClearSnapshotsRequest {
+  ClearSnapshotsCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message ClearSnapshotsResponse {}
+
+message RevokeEntitlementRequest {
+  RevokeEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message RevokeEntitlementResponse {}
+
+message QueryEntitlementsByItemTypeStreamRequest {
+  uint64 player_id = 1;
+  string item_type = 2;
+  optional string item_sub_type = 3;
+}
+
+message QueryEntitlementsByItemTypeStreamResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement results = 1;
+}
+
+message QueryEntitlementsBySourceTypeStreamRequest {
+  uint64 player_id = 1;
+  sc.external.services.entitlement.v2.EntitlementSourceType source_type = 2;
+  repeated string entitlement_urns = 3;
+}
+
+message QueryEntitlementsBySourceTypeStreamResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement results = 1;
+}
+
+message QueryEntitlementsByEntityClassStreamRequest {
+  uint64 player_id = 1;
+  repeated string entity_class_guids = 2;
+  repeated sc.external.services.entitlement.v2.EntitlementSourceType source_types = 3;
+}
+
+message QueryEntitlementsByEntityClassStreamResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement results = 1;
+}
+
+message QueryEntitlementsByEntityGeidsStreamRequest {
+  uint64 player_id = 1;
+  repeated uint64 entity_geids = 2;
+}
+
+message QueryEntitlementsByEntityGeidsStreamResponse {
+  repeated sc.external.services.entitlement.v2.Entitlement results = 1;
+}
+
+message RestoreEntitlementRequest {
+  RestoreEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message RestoreEntitlementResponse {}
+
+message UpdateEntitlementRequest {
+  UpdateEntitlementCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message UpdateEntitlementResponse {}
+
+message SetPersistentPropertiesRequest {
+  SetPersistentPropertiesCommand command = 1;
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message SetPersistentPropertiesResponse {}
+
+message QueryPersistentPropertiesRequest {
+    message Query {
+        // entitlement URN
+        string entitlement_urn = 1;
+        // filter
+        repeated sc.external.services.entitygraph.v1.SnapshotVariableFilter filter = 2;
+    }
+    // player geid
+    uint64 player_id = 1;
+    // query
+    repeated Query queries = 2;
+  }
+message QueryPersistentPropertiesResponse {
+    message PersistentEntityPropertiesResults {
+        // entitlement URN
+        string entitlement_urn = 1;
+        // filtered persistent_properties
+        sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 2;
+    }
+    repeated PersistentEntityPropertiesResults results = 1;
+}
+
+
+service EntitlementService {
+  /*
+    CreateEntitlement
+
+    Enqueue a request to grant new entitlements to a player, creating in-game items
+    and persisting the record. Can be used to create packaged, undelivered entitlements.
+  */
+  rpc CreateEntitlement(CreateEntitlementRequest) returns (CreateEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/createEntitlement"
+      body: "*"
+    };
+  }
+
+  /*
+    UpdateEntitlement
+
+    Enqueue a request to update mutable fields of existing entitlement records.
+    All updatable entitlement fields except persistent properties may be changed.
+    Use SetPersistentProperties for persistent property updates.
+  */
+  rpc UpdateEntitlement(UpdateEntitlementRequest) returns (UpdateEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/updateEntitlement"
+      body: "*"
+    };
+  }
+
+  /*
+    UpsertSnapshots
+
+    Enqueue a request to complete snapshot for a root entitlement and snapshot ID.
+    This will replace any existing snapshots for the entitlement for any snapshot ID
+    that was set on a record in the request.
+  */
+  rpc UpsertSnapshots(UpsertSnapshotsRequest) returns (UpsertSnapshotsResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/upsertSnapshots"
+      body: "*"
+    };
+  }
+
+  /*
+    RevokeAllPlayerEntitlements
+
+    Enqueue a request to revoke all entitlements & snapshots for a player, melting all fulfilled entities.
+  */
+  rpc RevokeAllPlayerEntitlements(RevokeAllPlayerEntitlementsRequest) returns (RevokeAllPlayerEntitlementsResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/revokeAllPlayerEntitlements"
+      body: "*"
+    };
+  }
+
+  /*
+    DeliverEntitlement
+
+    Enqueue a request to deliver entitlement records, creating entities.
+    If the entitlement is packed it will be unpacked first, then it will be claimed.
+  */
+  rpc DeliverEntitlement(DeliverEntitlementRequest) returns (DeliverEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/deliverEntitlement"
+      body: "*"
+    };
+  }
+
+  /*
+    CreateAndDeliverEntitlement
+
+    Enqueue a request to create new entitlements and immediately deliver them, creating in-game items
+    and persisting the records. This is a combination of CreateEntitlement and DeliverEntitlement.
+    This will create PACKAGED or UNDELIVERED entitlements first depending on the request payload, then immediately deliver them.
+  */
+  rpc CreateAndDeliverEntitlement(CreateAndDeliverEntitlementRequest) returns (CreateAndDeliverEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/createAndDeliverEntitlement"
+      body: "*"
+    };
+  }
+
+
+
+  /*
+    ClaimEntitlement
+
+    Enqueue a request to undeliver and then claim entitlements, bricking old entities and creating new ones.
+  */
+  rpc ClaimEntitlement(ClaimEntitlementRequest) returns (ClaimEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/claimEntitlement"
+      body: "*"
+    };
+  }
+
+  /*
+    ClearSnapshots
+
+    Enqueue a request to clear snapshots for a specific entitlement and snapshot ID.
+
+    Note: Currently not used, and not implemented, it will be deleted once we finish the project and make sure we don't need it.
+  */
+  rpc ClearSnapshots(ClearSnapshotsRequest) returns (ClearSnapshotsResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/clearSnapshots"
+      body: "*"
+    };
+  }
+
+  /*
+    RevokeEntitlement
+
+    Enqueue a request to revoke entitlements, deleting the entitlement record and all snapshots.
+    Optionally includes the ability to brick entities of a CLAIMED entitlement.
+  */
+  rpc RevokeEntitlement(RevokeEntitlementRequest) returns (RevokeEntitlementResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/revokeEntitlement"
+      body: "*"
+    };
+  }
+
+  /*
+    QueryEntitlementsStream
+
+    Query entitlements that match the request criteria.
+    Returns in a stream the full list of entitlements that match the request
+    and the full list of all snapshot records used by the entitlements.
+  */
+  rpc QueryEntitlementsStream(QueryEntitlementsStreamRequest) returns (stream QueryEntitlementsStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlements"
+      body: "*"
+    };
+  }
+
+  /*
+    QuerySnapshotsStream
+
+    Query entitlement snapshots for a specific player.
+  */
+  rpc QuerySnapshotsStream(QuerySnapshotsStreamRequest) returns (stream QuerySnapshotsStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/querySnapshots"
+      body: "*"
+    };
+  }
+
+  /*
+    QuerySnapshotsWithEntitlementsStream
+
+    Query entitlement snapshots for a specific player, including their entitlement.
+  */
+  rpc QuerySnapshotsWithEntitlementsStream(QuerySnapshotsWithEntitlementsStreamRequest) returns (stream QuerySnapshotsWithEntitlementsStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/querySnapshotsWithEntitlements"
+      body: "*"
+    };
+  }
+
+  /*
+    QueryEntitlementsHistory
+
+    Query entitlement history for a specific entitlement.
+  */
+  rpc QueryEntitlementsHistory(QueryEntitlementsHistoryRequest) returns (QueryEntitlementsHistoryResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlementsHistory"
+      body: "*"
+    };
+  }
+
+
+  /*
+    QueryEntitlementsByItemTypeStream
+  */
+  rpc QueryEntitlementsByItemTypeStream(QueryEntitlementsByItemTypeStreamRequest) returns (stream QueryEntitlementsByItemTypeStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlementsByItemType"
+      body: "*"
+    };
+  }
+
+  /*
+    QueryEntitlementsBySourceTypeStream
+  */
+  rpc QueryEntitlementsBySourceTypeStream(QueryEntitlementsBySourceTypeStreamRequest) returns (stream QueryEntitlementsBySourceTypeStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlementsBySourceType"
+      body: "*"
+    };
+  }
+
+  /*
+    QueryEntitlementsByEntityClassStream
+  */
+  rpc QueryEntitlementsByEntityClassStream(QueryEntitlementsByEntityClassStreamRequest) returns (stream QueryEntitlementsByEntityClassStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlementsByEntityClass"
+      body: "*"
+    };
+  }
+
+  /*
+    QueryEntitlementsByEntityGeidsStream
+  */
+  rpc QueryEntitlementsByEntityGeidsStream(QueryEntitlementsByEntityGeidsStreamRequest) returns (stream QueryEntitlementsByEntityGeidsStreamResponse) {
+    option (google.api.http) = {
+      post: "/v2/entitlement/queryEntitlementsByEntityGeids"
+      body: "*"
+    };
+  }
+  /*
+    RestoreEntitlement
+
+    Restore an entitled entity according to the specified snapshot type.
+    The caller must ensure that the entity associated with the entitlement is in a proper state
+    and ready to be restored according to the specified snapshot.
+
+    The service will return an error if:
+    - The item is in a non delivered state
+    - The snapshot type doesn't exist for the specified entitlement
+    - EC returned an error during the restore process
+  */
+  rpc RestoreEntitlement(RestoreEntitlementRequest) returns (RestoreEntitlementResponse) {
+    option (google.api.http) = {
+      post : "/v2/entitlement/restoreEntitlement",
+      body: "*"
+    };
+  }
+  /*
+    SetPersistentProperties
+
+    Command to set persistent properties (PersistentEntityProperties) of entities.
+
+    SetPersistentProperties on entitlement will:
+    - Replace the entire snapshot document for an entitlement
+  */
+  rpc SetPersistentProperties(SetPersistentPropertiesRequest) returns (SetPersistentPropertiesResponse) {
+    option (google.api.http) = {
+      post : "/v2/entitlement/setPersistentProperties",
+      body: "*"
+    };
+  }
+  /*
+    QueryPersistentProperties
+
+    Command to query persistent properties (PersistentEntityProperties) of entities.
+
+  */
+  rpc QueryPersistentProperties(QueryPersistentPropertiesRequest) returns (QueryPersistentPropertiesResponse) {
+    option (google.api.http) = {
+      post : "/v2/entitlement/queryPersistentProperties",
+      body: "*"
+    };
+  }
+}

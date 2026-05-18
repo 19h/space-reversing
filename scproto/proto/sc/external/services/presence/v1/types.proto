@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package sc.external.services.presence.v1;
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_OFFLINE = 1;
+  STATUS_ONLINE = 2;
+  STATUS_AWAY = 3;
+  STATUS_DND = 4;
+  STATUS_ACTIVITY = 5;
+  STATUS_INVISIBLE = 6;
+}
+
+// Additional information about the current activity of the account
+message Activity {
+  // The current activity. i.e. "Playing SC"
+  string state = 1;
+  // Details about the activity i.e. "In menus"
+  string details = 2;
+  // Id of the currently selected player
+  uint64 player_id = 3;
+}
+
+message Presence {
+  // Current status of the account
+  Status status = 1;
+
+  // (Optional) Rich presence activity
+  Activity activity = 2;
+}

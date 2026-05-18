@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v1;
+
+import "sc/external/services/entitlement/v1/types.proto";
+
+message ReconcileAccountUpdateNotification {
+  // id of the command
+  string command_id = 1;
+  // phase of the reconcile
+  ReconcileAccountPhase phase = 2;
+  // details of the current phase (total number to process)
+  string details = 3;
+  // SCURN of the Account
+  string account_urn = 4;
+  // SCURN of the Player
+  string player_urn = 5;
+  // current status of the reconcile
+  ReconcileAccountStatus status = 6;
+}
+
+message RealtimeFulfillmentUpdateNotification {
+  // id of the command
+  string command_id = 1;
+  // phase of the reconcile
+  RealtimeFulfillmentProcessorStatus status = 2;
+  // Id of the Account
+  int32 account_id = 3;
+}

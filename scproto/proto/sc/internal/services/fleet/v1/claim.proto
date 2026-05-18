@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "google/protobuf/any.proto";
+
+message JoinParameters {
+  // Name of the fleet to join (to be sent in subsequent reports)
+  string fleet = 1;
+
+  // Data to be passed to the unit for setup purpose (optional)
+  google.protobuf.Any config = 2;
+}
+
+message Claim {
+  // Which product a unit must fulfill
+  string product = 1;
+
+  // Which labels (key/value) a unit must fulfill (optional)
+  map<string, string> labels = 2;
+
+  // Instruction to be sent to the unit
+  JoinParameters join_parameters = 3;
+}
+
+message ClaimUnitRequest {
+  // List of units to claim
+  repeated Claim claims = 1;
+}
+
+message ClaimUnitResponse {
+  // Unique identifier of the claimed units
+  repeated string unit_ids = 1;
+}

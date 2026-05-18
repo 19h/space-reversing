@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  GENDER_MALE = 1;
+  GENDER_FEMALE = 2;
+}
+
+enum Race {
+  RACE_UNSPECIFIED = 0;
+  RACE_HUMAN = 1;
+}
+
+message Player {
+  uint64 created_at = 1;
+  uint64 updated_at = 2;
+  // Unique global identifier for the player
+  uint64 geid = 3;
+  // Owner of the player
+  uint32 account_id = 4;
+  // Name for the player, seen by all other users
+  string name = 5;
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    STATE_CURRENT = 1;
+    STATE_ARCHIVED = 2;
+    STATE_CREATING = 3;
+    STATE_REPAIRING = 4;
+    STATE_ARCHIVING = 5;
+    STATE_ABORTED = 6;
+    STATE_RESETTING = 7;
+    // Player has been assigned a GEID but has not yet completed character creation
+    STATE_PREALLOCATED = 8;
+  }
+  // State of this player (e.g. current, archived)
+  State state = 6;
+  // Has the player been created in all other services
+  bool is_fulfilled = 8;
+
+  // Removed player creation_attributes field
+  reserved 7;
+  reserved "creation_attributes";
+}
+
+message MapRankingEntry {
+  string map = 1;
+  int64 rank = 2;
+  int64 score = 3;
+  int64 total = 4;
+}
+
+message PlayerRanking {
+  string name = 1;
+  map<string, MapRankingEntry> maps = 2;
+}

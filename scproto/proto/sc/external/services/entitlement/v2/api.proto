@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v2;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/entitlement/v2/types.proto";
+import "sc/external/common/command/v1/types.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Entitlement Service External API"
+      version: "2.0",
+      description: "Service responsible for player interactions with their entitlements"
+    }
+};
+
+message QueryEntitlementsStreamRequest {
+    // (Optional) filter, if not set, all this player entitlements will be returned
+    optional EntitlementFilter filter = 1;
+}
+
+message QueryEntitlementsStreamResponse {
+    repeated Entitlement results = 1;
+}
+
+
+message QuerySnapshotsStreamRequest {
+    optional SnapshotFilter filter = 1;
+}
+
+message QuerySnapshotsStreamResponse {
+    repeated SnapshotRecord results = 1;
+}
+
+message QuerySnapshotsWithEntitlementsStreamRequest {
+    optional SnapshotFilter filter = 1;
+}
+
+message QuerySnapshotsWithEntitlementsStreamResponse {
+    repeated SnapshotWithEntitlement results = 1;
+}
+
+
+message QueryEntitlementsByItemTypeStreamRequest {
+    string item_type = 1;
+    optional string item_sub_type = 2;
+}
+
+message QueryEntitlementsByItemTypeStreamResponse {
+    repeated Entitlement results = 1;
+}
+
+message QueryEntitlementsBySourceTypeStreamRequest {
+    EntitlementSourceType source_type = 1;
+    repeated string entitlement_urns = 2;
+}
+
+message QueryEntitlementsBySourceTypeStreamResponse {
+    repeated Entitlement results = 1;
+}
+
+message QueryEntitlementsByEntityClassStreamRequest {
+    repeated string entity_class_guids = 1;
+    repeated EntitlementSourceType source_types = 2;
+}
+
+message QueryEntitlementsByEntityClassStreamResponse {
+    repeated Entitlement results = 1;
+}
+
+message QueryEntitlementsByEntityGeidsStreamRequest {
+    repeated uint64 entity_geids = 1;
+}
+
+message QueryEntitlementsByEntityGeidsStreamResponse {
+    repeated Entitlement results = 1;
+}
+
+message UpdateArenaCommanderLoadoutRequest {
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    // URN identifier of the record to update
+    string urn = 2;
+    // Loadout to update the record with
+    ItemPortLoadout loadout = 3;
+}
+    
+message UpdateArenaCommanderLoadoutResponse { }
+
+service ExternalEntitlementService {
+    /*
+        QueryEntitlementsStream
+
+        Query a player's own entitlement records, sends a stream of entitlements.
+    */
+    rpc QueryEntitlementsStream(QueryEntitlementsStreamRequest) returns (stream QueryEntitlementsStreamResponse) {
+        option (google.api.http) = {
+            post : "/v2/entitlement/queryEntitlements",
+            body: "*"
+        };
+    }
+
+
+    /* 
+        QuerySnapshotsStream
+
+        Query a player's own snapshot records.
+    */
+    rpc QuerySnapshotsStream(QuerySnapshotsStreamRequest) returns (stream QuerySnapshotsStreamResponse) {
+        option (google.api.http) = {
+            post : "/v2/entitlement/querySnapshots",
+            body: "*"
+        };
+    }
+
+    /*
+        QuerySnapshotsWithEntitlementsStream
+
+        Query a player's own snapshot records including their entitlement
+    */
+    rpc QuerySnapshotsWithEntitlementsStream(QuerySnapshotsWithEntitlementsStreamRequest) returns (stream QuerySnapshotsWithEntitlementsStreamResponse) {
+        option (google.api.http) = {
+            post : "/v2/entitlement/querySnapshotsWithEntitlements",
+            body: "*"
+        };
+    }
+
+    /*
+        QueryEntitlementsByItemTypeStream
+    */
+    rpc QueryEntitlementsByItemTypeStream(QueryEntitlementsByItemTypeStreamRequest) returns (stream QueryEntitlementsByItemTypeStreamResponse) {
+        option (google.api.http) = {
+            post: "/v2/entitlement/queryEntitlementsByItemType"
+            body: "*"
+        };
+    }
+
+    /*
+        QueryEntitlementsBySourceTypeStream
+    */
+    rpc QueryEntitlementsBySourceTypeStream(QueryEntitlementsBySourceTypeStreamRequest) returns (stream QueryEntitlementsBySourceTypeStreamResponse) {
+        option (google.api.http) = {
+            post: "/v2/entitlement/queryEntitlementsBySourceType"
+            body: "*"
+        };
+    }
+
+    /*
+        QueryEntitlementsByEntityClassStream
+    */
+    rpc QueryEntitlementsByEntityClassStream(QueryEntitlementsByEntityClassStreamRequest) returns (stream QueryEntitlementsByEntityClassStreamResponse) {
+        option (google.api.http) = {
+            post: "/v2/entitlement/queryEntitlementsByEntityClass"
+            body: "*"
+        };
+    }
+
+    /*
+        QueryEntitlementsByEntityGeidsStream
+    */
+    rpc QueryEntitlementsByEntityGeidsStream(QueryEntitlementsByEntityGeidsStreamRequest) returns (stream QueryEntitlementsByEntityGeidsStreamResponse) {
+        option (google.api.http) = {
+            post: "/v2/entitlement/queryEntitlementsByEntityGeids"
+            body: "*"
+        };
+    }
+
+    /*
+        UpdateArenaCommanderLoadout
+
+        Updates the Arena Commander loadout of a player's ship
+    */
+    rpc UpdateArenaCommanderLoadout(UpdateArenaCommanderLoadoutRequest) returns (UpdateArenaCommanderLoadoutResponse) {
+        option (google.api.http) = {
+            post : "/v2/entitlement/updateArenaCommanderLoadout"
+            body: "*"
+        };
+    }
+
+}

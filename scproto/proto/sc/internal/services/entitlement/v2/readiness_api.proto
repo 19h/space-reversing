@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v2;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/internal/services/entitlement/v2/commands.proto";
+import "sc/external/common/command/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Account Readiness service"
+      version: "2.0",
+      description: "Service responsible for ensuring accounts are ready to play."
+    }
+};
+
+message ReconcileAccountRequest {
+    ReconcileAccountCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message ReconcileAccountResponse {}
+
+service AccountReadinessService {
+
+    /*
+      ReconcileAccount
+
+      Enqueue a request to reconcile a player account. Reconciling is the process of taking existing entitlements from an account
+      and cross checking it with Platform (Pledges) and LTP (Inventory) data to ensure what is entitled is valid and complete, and what has been removed
+      gets melted.
+    */
+    rpc ReconcileAccount(ReconcileAccountRequest) returns (ReconcileAccountResponse) {
+        option (google.api.http) = {
+            post : "/v2/readiness/reconcileAccount",
+            body: "*"
+        };
+    }
+}

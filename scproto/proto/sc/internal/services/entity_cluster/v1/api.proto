@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_cluster.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+import "sc/external/common/mission/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Entity Cluster Service"
+        version: "1.0",
+        description: "Allow to manage entity cluster communication"
+    }
+};
+
+message AddClusterMemberRequest {
+    // cluster info
+    repeated sc.external.common.mission.v1.ClusterMember members = 1;
+}
+message AddClusterMemberResponse {}
+
+message RemoveClusterMemberRequest {
+    // shard id
+    string shard_id = 1;
+    
+    // cluster id
+    string cluster_id = 2;
+
+    // member id
+    string member_id = 3;
+}
+message RemoveClusterMemberResponse {}
+
+message RemoveClusterRequest {
+    // shard id
+    string shard_id = 1;
+
+    // cluster id
+    string cluster_id = 2;
+}
+message RemoveClusterResponse {}
+
+message RemoveAllClustersRequest {
+    // shard id
+    string shard_id = 1;
+}
+message RemoveAllClustersResponse {}
+
+message UpdateClusterMemberVariablesRequest {
+    // shard id
+    string shard_id = 1;
+
+    // cluster id
+    string cluster_id = 2;
+
+    // member id
+    string member_id = 3;
+
+    // variables to update (can be a subset of the initial map! map is merged)
+    sc.external.common.mission.v1.MissionVariables variables = 4;
+}
+message UpdateClusterMemberVariablesResponse {}
+
+message GetClusterMemberRequest {
+    // shard id
+    string shard_id = 1;
+
+    // cluster id
+    string cluster_id = 2;
+
+    // member id
+    string member_id = 3;
+}
+message GetClusterMemberResponse {
+    // cluster info
+    sc.external.common.mission.v1.ClusterMember member = 1;
+}
+
+message GetClusterRequest {
+    // shard id
+    string shard_id = 2;
+
+    // cluster id
+    string cluster_id = 1;
+}
+message GetClusterResponse {
+    // cluster info
+    repeated sc.external.common.mission.v1.ClusterMember members = 1;
+}
+
+service EntityClusterCommunicationService {
+    // adds member to cluster group; group is implicitly created (group is just an ID)
+    // will emit 'OnClusterMemberAdded' on 'cluster/<cluster_id>/member'
+    rpc AddClusterMember(AddClusterMemberRequest) returns (AddClusterMemberResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/member/add"
+            body : "*",
+        };
+    }
+
+    // removes member from cluster group; group will no longer exist if last member was removed
+    // will emit 'OnClusterMemberRemoved' on 'cluster/<cluster_id>/member'
+    rpc RemoveClusterMember(RemoveClusterMemberRequest) returns (RemoveClusterMemberResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/member/remove"
+            body : "*",
+        };
+    }
+
+    // removes all members from cluster group
+    // will emit 'OnClusterMemberRemoved' on 'cluster/<cluster_id>/member'
+    rpc RemoveCluster(RemoveClusterRequest) returns (RemoveClusterResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/remove"
+            body : "*",
+        };
+    }
+
+    // removes all clusters group in shard
+    // will emit 'OnClusterMemberRemoved' on 'cluster/<cluster_id>/member'
+    rpc RemoveAllClusters(RemoveAllClustersRequest) returns (RemoveAllClustersResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/remove-all"
+            body : "*",
+        };
+    }
+
+    // update (subset) of cluster member variables
+    // will emit 'OnClusterMemberUpdated' on 'cluster/<cluster_id>/<member_id>'
+    rpc UpdateClusterMemberVariables(UpdateClusterMemberVariablesRequest) returns (UpdateClusterMemberVariablesResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/member/update"
+            body : "*",
+        };
+    }
+
+    // get cluster member variable
+    rpc GetClusterMember(GetClusterMemberRequest) returns (GetClusterMemberResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster/member"
+            body : "*",
+        };
+    }
+
+    // get all cluster members
+    rpc GetCluster(GetClusterRequest) returns (GetClusterResponse) {
+        option (google.api.http) = {
+            post: "/v1/entity-cluster"
+            body : "*",
+        };
+    }
+}

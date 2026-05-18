@@ -1,0 +1,481 @@
+syntax = "proto3";
+
+package sc.external.services.social.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/social/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+
+message CreateDMGroupRequest {
+    // Member to create the group with
+    string member_urn = 1;
+}
+
+message CreateDMGroupResponse {
+    // The group that was created
+    Group group = 1;
+}
+
+message CreateGroupRequest {
+    // Name of the group
+    string name = 1;
+}
+
+message CreateGroupResponse {
+    Group group = 1;
+}
+
+message RenameGroupRequest {
+    // Group to be updated
+    string group_id = 1;
+    string name = 2;
+}
+
+
+message RenameGroupResponse {
+}
+
+
+message DestroyGroupRequest {
+    // Group id to be destroyed
+    string group_id = 1;
+}
+
+message DestroyGroupResponse {
+}
+
+message GetGroupsByIdRequest {
+    // Group ids to fetch, maximum of 100 groups can be returned.
+    repeated string group_ids = 1;
+}
+message GetGroupsByIdResponse {
+    repeated sc.external.services.social.v1.Group groups = 1;
+    repeated GroupMemberPreferences preferences = 2;
+}
+
+message ListGroupsRequest {
+    GroupFilters filters = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListGroupsResponse {
+    repeated Group groups = 1;
+    repeated GroupMemberPreferences preferences = 2;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 3;
+ }
+
+message SetGroupPreferencesRequest {
+    string group_id = 1;
+    map<string,string> preferences = 2;
+}
+
+message SetGroupPreferencesResponse {
+}
+
+message SendGroupInvitationRequest {
+    string group_id = 1;
+    repeated string member_urns = 2;
+}
+
+message SendGroupInvitationResponse {
+    repeated Invitation invitations = 1;
+}
+
+message InviteToPartyRequest {
+    // Member to be invited. The group will only be created if the invite is accepted.
+    string member_urn = 1;
+    // ( Optional ) Party name
+    string name = 2;
+}
+
+message InviteToPartyResponse {
+    Invitation invitation = 1;
+}
+
+message AcceptInvitationRequest {
+    string invitation_id = 1;
+}
+
+message AcceptInvitationResponse {
+}
+
+message DeclineInvitationRequest {
+    string invitation_id = 1;
+}
+
+message DeclineInvitationResponse {
+
+}
+
+message RevokeInvitationRequest {
+    string invitation_id = 1;
+}
+
+message RevokeInvitationResponse {
+
+}
+
+message LeaveGroupRequest {
+    string group_id = 1;
+}
+
+message LeaveGroupResponse {
+
+}
+
+message GetSubscriptionKeyRequest {
+}
+
+message GetSubscriptionKeyResponse {
+    string subscription_key = 1;
+}
+
+// List pending invitations sent to the player.
+message ListPendingInvitationsRequest {
+    // (Optional) filter pending invitations by group type
+    sc.external.services.social.v1.GroupType group_type = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+
+}
+
+message ListPendingInvitationsResponse {
+    repeated Invitation invitations = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message KickGroupMemberRequest {
+    string group_id = 1;
+    string member_urn = 2;
+}
+
+message KickGroupMemberResponse {
+}
+
+message TransferGroupLeadershipRequest {
+    string group_id = 1;
+    string player_urn = 2;
+}
+message TransferGroupLeadershipResponse {
+}
+
+
+message GetInstanceInfoRequest {
+    string player_urn = 1;
+}
+
+message GetInstanceInfoResponse {
+    sc.external.common.shard.v1.ShardInfo shard_info = 1;
+}
+
+message AddGroupModeratorRequest {
+    string group_id = 1;
+    string moderator_urn = 2;
+}
+
+message AddGroupModeratorResponse {
+}
+
+message RemoveGroupModeratorRequest {
+    string group_id = 1;
+    string moderator_urn = 2;
+}
+
+message RemoveGroupModeratorResponse {
+}
+
+message SetMemberReadyStatusRequest {
+    string group_id = 1;
+    bool ready = 2;
+}
+
+message SetMemberReadyStatusResponse {
+}
+
+message GetClientGameModeSettingsRequest {
+}
+
+message GetClientGameModeSettingsResponse {
+    repeated ClientGameModeSetting game_mode_settings = 2;
+}
+
+service SocialService {
+    /*
+        CreateDMGroup
+
+        Creates a DM group with the given member. If the group already exists, it will be returned.
+        Group is presence aware, which means it will get notifications on member's presence changes.
+    */
+    rpc CreateDMGroup(CreateDMGroupRequest) returns (CreateDMGroupResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/CreateDMGroup"
+            body: "*"
+        };
+    }
+
+    /*
+        CreateGroup
+
+        Creates a group of type GROUP. Name is provided, and the player will be the leader of the group.
+    */
+    rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/CreateGroup"
+            body: "*"
+        };
+    }
+
+    /* TransferGroupLeadership
+
+        Transfers leadership of a group to another player.
+        Requires player to be a leader of the group.
+    */
+    rpc TransferGroupLeadership(TransferGroupLeadershipRequest) returns (TransferGroupLeadershipResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/TransferGroupLeadership",
+            body: "*"
+        };
+    }
+
+    /*
+        RenameGroup
+
+        Updates the name of a group.
+        Requires player to be a leader of the group.
+    */
+    rpc RenameGroup(RenameGroupRequest) returns (RenameGroupResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RenameGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        DestroyGroup
+        
+        Requires player to be a leader of the group.
+    */
+    rpc DestroyGroup(DestroyGroupRequest) returns (DestroyGroupResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/DestroyGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        GetGroupsById
+
+        Get groups by their ids. Only returns groups the caller is part of.
+        Preferences are returned for each group retrieved. 
+        Each preference contains the group id it refers to.
+    */
+    rpc GetGroupsById(GetGroupsByIdRequest) returns (GetGroupsByIdResponse) {
+        option (google.api.http) = {
+            get: "/v1/social/external/GetGroupsById",
+        };
+    }
+
+    /*
+        ListGroups
+
+        Get groups the player is member of that can be filtered by group filters.
+        Preferences are returned for each group retrieved. 
+        Each preference contains the group id it refers to.
+    */
+    rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
+        option (google.api.http) = {
+            get: "/v1/social/external/ListGroups",
+        };
+    }
+
+    /*
+        SetGroupPreferences
+
+        Set group preferences for a player.
+    */
+    rpc SetGroupPreferences(SetGroupPreferencesRequest) returns (SetGroupPreferencesResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/SetGroupPreferences",
+            body: "*"
+        };
+    }
+
+
+    /*
+        LeaveGroup
+
+        Makes a player leave certain group, the group settings must allow players to leave.
+    */
+    rpc LeaveGroup(LeaveGroupRequest) returns (LeaveGroupResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/LeaveGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        KickGroupMember
+
+        Kicks a member from a group. Requires player to be a leader of the group.
+    */
+    rpc KickGroupMember(KickGroupMemberRequest) returns (KickGroupMemberResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/KickGroupMember",
+            body: "*"
+        };
+    }
+
+    /*
+        SendGroupInvitation
+
+        Invites multiple members to a group. Requires player to be a leader of the group.
+    */
+    rpc SendGroupInvitation(SendGroupInvitationRequest) returns (SendGroupInvitationResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/SendGroupInvitation",
+            body: "*"
+        };
+    }
+
+    /*
+        InviteToParty
+
+        Invites an actor to a party. If inviter already in party then member will be invited to it.
+        If no party, the group is only created if the invitation is accepted by someone.
+    */
+    rpc InviteToParty(InviteToPartyRequest) returns (InviteToPartyResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/InviteToParty",
+            body: "*"
+        };
+    }
+
+
+
+    /*
+        AcceptInvitation
+        
+        Accepts invitation to a group.
+    */
+    rpc AcceptInvitation(AcceptInvitationRequest) returns (AcceptInvitationResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/AcceptInvitation",
+            body: "*"
+        };
+    }
+
+    /*
+        DeclineInvitation
+
+        Declines invitation to a group.
+    */
+    rpc DeclineInvitation(DeclineInvitationRequest) returns (DeclineInvitationResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/DeclineInvitation",
+            body: "*"
+        };
+    }
+
+    /*
+        Revokes invitation sent to an actor. Requires player to be the inviter.
+    */
+    rpc RevokeInvitation(RevokeInvitationRequest) returns (RevokeInvitationResponse) {
+        option (google.api.http) = {
+            post: "/v1/social/external/RevokeInvitation",
+            body: "*"
+        };
+    }
+
+    /*
+        ListPendingInvitations
+
+        List pending invitations sent to the player.
+    */
+    rpc ListPendingInvitations(ListPendingInvitationsRequest) returns (ListPendingInvitationsResponse) {
+        option (google.api.http) = {
+            get: "/v1/social/external/ListPendingInvitations",
+        };
+    }
+
+    /*
+        GetInstanceInfo
+
+        Get instance info for a player. Requires being in a party with the player.
+    */
+    rpc GetInstanceInfo(GetInstanceInfoRequest) returns (GetInstanceInfoResponse) {
+        option (google.api.http) = {
+            get: "/v1/social/external/GetInstanceInfo",
+        };
+    }
+
+    /*
+        GetSubscriptionKey
+
+        Get the push subscription key used to subscribe to group topics. Requires player to be authenticated.
+        It needs to be obtained only once per client and can be used to subscribe to multiple group topics.
+    */
+    rpc GetSubscriptionKey(GetSubscriptionKeyRequest) returns (GetSubscriptionKeyResponse) {
+        option (google.api.http) = {
+            get: "/v1/social/external/GetSubscriptionKey",
+        };
+    }
+
+    /*
+        AddGroupModerator
+
+        Add a moderator to a group.
+    */
+    rpc AddGroupModerator(AddGroupModeratorRequest) returns (AddGroupModeratorResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/AddGroupModerator",
+            body: "*"
+        };
+    }
+
+    /*
+        RemoveGroupModerator
+
+        Remove a moderator from a group.
+    */
+    rpc RemoveGroupModerator(RemoveGroupModeratorRequest) returns (RemoveGroupModeratorResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RemoveGroupModerator",
+            body: "*"
+        };
+    }
+
+    /*
+        SetMemberReadyStatus
+
+        Set own ready status in the group.
+    */
+    rpc SetMemberReadyStatus(SetMemberReadyStatusRequest) returns (SetMemberReadyStatusResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/SetMemberReadyStatus",
+            body: "*"
+        };
+    }
+
+		/*
+        GetClientGameModeSettings
+
+        Each time the SC client reaches the SC FrontEnd, the SC client should fetch the current game_mode_settings.
+        1. GameTypes (e.g. EA_BattleRoyal, EA_ClassicRace) can dyanmically be enabled/disabled by GMs/DevOps (example: Turn on a Seasonal GameType/Map).
+        2. Maps for each GameType can be dynamically enabled/disabled as well.
+        3. required_badge can also be dynamically changed.  This allows for another way of enabling/disabling groupings of GameTypes/maps based on required_badge.
+        
+        The SC client's' AC/SM UI will dyanmically update based on the results of enabled GameTypes/Maps and required_badge settings (as seen in CEALobby::ValidateGameModes).
+    */
+    rpc GetClientGameModeSettings(GetClientGameModeSettingsRequest) returns (GetClientGameModeSettingsResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/external/GetClientGameModeSettings",
+            body: "*"
+        };
+    }
+}

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package sc.internal.services.dynamic_game_assets.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/internal/services/dynamic_game_assets/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Dynamic Game Assets Service"
+        version: "1.0",
+        description: "Allow to load different game assets based on date"
+    }
+};
+
+message RegisterAssetRequest {
+    string screen_id = 1;
+    string asset_id = 2;
+    google.protobuf.Timestamp valid_from = 3;
+}
+
+message RegisterAssetResponse {
+    string id = 1;
+}
+
+message ListAssetsRequest {
+    string screen_id = 1;
+}
+
+message ListAssetsResponse {
+    repeated AssetAssignment assets = 1;
+}
+
+service DynamicGameAssetsService {
+    /*
+      RegisterAsset
+      Called by Hex UI to register a new asset for a given screen.
+      If valid_from is in the past, the asset becomes active immediately (subject to cache TTL).
+      Registering a new asset invalidates the Redis cache for the given screen_id.
+    */
+    rpc RegisterAsset(RegisterAssetRequest) returns (RegisterAssetResponse) {
+        option (google.api.http) = {
+            post: "/v1/internal/dynamic_game_assets/assets"
+            body: "*"
+        };
+    }
+
+    /*
+      ListAssets
+      Called by Hex UI to retrieve all registered assets for a given screen.
+      Results are ordered by valid_from descending (most recent first), including future-scheduled assets.
+    */
+    rpc ListAssets(ListAssetsRequest) returns (ListAssetsResponse) {
+        option (google.api.http) = {
+            get: "/v1/internal/dynamic_game_assets/screens/{screen_id}/assets"
+        };
+    }
+}

@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package sc.internal.services.squad.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/squad/v1/types.proto";
+
+import "sc/external/services/social/v1/types.proto";
+
+
+message UpdateSettingsRequest {
+    string group_id = 1;
+    sc.external.services.squad.v1.SquadSettings settings = 2;
+}
+message UpdateSettingsResponse {
+}
+
+message CreateRequest {
+    string group_id = 1;
+    sc.external.services.squad.v1.SquadSettings settings = 2;
+    repeated sc.external.services.social.v1.GroupMember members = 3;
+    // (Optional) In case we want to specify a leader for the team
+    string leader_urn = 4;
+    
+}
+message CreateResponse {
+    sc.external.services.squad.v1.Squad squad = 1;
+}
+
+message GetRequest {
+  string group_id = 1;
+}
+message GetResponse {
+  sc.external.services.squad.v1.Squad squad = 1;
+}
+
+
+service SquadService {
+    /*
+        UpdateSettings
+
+        Update the settings of a squad
+    */
+    rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/internal/UpdateSettings"
+            body: "*"
+        };
+    }
+
+    /*
+        Create
+
+        Create a squad. Member list is required
+    */
+    rpc Create(CreateRequest) returns (CreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/internal/Create"
+            body: "*"
+        };
+    }
+
+    /*
+        Get
+
+        Get the squad properties of a group
+    */
+    rpc Get(GetRequest) returns (GetResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/internal/Get"
+            body: "*"
+        };
+    }
+}

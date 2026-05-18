@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package sc.external.services.login.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/login/v1/types.proto";
+import "sc/external/common/platform/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Login Service"
+    version: "1.0",
+    description: "Public API to log into the Star Citizen universe"
+  }
+};
+
+/*
+Responsibility:
+- Put player in queue
+- Send update about queue to player (position, estimate time, etc...)
+- Authenticate with platform
+- Send update about platform auth
+- Process entitlement (with EntitlementService)
+- Send update about entitlement
+- Retrieve characters with CharacterID
+ */
+
+message InitiateLoginRequest {
+  message VersionIdentifier {
+    uint64 base_cl = 1;
+    uint64 shelf_cl = 2;
+  }
+  string session_id = 1;
+  VersionIdentifier version = 2;
+}
+
+message InitiateLoginResponse {
+  uint32 account_id = 1;
+  string nickname = 2;
+  string displayname = 3;
+  repeated sc.external.common.platform.v1.PlatformBadge badges = 4;
+  LoginRequestStatus status = 5;
+  string tracking_metrics_id = 6;
+}
+
+message CancelLoginRequest {}
+message CancelLoginResponse {}
+
+service LoginService {
+
+  rpc InitiateLogin(InitiateLoginRequest) returns (InitiateLoginResponse);
+
+  rpc CancelLogin(CancelLoginRequest) returns (CancelLoginResponse);
+}

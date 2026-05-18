@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package sc.internal.services.chrono.v1;
+
+import "google/protobuf/any.proto";
+
+
+// Message used directly for Push, and also in the Kafka Event
+message JobTriggered {
+  string id = 1; // The ID of the job that occurred (passed when creating the job)
+  google.protobuf.Any body = 2; // The body of the job, already serialized by a protobuf message when creating the job
+}
+
+// Kafka serializer needs a name / body property for the EventBus
+message KafkaJobTriggered {
+  string name = 1; // Required name field for the eventbus to properly route to consumer used for topic
+  JobTriggered body = 2; // Required body field for the eventbus to deserialize and include body in the callback
+}
+
+// Example body uses in tests for the Job body. Producers of jobs can use whatever proto body they want
+message ExampleJobBody {
+  string id = 1;
+  string some_data = 2;
+  uint64 some_value = 3;
+}

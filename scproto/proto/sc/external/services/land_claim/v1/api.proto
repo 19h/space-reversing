@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package sc.external.services.land_claim.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/land_claim/v1/types.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.external.services.LandClaim.v1.Land Claim"
+      version: "1.0",
+      description: "Service responsible for land claim operations"
+    }
+};
+
+message QueryAreaClaimsRequest {
+    AreaFilter area_filter = 1;
+}
+
+message QueryAreaClaimsResponse {
+    // List of the claims without the owner information
+    repeated LandClaim claims = 1;
+}
+
+
+message QueryOwnedClaimsRequest {
+}
+
+message QueryOwnedClaimsResponse {
+    // List of the claims
+    repeated LandClaim claims = 1;
+}
+
+service LandClaimService {
+
+    
+
+    /*
+        QueryAreaClaims
+        
+        Allows a player to query the claims in a specific area
+    */
+    rpc QueryAreaClaims(QueryAreaClaimsRequest) returns (QueryAreaClaimsResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/external/query_area_claims",
+            body: "*"
+        };
+    }
+
+    /*
+        QueryOwnedClaims
+        
+        Allows a player to query his claims
+    */
+    rpc QueryOwnedClaims(QueryOwnedClaimsRequest) returns (QueryOwnedClaimsResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/external/query_user_claims",
+            body: "*"
+        };
+    }
+}

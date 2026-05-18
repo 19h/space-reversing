@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+// List of possible phase for unit statuses. Not all units have all of them
+enum Phase {
+  PHASE_UNSPECIFIED = 0;
+
+  // Only ACTIVE unit serve in a fleet
+  PHASE_ACTIVE = 1;
+
+  // Unit starting, not ready to serve
+  PHASE_BOOTSTRAP = 2;
+
+  // Unit is going to restart when drained
+  PHASE_RESTART = 3;
+
+  // Unit is going to be terminated when drained
+  PHASE_TERMINATE = 4;
+
+  // Unit detected it is unstable and may not be reliable
+  PHASE_UNSTABLE = 5;
+
+  // Unit has crashed, usually reported by a sidecar monitoring process
+  PHASE_CRASHED = 7;
+
+  // Unit has initiated a recovery procedure
+  PHASE_RECOVERY = 8;
+}
+
+message ProcessInfo {
+  // Hardware identifier, to know which units are on the same hardware
+  string hardware_id = 1;
+
+  // Kubernetes POD identifier
+  string pod = 2;
+
+  // Process ID
+  uint32 pid = 3;
+}
+
+message NetworkInfo {
+  // Unit reachable host name
+  string host = 1;
+
+  // gRPC service port, if any
+  uint32 port = 2;
+
+  // external gRPC routes served by unit
+  repeated string external_routes = 3;
+
+  // Http /metrics port, if any
+  string metrics_host = 4;
+
+  // Http /metrics port, if any
+  uint32 metrics_port = 5;
+
+  // internal gRPC routes served by unit
+  repeated string internal_routes = 6;
+
+}
+
+message UnitReport {
+  // Unique identifier of the unit
+  string id = 1;
+
+  // Unit's lifecycle
+  Phase phase = 2;
+
+   // Unit specific product classification
+  string product = 3;
+
+  // List of key/value describing the unit. For example: { "az": "us-east-1a" }
+  map<string, string> labels = 4;
+
+  // List of fleets that the unit is part of (or joining)
+  repeated string fleets = 5;
+
+  // Network & reachability of this unit
+  NetworkInfo network = 6;
+
+  // Pod, Host and Process info of this unit
+  ProcessInfo process = 7;
+}
+
+message ReportRequest {
+  // List of reports
+  repeated UnitReport reports = 1;
+}
+
+message ReportResponse {}

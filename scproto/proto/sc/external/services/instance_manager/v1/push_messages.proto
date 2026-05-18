@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package sc.external.services.instance_manager.v1;
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/services/instance_manager/v1/types.proto";
+
+// -------------------- Domain Events --------------------
+
+// Push events are sent to the following topics:
+// - instance/{instance_id}/events
+// - shard/{shard_id}/instance/{instance_id}/events
+
+// When the provisioning (creation or unstow) of an instance is started
+message InstanceProvisionStarted {
+  Instance instance = 1;
+}
+
+// When the provisioning (creation or unstow) of an instance is completed
+message InstanceProvisionCompleted {
+  Instance instance = 1;
+}
+
+// When the provisioning (creation or unstow) of an instance failed
+message InstanceProvisionFailed {
+  Instance instance = 1;
+}
+
+// When a pool instance is assigned to a requester
+message PoolInstanceAssigned {
+  Instance instance = 1;
+}
+
+
+// When the unprovisioning (stow or bury) of an instance is started
+message InstanceUnprovisionStarted {
+  Instance instance = 1;
+}
+
+// When the unprovisioning (stow or bury) of an instance is completed
+message InstanceUnprovisionCompleted {
+  Instance instance = 1;
+}
+
+// When the unprovisioning (stow or bury) of an instance failed
+message InstanceUnprovisionFailed {
+  Instance instance = 1;
+}
+
+// When creation of a pool instance starts
+message PoolInstanceCreationStarted {
+  Instance instance = 1;
+}
+
+// When creation of a pool instance completes
+message PoolInstanceCreationCompleted {
+  Instance instance = 1;
+}
+
+// When creation of a pool instance fails
+message PoolInstanceCreationFailed {
+  Instance instance = 1;
+}
+
+// When an instance assignment changes
+message InstanceAssignmentChanged {
+  Instance instance = 1;
+  string new_assignment_urn = 2;
+  string old_assignment_urn = 3;
+}
+
+// When the instance becomes active (has players)
+message InstanceBecameActive {
+  Instance instance = 1;
+}
+
+// When the instance becomes idle (no players)
+message InstanceBecameIdle {
+  Instance instance = 1;
+}
+
+// When a player joins an instance
+message PlayerJoinedInstance {
+  Instance instance = 1;
+  uint64 player_geid = 2;
+}
+
+// When the player exits the instance
+message PlayerLeftInstance {
+  Instance instance = 1;
+  uint64 player_geid = 2;
+}
+
+
+////////// Commands //////////
+
+// Commands are sent to the following topics:
+// - instance/{instance_id}/commands
+// - shard/{shard_id}/instance/{instance_id}/commands
+
+// Targets replication layer to start stowing an instance
+message StartStowingInstance {
+  Instance instance = 1;
+  string inventory_id = 2;
+  string command_id = 3;
+  string notification_kafka_topic = 4;
+}
+
+// Starts unstowing an instance
+message StartUnstowingInstance {
+  Instance instance = 1;
+  string inventory_id = 2;
+  sc.external.services.entitygraph.v1.ShardDestination shard_destination = 3;
+  string command_id = 4;
+  string notification_kafka_topic = 5;
+  optional InstanceEntitySnapshot snapshot = 6;
+}
+
+// Starts burying an instance
+message StartBuryingInstance {
+  Instance instance = 1;
+  string command_id = 2;
+  string notification_kafka_topic = 3;
+}
+
+// Targets dgs to kick a player from an instance
+message KickPlayerFromInstance {
+  Instance instance = 1;
+  uint64 player_geid = 2;
+}

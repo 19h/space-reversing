@@ -1,0 +1,80 @@
+
+syntax = "proto3";
+package sc.internal.services.match.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/social/v1/types.proto";
+import "sc/external/services/match/v1/types.proto";
+
+// Create a Match
+
+message CreateRequest {
+  sc.external.services.match.v1.MatchSettings settings = 1;
+  repeated string team_ids = 2;
+  bool is_public = 3;
+}
+
+message CreateResponse {
+  sc.external.services.match.v1.Match match = 1;
+}
+
+
+// Create a Match Team
+
+message CreateTeamRequest {
+  string id = 1;
+  repeated sc.external.services.social.v1.GroupMember members = 2;
+  // (Optional) In case we want to specify a leader for the team
+  string leader_urn = 3;
+}
+
+message CreateTeamResponse {
+  sc.external.services.social.v1.Group group = 1;
+}
+
+// Get a Match
+message GetRequest {
+  string group_id = 1;
+}
+
+message GetResponse {
+  sc.external.services.match.v1.Match match = 1;
+}
+
+service MatchService {
+
+    /*
+        Create
+
+        Create a group of type Match
+    */
+    rpc Create(CreateRequest) returns (CreateResponse) {
+      option (google.api.http) = {
+          get: "/v1/match/internal/Create",
+      };
+  }
+
+  /*
+      CreateTeam
+
+      Create a team for a match
+  */
+  rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse) {
+    option (google.api.http) = {
+        get: "/v1/match/internal/CreateTeam",
+    };
+  }
+
+  /*
+      Get
+
+      Get a match properties by groupId
+  */
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+        get: "/v1/match/internal/Get",
+    };
+  }
+
+}

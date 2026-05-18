@@ -1,0 +1,180 @@
+syntax = "proto3";
+
+package sc.external.services.reputation.v1;
+
+message ReputationLock {
+  // min time lock in ms
+  int32 min = 1;
+  // max time lock in ms
+  int32 max = 2;
+}
+
+message Reputation {
+  string id = 1;
+  // UUID identifier of the standings of this reputation
+  string standings_id = 2;
+  // Time in ms
+  uint64 updated_at = 3;
+  // Urn Subject
+  string subject = 4;
+  // Urn entity
+  string entity = 5;
+  // Scope of the reputation
+  string scope = 6;
+  // Score amount
+  int32 score = 7;
+  // Last Drift in ms
+  uint64 last_drifted_at = 8;
+  // Is the reputation lock or not
+  ReputationLock lock = 9;
+}
+
+message Drift {
+  // Time in ms
+  uint32 time = 1;
+  // Amount of reputation drift by time
+  int32 amount = 2;
+}
+
+message ReputationHistory {
+  string id = 1;
+  uint32 change_in_score = 2;
+  uint64 created_at = 3;
+  LogContext log_context = 4;
+  uint32 current_score = 5;
+}
+
+message Standing {
+  // Identifier Standing
+  string id = 1;
+  // Standing name
+  string name = 2;
+  // Standing description
+  string description = 3;
+  // min Standing value
+  int32 min = 4;
+  // Drift parameters of this standing
+  Drift drift = 5;
+  // if this Standing is gated
+  bool gated = 6;
+}
+
+message Standings {
+  enum Status {
+    STATUS_INVALID_UNSPECIFIED = 0;
+    STATUS_ACTIVE = 1;
+    STATUS_DELETE = 2;
+  }
+  // Identifier of the Standings
+  string id = 1;
+  // Current State
+  Status state = 2;
+  // last updated in ms
+  uint64 updated_at = 3;
+  // Name of the Standings
+  string name = 4;
+  // Initial value
+  uint32 initial = 5;
+  // Ceiling value
+  uint32 ceiling  = 6;
+  // Floor value
+  uint32 floor = 7;
+  // Standing array of the Standings
+  repeated Standing standings = 8;
+  // Default Standing (Neutral)
+  Standing default_standing = 9;
+}
+
+message StandingSeed {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 min = 4;
+  Drift drift = 5;
+  bool drift_can_cause_standing_change = 6;
+  bool gated = 7;
+}
+
+message StandingsSeed {
+  string id = 1;
+  string name = 2;
+  int32 initial = 3;
+  int32 ceiling = 4;
+  repeated StandingSeed standings = 5;
+}
+
+enum PushEventType {
+  PUSH_EVENT_TYPE_INVALID_UNSPECIFIED = 0;
+  PUSH_EVENT_TYPE_INITIALIZED = 1;
+  PUSH_EVENT_TYPE_INCREASED = 2;
+  PUSH_EVENT_TYPE_DECREASED = 3;
+  PUSH_EVENT_TYPE_SET = 4;
+  PUSH_EVENT_TYPE_RESET = 5;
+  PUSH_EVENT_TYPE_STATE_CHANGED = 6;
+  PUSH_EVENT_TYPE_STANDING_CHANGED = 7;
+}
+
+message ReputationInitialized {
+  // SubjectUrn
+  string subject = 1;
+  // entityUrn
+  string entity = 2;
+  // Scope of the reputation
+  string scope = 3;
+  // Is Initialized or not
+  bool initialized = 4;
+  // Reputation lock
+  ReputationLock lock = 5;
+}
+
+message VersionedReputation {
+  // Reputation
+  Reputation reputation = 1;
+  // Standing
+  Standing standing = 2;
+  // Version number
+  uint32 version = 3;
+}
+
+message ReputationPushEvent {
+  // PushEventType (see above)
+  PushEventType event_type = 1;
+  // Reputation 
+  VersionedReputation versioned_reputation = 2;
+  // standings achieved by this increase/decrease (if standing changed)
+  repeated string standings_achieved = 3;
+}
+
+message State {
+  // State Identifier
+  string id = 1;
+  // Entity Status
+  string entity_status = 2;
+  // Update time in ms
+  uint32 updated_at = 3;
+  // Urn subject
+  string subject = 4;
+  // Urn entity
+  string entity = 5;
+  // pairs object keyValue
+  map<string, string> pairs = 6;
+}
+
+message LogContext {
+  // Message
+  string message = 1;
+  // Tags (key value)
+  map<string, string> tags = 2;
+}
+
+message Favorites {
+  // Favorite reputation
+  repeated string reputations = 1;
+  // Favorite Entities
+  repeated string entities = 2; 
+}
+
+message RankedReputation {
+  Reputation reputation = 1;
+  Standing standing = 2;
+}

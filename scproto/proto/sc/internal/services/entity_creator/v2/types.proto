@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_creator.v2;
+
+// Describes a single item port attachment on an entity hierarchy.
+message MissingItemStructure {
+		// EntityId of the parent entity
+		uint64 parent_entity_id = 1;
+    // Attach path: list of item port names starting from the root entity.
+    repeated uint32 attach_path_crc = 2;
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+
+import "sc/external/services/discipline/v1/types.proto";
+
+message SanctionEvent {
+  string id = 1; // The ID of the sanction that occurred (passed when creating the sanction)
+  int32  account_id = 2; // The accountId of the account that the sanction is for
+  repeated sc.external.services.discipline.v1.Measure measures = 3; // The measures of the sanction
+}
+
+message KafkaEventSanction {
+  string name = 1; // Required name field for the eventbus to properly route to consumer used for topic
+  SanctionEvent body = 2; // Required body field for the eventbus to deserialize and include body in the callback
+}

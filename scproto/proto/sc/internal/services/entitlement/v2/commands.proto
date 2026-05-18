@@ -1,0 +1,233 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v2;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/services/entitlement/v2/types.proto";
+import "sc/internal/services/entity_creator/v2/types.proto";
+import "google/protobuf/timestamp.proto";
+
+message ReconcileAccountCommand {
+    // Source account URN to entitlement from
+    string account_urn = 1;
+    // Destination player URN to fulfill to
+    string player_urn = 2;
+    // Meaninful log message for administrative review
+    string log_message = 3;
+    // (Optional)If set to true, forces reconciliation of LTP records
+    bool force_reconcile_ltp = 4;
+}
+
+message ReconcileAccountResult { 
+    // Amount of new entitlement records created during reconciliation
+    uint32 new_entitlements_count = 1; 
+}
+
+// Stow state of an already delivered entity that is being entitled.
+// Only relevant when creating an entitlement for an entity that already exists in-game.
+message CurrentStowContext {
+    // Whether the entity is currently stowed
+    bool is_stowed = 1;
+    // Location of the entity — either within a shard (active instance) or an inventory
+    oneof location {
+        string shard_id = 2;
+        string inventory_id = 3;
+    }
+    // CRC of the entity class GUID
+    uint32 class_guid_crc = 4;
+}
+
+message CreateEntitlementPayload {
+    // Entitlement URN
+    string urn = 1;
+    // Source URN of the entitlement
+    string source_urn = 2;
+    // Source type of the entitlement
+    sc.external.services.entitlement.v2.EntitlementSourceType source_type = 3;
+    // Status of the entitlement
+    sc.external.services.entitlement.v2.EntitlementStatus status = 4;
+    // Entity Class GUID to entitle
+    string entity_class_guid = 5;
+    // Entity Geid, helpful for cases where the entitlement is created for already delivered entity in game.
+    // If this is set, the entitlement should be in status DELIVERED, otherwise it will be validation error
+    optional uint64 entity_geid = 6;
+    // Character Id of the owner
+    uint64 player_id = 7;
+    // web platform customization
+    optional sc.external.services.entitlement.v2.EntityConfiguration web_customization = 8;
+    // Rental expiry
+    optional google.protobuf.Timestamp rental_expiry = 9;
+    // Some additional information about the entitlement that is not affecting
+    // how the entitlement is handled from the service perspective.
+    sc.external.services.entitlement.v2.EntitlementMetadata metadata = 10;
+    // Current stow context of the entity. Only set when creating an entitlement for an entity that already exists in-game.
+    optional CurrentStowContext current_stow_context = 11;
+    // persistent entity properties (full PersistentEntityProperties - variables filtered by eSVF_Type_LTPBacked flag)
+    sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 12;
+}
+
+message UpdateEntitlementPayload {
+    // Entitlement URN
+    string urn = 1;
+    // Full replacement of persistent entity properties (Set semantics — caller must provide
+    // ALL variables AND components; the entire snapshot document is replaced).
+    sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 2;
+}
+
+message CreateEntitlementCommand {
+    repeated CreateEntitlementPayload entitlements = 1;
+}
+
+// Combination of CreateEntitlement and DeliverEntitlement
+// This will create UNDELIVERED/PACKAGED entitlements first depending on the request payload, then immediately deliver them
+message CreateAndDeliverEntitlementCommand {
+    // List of entitlements to create
+    repeated CreateEntitlementPayload entitlements = 1;
+    // Entitlement(s) to (unpack and) deliver
+    sc.external.services.entitygraph.v1.InventoryDestination inventory_destination = 2;
+    // entitlement root URN of the snapshot holder
+    string root_entitlement_urn = 3;
+    // snapshot id of the delivery
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 4;
+    // Fallback inventory id
+    string fallback_inventory_id = 5;
+}
+
+// If the entitlement is packed it will be unpacked first
+// after that it will be delivered
+message DeliverEntitlementCommand{
+    // player geid
+    uint64 player_id = 1;
+    // Entitlement(s) to (unpack and) deliver
+    sc.external.services.entitygraph.v1.InventoryDestination inventory_destination = 2;
+    // entitlement root URN of the snapshot holder
+    string root_entitlement_urn = 3;
+    // snapshot id of the delivery
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 4;
+    // Fallback inventory id
+    string fallback_inventory_id = 5;
+}
+
+// Undeliver entitlement and deliver it again, bricking old entities and creating new ones.
+message ClaimEntitlementCommand {
+    // player geid
+    uint64 player_id = 1;
+    // Entitlement(s) to claim
+    sc.external.services.entitygraph.v1.InventoryDestination inventory_destination = 2;
+    // entitlement root URN of the snapshot holder
+    string root_entitlement_urn = 3;
+    // snapshot id of the delivery
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 4;
+    // Fallback inventory id
+    string fallback_inventory_id = 5;
+}
+
+// this will replace any existing snapshots for the entitlement for any snapshot id that was set on a record in the request
+message UpsertSnapshotsCommand {
+    // player geid
+    uint64 player_id = 1;
+    // Root Entitlement for snapshots
+    string entitlement_urn = 2;
+    // Snapshot id to set
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 3;
+    // Snapshots to create
+    repeated sc.external.services.entitlement.v2.SnapshotRecord snapshots = 4;
+    // Entitlements to be created/updated along with the snapshots
+    message EntitlementPayload 
+    {
+        oneof payload {
+            CreateEntitlementPayload to_be_created_entitlement = 1;
+            UpdateEntitlementPayload to_be_updated_entitlement = 2;          
+        }
+    }
+    repeated EntitlementPayload to_be_processed_entitlement = 5;
+}
+
+message ClearSnapshotsCommand {
+    // player geid of the snapshot record
+    uint64 player_id = 1;
+    // Entitlement to clear snapshots for
+    string entitlement_urn = 2;
+    // Snapshot id to clear
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 3;
+}
+
+message RevokeEntitlementCommand {
+    // player geid of the snapshot record
+    uint64 player_id = 1;
+    // Entitlements to revoke
+    repeated string entitlement_urns = 2;
+    // Optional to brick entities of a CLAIMED entitlement
+    // default is true
+    optional bool brick_entities = 3;
+}
+
+message RevokeAllPlayerEntitlementsCommand {
+    // player geid
+    uint64 player_id = 1;
+    // Meaninful log message for administrative review
+    string log_message = 2;
+}
+
+message RestoreEntitlementCommand {
+    // player geid
+    uint64 player_id = 1;
+    // Root entitlement URN
+    string root_entitlement_urn = 2;
+    // Snapshot id to restore from
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 3;
+    // Contains the minimal set of informations to describe the current structure of the entity.
+    // Should only contain items on editable ports.
+    repeated sc.internal.services.entity_creator.v2.MissingItemStructure missing_item_structures = 4;
+    // Shard id
+    string shard_id = 5;
+}
+
+/*
+  UpdateEntitlement
+
+  Command to update mutable fields of existing entitlement records.
+
+  Persistent properties are explicitly excluded — use SetPersistentPropertiesCommand for those.
+
+  Only fields that are set (non-default) will be applied; omitted optional fields
+  leave the existing value on the record unchanged.
+*/
+message UpdateEntitlementCommand {
+    // player geid
+    uint64 player_id = 1;
+    message Body {
+        // Entitlement URN identifying the record to update
+        string entitlement_urn = 1;
+        // Status of the entitlement
+        optional sc.external.services.entitlement.v2.EntitlementStatus status = 2;
+        // Entity Class GUID
+        optional string entity_class_guid = 3;
+        // Entity Geid
+        optional uint64 entity_geid = 4;
+        // Current stow context of the entity
+        optional CurrentStowContext current_stow_context = 5;
+    }
+    repeated Body updates = 2;
+}
+
+/*
+  SetPersistentProperties
+
+  Command to set persistent properties (PersistentEntityProperties) of entities.
+
+  SetPersistentProperties on entitlement will:
+  - Replace the entire snapshot document for an entitlement
+*/
+message SetPersistentPropertiesCommand {
+    // player geid
+    uint64 player_id = 1;
+    message Body {
+        // entitlement URN
+        string entitlement_urn = 1;
+        // persistent entity properties (full PersistentEntityProperties - variables filtered by eSVF_Type_LTPBacked flag)
+        sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 2;
+    }
+    repeated Body updates = 2;
+}
+

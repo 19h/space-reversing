@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sc.internal.services.friends.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/friends/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+message GetFriendListRequest {
+    uint32 account_id = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message GetFriendListResponse {
+    repeated sc.external.services.friends.v1.Friend friends = 1;
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message GetPendingFriendRequestRequest {
+    uint32 account_id = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message  GetPendingFriendRequestResponse {
+    repeated sc.external.services.friends.v1.FriendRequest pending_friend_requests = 1;
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+service FriendService {
+    /*
+        GetFriendList
+        Get the list of friend for a specific account
+    */
+    rpc GetFriendList(GetFriendListRequest) returns (GetFriendListResponse) {
+        option (google.api.http) = {
+            get: "/v1/friend/internal/GetFriendList"
+        };
+    }
+
+    /*
+        GetPendingFriendRequest
+    */
+    rpc GetPendingFriendRequest(GetPendingFriendRequestRequest) returns (GetPendingFriendRequestResponse) {
+        option (google.api.http) = {
+            get: "/v1/friend/internal/GetPendingFriendRequest"
+        };
+    }
+}

@@ -1,0 +1,375 @@
+syntax = "proto3";
+
+package sc.internal.services.instance_manager.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/instance_manager/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Instance Manager Service"
+      version: "1.0",
+      description: "This service is responsible for managing instances"
+    }
+};
+
+// When referencing an instance by requester_urn we must provide the instance_identifier to ensure we're referencing the correct instance.
+message RequestorIdentifier {
+  string requester_urn = 1;
+  string instance_identifier = 2;
+}
+
+message EnsureInstanceRequest {
+  message EnterParams {
+    optional string role_name = 1;
+  }
+
+  string instance_identifier = 1;
+  string requester_urn = 2;
+  // (Optional) Only required if the cleanup strategy is set to INSTANCE_CLEANUP_STRATEGY_STOW
+  optional string stow_inventory_id = 3;
+  // Used only in order to create a new instance if one already doesn't exist
+  sc.external.services.instance_manager.v1.InstanceTemplate template = 4;
+  // EntitySnapshot data for instance ocs
+  optional sc.external.services.instance_manager.v1.InstanceEntitySnapshot snapshot = 5;
+  // When creating a new instance, this is the ownerId that will be set in the entity
+  uint64 owner_geid = 6;
+  // Shard destination where the instance will be created
+  sc.external.services.entitygraph.v1.ShardDestination shard_destination = 7;
+  // optional enter instance request, immediately executed
+  optional EnterParams auto_enter = 8;
+
+}
+message EnsureInstanceResponse {
+  sc.external.services.instance_manager.v1.Instance instance = 1;
+  sc.external.services.instance_manager.v1.InstanceActivityReport activity_report = 2;
+}
+
+message ReleaseInstanceRequest {
+  oneof identifier {
+    string instance_id = 1;
+    RequestorIdentifier instance_requestor = 2;
+  }
+  string shard_id = 3;
+  // When true, skips the idle state check and forces cleanup regardless of instance state
+  optional bool force = 4;
+}
+message ReleaseInstanceResponse {
+  sc.external.services.instance_manager.v1.InstanceStatus status = 1;
+}
+
+message GetInstanceRequest {
+  oneof identifier {
+    string instance_id = 1;
+    RequestorIdentifier instance_requestor = 2;
+  }
+  string shard_id = 3;
+}
+message GetInstanceResponse {
+  sc.external.services.instance_manager.v1.Instance instance = 1;
+}
+
+message GetCurrentEnteredInstanceRequest {
+  RequestorIdentifier instance_requestor = 1;
+  string shard_id = 2;
+}
+
+message GetCurrentEnteredInstanceResponse {
+  sc.external.services.instance_manager.v1.Instance instance = 1;
+}
+
+message GetInstancesActivityReportsRequest {
+  repeated string instance_ids = 1;
+}
+message GetInstancesActivityReportsResponse {
+  message IdentifiedReport {
+    string instance_id = 1;
+    sc.external.services.instance_manager.v1.InstanceActivityReport report = 2;
+  }
+  repeated IdentifiedReport reports = 1;
+}
+
+message GetAvailableInstancesRequest {
+  // Key: instance identifier, Value: instance pre-requisites used for eligibility evaluation
+  map<string, sc.external.services.instance_manager.v1.InstancePrerequisites> instance_prerequisites = 1;
+  string shard_id = 2;
+  string requester_urn = 3;
+  bool request_activity_report = 4;
+}
+
+message GetAvailableInstancesResponse {
+  repeated sc.external.services.instance_manager.v1.InstanceAvailabilityInfo instance_results = 1;
+}
+
+message QueryInstancesRequest {
+  sc.external.services.instance_manager.v1.InstanceFilter filter = 1;
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+message QueryInstancesResponse {
+  repeated sc.external.services.instance_manager.v1.Instance results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message SendHeartbeatRequest {
+  sc.external.services.instance_manager.v1.InstanceHeartbeat heartbeat = 1;
+}
+message SendHeartbeatResponse {
+}
+
+message EnterInstanceRequest {
+  string instance_id = 1;
+  string shard_id = 2;
+  string requester_urn = 3;
+  // The role name of the player entering the instance
+  optional string role_name = 4;
+}
+message EnterInstanceResponse {
+  // return full instance object
+  sc.external.services.instance_manager.v1.Instance instance = 1;
+  // return activity report
+  sc.external.services.instance_manager.v1.InstanceActivityReport activity_report = 2;
+}
+
+message ExitInstanceRequest {
+  string instance_id = 1;
+  string requester_urn = 2;
+  optional string role_name = 3;
+}
+message ExitInstanceResponse {
+  sc.external.services.instance_manager.v1.InstanceStatus status = 1;
+}
+
+message ExitRoleRequest {
+  string instance_id = 1;
+  string role_name = 2;
+}
+message ExitRoleResponse {
+}
+
+message ProvisionInstancePoolsRequest {
+  message PoolConfiguration {
+    string instance_identifier = 1;
+    sc.external.services.instance_manager.v1.InstanceTemplate template = 2;
+    optional sc.external.services.instance_manager.v1.InstanceEntitySnapshot snapshot = 3;
+    int32 pool_size = 4;
+    uint64 owner_geid = 5;
+    sc.external.services.entitygraph.v1.ShardDestination shard_destination = 6;
+  }
+  string shard_id = 1;
+  repeated PoolConfiguration pools = 2;
+}
+message ProvisionInstancePoolsResponse {
+}
+
+message CleanupInstancePoolsRequest {
+  string shard_id = 1;
+  // If true, the service will also send commands to bury the instances
+  bool bury = 2;
+  // If specified, only the given instance identifiers will be cleaned up
+  repeated string only_instance_identifiers = 3;
+}
+message CleanupInstancePoolsResponse {
+}
+
+message CheckEligibilityForInstancesRequest {
+  string player_urn = 1;
+  // Key: instance identifier, Value: instance pre-requisites used for eligibility evaluation
+  map<string, sc.external.services.instance_manager.v1.InstancePrerequisites> instance_prerequisites = 2;
+}
+message CheckEligibilityForInstancesResponse {
+  // Key is the instance identifier, value is the eligibility result
+  map<string, bool> eligibility_results = 1;
+}
+
+service InstanceManagerService {
+  /*
+      RequestInstance
+
+      Request a new instance of the specified type for a requester on a given shard.
+  */
+  rpc EnsureInstance(EnsureInstanceRequest) returns (EnsureInstanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/request",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+  /*
+      ReleaseInstance
+
+      Release an instance by ID or requester on a given shard.
+  */
+  rpc ReleaseInstance(ReleaseInstanceRequest) returns (ReleaseInstanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/release",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+  /*
+      GetInstance
+
+      Get an instance by ID or requester on a given shard.
+  */
+  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/internal/instances/{instance_id}",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+  /*
+     GetCurrentEnteredInstance
+
+      Get the current instance that a requester is entered in, if any, on a given shard. Requires instance identifier.
+  */
+  rpc GetCurrentEnteredInstance(GetCurrentEnteredInstanceRequest) returns (GetCurrentEnteredInstanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/internal/instances/current-entered",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+
+  /*
+      GetInstancesActivityReports
+
+      Get activity reports for a list of instances
+  */
+  rpc GetInstancesActivityReports(GetInstancesActivityReportsRequest) returns (GetInstancesActivityReportsResponse) {
+    option (google.api.http) = {
+      get: "/v1/internal/instances/activity-reports",
+    };
+  }
+
+  /*
+      GetAvailableInstances
+
+      List all currently available instances that match the given identifiers and shard for a given requester
+  */
+  rpc GetAvailableInstances(GetAvailableInstancesRequest) returns (GetAvailableInstancesResponse) {
+    option (google.api.http) = {
+      get: "/v1/internal/instances/available",
+    };
+  }
+
+  /*
+      QueryInstances
+
+      List instances filtered by multiple criteria. 
+
+      Hex should be the main user of this method, abusing queries could impact performance.
+  */
+  rpc QueryInstances(QueryInstancesRequest) returns (QueryInstancesResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/list",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+
+  /*
+      SendHeartbeat
+
+      Send a heartbeat to the instance manager to keep the instance alive. It is allowed to heartbeat different groups of players in different requests.
+  */
+  rpc SendHeartbeat(SendHeartbeatRequest) returns (SendHeartbeatResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/heartbeat",
+      body: "*"
+    };
+  }
+
+  /*
+      EnterInstance
+
+      Informs the service that a player is entering an instance. An error is returned if the player is not allowed.
+  */
+  rpc EnterInstance(EnterInstanceRequest) returns (EnterInstanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/enter",
+      body: "*"
+    };
+  }
+
+  /*
+    ExitInstance
+
+    Signals to the service that the player is exiting the instance
+  */
+  rpc ExitInstance(ExitInstanceRequest) returns (ExitInstanceResponse){
+    option (google.api.http) = {
+      post: "/v1/internal/instances/exit",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+
+  /*
+      ExitRole
+
+      Decrements the usage count for a role in an instance in order to immediately free a slot for another player with that role.
+  */
+  rpc ExitRole(ExitRoleRequest) returns (ExitRoleResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/exit-role",
+      body: "*"
+    };
+  }
+
+  /*
+      ProvisionInstancePools
+
+      Provision and configure instance pools with a given size for a given shard
+  */
+  rpc ProvisionInstancePools(ProvisionInstancePoolsRequest) returns (ProvisionInstancePoolsResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/configure-pools",
+      body: "*"
+    };
+  }
+
+  /*
+      CleanupInstancePools
+
+      Cleanup instance pools for a given shard, it should be possible to cleanup all or specific instance identifiers
+  */
+  rpc CleanupInstancePools(CleanupInstancePoolsRequest) returns (CleanupInstancePoolsResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/cleanup-pools",
+      body: "*"
+    };
+  }
+
+  /*
+      CheckEligibilityForInstances
+
+      Check if a player is eligible for multiple instances based on their contract prerequisites.
+      Returns a map of instance identifiers to eligibility results.
+  */
+  rpc CheckEligibilityForInstances(CheckEligibilityForInstancesRequest) returns (CheckEligibilityForInstancesResponse) {
+    option (google.api.http) = {
+      post: "/v1/internal/instances/check-eligibility",
+      body: "*"
+    };
+  }
+}

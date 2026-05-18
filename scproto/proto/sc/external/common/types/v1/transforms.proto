@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package sc.external.common.types.v1;
+
+/*
+  Vec2f
+
+  A 2D float (32) vector
+*/
+message Vec2f {
+    float x = 1;
+    float y = 2;
+}
+
+/*
+    Vec3f
+
+    A 3D float (32) vector
+*/
+message Vec3f {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+/*
+    Vec4f
+
+    A 4D float (32) vector
+*/
+message Vec4f {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
+
+/*
+    Quatf
+
+    A float (32) quaternion
+*/
+message Quatf {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+} 
+
+/*
+    Mat2f
+
+    A 2x2 float (32) matrix
+*/
+message Mat2f {
+    float m11 = 1;
+    float m12 = 2;
+    float m21 = 3;
+    float m22 = 4;
+}
+
+/*
+    Mat3f
+
+    A 3x3 float (32) matrix
+*/
+message Mat3f {
+    float m11 = 1;
+    float m12 = 2;
+    float m13 = 3;
+    float m21 = 4;
+    float m22 = 5;
+    float m23 = 6;
+    float m31 = 7;
+    float m32 = 8;
+    float m33 = 9;
+}
+
+/*
+    Mat4f
+
+    A 4x4 float (32) matrix
+*/
+message Mat4f {
+    double m11 = 1;
+    double m12 = 2;
+    double m13 = 3;
+    double m14 = 4;
+    double m21 = 5;
+    double m22 = 6;
+    double m23 = 7;
+    double m24 = 8;
+    double m31 = 9;
+    double m32 = 10;
+    double m33 = 11;
+    double m34 = 12;
+    double m41 = 13;
+    double m42 = 14;
+    double m43 = 15;
+    double m44 = 16;
+}
+
+
+/*
+    Vec2d
+
+    A 2D double (float 64) vector
+*/
+message Vec2d {
+    double x = 1;
+    double y = 2;
+}
+
+/*
+    Vec3d
+
+    A 3D double (float 64) vector
+*/
+message Vec3d {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+/*
+    Vec4d
+
+    A 4D double (float 64)  vector
+*/
+message Vec4d {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double w = 4;
+}
+
+/*
+    Quatd
+
+    A double (float 64) Quaternion
+*/
+message Quatd {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double w = 4;
+}
+
+/*
+    Mat2d
+
+    A 2x2 double (float 64) matrix
+*/
+message Mat2d {
+    double m11 = 1;
+    double m12 = 2;
+    double m21 = 3;
+    double m22 = 4;
+}
+
+/*
+    Mat3d
+
+    A 3x3 double (float 64) matrix
+*/
+message Mat3d {
+    double m11 = 1;
+    double m12 = 2;
+    double m13 = 3;
+    double m21 = 4;
+    double m22 = 5;
+    double m23 = 6;
+    double m31 = 7;
+    double m32 = 8;
+    double m33 = 9;
+}
+
+/*
+    Mat4d
+
+    A 4x4 double (float 64) matrix
+*/
+message Mat4d {
+    double m11 = 1;
+    double m12 = 2;
+    double m13 = 3;
+    double m14 = 4;
+    double m21 = 5;
+    double m22 = 6;
+    double m23 = 7;
+    double m24 = 8;
+    double m31 = 9;
+    double m32 = 10;
+    double m33 = 11;
+    double m34 = 12;
+    double m41 = 13;
+    double m42 = 14;
+    double m43 = 15;
+    double m44 = 16;
+}

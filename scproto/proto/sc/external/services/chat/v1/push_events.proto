@@ -1,0 +1,24 @@
+syntax = "proto3";
+package sc.external.services.chat.v1;
+import "sc/external/services/chat/v1/types.proto";
+
+message MessageReceived {
+  sc.external.services.chat.v1.Message message = 1;
+}
+
+message MessageEdited {
+  string message_id = 1;
+  string group_id = 2;
+  string content = 3;
+  int64 edited_at = 4;
+}
+
+message MessageErased {
+  string message_id = 1;
+  string group_id = 2;
+  int64 erased_at = 3;
+}
+
+message SystemMessageReceived {
+  sc.external.services.chat.v1.SystemMessage message = 1;
+}

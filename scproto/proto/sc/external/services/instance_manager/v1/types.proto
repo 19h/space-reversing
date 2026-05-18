@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package sc.external.services.instance_manager.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+// Payload sent by dgs per instance ( May contain partial data )
+message InstanceHeartbeat {
+  string instance_id = 1;
+  string shard_id = 2;
+  repeated uint64 player_geids = 3;
+  repeated RoleSlotStats role_slot_stats = 4;
+}
+
+message InstancePrerequisites {
+  sc.external.common.mission.v1.ContractPrerequisites contract_prerequisites = 1;
+  // Max player count inside an instance
+  uint32 max_capacity = 2;
+  repeated RoleSlot slot_rules = 3;
+}
+
+enum InstanceCleanupStrategy {
+  INSTANCE_CLEANUP_STRATEGY_UNSPECIFIED = 0;
+  INSTANCE_CLEANUP_STRATEGY_BURY = 1;
+  INSTANCE_CLEANUP_STRATEGY_STOW = 2;
+}
+
+enum InstanceType {
+  INSTANCE_TYPE_UNSPECIFIED = 0;
+  INSTANCE_TYPE_PLAYER_HANGAR = 1;
+  INSTANCE_TYPE_STAGING_HANGAR = 2;
+  INSTANCE_TYPE_DUNGEON_OPEN = 3;
+  INSTANCE_TYPE_DUNGEON_CLOSED = 4;
+}
+
+message RoleSlot {
+  string name = 1;
+  uint32 max_count = 2;
+}
+
+message RoleSlotStats {
+  string name = 1;
+  uint32 current_count = 2;
+}
+
+message InstanceConfig {
+  InstanceCleanupStrategy cleanup_strategy = 1;
+  // How much cooldown the requester will receive after creating the instance before they can create another one
+  google.protobuf.Duration creation_cooldown = 2;
+  // How much cooldown the requester will receive after leaving the instance before they can join another one  
+  google.protobuf.Duration join_cooldown = 3;
+  // Time to live before cleanup once abandoned
+  google.protobuf.Duration ttl = 4;
+  // Allows ignoring any existing cooldown periods when creating and joining this instance
+  bool ignore_cooldowns = 5;
+  // Allows ignoring any existing creation limits when creating this instance
+  bool ignore_creation_limits = 6;
+}
+
+enum InstanceStatus {
+  INSTANCE_STATUS_UNSPECIFIED = 0;
+  INSTANCE_STATUS_CREATING_UNASSIGNED = 1;
+  INSTANCE_STATUS_CREATING = 2;
+  INSTANCE_STATUS_UNASSIGNED = 3;
+  INSTANCE_STATUS_IDLE = 4;
+  INSTANCE_STATUS_ACTIVE = 5;
+  INSTANCE_STATUS_STOWING = 6;
+  INSTANCE_STATUS_STOWED = 7;
+  INSTANCE_STATUS_UNSTOWING = 8;
+  INSTANCE_STATUS_BURYING = 9;
+}
+
+message InstanceEntitySnapshot {
+  map<string, sc.external.services.entitygraph.v1.EntitySnapshot> snapshots = 1; // map<slot, EntitySnapshot>
+}
+
+
+// Static data required to create an instance
+message InstanceTemplate {
+  string instance_oc_path = 1;
+  InstanceType type = 2;
+  InstancePrerequisites prerequisites = 3;
+  InstanceConfig config = 4;
+}
+
+message InstanceActivityReport {
+  repeated uint64 player_geids = 1;
+  repeated RoleSlotStats role_slot_stats = 2;
+}
+
+// Whole message containing all the information about an instance
+message Instance {
+  string instance_id = 1; // uuid identifier
+  string instance_identifier = 2;
+  string shard_id = 3;
+  map<string, uint64> instance_entity_geids = 4; // map<slot, entity_geid>
+  google.protobuf.Timestamp created_at = 5;
+  InstanceTemplate template = 6;
+  /* Dynamic data */
+  InstanceStatus status = 7;
+  optional string requester_urn = 8; // Tracks the original requester of the instance
+  optional string assigned_to_urn = 9; // Tracks who the instance is assigned to, e.g: player, party, system entity, etc.
+  optional string stow_inventory_id = 10; // Only if the instance needs to be stowed during cleanup
+  optional google.protobuf.Timestamp last_activity_at = 11;
+}
+
+// Filter criteria for querying instances. All fields are ANDed together and lists contents are ORed together (IN operator).
+message InstanceFilter {
+  optional string shard_id = 1;
+  repeated string instance_identifiers = 2;
+  repeated string assigned_to_urns = 3;
+  repeated InstanceStatus statuses = 4;
+  repeated string requester_urns = 5;
+  repeated InstanceType instance_types = 6;
+}
+
+
+message InstanceAvailabilityInfo {
+  // always defined field. Allows mapping instance_identifier to eligibility result for an instance that is not created yet
+  string instance_identifier = 1;
+
+  // might be null if there is no instance
+  optional sc.external.services.instance_manager.v1.Instance instance = 2;
+
+  // if there is an instance, we also return the report (requires request_activity_report to be set)
+  optional sc.external.services.instance_manager.v1.InstanceActivityReport activity_report = 3;
+
+  // boolean indicating if player is eligible for instance
+  bool eligible = 4;
+}

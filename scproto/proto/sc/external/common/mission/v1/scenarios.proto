@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/time/v1/schedule.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+enum ScenarioStatus {
+    SCENARIO_STATUS_UNSPECIFIED = 0;
+    SCENARIO_STATUS_DISABLED = 1;
+    SCENARIO_STATUS_SCHEDULED = 2;
+    SCENARIO_STATUS_STARTING = 3;
+    SCENARIO_STATUS_RUNNING = 4;
+    SCENARIO_STATUS_STOPPING = 5;
+    SCENARIO_STATUS_STOPPED = 6;
+    SCENARIO_STATUS_DEPRECATED = 7;
+    SCENARIO_STATUS_ERROR = 8;
+}
+
+message ScenarioCurrentCommand {
+  string message_id = 1;
+  ScenarioCommandWord word = 2;
+  uint32 acks = 3;
+}
+
+message CycleState {
+  // The current phase id of the cycle
+   string current_phase_id = 1;
+
+   // When did this current phase start
+   google.protobuf.Timestamp start_ts = 2;
+
+   // Unique uuid for the current evolution of the cycle
+   optional string revolution_id = 3;
+}
+
+message ScenarioState {
+  // Status of the scenario
+  ScenarioStatus status = 1;
+
+  // When is the scenario running next.
+  optional uint64 next_run = 2;
+
+  // State of cycles. Key is cycle id, value is current phase.
+  map<string, CycleState> cycle_states = 3;
+
+  // Current scenario command
+  optional ScenarioCurrentCommand current_command = 5;
+}
+
+
+// A scenario  template, fed by DataCore.
+message ScenarioTemplate {
+    // Identifier to the datacore GUID record of the scenario.
+    string id = 1;
+
+    // Human readable name
+    optional string name = 2;
+    
+    // Human readable description
+    optional string description = 3;
+
+    // Dynamic variables
+    optional MissionVariables variables = 4;
+
+    // Default schedule for this template
+    optional sc.external.common.time.v1.Schedule schedule = 5;
+
+    // Default cycles for this template
+    repeated Cycle cycles = 6;
+
+    // Auto create a scenario with this template as enabled
+    reserved 7;
+    reserved "auto_enable";
+
+    optional bool auto_create = 8;
+
+    // optionally track progress of the scenario
+    bool track_progress = 9;
+}
+
+message ContributorProgress {
+  string player_urn = 1;
+  map<string, int64> progress = 2;
+}
+
+// A created scenario. Can be started/stopped/scheduled.
+message Scenario {
+    // Scenario identifier
+    string id = 1;
+
+    // Scenario template configuration
+    ScenarioTemplate template = 2;
+
+    // Name of scenario
+    optional string name = 4;
+
+    // Description of scenario
+    optional string description = 5;
+
+    // Configured mission variables.
+    optional MissionVariables variables = 6;
+
+    reserved 7;
+    reserved "enabled";
+
+    // Current state of the scenario
+    ScenarioState state = 8;
+
+    // Configured schedule
+    optional sc.external.common.time.v1.Schedule schedule = 9;
+
+    // Cycle configuration
+    repeated Cycle cycles = 10;
+
+    // Last information 
+    optional string summary = 11;
+}
+
+message Cycle {
+  // Identifier of the cycle
+  string id = 1;
+  // Human readable name of the cycle
+  string name = 2;
+  // Cycle events during a single cycle run
+  repeated CyclePhase phases = 3;
+  // Human description
+  optional string description = 4;
+}
+
+message CyclePhase {
+  // Identifier of the event
+  string id = 1;
+  // Human readable name of the event
+  string name = 2;
+  // Duration of this phase (in seconds)
+  uint32 duration_seconds = 3;
+  // Human description
+  optional string description = 4;
+}
+
+enum ScenarioCommandWord {
+  SCENARIO_COMMAND_WORD_UNSPECIFIED = 0;
+  SCENARIO_COMMAND_WORD_START = 1;
+  SCENARIO_COMMAND_WORD_STOP = 2;
+  SCENARIO_COMMAND_WORD_CONFIGURED = 3;
+  SCENARIO_COMMAND_WORD_SCHEDULED = 4;
+}
+

@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+/*
+Configuration Service API
+*/
+package sc.external.services.configuration.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/configuration/v1/matchers.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Configuration Service"
+    version: "1.0",
+    description: "Service responsible for distributing configurations using ETCD"
+  }
+};
+
+message ConfigQuery {
+  // config group - ex /cvars/x/y/x (cvars is the group)
+  string config_group = 1;
+  // config key - /x/y/z/variables (variables is the key)
+  string config_key = 2;
+  // full path to current config node (optional ex - /cvars/product_name:dgs_pu/variables)
+  string curr_node = 3;
+  // current version of full node (optional: -1 for none)
+  int64 curr_version = 4;
+  // config matchers
+  sc.external.services.configuration.v1.ConfigMatchers matchers = 5;
+}
+
+
+message ConfigResponse {
+  enum Result {
+    RESULT_UNSPECIFIED = 0;
+    RESULT_FOUND = 1;
+    RESULT_FOUND_NO_UPDATE = 2;
+    RESULT_NOT_FOUND = 3;
+  }
+  // result
+  Result result = 1;
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 2;
+  // config group - ex /cvars/x/y/z (cvars is the group)
+  string config_group = 3;
+  // config key name - /x/y/z/variables (variables is the key)
+  string config_key = 4;
+  // config value
+  string value = 5;
+  // config version
+  uint64 version = 6;
+}
+
+message QueryConfigRequest {
+  ConfigQuery query = 1;
+}
+
+message QueryConfigResponse {
+  ConfigResponse response = 1;
+}
+
+message WatchConfigRequest {
+  ConfigQuery request = 1;
+}
+
+message WatchConfigResponse {
+  ConfigResponse response = 1;
+}
+
+message WatchMultiGroupKeyPair {
+  // config group - ex /cvars/x/y/x (cvars is the group)
+  string config_group = 1;
+  // config key - /x/y/z/variables (variables is the key)
+  string config_key = 2;
+}
+
+message WatchMultiConfigurationsRequestBody {
+  repeated WatchMultiGroupKeyPair group_key_pairs = 1;
+  // config matchers
+  sc.external.services.configuration.v1.ConfigMatchers matchers = 2;
+}
+
+message WatchMultiConfigurationsRequest {
+  WatchMultiConfigurationsRequestBody request = 1;
+}
+
+message WatchMultiConfigurationsResponse {
+  ConfigResponse response = 1;
+}
+
+service ConfigService {
+  /*  QueryConfig
+      Accepts a QueryConfigRequest
+      Returns current configuration for the Query Config Request
+  */
+  rpc QueryConfig(QueryConfigRequest) returns (QueryConfigResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/query",
+      body: "*"
+    };
+  }
+
+  /*  WatchConfig
+      Accepts a WatchConfigRequest
+      Returns stream of configurations (initial current config and then updated configuration when any watched keys change)
+  */
+  rpc WatchConfig(WatchConfigRequest) returns (stream WatchConfigResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/watch",
+      body: "*"
+    };
+  }
+
+  /*  WatchMultiConfigurations
+      Accepts a WatchMultiConfigurationsRequest
+      Returns stream of configurations (initial current config and then updated configuration when any watched keys change)
+  */
+  rpc WatchMultiConfigurations(WatchMultiConfigurationsRequest) returns (stream WatchMultiConfigurationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/watch-multi",
+      body: "*"
+    };
+  }
+}

@@ -1,0 +1,256 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v2;
+import "google/protobuf/timestamp.proto";
+import "sc/external/common/platform/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+message EntityConfigurationParameters {
+    oneof param {
+        sc.external.common.platform.v1.PortConfig web_customizations = 1;
+        sc.external.common.platform.v1.LoadoutKitConfiguration loadout_kit = 2;
+        string custom_name = 3;
+        string serial = 4;
+    }
+}
+
+message EntityConfiguration {
+    // Unique identifier for this configuration
+    string id = 1;
+    // User-supplied entity config parameters
+    repeated EntityConfigurationParameters params = 2;
+}
+
+
+// Status of the entitlement
+// Four main states, with pending states for transitions
+enum EntitlementStatus {
+    ENTITLEMENT_STATUS_UNSPECIFIED = 0;
+    // entitlement is packaged
+    ENTITLEMENT_STATUS_PACKAGED = 1;
+    // entitlement is undelivered
+    ENTITLEMENT_STATUS_UNDELIVERED = 2;
+    // entitlement is delivered
+    ENTITLEMENT_STATUS_DELIVERED = 3;
+    // entitlement is revoked
+    ENTITLEMENT_STATUS_REVOKED = 4;
+    // delivery failed due to a non-retriable error on this patch (e.g. entity class GUID no longer exists);
+    // entitlement will be re-auto-delivered on the next patch
+    ENTITLEMENT_STATUS_FAILED = 5;
+}
+
+// Source of the entitlement
+enum EntitlementSourceType {
+    ENTITLEMENT_SOURCE_TYPE_UNSPECIFIED = 0;
+    // item comes from platform (e.g. webstore)
+    ENTITLEMENT_SOURCE_TYPE_PLATFORM = 1;
+    // item comes from ingame; entitlement is persistent
+    ENTITLEMENT_SOURCE_TYPE_INGAME_PERSISTENT = 2;
+    // item comes from ingame; entitlement is not persistent
+    ENTITLEMENT_SOURCE_TYPE_INGAME_NONPERSISTENT = 3;
+    // item comes from rental
+    ENTITLEMENT_SOURCE_TYPE_RENTAL = 4;
+    // item comes from arena commander
+    ENTITLEMENT_SOURCE_TYPE_ARENA_COMMANDER = 5;
+}
+
+message ItemPortLoadout {
+    message ItemPortParams {
+        // Recursive item port configuration
+        repeated ItemPortParams items = 1;
+        // Item port name
+        string port_name = 2;
+        // Item class name
+        string item_class_name = 3;
+        // Item game flags
+        uint64 game_flags = 4;
+        // Item ownership type
+        int32 ownership = 5;
+        // (Optional) override to the parent urn for that item and below
+        optional string parent_urn = 6;
+    }
+
+    repeated ItemPortParams items = 1;
+}
+
+// Some additional information about the entitlement that is not affecting
+// how the entitlement is handled from the service perspective.
+message EntitlementMetadata {
+    // Name of the entitlement
+    string name = 1;
+    // Stack size
+    int32 stack_size = 2;
+    // SKU of the source of the entitlement
+    string source_sku = 3;
+    // Whether the source of this entitlement was funded with real currency.
+    bool real_money = 4;
+}
+
+message Entitlement {
+    // Entitlement URN
+    string urn = 1;
+    // Source URN of the entitlement
+    string source_urn = 2;
+    // Source type of the entitlement
+    EntitlementSourceType source_type = 3;
+    // Status of the entitlement
+    EntitlementStatus status = 4;
+    // Entity Class GUID to entitle
+    string entity_class_guid = 5;
+    // Player Id of the owner, required as it's the sharding key
+    uint64 player_id = 6;
+    // web platform customization, name, serial, and loadout
+    optional EntityConfiguration entity_configuration = 9;
+    // Entity GEID
+    optional uint64 entity_geid = 10;
+    // claim timestamp
+    optional google.protobuf.Timestamp claim_timestamp = 11;
+    // claim version
+    optional string claim_version = 12;
+    // Rental expiry
+    optional google.protobuf.Timestamp rental_expiry = 13;
+     // Loadout kit for arena commander items
+    optional ItemPortLoadout arena_commander_loadout = 14;
+
+    google.protobuf.Timestamp created_at = 15;
+    google.protobuf.Timestamp modified_at = 16;
+    
+    EntitlementMetadata metadata = 17;
+
+    // entity persistent properties (current snapshot, only set when pass to EntityCreator - query returns null)
+    optional sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 18;
+
+    reserved 7;
+    reserved "item_type";
+    reserved 8;
+    reserved "item_sub_type";
+}
+
+enum SnapshotSlotId {
+    SNAPSHOT_SLOT_ID_UNSPECIFIED = 0;
+    SNAPSHOT_SLOT_ID_DEFAULT = 1;
+    SNAPSHOT_SLOT_ID_CUSTOMIZED = 2;
+}
+
+// Snapshot record for each attachment of a root entitlement
+// All snapshot records for the same root entity and snapshot type will define the root's entity loadout
+message SnapshotRecord {
+    // Snapshot id
+    string id = 1;
+    // Player Id of the owner, required as it's the sharding key
+    uint64 player_id = 2;
+    // Snapshot root URN
+    string root_urn = 3;
+    // Item URN
+    // can be entitlement URN or entity class URN
+    string item_urn = 4;
+    // slot id
+    SnapshotSlotId slot_id = 5;
+    // Attach path (array of item ports names, starting from the root)
+    repeated string attach_path = 6;
+}
+
+
+// Action that occurred on an entitlement record
+enum EntitlementLogAction {
+    ENTITLEMENT_LOG_ACTION_UNSPECIFIED = 0;
+    ENTITLEMENT_LOG_ACTION_CREATED = 1;
+    ENTITLEMENT_LOG_ACTION_DELIVERED = 2;
+    ENTITLEMENT_LOG_ACTION_REVOKED = 3;
+    ENTITLEMENT_LOG_ACTION_DELETED = 4;
+    ENTITLEMENT_LOG_ACTION_UNCLAIMED = 5;
+    // The entitlement was revoked/deleted because of snapshot reconciliation process
+    ENTITLEMENT_LOG_ACTION_RECONCILED = 6;
+    // The entitlement was updated (e.g. loadout change)
+    ENTITLEMENT_LOG_ACTION_UPDATED = 7;
+    // Delivery failed due to a non-retriable error on this patch (e.g. entity class GUID no longer exists)
+    ENTITLEMENT_LOG_ACTION_FAILED = 8;
+}
+
+// An entitlement record history
+message EntitlementHistory {
+    // SCURN of the entielement record
+    string urn = 1;
+    // Player URN of the player for who this was entitled
+    uint64 player_id = 2;
+    // Source of the entitlement request
+    EntitlementSourceType source = 3;
+    // Status of the entitlement
+    EntitlementStatus status = 4;
+    // Reference name for this entitlement (mainly human readable)
+    string name = 5;
+    // Entity Class GUID to entitle
+    string entity_class_guid = 6;
+    // Log timestamp
+    google.protobuf.Timestamp created_at = 7;
+    // Action that occured
+    EntitlementLogAction log_action = 8;
+    // Log message
+    string log_message = 9;
+    // CommandId from request (allows linking to login)
+    string command_id = 10;
+    // source entitlement URN, used to track the history across all children entitlements
+    string source_entitlement_urn = 11;
+}
+
+// Reconcile Account
+enum ReconcileAccountStatus {
+    RECONCILE_ACCOUNT_STATUS_UNSPECIFIED = 0;
+    RECONCILE_ACCOUNT_STATUS_EXECUTING = 1;
+    RECONCILE_ACCOUNT_STATUS_COMPLETE = 2;
+    RECONCILE_ACCOUNT_STATUS_FAILED = 3;
+}
+
+enum ReconcileAccountPhase {
+    RECONCILE_ACCOUNT_PHASE_UNSPECIFIED = 0;
+    RECONCILE_ACCOUNT_PHASE_LTP = 1;
+    RECONCILE_ACCOUNT_PHASE_PLATFORM = 2;
+    RECONCILE_ACCOUNT_PHASE_ENTITLEMENT = 3;
+}
+
+message EntitlementFilter {
+    // (Optional) filter by item type
+    optional string item_type = 1; 
+    // (Optional) filter by item subtype
+    optional string item_sub_type = 2; 
+    // (Optional) filter by entity class GUID
+    repeated string entity_class_guid = 3; 
+    // (Optional) filter by entitlement URN
+    repeated string entitlement_urn = 4; 
+    // (Optional) filter by source type
+    repeated EntitlementSourceType source_type = 5;
+    // (Optional) filter by entity GEID
+    repeated uint64 entity_geid = 6;
+
+    message Exclude {
+        // (Optional) filter by item type
+        repeated string item_type = 1;
+        // (Optional) filter by item subtype
+        repeated string item_sub_type = 2;
+    }
+
+    // (Optional) exclude results whose item_type/item_sub_type matches any of these
+    // If not set, no results will be excluded
+    optional Exclude exclude = 7;
+    // (Optional) if true, revoked entitlements are included in the results.
+    // By default revoked entitlements are excluded from all query results.
+    optional bool include_revoked = 8;
+}
+
+message SnapshotFilter {
+    // At least one of these fields must be set
+    repeated string entitlement_urn = 1;
+    repeated SnapshotSlotId snapshot_slot_id = 2;
+}
+
+message SnapshotWithEntitlement {
+    SnapshotRecord snapshot = 1;
+    Entitlement entitlement = 2;
+}
+
+enum RealtimeFulfillmentProcessorStatus {
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_UNSPECIFIED = 0;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_EXECUTING = 1;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_COMPLETED = 2;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_FAILED = 3;
+}

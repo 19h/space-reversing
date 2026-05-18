@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+/*
+  Echo Service API
+
+  Simple echo service, for testing purpose
+*/
+package sc.external.services.echo.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Echo Service"
+      version: "1.0",
+      description: "Testing service for unary, client, server and duplex streaming over gRPC and Diffusion."
+    }
+};
+
+
+message EchoRequest { string msg = 1; uint32 delay = 2; }
+message EchoResponse { string msg = 1; }
+
+message EchoClientStreamRequest { string msg = 1; }
+message EchoClientStreamResponse { repeated string msgs = 1; }
+
+message EchoServerStreamRequest {
+  // The message to echo
+  string msg = 1;
+  // Echo period in miliseconds.
+  uint32 period = 2;
+  // Max echoes to send before closing the stream
+  uint32 max = 3;
+}
+message EchoServerStreamResponse {
+  // The echoed message
+  string msg = 1;
+  // Total amount of echoes on this stream
+  uint32 count = 2;
+}
+
+message RandomMessagesStreamSettings {
+  bool enabled = 1;
+  // Min period in miliseconds between messages
+  uint32 period_min = 2;
+  // Max period in miliseconds between messages
+  uint32 period_max = 3;
+  // Max messages before closing the stream
+  uint32 max = 4;
+}
+
+message EchoDuplexStreamRequest {
+  // The message to echo back
+  string msg = 1;
+
+  // Settings for random message generatiokn
+  RandomMessagesStreamSettings random_message_settings = 2;
+}
+
+message EchoDuplexStreamResponse {
+  // The echoed message
+  string msg = 1;
+  // Total amount of echoes on this stream
+  uint32 count = 2;
+}
+
+message EchoSimpleDuplexStreamRequest {
+  // The message to echo back
+  string msg = 1;
+
+  // delay until messages is echo back
+  uint32 delay = 2;
+}
+
+message EchoSimpleDuplexStreamResponse {
+  // The echoed message
+  string msg = 1;
+}
+
+message CloseAllStreamsRequest {
+  bool cancel = 1;
+  uint32 delay = 2;
+}
+message CloseAllStreamsResponse {}
+
+message EchoErrorRequest {
+  string msg = 1;
+  uint32 code = 2;
+  string retry_pushback_ms = 3;
+}
+message EchoErrorResponse { }
+
+service EchoService {
+
+  /*
+    Echo
+
+    Submit a msg string through a unary call, server will respond with that same message.
+  */
+  rpc Echo(EchoRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo",
+    };
+  }
+
+  /*
+    EchoClientStream
+
+    Open a client stream to the server. The client can submit a number of string requests on the open stream.
+    The server will answer upon closing the stream with a list of messages received.
+  */
+  rpc EchoClientStream(stream EchoClientStreamRequest) returns (EchoClientStreamResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/client",
+    };
+  }
+
+  /*
+    EchoServerStream
+
+    Open a server stream by submitting an initial string message and a period. The server willthen periodically submit
+    response messages with the same message on the server stream.
+  */
+  rpc EchoServerStream(EchoServerStreamRequest) returns (stream EchoServerStreamResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/server",
+    };
+  }
+
+  /*
+    EchoDuplexStream
+
+    Open a duplex stream by submitting a msg string to echo. The server will echo back on the stream
+    and include a number of the total amount of echo submitted in this stream since it was established.
+  */
+  rpc EchoDuplexStream(stream EchoDuplexStreamRequest) returns (stream EchoDuplexStreamResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/duplex",
+    };
+  }
+
+  /*
+    EchoSimpleDuplexStream
+
+    Open a duplex stream by submitting a msg string to echo. The server will echo back on the stream with optional delay
+  */
+  rpc EchoSimpleDuplexStream(stream EchoSimpleDuplexStreamRequest) returns (stream EchoSimpleDuplexStreamResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/simpleduplex",
+    };
+  }
+
+  /*
+    CloseAllStreams
+
+    Instruct the service to forcibly terminate all active connected streams.
+  */
+  rpc CloseAllStreams(CloseAllStreamsRequest) returns (CloseAllStreamsResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/close",
+    };
+  }
+
+  rpc EchoError(EchoErrorRequest) returns (EchoErrorResponse) {
+    option (google.api.http) = {
+      get : "/v1/echo/error",
+    };
+  }
+
+}

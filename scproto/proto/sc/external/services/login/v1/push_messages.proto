@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package sc.external.services.login.v1;
+
+import "sc/external/services/identity/v1/player.proto";
+import "sc/external/services/login/v1/types.proto";
+
+
+// Sent as a Push Notification on SessionCollision to account/<account_id>/login
+message SessionCollision {
+  string session_id = 1;
+}
+
+// Sent as a Push Notification when LoginCompleted to account/<account_id>/login
+message LoginCompleted {}
+
+// Sent as a Push Notification when EntitlementStarted to account/<account_id>/login
+message EntitlementStarted{}
+
+// Sent as a Push Notification when the player has joined the Processing queue to account/<account_id>/login
+message ProcessingQueueJoined {}
+
+// Sent as a Push Notification on Queue Update AccountLoginQueueStatus on account/<account_id>/login
+message AccountLoginQueueStatus {
+  // Name of queue
+  string queue_name = 1;
+  // Current position in queue
+  uint32 position = 2;
+  // Estimated time to end of queue in seconds
+  uint32 eta_seconds = 3;
+}
+
+// Sent as a Push Notification to Clients while they are active in the Processing Queue (A heartbeat to keep game client aware that processing is still happening)
+message ProcessingQueueHeartbeat {}
+
+// Send as a Push Notification on Queue Error (Timeout reaching Identity / Entitlement or other Infra Errors) on account/<account_id>/login
+message LoginQueueError {
+  sc.external.services.login.v1.LoginRequestState state = 1;
+  sc.external.services.login.v1.LoginRequestPhase phase = 2;
+  string error = 3;
+  string session_id = 4;
+}
+
+// Sent as a Push Notification on Indenity Completed -  AccountLoginCharacterStatus on account/<account_id>/login
+message AccountLoginCharacterStatus {
+  repeated sc.external.services.identity.v1.Player players = 1;
+}

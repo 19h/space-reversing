@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sc.external.services.ledger.v1;
+
+import "sc/external/services/ledger/v1/types.proto";
+
+message VariedFunds {
+  enum Variation {
+    VARIATION_INVALID_UNSPECIFIED = 0;
+    VARIATION_DEPOSITED = 1;
+    VARIATION_WITHDREW = 2;
+}
+  // amount and currency deposited or withdrew on a ledger
+  sc.external.services.ledger.v1.Funds funds = 1;
+  // name of the ledger
+  string ledger_name = 2;
+  // log message
+  string log_message = 3;
+  // Variation enum
+  Variation variation = 4;
+  // Version of the ledger
+  uint32 version = 5;
+} 

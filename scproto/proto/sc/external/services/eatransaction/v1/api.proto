@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package sc.external.services.eatransaction.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/services/eatransaction/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "EA Transaction API"
+      version: "1.0",
+      description: "Service API that provides functionality to rent items in EA from the game client"
+    }
+};
+
+message EARentRequest {
+    message Body {
+        // Class Guid of the rental
+        string entity_class_guid = 1;
+        // Suggested price of the rental
+        float price = 2;
+        // Rental duration in ms
+        uint32 duration = 3;
+        // Log context for this transaction
+        TransactionLogContext log_context = 4;
+    }
+    
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+}
+
+message EARentResponse {
+    string rental_id = 1;
+}
+
+message RenewEARentalRequest {
+    message Body {
+        string rental_id = 1;
+        // Suggested price of the rental
+        float price = 2;
+        // Rental duration in ms
+        uint32 duration = 3;
+        // Log context for this transaction
+        TransactionLogContext log_context = 4;
+    }
+    
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+}
+
+message RenewEARentalResponse {
+    string rental_id = 1;
+}
+
+service ExternalEATransactionService {
+  
+  rpc EARent(EARentRequest) returns (EARentResponse) {
+    option (google.api.http) = {
+      post : "/v1/ea/rental",
+      body: "*"
+    };
+  }
+  
+  rpc RenewEARental(RenewEARentalRequest) returns (RenewEARentalResponse) {
+    option (google.api.http) = {
+      post : "/v1/ea/rental/renew",
+      body: "*"
+    };
+  }
+}

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sc.external.services.instance_manager.v1;
+
+import "sc/external/services/instance_manager/v1/types.proto";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "External Instance Manager Service"
+    version: "1.0",
+    description: "This service is responsible for managing instances"
+  }
+};
+
+message GetAvailableInstancesRequest {
+  // Key: instance identifier, Value: instance pre-requisites used for eligibility evaluation
+  map<string, sc.external.services.instance_manager.v1.InstancePrerequisites> instance_prerequisites = 1;
+  string shard_id = 2;
+  bool request_activity_report = 3;
+}
+
+message GetAvailableInstancesResponse {
+  repeated sc.external.services.instance_manager.v1.InstanceAvailabilityInfo instance_results = 1;
+}
+
+service InstanceManagerService {
+  /*
+    GetAvailableInstances
+
+    List all currently available instances that match the given identifiers and shard
+  */
+  rpc GetAvailableInstances(GetAvailableInstancesRequest) returns (GetAvailableInstancesResponse){
+    option (google.api.http) = {
+      get: "/v1/external/instances/available"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Instances"
+    };
+  }
+}
+

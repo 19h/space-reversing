@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+/*
+  Anti-Cheat Service API
+
+  Handle communication between the Game client and Epic Anti-Cheat service
+*/
+package sc.external.services.discipline.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/discipline/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Anti-Cheat Service"
+      version: "1.0",
+      description: "Handle communication between the Game client and Epic Anti-Cheat service"
+    }
+};
+
+message QuerySanctionsRequest {
+    sc.external.common.api.v1.Query query = 1;
+}
+message QuerySanctionsResponse {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated Sanction results = 2;
+}
+
+service DisciplineService {
+  rpc QuerySanctions(QuerySanctionsRequest) returns (QuerySanctionsResponse) {
+    option (google.api.http) = {
+      post: "/v1/query-sanction",
+      body: "*"
+    };
+  }
+}

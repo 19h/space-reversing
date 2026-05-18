@@ -1,0 +1,261 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_location.v1;
+
+import "sc/external/common/mission/v1/locations.proto";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+    	title: "Mission Location Service"
+    	version: "1.0",
+    	description: "Service to manage Missions Locations."
+	}
+};
+
+message AcquireLocationRequest {
+    message Body {
+        // unique id of this mission location
+        uint64 location_entity_id = 1;
+
+        //shard id
+        string shard_id = 2;
+
+        // contractId 
+        string contract_id = 3;
+
+        // slot type
+        string contract_slot_type = 4;
+
+        // slot max
+        int32 max_contracts_for_slot = 5;
+
+        // acquisition tag
+        string acquisition_tag = 6;
+
+        // contract definition id
+        string contract_definition_id = 7;
+
+        // active mission id
+        string active_mission_id = 8;
+    }
+
+    repeated Body acquisitions = 1;
+}
+message AcquireLocationResponse {
+    message Body {
+        uint64 location_entity_id = 1;
+        repeated string added_acquisition_tags = 2;
+    }
+    // list of location tags that where added during the aquisition
+    repeated Body acquisitions = 1;
+}
+
+message OccupyLocationRequest {
+    message Body {
+        // unique id of this mission location
+        uint64 location_entity_id = 1;
+
+        //shard id
+        string shard_id = 2;
+
+        // expiry
+        // after expiry the location be available again
+        google.protobuf.Timestamp expiry = 3;
+
+        // contract slots that aren't blocked by occupation
+        repeated string ignored_contract_slot_types = 4;
+    }
+
+    repeated Body occupations = 1;
+}
+message OccupyLocationResponse {}
+
+message UpsertLocationTagsRequest  {
+    // unique id of this mission location
+    uint64 location_entity_id = 1;
+
+    //shard id
+    string shard_id = 2;
+
+    // location tags
+    repeated sc.external.common.mission.v1.MissionLocationTag location_tags = 3;
+}
+message UpsertLocationTagsResponse {}
+
+message RemoveLocationTagsRequest  {
+    // unique id of this mission location
+    uint64 location_entity_id = 1;
+
+    //shard id
+    string shard_id = 2;
+
+    //shard id
+    repeated string location_tags = 3;
+}
+message RemoveLocationTagsResponse {}
+
+message ReleaseLocationRequest {
+    message Body {
+        // unique id of this mission location
+        uint64 location_entity_id = 1;
+
+        //shard id
+        string shard_id = 2;
+        
+        // contractId 
+        string contract_id = 3;
+
+        // slot type
+        string contract_slot_type = 4;
+    }
+
+    repeated Body releases = 1;
+}
+message ReleaseLocationResponse {
+    message Body {
+        uint64 location_entity_id = 1;
+        repeated string removed_acquisition_tags = 2;
+    }
+    // list of location tags that where removed during the aquisition
+    repeated Body releases = 1;
+}
+
+message ReleaseShardRequest {
+    message Body {
+        // shard id
+        string shard_id = 1;
+    }
+
+    repeated Body releases = 1;
+}
+message ReleaseShardResponse {}
+
+message QueryAllLocationsRequest {
+    //shard id
+    string shard_id = 1;
+}
+message QueryAllLocationsResponse {
+    repeated sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+
+message QueryLocationsRequest {
+    //shard id
+    string shard_id = 1;
+
+    // unique id of this mission location
+    repeated uint64 location_entity_id = 2;
+}
+message QueryLocationsResponse {
+    repeated sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+
+message QueryLocationsByContractRequest {
+    //shard id
+    string shard_id = 1;
+
+    // contractId 
+    repeated string contract_id = 2;
+}
+message QueryLocationsByContractResponse {
+    repeated sc.external.common.mission.v1.MissionLocation locations = 1;
+}
+
+message ReleaseAllAcquisitionsRequest {
+    // active mission id
+    string active_mission_id = 1;
+}
+message ReleaseAllAcquisitionsResponse {
+    message Body {
+        uint64 location_entity_id = 1;
+        repeated string removed_acquisition_tags = 2;
+    }
+    // list of location tags that where removed during the aquisition
+    repeated Body releases = 1;
+}
+
+// service to reserve mission locations
+service MissionLocationService {
+    // occupy location temporaily (or extends current occupation)
+    // will cancel other contracts at this location 
+    rpc OccupyLocation(OccupyLocationRequest) returns (OccupyLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/location/occupy"
+            body : "*",
+        };      
+    }
+
+    // acquire (location will be occupied until release)
+    // will also cancel other contracts at this location 
+    rpc AcquireLocation(AcquireLocationRequest) returns (AcquireLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/location/acquire"
+            body : "*",
+        };      
+    }
+
+
+    // ReleaseLocation will become free
+    rpc ReleaseLocation(ReleaseLocationRequest) returns (ReleaseLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/locations/release"
+            body : "*",
+        };      
+    }
+
+    // release all mission locations for a given shard
+    rpc ReleaseShard(ReleaseShardRequest) returns (ReleaseShardResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/shards/release"
+            body : "*",
+        };      
+    }
+
+    // upsert location tags (replace or create)
+    rpc UpsertLocationTags(UpsertLocationTagsRequest) returns (UpsertLocationTagsResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/locations/tags/upsert"
+            body : "*",
+        };      
+    }
+
+    // remove location tags 
+    rpc RemoveLocationTags(RemoveLocationTagsRequest) returns (RemoveLocationTagsResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/locations/tags/remove"
+            body : "*",
+        };      
+    }
+
+    // query all mission locations for given shard
+    rpc QueryAllLocations(QueryAllLocationsRequest) returns (stream QueryAllLocationsResponse){
+        option (google.api.http) = {
+            get: "/v1/mission_location/locations/shard"
+        };      
+    }
+
+    // query mission locations by location id
+    rpc QueryLocations(stream QueryLocationsRequest) returns (stream QueryLocationsResponse){
+        option (google.api.http) = {
+            get: "/v1/mission_location/locations"
+        };      
+    }
+
+    // query mission locations by contract ids
+    rpc QueryLocationsByContract(QueryLocationsByContractRequest) returns (stream QueryLocationsByContractResponse){
+        option (google.api.http) = {
+            get: "/v1/mission_location/locations/contract"
+        };      
+    }
+
+    // release all acquisitions for a given mission id
+    rpc ReleaseAllAcquisitions(ReleaseAllAcquisitionsRequest) returns (ReleaseAllAcquisitionsResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission_location/locations/release/all"
+            body : "*",
+        };      
+    }
+};

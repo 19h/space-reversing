@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sc.internal.services.retry.v1;
+
+import "google/api/annotations.proto";
+import "sc/internal/services/retry/v1/types.proto";
+
+message RetryRequest {
+  repeated RetryEnvelope envelopes = 1;
+}
+
+message RetryResponse {}
+
+// A broadcast envelope to submi
+service RetryService {
+  /*
+    Retry
+
+    Enqueue `RetryEnvelope`s
+  */
+  rpc Retry(RetryRequest) returns (RetryResponse) {
+    option (google.api.http) = {
+      post: "/v1/retry",
+      body: "*"
+    };
+  }
+}

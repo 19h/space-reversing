@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/metric.proto";
+import "sc/internal/services/fleet/v1/report.proto";
+import "sc/internal/services/fleet/v1/fleet.proto";
+import "sc/internal/services/fleet/v1/unit.proto";
+import "sc/internal/services/fleet/v1/signal.proto";
+import "sc/internal/services/fleet/v1/claim.proto";
+import "sc/internal/services/fleet/v1/unhealthy.proto";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Fleet Management Service"
+      version: "1.0",
+      description: "Track deployed server resources, aggregate them in logic entities and control them in a unified way."
+    }
+};
+
+service FleetService {
+  /*
+      Report
+
+      Stream reports to the Fleet Management
+
+      The reports serve as heatbeart, conveying information about the health
+      status and registration within the fleet. Reports must be sent periodically,
+      functioning as a keep-alive mechanism.
+  */
+  rpc Report(stream ReportRequest) returns (ReportResponse) {
+    option (google.api.http) = {
+      post: "/v1/report",
+      body: "*"
+    };
+  }
+
+  /*
+    MarkUnhealthy
+
+    Mark units as unhealthy and retire them
+  */
+  rpc MarkUnhealthy(MarkUnhealthyRequest) returns (MarkUnhealthyResponse) {
+    option (google.api.http) = {
+      post: "/v1/mark-unhealthy",
+      body: "*"
+    };
+  }
+
+  /*
+      MetricsTargets
+
+      Retrieve the full list of targets to monitor for metrics by Prometheus.
+
+      Every unit implementing the /metrics http enpoint and is registered to the Fleet Management will be returned.
+
+      This target list is also available on Etcd, where it can be watched for changes,
+      instead of refetching the full list in a loop.
+  */
+  rpc MetricsTargets(MetricsTargetsRequest) returns (MetricsTargetsResponse) {
+    option (google.api.http) = {
+      post : "/v1/metrics-targets",
+      body: "*"
+    };
+  }
+
+  /*
+      GetFleets
+
+      Retrieve the details of the fleets specified in the request.
+  */
+  rpc GetFleets(GetFleetsRequest) returns (GetFleetsResponse) {
+    option (google.api.http) = {
+      post : "/v1/get-fleet",
+      body: "*"
+    };
+  }
+
+  /*
+      GetUnits
+
+      Retrieve details of a tracked unit.
+  */
+  rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {
+    option (google.api.http) = {
+      post : "/v1/get-units",
+      body: "*"
+    };
+  }
+
+  /*
+      SendSignal
+
+      Send a signal to individual units and all units in the specified fleets
+  */
+  rpc SendSignal(SendSignalRequest) returns (SendSignalResponse) {
+    option (google.api.http) = {
+      post : "/v1/send-signal",
+      body: "*"
+    };
+  }
+
+  /*
+      ClaimUnit
+
+      Claim a unit from the free pool to join a fleet
+  */
+  rpc ClaimUnit(ClaimUnitRequest) returns (ClaimUnitResponse) {
+    option (google.api.http) = {
+      post : "/v1/claim-unit",
+      body: "*"
+    };
+  }
+}

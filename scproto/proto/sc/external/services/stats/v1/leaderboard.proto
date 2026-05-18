@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+import "sc/external/services/stats/v1/stat_def.proto";
+
+
+message LeaderboardRow {
+  // String identifier of the Subject URN
+  string subject = 1;
+  // Array of column values of the leaderboard per Subject
+  repeated uint32 values = 2;
+  // The rank number of the Subject in the leaderboard (if ranked leaderboard)
+  uint32 rank = 3;
+}
+
+message Leaderboard {
+  // UUID identifier of the Stat Def Id to build leaderboard for
+  string sorted_stat_def_id = 1;
+  // Array of Rows for the leaderboard
+  repeated LeaderboardRow rows = 2;
+  // Optional From request - Entire stat definitions if requested
+  repeated sc.external.services.stats.v1.StatDef stat_defs = 3;
+}
+
+message LeaderboardRequest {
+  // UUID identifier of the Stat Def Id to build leaderboard for
+  string sorted_stat_def_id = 1;
+  // Array of Stat Def Ids to populate each column with
+  repeated string column_stat_def_ids = 2;
+  // Season identifier for the stats
+  string season = 3;
+  // Boolean to denote if response should include entire stat defs
+  bool include_stat_defs = 4;
+}

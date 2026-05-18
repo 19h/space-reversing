@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package sc.internal.common.shard.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+
+enum ShardRole {
+  SHARD_ROLE_UNSPECIFIED = 0;
+  SHARD_ROLE_WORKER = 1;
+  SHARD_ROLE_GATEWAY = 2;
+  SHARD_ROLE_SCRIBE = 3;
+  SHARD_ROLE_REPLICANT = 4;
+}
+
+enum SeatStatus {
+  SEAT_STATUS_UNSPECIFIED = 0;
+  SEAT_STATUS_FREE = 1;
+  SEAT_STATUS_RESERVED = 2;
+  SEAT_STATUS_ACQUIRING = 3;
+  SEAT_STATUS_ACQUIRED = 4;
+}
+
+message CriteriaCountPair {
+  sc.external.common.shard.v1.SeatCriterias criteria = 1;
+  uint32 count = 2;
+}
+
+message SeatMap {
+  message StatusCount {
+      SeatStatus status = 1;
+      uint32 count = 2;
+  }
+
+  uint32 total_count = 1;
+  repeated StatusCount seat_count_by_status = 2;
+  repeated CriteriaCountPair free_seat_count_by_criteria = 3;
+}
+
+message Reservation {
+  // Identifier of the connecting player
+  uint64 player_id = 1;
+
+  // Until when the client is allowed to keep his seat reserved if state does not change
+  google.protobuf.Timestamp until = 2;
+
+  sc.external.common.network.v1.Endpoint endpoint = 3;
+
+  google.protobuf.Any keys = 4;
+
+  // Unique identifier of the game instance (e.g. shard id)
+  string instance_id = 5;
+}

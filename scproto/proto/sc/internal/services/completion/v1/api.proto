@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sc.internal.services.completion.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/internal/services/completion/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Completion Service"
+      version: "1.0",
+      description: "Responsible for publishing completion messages for distributed commands"
+    }
+};
+
+message SubmitCompletionRequest {
+    CompletionRequest completion = 1;
+}
+message SubmitCompletionResponse {}
+
+service CompletionService {
+
+    /*
+      SubmitCompletion
+
+      Submit completion for a command
+    */
+    rpc SubmitCompletion(SubmitCompletionRequest) returns (SubmitCompletionResponse) {
+        option (google.api.http) = {
+            post : "/v1/completion/submit",
+            body: "*"
+        };
+    }
+}

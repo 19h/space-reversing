@@ -1,0 +1,208 @@
+syntax = "proto3";
+package sc.external.services.reputation.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/reputation/v1/types.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Reputation Service external API"
+      version: "1.0",
+      description: "Definitions of the external API of the reputation service"
+    }
+};
+
+
+// REPUTATION
+
+message GetRequest {
+    // Reputation Urn entity
+    string entity = 1;
+    // Scope of the reputation
+    string scope = 2;
+}
+
+message GetResponse {
+  VersionedReputation reputation = 1;
+}
+
+message QueryReputationsRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryReputationsResponse {
+  repeated VersionedReputation results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+message QueryFavoritesRequest { 
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryFavoritesResponse {
+  repeated VersionedReputation results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+
+// PREFERENCES
+
+message GetPreferencesRequest {}
+
+message GetPreferencesResponse {
+  message PlayerPreferences {
+  // playerPreferences identifier
+  string id = 1;
+  // playerUrn
+  string player = 2;
+  // Favorites Reputation / Entities
+  Favorites favorites = 3;
+  // Preferences keyvalue
+  map<string, string> preference_pairs = 4;
+  }
+  PlayerPreferences preferences = 1;
+}
+
+message SetPairsRequest {
+  // Preferences key value
+  map<string, string> preference_pairs = 1;
+}
+
+message SetPairsResponse {}
+
+message AddFavoritesRequest {
+  // Reputation to add as Favorite
+  repeated string favorite_reputations = 1;
+}
+
+message AddFavoritesResponse {}
+
+message RemoveFavoritesRequest {
+  // Reputation to remove as Favorite
+  repeated string favorite_reputations = 1;
+}
+
+message RemoveFavoritesResponse {}
+
+message AddFavoriteEntitiesRequest {
+  // Entities to add as Favorite
+  repeated string favorite_entities = 1;
+}
+
+message AddFavoriteEntitiesResponse {}
+
+message RemoveFavoriteEntitiesRequest {
+  // Entities to remove as Favorite
+  repeated string favorite_entities = 1;
+}
+
+message RemoveFavoriteEntitiesResponse {}
+
+// SCORE HISTORY 
+
+message GetScoreHistoryRequest {
+  message ScoreHistory {
+  // reputation identifier
+  string reputation_id = 1;
+  // Days
+  uint32 days = 2;
+  }
+  repeated ScoreHistory reputation_scores = 1;
+}
+
+message GetScoreHistoryResponse {
+  message ScoresHistory {
+    message Score {
+    // Score amount
+    uint64 score = 1;
+    // Time 
+    uint32 timestamp = 2;
+    }
+    // reputation identifier
+    string reputation_id = 1;
+    // Scores history
+    repeated Score scores = 2;
+  }
+  repeated ScoresHistory reputation_scores = 1;
+}
+
+
+
+
+service ReputationService {
+
+    rpc Get(GetRequest) returns (GetResponse) {
+      option (google.api.http) = {
+         get : "/v1/reputation"
+      };
+    }
+
+    rpc QueryReputations(QueryReputationsRequest) returns (QueryReputationsResponse) {
+      option (google.api.http) = {
+         get : "/v1/reputations"
+      };
+    }
+
+    rpc QueryFavorites(QueryFavoritesRequest) returns (QueryFavoritesResponse) {
+        option (google.api.http) = {
+         get : "/v1/reputation/favorites"
+        };
+    }
+
+    rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse) {
+        option (google.api.http) = {
+         get : "/v1/reputation/preferences"
+        };
+    }
+
+    rpc SetPairs(SetPairsRequest) returns (SetPairsResponse) {
+        option (google.api.http) = {
+         post : "/v1/reputation/pairs",
+         body : "*"
+        };
+    }
+
+    rpc AddFavorites(AddFavoritesRequest) returns (AddFavoritesResponse) {
+        option (google.api.http) = {
+         post : "/v1/reputation/favorites/add",
+         body : "*"
+        };
+    }
+
+    rpc RemoveFavorites(RemoveFavoritesRequest) returns (RemoveFavoritesResponse) {
+        option (google.api.http) = {
+         post : "/v1/reputation/favorites/remove",
+         body : "*"
+        };
+    }
+
+    rpc AddFavoriteEntities(AddFavoriteEntitiesRequest) returns (AddFavoriteEntitiesResponse) {
+        option (google.api.http) = {
+         post : "/v1/reputation/favorite/entities/add",
+         body : "*"
+        };
+    }
+
+    rpc RemoveFavoriteEntities(RemoveFavoriteEntitiesRequest) returns (RemoveFavoriteEntitiesResponse) {
+        option (google.api.http) = {
+         post : "/v1/reputation/favorite/entities/remove",
+         body : "*"
+        };
+    }
+
+    rpc GetScoreHistory(GetScoreHistoryRequest) returns (GetScoreHistoryResponse) {
+        option (google.api.http) = {
+         get : "/v1/reputation/score-history"
+        };
+    }
+}

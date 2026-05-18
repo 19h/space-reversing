@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+
+/** Inventories **/
+
+/*
+    InventoryCommand
+
+  A command to modify the inventories
+*/
+message InventoryCommand {
+    oneof params {
+        CreateInventoryCommand create = 1;
+        EraseInventoryCommand erase = 2;
+        ChangeInventoryConfigurationCommand change_config = 3;
+    }
+}
+
+/*
+    CreateInventoryCommand
+
+    Command to add inventories to the graph
+
+    The create command will:
+    - create the inventory node
+*/
+message CreateInventoryCommand {
+    message Body {
+        // inventory owner
+        uint64 player_id = 1;
+
+        // inventory properties
+        InventoryNodeProperties properties = 2;
+
+        // geid of the entity this inventory references
+        uint64 reference = 3;
+    }
+    repeated Body creates = 1;
+    // Do not throw an error if the inventory already exists
+    bool ignore_already_exists_error = 2;
+}
+
+
+message CreateInventoryArguments {
+       // inventory properties
+       InventoryNodeProperties properties = 1;
+
+       // geid of the entity this inventory references
+       uint64 reference = 2;
+}
+
+
+/*
+    EraseInventoryCommand
+
+    Command to erase an inventory
+
+    The erase command on invntories will:
+    - Erase inventory
+    - Erase all stowed-in entities
+*/
+message EraseInventoryCommand {
+    message Body {
+        string id = 1;
+    }
+    repeated Body erasures = 1;
+}
+
+
+/*
+  ChangeInventoryConfiguration
+
+  Command used to change the configuration of an inventorye.
+  The inventory type can be changed here.
+
+  ChangeInventoryConfiguration on an inventory will:
+  - Modify the stored inventory configuration based on the inventory type.
+  - For physical inventories, allow changing capacity and calculated occupancy
+*/
+message ChangeInventoryConfigurationCommand {
+    message Body {
+        // The inventory id to change
+        string id = 1;
+        // The configuration based on the type of inventory
+        InventoryConfiguration config = 3;
+        reserved "type";
+        reserved 2;
+    }
+    repeated Body change_configs = 1;
+}

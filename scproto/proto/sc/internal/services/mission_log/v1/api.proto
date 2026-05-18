@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_log.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+import "sc/internal/services/mission_log/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Mission Log Service internal API"
+      version: "1.0",
+      description: "Definitions of the internal API of the mission log service"
+    }
+};
+
+message GetLogsRequest {
+    // Player owning these logs
+    uint64 player_id = 1;
+}
+
+message GetLogsResponse {
+    repeated MissionLog logs = 2;
+}
+
+message AddLogsRequest {
+    // Player owning these logs
+    uint64 player_id = 1;
+    // The list of mission logs to add
+    repeated MissionLog logs = 2;
+}
+
+message AddLogsResponse {}
+
+message EraseLogsRequest {
+    // Player owning the logs to erase
+    uint64 player_id = 1;
+    // The logs to erase
+    repeated MissionLog logs = 2;
+}
+
+message EraseLogsResponse {}
+
+service MissionLogInternalService {
+    
+    rpc GetLogs(GetLogsRequest) returns (GetLogsResponse) {
+        option (google.api.http) = {
+            get : "/v1/mission_log/logs"
+        };      
+    }
+
+    rpc AddLogs(AddLogsRequest) returns (AddLogsResponse) {
+        option (google.api.http) = {
+            post : "/v1/mission_log/logs/add",
+            body : "*",
+        };      
+    }
+
+    rpc EraseLogs(EraseLogsRequest) returns (EraseLogsResponse) {
+        option (google.api.http) = {
+            post : "/v1/mission_log/logs/erase",
+            body : "*",
+        };
+    }
+}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sc.internal.common.shard.v1;
+
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+import "sc/internal/common/shard/v1/types.proto";
+
+/*
+ * This is the "extension" that is sent by the shard supervisor as a "fleet unit" of the Fleet service
+ * The extension is part of the status in the fleet report. The fleet service does not inspect the content of extensions.
+ *
+ * The content of this message is made available when querying grpc findFleet or findUnit of the Fleet service.
+ *
+ * The first user of this extension is the matchmaking service, to know which seat can be booked in every shard
+ */
+message ShardSupervisorUnitExtension {
+  // Unique identifier of the shard supervisor
+  string id = 1;
+
+  // Which game mode is served by the shard
+  sc.external.common.game.v1.Game game = 2;
+  sc.external.common.game.v1.Mode mode = 3;
+
+  // In which region hosted is the shard
+  sc.external.common.network.v1.Region region = 4;
+
+  // Endpoint where the matchmaking should do the grpc calls for reservation
+  string reservation_endpoint = 5;
+
+  // Map of the seats in the shard, how many are available, etc
+  SeatMap seat_map = 6;
+}

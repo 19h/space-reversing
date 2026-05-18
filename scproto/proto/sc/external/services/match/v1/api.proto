@@ -1,0 +1,32 @@
+
+syntax = "proto3";
+package sc.external.services.match.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/match/v1/types.proto";
+
+// Get a Match
+message GetRequest {
+  // (Optional) If not provided, the service will return the match the player is part of.
+  string group_id = 1;
+}
+
+message GetResponse {
+  Match match = 1;
+}
+
+service MatchService {
+
+  /*
+      Get
+
+      Get a match properties by groupId
+  */
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+        get: "/v1/match/external/Get",
+    };
+  }
+
+}

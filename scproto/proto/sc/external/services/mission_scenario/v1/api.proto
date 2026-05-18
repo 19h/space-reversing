@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package sc.external.services.mission_scenario.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "sc/external/common/mission/v1/scenarios.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Scenario Service"
+    version: "1.0",
+    description: "Allow to manage mission scenarios and schedules"
+  }
+};
+
+//////////////////////////////////////////////////
+//rpc GetContributorScenarioProgress(GetContributorScenarioProgressRequest) returns (GetContributorScenarioProgressResponse);
+//
+// called to get the progress of a scenario for a player
+//
+message GetContributorScenarioProgressRequest {
+  reserved 1;
+  reserved "scenario_id";
+  // template id
+  string template_id = 2;
+  // contributor id. 
+  // If called from external, needs to match jwt player id. If called from internal, jwt must include service_id
+  uint64 contributor_id = 3;
+}
+message GetContributorScenarioProgressResponse {
+  // overall progress
+  map<string, int64> overall_progress = 1;
+  // progress for player
+  map<string, int64> contributor_progress = 2;
+  // is the scenario active
+  bool is_scenario_active = 3;
+}
+
+message QueryScenarioStatusRequest {
+  // template ids
+  repeated string template_ids = 1;
+}
+message QueryScenarioStatusResponse {
+  message Body {
+    // template id
+    string template_id = 1;
+    // status
+    sc.external.common.mission.v1.ScenarioStatus status = 3;
+  }
+  repeated Body results = 1;
+}
+
+service ScenarioService {
+  // called to get progress for scenario
+  rpc GetContributorScenarioProgress(GetContributorScenarioProgressRequest) returns (GetContributorScenarioProgressResponse) {
+    option (google.api.http) = {
+      post: "/v1/mission/scenario/progress/get"
+      body : "*",
+    };
+  }
+
+  // called to query the status of a scenario
+  rpc QueryScenarioStatus(QueryScenarioStatusRequest) returns (QueryScenarioStatusResponse) {
+    option (google.api.http) = {
+      post: "/v1/mission/scenario/status/query"
+      body : "*",
+    };
+  }
+}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+// Sent as a Push Notification to account/<account_id>/identity when a player is back to a state that allows login
+message LoginAllowedPushEvent {
+  uint64 player_id = 1;
+}

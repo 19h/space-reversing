@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sc.external.services.dynamic_game_assets.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/dynamic_game_assets/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Dynamic Game Assets Service"
+        version: "1.0",
+        description: "Allow to load different game assets based on date"
+    }
+};
+
+message GetAssetForScreenRequest {
+    string screen_id = 1;
+}
+
+message GetAssetForScreenResponse {
+    AssetAssignment asset = 1;
+}
+
+service DynamicGameAssetsService {
+    /*
+      GetAssetForScreen
+      Called by Game Client to retrieve the currently active asset for a given screen.
+      Returns NOT_FOUND if no active asset exists for the given screen_id.
+    */
+    rpc GetAssetForScreen(GetAssetForScreenRequest) returns (GetAssetForScreenResponse) {
+        option (google.api.http) = {
+            get: "/v1/external/dynamic_game_assets/screens/{screen_id}/asset"
+        };
+    }
+}

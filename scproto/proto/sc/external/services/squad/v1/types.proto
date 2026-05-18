@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sc.external.services.squad.v1;
+import "sc/external/services/match/v1/types.proto";
+
+
+// Squad
+message SquadSettings {
+  sc.external.services.match.v1.MatchSettings match_settings = 1;
+}
+
+message Squad {
+  string group_id = 1;
+  SquadSettings settings = 3;
+}

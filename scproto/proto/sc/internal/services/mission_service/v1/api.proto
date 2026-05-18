@@ -1,0 +1,662 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Mission Service"
+        version: "1.0",
+        description: "Allow to manage active contracts"
+    }
+};
+
+//////////////////////////////////////////////////
+// rpc CreateMission(CreateMissionRequest) returns (CreateMissionResponse)
+//
+// called from contract broker when mission was accepted by player
+// 
+//
+message CreateMissionRequest {
+    // contract this mission is based off
+    sc.external.common.mission.v1.MissionContract contract = 1;
+
+    // mission owner
+    string mission_owner_urn = 2;
+
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+
+    // shard id where mission is created
+    string shard_id = 4;
+
+    // ignore contributers and only track overall progess - defaults to false
+    bool ignore_objective_contributors = 5;
+
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 6;
+}
+
+message CreateMissionResponse {
+    // mission id
+    string mission_id = 1;
+
+    // active mission key
+    string active_mission_key = 2;
+}
+
+//////////////////////////////////////////////////
+// rpc EndMission(EndMissionRequest) returns (EndMissionResponse);
+//
+// end a mission server/service side
+// end a mission will automatically end all remaining mission phases with `MISSION_PHASE_STATE_ENDED`
+//  
+message EndMissionRequest {
+    // mission id
+    string mission_id = 1;
+    // overall mission state
+    sc.external.common.mission.v1.MissionState mission_state = 2;
+    // reason
+    string reason = 3;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message EndMissionResponse {}
+
+//////////////////////////////////////////////////
+// rpc OnPlayerJoinShard(OnPlayerJoinShardRequest) returns (OnPlayerJoinShardResponse)
+//
+// starts all restartable missions for player
+// - mission must be restartable
+// - mission must be fully suspended
+//
+message OnPlayerJoinShardRequest {
+    message Body {
+        string player_urn = 1;
+    }
+    repeated Body players = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // shardId
+    string shard_id = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message OnPlayerJoinShardResponse {}
+
+//////////////////////////////////////////////////
+// OnPlayerLeaveShard(OnPlayerLeaveShardRequest) returns (OnPlayerLeaveShardResponse)
+//
+// Removes player from 'active' participant list from all active missions
+// All missions that have zero active participants will be either suspended (if mission is suspendable) or will be cancelled
+//
+message OnPlayerLeaveShardRequest {
+    message Body {
+        string player_urn = 1;
+    }
+    repeated Body players = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // shardId
+    string shard_id = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message OnPlayerLeaveShardResponse {}
+
+//////////////////////////////////////////////////
+// rpc CreateMissionPhase(CreateMissionPhaseRequest) returns (CreateMissionPhaseResponse);
+//
+// create additional mission phase
+//
+message CreateMissionPhaseRequest {
+    message Body {
+        // dc guid for this mission phase
+        string mission_phase_guid = 1;
+
+        // time when the phase expires
+        google.protobuf.Timestamp expiry = 2;
+
+        // optional objective id that will complete this phase when the objective completed/failed
+        string autocomplete_objective_id = 3;        
+
+        // initial phase data
+        sc.external.common.mission.v1.MissionPhaseData data = 4;
+
+        // mission phase id
+        string mission_phase_id = 5;
+
+        // active phase key
+        string active_phase_key = 6;
+    }
+    repeated Body phases = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // active mission key
+    string active_mission_key = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message CreateMissionPhaseResponse {}
+
+//////////////////////////////////////////////////
+// rpc UpdateMissionPhase(UpdateMissionPhaseRequest) returns (UpdateMissionPhaseResponse);
+//
+// called from active mission phase to update mission phase data
+//
+message UpdateMissionPhaseRequest {
+    message Body {
+        // active phase key
+        string active_phase_key = 1;
+
+        // phase data
+        sc.external.common.mission.v1.MissionPhaseData data = 2;
+    }
+    repeated Body phases = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // mission Id
+    string mission_id = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message UpdateMissionPhaseResponse {}
+
+//////////////////////////////////////////////////
+// rpc CompleteMissionPhase(CompleteMissionPhaseRequest) returns (CompleteMissionPhaseResponse);
+//
+//
+//
+message CompleteMissionPhaseRequest {
+    message Body {
+        // optional final phase data
+        sc.external.common.mission.v1.MissionPhaseData data = 1;
+        // active phase key
+        string active_phase_key = 2;
+        // (optional) phase state (MISSION_PHASE_STATE_COMPLETED if not specified)
+        optional sc.external.common.mission.v1.MissionPhaseState state = 3;
+    }
+    repeated Body phases = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // mission Id
+    string mission_id = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message CompleteMissionPhaseResponse {}
+
+//////////////////////////////////////////////////
+// rpc UpsertObjective(UpsertObjectiveeRequest) returns (UpsertObjectiveResponse);
+//
+//
+//
+message UpsertObjectiveRequest {
+    message Body {
+        // objective
+        sc.external.common.mission.v1.MissionObjective objective = 1;
+        // when true, triggers the completion flow (auto-complete policies + phase autocomplete)
+        bool completed = 2;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message UpsertObjectiveResponse {}
+
+
+//////////////////////////////////////////////////
+//rpc UpdateObjectiveProgress(UpdateObjectiveProgressRequest) returns (UpdateObjectiveProgressResponse);
+//
+// called from active mission phase to update an objective progress
+//
+message UpdateObjectiveProgressRequest {
+    message Body {
+        // objective id
+        string objective_id = 1;
+
+        // progress update
+        int64 progress_delta = 2;
+
+        // contributor playerUrn
+        string player_urn = 3;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message UpdateObjectiveProgressResponse {}
+
+//////////////////////////////////////////////////
+// rpc CompleteObjective(CompleteObjectiveRequest) returns (CompleteObjectiveResponse);
+//
+// called from active mission phase to complete an existing objective
+//
+message CompleteObjectiveRequest {
+    message Body {
+        // objective id
+        string objective_id = 1;
+
+        // final state (complete/failed/exipred)
+        sc.external.common.mission.v1.MissionObjectiveState state = 2;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message CompleteObjectiveResponse {}
+
+message QueryMissionsRequest {
+    // query for missions to match
+    sc.external.common.api.v1.Query query = 1;
+}
+message QueryMissionsResponse {
+    // matched missions
+    repeated sc.external.common.mission.v1.ActiveMission missions = 1;
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message QueryMissionLogsRequest {
+    // query for missions to match
+    sc.external.common.api.v1.Query query = 1;
+}
+message QueryMissionLogsResponse {
+    // matched missions
+    repeated sc.external.common.mission.v1.MissionLog logs = 1;
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+//////////////////////////////////////////////////
+//rpc UpdateObjective(UpdateObjectiveRequest) returns (UpdateObjectiveResponse);
+//
+message UpdateObjectiveRequest {
+    message Body {
+        // objective id
+        string objective_id = 1;
+
+        // flags update
+        uint32 flags = 2;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message UpdateObjectiveResponse {}
+
+// assignObjectiveToPlayer/removePlayerFromObjective
+
+//////////////////////////////////////////////////
+//rpc AddContributorToObjective(AddContributorToObjectiveRequest) returns (AddContributorToObjectiveResponse);
+//
+// called to assign a player to an objective
+//
+message AddContributorToObjectiveRequest {
+    message Body {
+        // objective id
+        string objective_id = 1;
+
+        // player urn
+        string player_urn = 2;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message AddContributorToObjectiveResponse {}
+
+//////////////////////////////////////////////////
+//rpc RemoveContributorFromObjective(RemoveContributorFromObjectiveRequest) returns (RemoveContributorFromObjectiveResponse);
+//
+// called to remove a player from an objective
+//
+message RemoveContributorFromObjectiveRequest {
+    message Body {
+        // objective id
+        string objective_id = 1;
+
+        // player urn
+        string player_urn = 2;
+    }
+    repeated Body objectives = 1;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+    // (Optional) active mission key
+    string active_mission_key = 3;
+    // mission id
+    string mission_id = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+
+message RemoveContributorFromObjectiveResponse {}
+
+//////////////////////////////////////////////////
+// rpc DisableMissionExpiry(DisableMissionExpiryRequest) returns (DisableMissionExpiryResponse)
+//
+// Will clear the expiry timestamp
+// Will remove the chrono job
+// Will also track how much time (in seconds) was still left on the expiry and store this on the ActiveMission
+// 
+//
+message DisableMissionExpiryRequest {
+    // mission id
+    string mission_id = 1;
+    // reason
+    string reason = 2;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+message DisableMissionExpiryResponse {}
+
+//////////////////////////////////////////////////
+// rpc EnableMissionExpiry(EnableMissionExpiryRequest) returns (EnableMissionExpiryResponse)
+//
+// This will clean any existing chrono jobs if they exist
+// This will also clear timeRemaining field
+// This will set expiry timestamp
+// This will queue a chrono job that will trigger the normal Abandon flow once expired 
+// 
+//
+message EnableMissionExpiryRequest {
+    // mission id
+    string mission_id = 1;
+    // reason
+    string reason = 2;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+    // time to complete mission
+    google.protobuf.Timestamp expiry = 4;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+message EnableMissionExpiryResponse {}
+
+//////////////////////////////////////////////////
+// rpc ReenableMissionExpiry(ReenableMissionExpiryRequest) returns (ReenableMissionExpiryResponse)
+//
+// Only allowed if timeRemaining has a value
+// This will clear timeRemaining field
+// This will set a new expiry timestamp: now + timeRemaining
+// This will queue a chrono job that will trigger the normal Abandon flow once expired 
+// 
+//
+message ReenableMissionExpiryRequest {
+    // mission id
+    string mission_id = 1;
+    // reason
+    string reason = 2;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+message ReenableMissionExpiryResponse {}
+
+//////////////////////////////////////////////////
+// rpc DestroyMissionsByShard(DestroyMissionsByShardRequest) returns (DestroyMissionsByShardResponse)
+//
+// Destroys all active missions on a shard.
+// Used for shard lifecycle cleanup to prevent mission leakage
+// for entity-owned missions that aren't handled by OnPlayerLeaveShard.
+//
+message DestroyMissionsByShardRequest {
+    // shard to clean up
+    string shard_id = 1;
+    // reason for destruction
+    string reason = 2;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message DestroyMissionsByShardResponse {}
+
+//////////////////////////////////////////////////
+// rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse);
+//
+// join mission with another player - internal version, no ownership check
+//
+message JoinMissionRequest {
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+
+    // id of the mission
+    string mission_id = 2;
+
+    // owner of the mission
+    string owner_urn = 3;
+
+    // player urns for players joining the mission
+    repeated string player_urns = 4;
+
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+message JoinMissionResponse {}
+
+//////////////////////////////////////////////////
+//
+//
+//
+service MissionService {
+    // called from contract broker when mission was accepted
+    rpc CreateMission(CreateMissionRequest) returns (CreateMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/create"
+            body : "*",
+        };      
+    }
+
+    // end a mission server/service side
+    // end a mission will automatically end all remaining mission phases with `MISSION_PHASE_STATE_ENDED`
+    rpc EndMission(EndMissionRequest) returns (EndMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/end"
+            body : "*",
+        };      
+    }
+
+    // starts all restartable missions
+    // - mission must be restartable
+    // - mission must be fully suspended
+    rpc OnPlayerJoinShard(OnPlayerJoinShardRequest) returns (OnPlayerJoinShardResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/players/join"
+            body : "*",
+        };      
+    }
+
+    // Removes player from 'active' participant list from all active missions
+    // All missions that have zero active participants will be either suspended (if mission is suspendable) or will be cancelled
+    rpc OnPlayerLeaveShard(OnPlayerLeaveShardRequest) returns (OnPlayerLeaveShardResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/players/leave"
+            body : "*",
+        };      
+    }
+    
+    // create additional mission phase
+    rpc CreateMissionPhase(CreateMissionPhaseRequest) returns (CreateMissionPhaseResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/phases/create"
+            body : "*",
+        };      
+    }
+
+    // called from active mission phase to update mission phase data
+    rpc UpdateMissionPhase(UpdateMissionPhaseRequest) returns (UpdateMissionPhaseResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/phases/update"
+            body : "*",
+        };      
+    }
+
+    // called from active mission phase when phase is completed
+    rpc CompleteMissionPhase(CompleteMissionPhaseRequest) returns (CompleteMissionPhaseResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/phases/complete"
+            body : "*",
+        };      
+    }
+    
+    // called from active mission phase to create/update an objective
+    // this will override the current objective state
+    rpc UpsertObjective(UpsertObjectiveRequest) returns (UpsertObjectiveResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/upsert"
+            body : "*",
+        };      
+    }
+
+    // called from active mission phase to update an objective progress
+    rpc UpdateObjectiveProgress(UpdateObjectiveProgressRequest) returns (UpdateObjectiveProgressResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/progress/update"
+            body : "*",
+        };      
+    }
+
+    // called from active mission phase to complete an existing objective
+    rpc CompleteObjective(CompleteObjectiveRequest) returns (CompleteObjectiveResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/complete"
+            body : "*",
+        };      
+    }
+
+    // qurry for mission, internal use (hex)
+    rpc QueryMissions(QueryMissionsRequest) returns (QueryMissionsResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/missions"
+        };      
+    }
+
+    // qurry for mission logs, internal use (hex)
+    rpc QueryMissionLogs(QueryMissionLogsRequest) returns (QueryMissionLogsResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/mission-logs"
+        };      
+    }
+
+    // called to update certain objective properties
+    rpc UpdateObjective(UpdateObjectiveRequest) returns (UpdateObjectiveResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/update"
+            body : "*",
+        };      
+    }
+
+    // called to add a contributor to an objective
+    rpc AddContributorToObjective(AddContributorToObjectiveRequest) returns (AddContributorToObjectiveResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/contributor/add"
+            body : "*",
+        };      
+    }
+
+    // called to remoce a player from an objective
+    rpc RemoveContributorFromObjective(RemoveContributorFromObjectiveRequest) returns (RemoveContributorFromObjectiveResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/objectives/contributor/remove"
+            body : "*",
+        };      
+    }
+
+    // called to disable mission expiry
+    rpc DisableMissionExpiry(DisableMissionExpiryRequest) returns (DisableMissionExpiryResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/expiry/disable"
+            body : "*",
+        };      
+    }
+
+    // called to enable mission expiry
+    rpc EnableMissionExpiry(EnableMissionExpiryRequest) returns (EnableMissionExpiryResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/expiry/enable"
+            body : "*",
+        };      
+    }
+
+    // called to reenable mission expiry
+    rpc ReenableMissionExpiry(ReenableMissionExpiryRequest) returns (ReenableMissionExpiryResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/expiry/reenable"
+            body : "*",
+        };
+    }
+
+    // destroys all active missions on a shard
+    rpc DestroyMissionsByShard(DestroyMissionsByShardRequest) returns (DestroyMissionsByShardResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/destroy-by-shard"
+            body : "*",
+        };
+    }
+
+    // join mission with player - internal version, no ownership check
+    rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/join"
+            body : "*",
+        };
+    }
+}

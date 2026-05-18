@@ -1,0 +1,224 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v1;
+
+enum EntitlementType {
+    ENTITLEMENT_TYPE_UNSPECIFIED = 0;
+    // A permanent entitlement
+    ENTITLEMENT_TYPE_PERMANENT = 1;
+    // A rental entitlement that will be expired after a timer
+    ENTITLEMENT_TYPE_RENTAL = 2;
+}
+
+enum EntitlementFulfillment {
+    ENTITLEMENT_FULFILLMENT_UNSPECIFIED = 0;
+    // Fulfill entitlement as soon as possible
+    ENTITLEMENT_FULFILLMENT_IMMEDIATE = 1;
+    // Create as `UNCLAIMED` and fulfill only on `Claim`
+    ENTITLEMENT_FULFILLMENT_CLAIMABLE = 2;
+    // Create as `FULFILLED` the entitlement already exists in EG and will not be send for fulfillment
+    ENTITLEMENT_FULFILLMENT_FULFILLED = 3;
+}
+
+enum EntitlementSource {
+    ENTITLEMENT_SOURCE_UNSPECIFIED = 0;
+    ENTITLEMENT_SOURCE_PLATFORM = 1;
+    ENTITLEMENT_SOURCE_ARENA_COMMANDER = 2;
+    ENTITLEMENT_SOURCE_STAR_MARINE = 3;
+    ENTITLEMENT_SOURCE_PERSISTENT_UNIVERSE = 4;
+    ENTITLEMENT_SOURCE_LONGTERM_PERSISTENCE = 5;
+}
+
+enum EntitlementStatus {
+    ENTITLEMENT_STATUS_UNSPECIFIED = 0;
+    // Entitlement awaiting fulfillment from EG
+    ENTITLEMENT_STATUS_PENDING = 1;
+    // Entitlement successfully fulfilled from EG
+    ENTITLEMENT_STATUS_FULFILLED = 2;
+    // Entitlement was revoked
+    ENTITLEMENT_STATUS_REVOKED = 3;
+    // Entitlement is unclaimed and can be claimed via an RPC
+    ENTITLEMENT_STATUS_UNCLAIMED = 4;
+    // Entitlement failed fulfillment from EG, can be retried
+    ENTITLEMENT_STATUS_FAILED = 5;
+}
+
+// An entity port configuration specifying port customization overrides recursively
+message NewEntityPortConfiguration {
+    message PortConfig {
+        string ref = 1;
+        repeated PortConfig ports = 2;
+    }
+    repeated PortConfig ports = 1;
+}
+
+// An entity loadout kit selection for the resulting entity hierarchy
+message NewEntityLoadoutKitConfiguration {
+    string code = 1;
+    string name = 2;
+}
+
+// A user-supplied name configuration for the resulting entity
+message NewEntityNameConfiguration {
+    string name = 1;
+}
+
+// Unique serial number configuration for the resulting entity
+message NewEntitySerialConfiguration {
+    string serial = 2;
+}
+
+message NewEntityConfigurationParameters {
+    oneof param {
+        NewEntityPortConfiguration entity_port = 1;
+        NewEntityLoadoutKitConfiguration entity_loadout_kit = 2;
+        NewEntityNameConfiguration entity_name = 3;
+        NewEntitySerialConfiguration entity_serial = 4;
+    }
+
+    reserved 5;
+    reserved "entity_insurance";
+}
+
+message NewEntityConfiguration {
+    // Unique identifier for this configuration
+    string id = 1;
+    // User-supplied entity config parameters
+    repeated NewEntityConfigurationParameters params = 2;
+}
+
+enum EntitlementItemType {
+    ENTITLEMENT_ITEM_TYPE_UNSPECIFIED = 0;
+    ENTITLEMENT_ITEM_TYPE_SHIP = 1;
+    ENTITLEMENT_ITEM_TYPE_HANGAR = 2;
+    ENTITLEMENT_ITEM_TYPE_HANGAR_DECORATION = 3;
+    ENTITLEMENT_ITEM_TYPE_OTHER = 4;
+}
+
+// An entitlement record
+message Entitlement {
+    // SCURN of the entitlement record
+    string urn = 1;
+    // Creation timestamp in ms
+    uint64 created_at = 2;
+    // Modification timestamp in ms
+    uint64 modified_at = 3;
+    // Status of the entitlement
+    EntitlementStatus status = 4;
+    // Account URN of the owner
+    string account_urn = 5;
+    // Player URN of the player for who this was entitled
+    string player_urn = 6;
+    // Type of entitlement
+    EntitlementType type = 7;
+    // Source of the entitlement request
+    EntitlementSource source = 8;
+    // Wether the source of this entitlement was funded with real currency.
+    bool real_money = 9;
+    // Optional source SKU code
+    string source_sku = 10;
+    // Reference name for this entitlement (mainly human readable)
+    string name = 11;
+    // Entity Class GUID to entitle
+    string entity_class_guid = 12;
+    // Stack size quantity for this entitlement
+    uint32 stack_size = 13;
+    // Entitlement insurance applies to ships only
+    Insurance insurance = 15;
+    // Loadout for Arena Commander's ships
+    InsuranceItemPortLoadout arena_commander_loadout = 16;
+    // NewEntityConfiguration of the entitlement
+    NewEntityConfiguration entity_config = 17;
+    // Whether the record is a ship or not
+    EntitlementItemType item_type = 18;
+
+    reserved 14;
+    reserved "config";
+}
+
+// An entitlement record history
+message EntitlementHistory {
+    // SCURN of the entielement record
+    string urn = 1;
+    // Account URN of the owner
+    string account_urn = 2;
+    // Player URN of the player for who this was entitled
+    string player_urn = 3;
+    // Type of entitlement
+    EntitlementType type = 4;
+    // Source of the entitlement request
+    EntitlementSource source = 5;
+    // Status of the entitlement
+    EntitlementStatus status = 6;
+    // Reference name for this entitlement (mainly human readable)
+    string name = 7;
+    // Entity Class GUID to entitle
+    string entity_class_guid = 8;
+    // Log timestamp in ms
+    uint64 log_at = 9;
+    // Action that occured
+    string log_action = 10;
+    // Log message
+    string log_message = 11;
+    // CommandId from request (allows linking to login)
+    string command_id = 12;
+}
+
+enum ReconcileAccountStatus {
+    RECONCILE_ACCOUNT_STATUS_UNSPECIFIED = 0;
+    RECONCILE_ACCOUNT_STATUS_EXECUTING = 1;
+    RECONCILE_ACCOUNT_STATUS_COMPLETE = 2;
+    RECONCILE_ACCOUNT_STATUS_FAILED = 3;
+}
+
+enum ReconcileAccountPhase {
+    RECONCILE_ACCOUNT_PHASE_UNSPECIFIED = 0;
+    RECONCILE_ACCOUNT_PHASE_LTP = 1;
+    RECONCILE_ACCOUNT_PHASE_PLATFORM = 2;
+    RECONCILE_ACCOUNT_PHASE_ENTITLEMENT = 3;
+}
+
+enum RealtimeFulfillmentProcessorStatus {
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_UNSPECIFIED = 0;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_EXECUTING = 1;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_COMPLETED = 2;
+    REALTIME_FULFILLMENT_PROCESSOR_STATUS_FAILED = 3;
+}
+
+message InsurancePolicy {
+    // Lifetime insurance policy
+    message Lifetime {}
+    // Insurance policy that expires at the given UNIX timestamp
+    message Duration { uint64 expires_at = 1; }
+  
+    oneof coverage {
+      Lifetime lifetime = 1;
+      Duration duration = 2;
+    }
+}
+
+message Insurance {
+    // Insurace policy that applies
+    InsurancePolicy policy = 1;
+    // If applicable a custom port loadout
+    InsuranceItemPortLoadout custom_loadout = 2;
+}
+
+message InsuranceItemPortLoadout {
+    // Port loadout for a single item
+    repeated InsuranceItemPortParams items = 1;
+}
+
+message InsuranceItemPortParams {
+    repeated InsuranceItemPortParams items = 1;
+    // Item port name
+    string port_name = 2;
+    // Item class name
+    string item_class = 3;
+    // Item game flags
+    uint64 game_flags = 4;
+    // Item ownership type
+    int32 ownership = 5;
+    // (Optional) override to the parent urn for that item and below
+    string parent_urn = 6;
+}

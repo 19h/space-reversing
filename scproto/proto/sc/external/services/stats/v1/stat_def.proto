@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+message AverageType {
+  // Stat Def Id to use as the numerator value
+  string numerator_stat_def_id = 1;
+  // Stat Def Id to use as the denominator value
+  string denominator_stat_def_id = 2;
+}
+
+message RollingAvergeType {
+  // Window to calculate rolling average value expressed in seconds
+  uint32 window = 1;
+  // The interval to calculate the window over (7 day window, 1 day interval or 24 hour window, 1 hour interval etc..)
+  uint32 interval = 2;
+}
+
+message NumberType {
+  // Optional - Minimum value
+  uint32 min = 1;
+  // Optional - Maximum value
+  uint32 max = 2;
+  // Optional - Maxmimum change
+  uint32 max_change = 3;
+  // Optional - Default value of the stat
+  uint32 default = 4;
+}
+
+message StatDefType {
+  oneof stat_type {
+    // Gauge can Increment or Decrement
+    NumberType gauge = 1;
+    // Counter can only Increment
+    NumberType counter = 2;
+    // Average calculated by the numerator and denominator stat values
+    AverageType avg = 3;
+    // Rolling average calculated by values that fall within the given window
+    RollingAvergeType rolling_avg = 4;
+  }
+}
+
+message StatDef {
+  // UUID Identifier of the stat
+  string id = 1;
+  // String identifier of the game application for this stat
+  string game_id = 2;
+  // String identifier for the game mode (ex : Arena Commander, Star Marine)
+  string game_mode = 3;
+  // String identifier for the category of stat (Offense, Defense, Class etc..)
+  string category = 4;
+  // Type of the Stat (Gauge, Counter, Avg, Rolling Avg etc..)
+  StatDefType type = 5;
+  // Name identifier of the stat def
+  string name = 6;
+  // String identifier for the unit of stat (%, Meters, Time etc..)
+  string unit = 7;
+  // String identifier of the description of the stat
+  string display_description = 8;
+  // Boolean to express whether the Stat Def is Rankable
+  bool rankable = 9;
+}

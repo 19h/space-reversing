@@ -1,0 +1,107 @@
+
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+import "sc/external/services/discipline/v1/types.proto";
+
+message WatchList {
+    string id = 1;
+    uint64 time_created = 2;
+    uint64 time_modified = 3;
+    string lastwriter = 4;
+    string name = 5;
+    string description = 6;
+}
+
+enum WatchListReasonType {
+    WATCH_LIST_REASON_TYPE_UNSPECIFIED = 0;
+    WATCH_LIST_REASON_TYPE_OPERATOR = 1;
+    WATCH_LIST_REASON_TYPE_ANTICHEAT = 2;
+}
+
+message WatchListEntry {
+    string watchlist_id = 1;
+    // Target URN of the player being added
+    string target_urn = 2;
+    // Who added the entry to the watchlist
+    string author_id = 3;
+    // Why was this entry created
+    WatchListReasonType reason = 4;
+    // (Optional) Details of the entry if applicable
+    string details = 5;
+    // Notes to add to the dossier
+    sc.external.services.discipline.v1.InputNotes notes = 6;
+}
+
+message Note {
+    string id = 1;
+    uint64 time_created = 2;
+    uint64 time_modified = 3;
+    // Author of the note
+    string author_id = 4;
+    // (Optional) Parent note of this note if note is a reply
+    string parent_id = 5;
+    // The target player URN
+    string target_urn = 6;
+    // (Optional) subject URN if the note is in relation to infractions or sanctions
+    string subject_urn = 7;
+    // Note content
+    sc.external.services.discipline.v1.InputNotes note = 8;
+    // Replies to this note if applicable
+    repeated Note replies = 9;
+}
+
+enum InfractionType {
+    INFRACTION_TYPE_UNSPECIFIED = 0;
+    INFRACTION_TYPE_CHEATING = 1;
+    INFRACTION_TYPE_STREAM_SNIPING = 2;
+    INFRACTION_TYPE_PROFANITY = 3;
+    INFRACTION_TYPE_EXPLOITING = 4;
+    INFRACTION_TYPE_CDC_VIOLATION = 5;
+    INFRACTION_TYPE_ADVERTISEMENT = 6;
+    INFRACTION_TYPE_GREY_MARKET = 7;
+}
+
+enum InfractionSeverity {
+    INFRACTION_SEVERITY_UNSPECIFIED = 0;
+    INFRACTION_SEVERITY_NUISANCE = 1;
+    INFRACTION_SEVERITY_ANNOYING = 2;
+    INFRACTION_SEVERITY_DISRUPTIVE = 3;
+    INFRACTION_SEVERITY_EXTREME = 4;
+}
+
+message PlayerReport {
+    string from_urn = 1;
+    string target_urn = 2;
+    uint64 time_created = 3;
+    uint64 time_modified = 4;
+    InfractionScope scope = 5;
+    InfractionType type = 6;
+    InfractionSeverity severity = 7;
+    string description = 8;
+}
+
+enum InfractionScope {
+    INFRACTION_SCOPE_UNSPECIFIED = 0;
+    INFRACTION_SCOPE_GAME_PU = 1;
+    INFRACTION_SCOPE_GAME_AC = 2;
+    INFRACTION_SCOPE_PLATFORM_ECOM = 3;
+    INFRACTION_SCOPE_PLATFORM_SPECTRUM = 4;
+}
+
+message Infraction {
+    string id = 1;
+    // Target URN of the player who committed the infration
+    string target_urn = 2;
+    uint64 time_created = 3;
+    uint64 time_modified = 4;
+    // Author identifier
+    string author_id = 5;
+    // Scope of infraction ; where the infraction happened
+    InfractionScope scope = 6;
+    // Type: The offensive action that has taken place
+    InfractionType type = 7;
+    // Severity: How severe was the infraction
+    InfractionSeverity severity = 8;
+    sc.external.services.discipline.v1.InputNotes notes = 9;
+}

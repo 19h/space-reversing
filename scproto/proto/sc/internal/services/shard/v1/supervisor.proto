@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package sc.internal.services.shard.v1;
+
+import "sc/internal/common/shard/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+message ReserveSeatsRequest {
+  message ReserveSeatCommand {
+    uint64 player_id = 1;
+    sc.external.common.shard.v1.SeatCriterias criterias = 2;
+    google.protobuf.Timestamp until = 3;
+  }
+  repeated ReserveSeatCommand commands = 1;
+}
+
+message ReserveSeatsResponse {
+  repeated sc.internal.common.shard.v1.Reservation reservations = 1;
+}
+
+message GetSeatRequest {
+  uint64 player_id = 1;
+}
+
+message GetSeatResponse {
+  uint64 player_id = 1;
+  sc.internal.common.shard.v1.SeatStatus status = 2;
+  sc.external.common.shard.v1.SeatCriterias criterias = 3;
+  sc.internal.common.shard.v1.Reservation reservation = 4;
+}
+
+message ReleaseSeatsRequest {
+  repeated uint64 player_id = 1;
+}
+
+message ReleaseSeatsResponse {
+  /*
+   * List of actually released player's seats.
+   * A seat can only be released if its status is SEAT_STATUS_RESERVED
+   */
+  repeated uint64 player_id = 1;
+}
+
+message ModifySeatMapRequest {
+  repeated sc.internal.common.shard.v1.CriteriaCountPair to_remove = 1;
+  repeated sc.internal.common.shard.v1.CriteriaCountPair to_add = 2;
+}
+
+message ModifySeatMapResponse {
+}
+
+message GatewayStreamRequest {
+
+  message PlayerConnected {
+    uint64 player_id = 1;
+  }
+
+  message PlayerDisconnected {
+    uint64 player_id = 1;
+    bool expected = 2;
+  }
+
+  oneof request {
+    PlayerConnected connected = 1;
+    PlayerDisconnected disconnected = 2;
+  }
+}
+
+message GatewayStreamResponse {
+
+  message PlayerIncoming {
+    uint64 player_id = 1;
+    sc.external.common.network.v1.CryptographicKeys keys = 2;
+  }
+
+  message PlayerCanceled {
+    uint64 player_id = 1;
+  }
+
+  oneof response {
+    PlayerIncoming player_incoming = 1;
+    PlayerCanceled player_canceled = 2;
+  }
+}
+
+message DGSStreamRequest {}
+
+message DGSStreamResponse {}
+
+service ShardSupervisorService {
+    // Matchmaking
+    rpc ReserveSeats(ReserveSeatsRequest) returns (ReserveSeatsResponse) { }
+    rpc GetSeat(GetSeatRequest) returns (GetSeatResponse) { }
+    rpc ReleaseSeats(ReleaseSeatsRequest) returns (ReleaseSeatsResponse) { }
+
+    // Replicant
+    rpc ModifySeatMap(ModifySeatMapRequest) returns (ModifySeatMapResponse) { }
+
+    // Gateway
+    rpc GatewayStream(stream GatewayStreamRequest) returns (stream GatewayStreamResponse) { }
+
+    // DGS
+    rpc DGSStream(stream DGSStreamRequest) returns (stream DGSStreamResponse) { }
+}

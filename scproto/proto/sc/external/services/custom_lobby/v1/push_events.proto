@@ -1,0 +1,18 @@
+syntax = "proto3";
+package sc.external.services.custom_lobby.v1;
+import "sc/external/services/custom_lobby/v1/types.proto";
+
+// Group event
+message CustomLobbyMemberJoinedTeam {
+  string group_id = 1;
+  string team_id = 2;
+  string member_urn = 3;
+  string previous_team_id = 4;
+}
+
+message CustomLobbySettingsChanged {
+  string group_id = 1;
+  CustomLobbySettings settings = 2;
+  MapGameRules map_game_rules = 3;
+  repeated CustomLobbyTeam teams = 4;
+}

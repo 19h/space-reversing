@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package sc.internal.services.gim.v1;
+
+// ----------------------------------------------------------------------------
+// GameSettings
+// ----------------------------------------------------------------------------
+message GameSettings {
+  string map = 1;
+  int32 level_variant = 2;
+  int32 game_type = 3;
+  bool public = 4;
+  bool no_dynamic_join = 5;
+  int32 team_count = 6;
+  int32 max_squad_size = 7;
+}
+
+// ----------------------------------------------------------------------------
+// MatchInfo
+// ----------------------------------------------------------------------------
+message MatchInfo {
+  string id = 1;
+  int32 region_id = 2;
+  int32 num_players = 3;
+  int32 max_players = 4;
+  int32 team1 = 5;
+  int32 team2 = 6;
+  uint64 location_id = 7;
+  string location = 8;
+  int32 match_state_id = 9;
+  string match_state = 10;
+  GameSettings game_settings = 11;
+  // Optionally provided. It is defined when info is obtained by character geid
+  uint64 character_geid = 12;
+  string shard_id = 13;
+}
+
+// ----------------------------------------------------------------------------
+// GameType
+// ----------------------------------------------------------------------------
+message GameType {
+  string name = 1;
+  int32 value = 2;
+}
+
+// ----------------------------------------------------------------------------
+// MapInfo
+// ----------------------------------------------------------------------------
+message MapInfo {
+  string map_name = 1;
+  int32 max_player_count = 2;
+  int32 required_badge = 3;
+  bool enabled = 4;
+}
+
+// ----------------------------------------------------------------------------
+// GameModeSetting
+// ----------------------------------------------------------------------------
+message GameModeSetting {
+  repeated MapInfo maps = 1;
+  int32 team_count = 2;
+  int32 min_player_count = 3;
+  int32 max_player_count = 4;
+  int32 max_squad_size = 5;
+  bool restrict_join_to_prematch = 6;
+  int32 required_badge = 7;
+  int32 game_type = 8;
+  bool enabled = 9;
+}
+
+// ----------------------------------------------------------------------------
+// PlayerInfo
+// ----------------------------------------------------------------------------
+message PlayerInfo {
+  // Global unique player entity identifier.
+  uint64 player_geid = 1;
+  // Player's name/nickname.
+  string name = 2;
+  // Note: team is optional - left-in in case if want to explicitly spectate TeamA only vs TeamB only. "0" would imply can inspect from anywhere (i.e. PureSpectator).
+  int32 team = 3;
+}

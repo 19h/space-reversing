@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package sc.internal.services.matchmaking.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/internal/common/shard/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Matchmaking Service - Internal"
+      version: "1.0",
+      description: ""
+    }
+};
+
+message SetReservationRequest {
+  sc.internal.common.shard.v1.Reservation reservation = 1;
+}
+
+message SetReservationResponse {
+}
+
+message GetReservationRequest {
+  string id = 1;
+}
+
+message GetReservationResponse {
+  sc.internal.common.shard.v1.Reservation reservation = 1;
+}
+
+message CancelReservationRequest {
+  string id = 1;
+}
+
+message CancelReservationResponse {
+}
+
+/*
+ * Service Definition
+ */
+service ReservationService {
+  /*
+     Reservation
+
+     Seat has been reserved for a period of time. Used for a grace period when a player unexpectedly disconnects
+  */
+  rpc SetReservation(SetReservationRequest) returns (SetReservationResponse) {
+    option (google.api.http) = {
+      post : "/v1/set-reservation",
+      body: "*"
+    };
+  }
+
+  rpc GetReservation(GetReservationRequest) returns (GetReservationResponse) {
+    option (google.api.http) = {
+      post : "/v1/set-reservation",
+      body: "*"
+    };
+  }
+
+  rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse) {
+    option (google.api.http) = {
+      post : "/v1/cancel-reservation",
+      body: "*"
+    };
+  }
+}

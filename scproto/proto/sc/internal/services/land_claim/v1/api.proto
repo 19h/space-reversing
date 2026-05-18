@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package sc.internal.services.land_claim.v1;
+
+import "sc/external/services/land_claim/v1/types.proto";
+import "sc/external/services/ledger/v1/types.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.internal.services.LandClaim.v1.Land Claim"
+      version: "1.0",
+      description: "Service responsible for land claim operations"
+    }
+};
+
+message ClaimLandRequest {
+    // Id of the location where the land is being claimed
+    uint32 location_id = 1;
+    // URN of the entity claiming the land
+    string owner_urn = 2;
+    // Area to be claimed
+    repeated sc.external.services.land_claim.v1.Plot plots = 3;
+    // Type of claim
+    sc.external.services.land_claim.v1.ClaimType type = 4;
+    // Price of the claim (to be validated by the service)
+    sc.external.services.ledger.v1.Funds price = 5;
+}
+
+message ClaimLandResponse {
+    // UUID of the claim
+    string id = 1;
+}
+
+message SplitClaimsCommand {
+    message SplitPlots {
+        // Ids of the plots that will be moved to the new claim
+        repeated string plot_ids = 1;
+    }
+    // array of array of plots that will be splitted, each sub array will be a new claim
+    repeated SplitPlots plots_to_split = 1;
+}
+
+message MergeClaimsCommand {
+    // Ids of the claims that will be merged
+    repeated string claim_ids = 1;
+}
+
+message UpdateClaimRequest {
+    // Id of the claim to be updated
+    string claim_id = 1;
+    // The existing plots that is going to be modified, this is the new coordinates
+    repeated sc.external.services.land_claim.v1.Plot modified_plots = 2;
+    // The operation to be done to the existing claim
+    oneof operation {
+        MergeClaimsCommand claims_to_merge = 3;
+        SplitClaimsCommand plots_to_split = 4;
+    }
+
+}
+message UpdateClaimResponse {
+    // The claim(s) after the update
+    repeated sc.external.services.land_claim.v1.LandClaim claims = 1;
+}
+
+message QueryClaimsRequest {
+    sc.external.services.land_claim.v1.AreaFilter area_filter = 1;
+    // Only the claims owned by this entity will be returned
+    string owner_urn = 2;
+}
+
+message QueryClaimsResponse {
+    // List of the claims
+    repeated sc.external.services.land_claim.v1.LandClaim claims = 1;
+}
+
+message DeleteClaimsRequest {
+    // Ids of the claims to be deleted
+    repeated string claims_id = 1;
+}
+
+message DeleteClaimsResponse {
+}
+
+
+
+service LandClaimService {
+
+    /*
+        QueryClaims
+
+        Allows to query the claims
+    */ 
+    rpc QueryClaims(QueryClaimsRequest) returns (QueryClaimsResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/internal/query_claims",
+            body: "*"
+        };
+    }
+
+    /*
+        ClaimLand
+    */
+    rpc ClaimLand(ClaimLandRequest) returns (ClaimLandResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/internal/claim_land",
+            body: "*"
+        };
+    }
+
+    /*
+        UpdateClaim
+
+        Allow to modify plots of a claim, merge claims or split claim plots into new claim(s)
+    */
+    rpc UpdateClaim(UpdateClaimRequest) returns (UpdateClaimResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/internal/update_claims",
+            body: "*"
+        };
+    }
+
+    /*
+        DeleteClaims
+
+        Allows to delete multiple claims
+    */
+    rpc DeleteClaims(DeleteClaimsRequest) returns (DeleteClaimsResponse) {
+        option (google.api.http) = {
+            post : "/v1/land_claim/internal/delete_claims",
+            body: "*"
+        };
+    }
+}

@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package sc.external.services.rental.v1;
+import "google/protobuf/timestamp.proto";
+
+enum RentalStatus {
+  RENTAL_STATUS_UNSPECIFIED = 0;
+  // The rental is available to start
+  RENTAL_STATUS_AVAILABLE = 1;
+  // The rental is currently active
+  RENTAL_STATUS_ACTIVE = 2;
+  // The rental period finished
+  RENTAL_STATUS_FINISHED = 3;
+}
+
+enum RentalLogAction {
+  RENTAL_LOG_ACTION_UNSPECIFIED = 0;
+  // The rental was created
+  RENTAL_LOG_ACTION_CREATED = 1;
+  // The rental was started
+  RENTAL_LOG_ACTION_STARTED = 2;
+  // The rental was renewed
+  RENTAL_LOG_ACTION_RENEWED = 3;
+  // The rental was cancelled
+  RENTAL_LOG_ACTION_CANCELLED = 4;
+  // The rental has expired
+  RENTAL_LOG_ACTION_EXPIRED = 5;
+  // The rental start was reverted
+  RENTAL_LOG_ACTION_REVERTED_START = 6;
+}
+
+message Rental {
+  // Unique identifier of this rental
+  string id = 1;
+  // Rental status
+  RentalStatus status = 2;
+  // Creation time
+  google.protobuf.Timestamp created_at = 3;
+  // (Once active): Begin time
+  google.protobuf.Timestamp began_at = 4;
+  // (Once active): Expiration time
+  google.protobuf.Timestamp expire_at = 5;
+  // Duration of the rental in ms
+  uint32 duration = 6;
+  // Account URN of the owner
+  string account_urn = 7;
+  // Player geid
+  uint64 player_id = 8;
+  // URN of the of the entitlement created (created from rentalId)
+  string entitlement_urn = 9;
+  // How many times this rental was renewed or extended
+  uint32 renewals = 10;
+  // Entity class of the rental
+  string entity_class_guid = 11;
+}
+
+message RentalHistory {
+  // Unique identifier of this rental
+  string rental_id = 1;
+  // Account URN of the owner
+  string account_urn = 2;
+  // Player geid
+  uint64 player_id = 3;
+  // URN of the of the entitlement created (created from rentalId)
+  string entitlement_urn = 4;
+  // Name of the rental
+  string name = 5;
+  // GUID of the Entity Class
+  string entity_class_guid = 6;
+  // Creation time
+  google.protobuf.Timestamp created_at = 7;
+  // log action (rent, cancel, renew, expired)
+  RentalLogAction log_action = 8;
+  // log message
+  string log_message = 9;
+}
+
+
+
+message RentalFilter {
+  // All specified fields are combined with AND logic.
+  // (Optional) When provided, only rentals matching one of these statuses are returned.
+  repeated RentalStatus statuses = 1;
+  // (Optional) When provided, only rentals matching one of these IDs are returned.
+  repeated string ids = 2;
+  // (Optional) Only rentals matching one of those entity class guids are returned
+  repeated string entity_class_guid = 3;
+  // (Optional) When provided, only rentals matching one of these entitlement URNs are returned.
+  repeated string entitlement_urns = 4;
+}

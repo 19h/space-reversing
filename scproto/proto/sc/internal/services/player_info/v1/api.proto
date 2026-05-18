@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package sc.internal.services.player_info.v1;
+
+import "google/api/annotations.proto";
+import "sc/internal/services/player_info/v1/types.proto";
+
+// Overview: https://cloudimperiumgames.atlassian.net/wiki/spaces/SCB/pages/315230076/Player+Info+Service+API
+
+// ----------------------------------------------------------------------------
+// [GetByAccountIds]
+// ----------------------------------------------------------------------------
+message GetByAccountIdsRequest {
+  repeated int32 account_ids = 1;
+}
+
+message GetByAccountIdsResponse {
+  // 1:valid request even if player not found.
+  int32 code = 1;
+  // Echoing the number of accountIds from the request.
+  int32 num_account_ids = 2;
+  // List of players with information.
+  repeated PlayerInfo players = 3;
+}
+
+// ----------------------------------------------------------------------------
+// [GetByCharacterGeids]
+// ----------------------------------------------------------------------------
+message GetByCharacterGeidsRequest {
+  repeated uint64 character_geids = 1;
+}
+
+message GetByCharacterGeidsResponse {
+  // 1:valid request even if player not found.
+  int32 code = 1;
+  // Echoing the number of character GEIDs from the request.
+  int32 num_character_geids = 2;
+  // List of players with information.
+  repeated PlayerInfo players = 3;
+}
+
+// ----------------------------------------------------------------------------
+// [KickPlayer]
+// ----------------------------------------------------------------------------
+message KickPlayerRequest {
+  int32 account_id = 1;
+}
+
+message KickPlayerResponse {
+  int32 account_id = 1;
+  bool was_online = 2;
+  bool kicked = 3;
+}
+
+// ----------------------------------------------------------------------------
+// PlayerInfoService
+// ----------------------------------------------------------------------------
+service PlayerInfoService {
+
+  // --------------------------------------------------------------------------
+  // [GetByAccountIds]
+  // Description: Gets one or more player's info from the PlayerInfo service by a list of account_ids.
+  // --------------------------------------------------------------------------
+  rpc GetByAccountIds(GetByAccountIdsRequest) returns (GetByAccountIdsResponse) {
+    option (google.api.http) = {
+      post: "/v1/player_info/GetByAccountIds",
+      body: "*"
+    };
+  }
+  
+  // --------------------------------------------------------------------------
+  // [GetByCharacterGeids]
+  // Description: Gets one or more player's info from the PlayerInfo service by a list of character_geids.
+  // --------------------------------------------------------------------------
+  rpc GetByCharacterGeids(GetByCharacterGeidsRequest) returns (GetByCharacterGeidsResponse) {
+    option (google.api.http) = {
+      post: "/v1/player_info/GetByCharacterGeids",
+      body: "*"
+    };
+  }
+  
+  // --------------------------------------------------------------------------
+  // [KickPlayer]
+  // Description: Request to kick a player. GameServer/Shard and HubServer notified of kick if player found.
+  // --------------------------------------------------------------------------
+  rpc KickPlayer(KickPlayerRequest) returns (KickPlayerResponse) {
+    option (google.api.http) = {
+      post: "/v1/player_info/KickPlayer",
+      body: "*"
+    };
+  }
+}
+

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_service.v1;
+
+// Mission expiration message
+message MissionExpiration {
+  string mission_id = 1;
+}
+
+// Mission phase expiration message
+message MissionPhaseExpiration {
+  string mission_id = 1;
+  string active_phase_key = 2;
+}
+
+// Mission objective expiration message
+message MissionObjectiveExpiration {
+  string mission_id = 1;
+  string objective_id = 2;
+}

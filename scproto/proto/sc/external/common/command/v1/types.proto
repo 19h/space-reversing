@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sc.external.common.command.v1;
+
+import "sc/external/services/push/v1/messages.proto";
+import "google/rpc/status.proto";
+// buf:lint:ignore IMPORT_USED
+import "google/rpc/error_details.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message KafkaDestination {
+    // Destination Kafka topic
+    string topic = 1;
+}
+  
+
+message NotifyDestination {
+    oneof destination {
+        sc.external.services.push.v1.PushDestination push = 1; 
+        KafkaDestination kafka = 2;
+    }
+}
+
+
+message CommandArguments {
+    // Identifier of the command
+    string id = 1;
+    // (Optional) Notification destinations for the command
+    repeated NotifyDestination destinations = 2;
+    // (Optional) A partitioning key used to enforce ordering guarantees
+    string partitioning_key = 3;
+    // (Optional) expiry of the command, if worker picks it up after this, it will be dropped
+    google.protobuf.Timestamp expiry = 4;
+}
+
+message KafkaCommandResponse {
+    string name = 1;
+    CommandResponseBody body = 2;
+}
+
+message CommandResponseBody {
+    // Identifier of the command
+    string id = 1;
+    // google GRPC status object
+    google.rpc.Status status = 2;
+    // Optional context to provide extra info if needed
+    google.protobuf.Any context = 3;
+}

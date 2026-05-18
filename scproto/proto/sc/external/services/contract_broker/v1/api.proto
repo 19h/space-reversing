@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package sc.external.services.contract_broker.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Contract Broker Service"
+        version: "1.0",
+        description: "Allow to manage get available contracts"
+    }
+};
+
+message QueryAvailableContractsRequest {
+    // Optional current shard id
+    string shard_id = 1;
+
+    // location ids
+    repeated uint32 location_ids = 2;
+
+    // player id - OPTIONAL if service token passed
+    uint64 player_id = 3;
+
+    // options for filtering
+    sc.external.common.mission.v1.FilterOptions options = 4;
+}
+message QueryAvailableContractsResponse {
+    // batch of contracts (note this RPC will stream batches of contracts)
+    repeated sc.external.common.mission.v1.MissionContract contracts = 1;
+    
+    // player mission salt (based on QueryAvailableContractsRequest.player_id, salt of 0 for internal service token)
+    uint64 player_mission_salt = 2;
+}
+
+message QueryContractsRequest {
+    // query for contracts to match
+    sc.external.common.api.v1.Query query = 1;
+
+    message EligibilityOptions {
+        // player id
+        uint64 player_id = 1;
+        // optional location ids
+        repeated uint32 location_ids = 2;
+        // optional shard id
+        string shard_id = 3;
+    }
+    // show contracts that are eligible for this player
+    EligibilityOptions eligibility = 3;
+}
+message QueryContractsResponse {
+    message EligibilityInfo {
+        // is player eligible for this contract
+        bool eligible = 1;
+        // contract pre-requisites
+        sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+    }
+
+    message ContractsWithEligibility {
+        // matched contracts
+        sc.external.common.mission.v1.MissionContract contract = 1;
+        // eligibility info, if requested
+        EligibilityInfo eligibility_info = 2;
+    }
+
+    message Body {
+        oneof contracts {
+            // matched contracts
+            sc.external.common.mission.v1.MissionContract contract = 1;
+            // contracts with eligibility info
+            ContractsWithEligibility contract_with_eligibility = 2;
+        }
+    }
+
+    repeated Body body = 1;
+
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+
+    // current player mission salt  
+    uint64 player_mission_salt = 3;
+}
+
+/* 
+service to provide list of available contracts for the current shard, solar system and location
+*/
+service ContractBrokerService {
+    // request list of available contracts
+    rpc QueryAvailableContracts(QueryAvailableContractsRequest) returns (stream QueryAvailableContractsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contract_broker/contracts"
+        };      
+    }
+
+    // query for contracts
+    rpc QueryContracts(QueryContractsRequest) returns (QueryContractsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contract_broker/contracts"
+        };      
+    }
+};

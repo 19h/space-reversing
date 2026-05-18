@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sc.internal.services.custom_lobby.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/services/custom_lobby/v1/types.proto";
+
+message GetRequest {
+    string group_id = 1;
+}
+message GetResponse {
+    sc.external.services.custom_lobby.v1.CustomLobby custom_lobby = 1;
+}
+
+service CustomLobbyService {
+    /*
+        Get
+
+        Get the custom lobby properties of a group
+    */
+    rpc Get(GetRequest) returns (GetResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/Get"
+            body: "*"
+        };
+    }
+ 
+}

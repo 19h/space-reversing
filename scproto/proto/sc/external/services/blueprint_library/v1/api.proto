@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package sc.external.services.blueprint_library.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/blueprint_library/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Blueprint Library Service",
+      version: "1.0",
+      description: "Service responsible for external blueprint library management"
+    }
+};
+
+message QueryBlueprintEntriesRequest {
+  sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryBlueprintEntriesResponse {
+  sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated BlueprintEntry results = 2;
+}
+
+message QueryBlueprintEntriesStreamRequest {
+  sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryBlueprintEntriesStreamResponse {
+  repeated sc.external.services.blueprint_library.v1.BlueprintEntry entries = 1;
+}
+
+service BlueprintLibraryService {
+ 
+  /*
+    Query blueprint entries.
+    This is used to query blueprint entries for the authenticated associate user account in the grpc metadata.
+  */
+  rpc QueryBlueprintEntries(QueryBlueprintEntriesRequest) returns (QueryBlueprintEntriesResponse) {
+    option (google.api.http) = {
+      post: "/v1/external/blueprint-library/query-blueprint-entries"
+      body: "*"
+    };
+  }
+
+  /* Query Server Stream blueprint entries. 
+    This is used to query blueprint entries for the authenticated associate user account in the grpc metadata.
+  */
+  rpc QueryBlueprintEntriesStream(QueryBlueprintEntriesStreamRequest) returns (stream QueryBlueprintEntriesStreamResponse) {
+    option (google.api.http) = {
+      post: "/v1/external/blueprint-library/query-blueprint-entries-stream"
+      body: "*"
+    };
+  }
+}

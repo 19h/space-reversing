@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sc.internal.services.longterm.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+
+message SetPersistentPropertiesCommand {
+    // player geid
+    uint64 player_id = 1;
+    message Body {
+        // ltp URN
+        string ltp_urn = 1;
+        // persistent entity properties (full PersistentEntityProperties - variables filtered by eSVF_Type_LTPBacked flag)
+        sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 2;
+    }
+    repeated Body updates = 2;
+}
+

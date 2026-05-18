@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/ledger/v1/types.proto";
+
+
+package sc.external.services.ledger.v1;
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Ledger Service external API"
+      version: "1.0",
+      description: "Definitions of the external API of the ledger service"
+    }
+};
+
+message GetFundsRequest {
+  // name of ledger that we want the funds. (optional)
+  string ledger_name = 1;
+}
+
+message GetFundsResponse {
+  repeated sc.external.services.ledger.v1.Ledger ledgers = 1;
+}
+
+service LedgerService {
+
+
+  /*
+      GetFunds
+
+      Get the funds through the gameClient
+  */
+
+  rpc GetFunds(GetFundsRequest) returns (GetFundsResponse) {
+    option (google.api.http) = {
+      get : "/v1/ledger/funds"
+    };
+  }
+};

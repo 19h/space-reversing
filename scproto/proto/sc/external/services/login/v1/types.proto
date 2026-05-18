@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package sc.external.services.login.v1;
+
+import "google/rpc/error_details.proto";
+import "sc/external/services/identity/v1/player.proto";
+
+
+// Imported here due to cyclic import if in types.proto
+enum LoginRequestState {
+  LOGIN_REQUEST_STATE_UNSPECIFIED = 0;
+  // The login request is ongoing
+  LOGIN_REQUEST_STATE_ONGOING = 1;
+  // The login request ended with an error
+  LOGIN_REQUEST_STATE_ERROR = 2;
+  // The login request completed successfully
+  LOGIN_REQUEST_STATE_COMPLETE = 3;
+}
+
+enum LoginRequestPhase {
+  LOGIN_REQUEST_PHASE_UNSPECIFIED = 0;
+  // Currently in global auth queue and waiting our turn
+  LOGIN_REQUEST_PHASE_IN_QUEUE = 1;
+  // Account validation and data retrieval
+  LOGIN_REQUEST_PHASE_AUTHENTICATING = 2;
+  // Character retrieval and readiness
+  LOGIN_REQUEST_PHASE_CHARACTERS = 3;
+  // Entitlement processing
+  LOGIN_REQUEST_PHASE_ENTITLEMENT = 4;
+  // Done
+  LOGIN_REQUEST_PHASE_DONE = 5;
+}
+
+message LoginQueue {
+  string name = 1;
+}
+
+message LoginQueueStats {
+  uint32 players_in_processing_queue = 2;
+  uint32 players_in_login_queue = 3;
+  float average_wait_time_seconds = 4;
+  float max_wait_time_seconds = 5;
+  float average_login_rate_per_second = 6;
+  uint32 max_players_in_login_queue = 7;
+  uint32 max_players_in_processing_queue = 8;
+}
+
+message QueueStatus {
+  // Name of queue
+  string queue_name = 1;
+  // Current position in queue
+  uint32 position = 2;
+  // Estimated time to end of queue in seconds
+  uint32 eta_seconds = 3;
+}
+
+message CharacterStatus {
+  repeated sc.external.services.identity.v1.Player players = 1;
+}
+
+
+message LoginRequestStatus {
+  string login_request_id = 1;
+  LoginRequestState state = 2;
+  LoginRequestPhase phase = 3;
+
+  oneof status {
+    google.rpc.ErrorInfo error = 4;
+    QueueStatus queue = 5;
+    CharacterStatus characters = 6;
+  }
+}

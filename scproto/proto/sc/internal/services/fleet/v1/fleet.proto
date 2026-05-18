@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/types.proto";
+import "sc/internal/services/fleet/v1/unit.proto";
+
+message FleetDetail {
+  // Name of the fleet
+  string id = 1;
+
+  // Details of the units in this fleet that matched the filters
+  repeated UnitDetail units = 2;
+}
+
+message GetFleetsRequest {
+  // List of fleet ids to retrieve. Include all fleets if not specified (optional)
+  repeated string fleet_ids = 1;
+
+  // Filter for selecting units (optional)
+  UnitFilter filter = 2;
+}
+
+message GetFleetsResponse {
+  // Details of every requested fleet
+  repeated FleetDetail fleets = 1;
+}

@@ -1,0 +1,100 @@
+syntax = "proto3";
+package sc.internal.services.solar_system_shop.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/internal/services/solar_system_shop/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.external.services.solar_system_shop.v1.SolarSystemShopService",
+      version: "1.0",
+      description: "Service responsible for providing shop information on solar systems"
+    }
+};
+
+// Shop Inventory
+message GetShopInventoryRequest {
+  string shop_super_guid = 1;
+}
+message GetShopInventoryResponse {
+  string shop_id = 1;
+  bool accepts_stolen_goods = 2;
+  repeated InventoryItem inventory_items = 3;
+  double cargo_price_pct = 4;
+  double cargo_time_pct = 5;
+}
+
+// Item Prices
+message GetItemPricesFromAllShopsRequest {
+  repeated string item_ids = 1;
+}
+message GetItemPricesFromAllShopsResponse {
+  map<string, ShopInventory> items = 1; // Map of item IDs to their shop inventory details
+}
+
+// Global Inventory
+message GetGlobalInventoryRequest {
+}
+message GetGlobalInventoryResponse {
+  repeated InventoryItem inventory_items = 1; // List of all inventory items across all shops
+}
+
+// Global Commodities
+message GetGlobalCommoditiesRequest {
+}
+message GetGlobalCommoditiesResponse {
+  repeated GlobalCommoditiesData commodities = 1;
+}
+
+// Shop Transaction
+message ShopTransactionRequest {
+  string shop_id = 1;
+  int64 player_id = 2;
+  repeated TransactionType event_types = 3;
+  repeated ShopTransactionItem items = 4;
+}
+message ShopTransactionResponse {
+}
+
+service SolarSystemShopService {
+  // Get the inventory for a specific shop
+  rpc GetShopInventory(GetShopInventoryRequest) returns (GetShopInventoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/get_shop_inventory"
+      body: "*"
+    };
+  }
+
+  // Get item prices from all shops (used by entitlment-service)
+  rpc GetItemPricesFromAllShops(GetItemPricesFromAllShopsRequest) returns (GetItemPricesFromAllShopsResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/get_item_prices_from_all_shops"
+      body: "*"
+    };
+  }
+
+  // Get the global inventory across all shops (used by backend services - not client)
+  rpc GetGlobalInventory(GetGlobalInventoryRequest) returns (GetGlobalInventoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/get_global_inventory"
+      body: "*"
+    };
+  }
+  
+  // Get global commodities (used for calculating 'retail-product-prices' RPP)
+  rpc GetGlobalCommodities(GetGlobalCommoditiesRequest) returns (GetGlobalCommoditiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/get_global_commodities"
+      body: "*"
+    };
+  }
+  
+  // Send shop transaction (updates shop inventory)
+  rpc ShopTransaction(ShopTransactionRequest) returns (ShopTransactionResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/shop_transaction"
+      body: "*"
+    };
+  }
+}

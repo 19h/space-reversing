@@ -1,0 +1,676 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/services/entitygraph/v1/inventory_commands.proto";
+import "sc/external/services/longterm/v1/types.proto";
+
+/*
+  EntityGraphCommand
+
+  A command to modify the shard entity graph
+*/
+message EntityGraphCommand {
+    oneof params {
+        CreateCommand create = 1;
+        EraseCommand erase = 2;
+        AttachCommand attach = 3;
+        DetachCommand detach = 4;
+        TransferCommand transfer = 5;
+        MoveCommand move = 6;
+        AddLabelsCommand add_labels = 7;
+        RemoveLabelsCommand remove_labels = 8;
+        ChangeFlagsCommand change_flags = 9;
+        ChangeLocationCommand change_location = 10;
+        SetSnapshotCommand set_snapshot = 11;
+        ChangeSnapshotCommand change_snapshot = 12;
+        RemoveSnapshotCommand remove_snapshot = 13;
+        StackCommand stack = 14;
+        UnstackCommand unstack = 15;
+        SetStackCommand setstack = 16;
+        ChangeRankCommand change_rank = 17;
+        ActivateCommand activate = 18;
+        AddTagsCommand add_tags = 19;
+        RemoveTagsCommand remove_tags = 20;
+        SetTagsCommand set_tags = 21;
+        // Inventory commands
+        CreateInventoryCommand create_inventory = 22;
+        EraseInventoryCommand erase_inventory = 23;
+        ChangeInventoryConfigurationCommand change_inventory_config = 24;
+        DeactivateCommand deactivate = 25;
+        SyncCommand sync = 26;
+        CreateLTRecordCommand create_lt_record = 28;
+        MoveAllCommand move_all = 29;
+        CreateStowContextsCommand create_stow_context = 30;
+        UpdateParentUrnsCommand update_parent_urn = 31;
+        DeleteLTRecordCommand delete_lt_record = 32;
+    }
+    reserved 27;
+    reserved "set_node_status";
+}
+
+/*
+    CreateCommand
+
+    Command to add aggregates or entities to the graph
+
+    The create command will:
+    - Append every node to the graph
+    - Process and append every edge  to existing entity nodes
+*/
+message CreateCommand {
+    message Body {
+        EntityGraph graphs = 1;
+    }
+    repeated Body creates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+    EraseCommand
+
+    Command to erase entities or entire aggregates
+
+    The erase command on entities will:
+    - Erase any entity node `ATTACHED_TO` the Entity recursively
+    - Erase all edges to and from the Entity
+    - Copy the entity to the graveyard if the `bury` flag is passed
+    - Erase all snapshots of matched entities
+*/
+message EraseCommand {
+    message Body {
+        uint64 entity_id = 1;
+        // (Optional) Preconditions that must be true before erase is accepted
+        repeated EntityPreCondition preconditions = 2;
+    }
+    repeated Body erasures = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+message BuryCommand {
+    message Body {
+        // The entity to bury
+        uint64 entity_id = 1;
+        // (Optional) EntityGraphCommands to run transactionally on the shard scope after unstow
+        repeated EntityGraphCommand post_commands = 2;
+        // (Optional) Sync command to submit to shard before burying
+        SyncCommand sync = 3;
+        // (Optional) Geids to include. Other geids found will be evicted before stow.
+        repeated uint64 geids = 4;
+        // (Optional) Preconditions that must be true before bury is accepted
+        repeated EntityPreCondition preconditions = 5;
+    }
+    repeated Body erasures = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+    StowCommand
+
+    Command used to stow aggregates into inventories.
+
+    Stowing an entity will:
+    - `Detach` the entity
+    - Ensure it's labeled as an AggregateRoot
+    - Remove the StreamingGroup label
+    - Create an edge STOWED_IN to the specified `to_inventory`
+    - If `transfer_to_inventory_owner` is passed, ownership is transfered to the owner of the target inventory.
+*/
+message StowCommand {
+    message Body {
+        uint64 entity_id = 1;
+        string to_inventory_id = 2;
+        bool transfer_to_inventory_owner = 3;
+        // (Optional) EntityGraphCommands to run transactionally on the global scope after stow
+        repeated EntityGraphCommand post_commands = 4;
+        // lexorank of item if stowed
+        string rank = 5;
+        // (Optional) config to update in inventory edge properties
+        oneof stow_config {
+            PhysicalInventoryEdgeConfiguration physical = 6;
+        }
+        // (Optional) additional fields to be sent within the deactivation notification push message
+        map<string, ScalarValue> deactivation_context = 7;
+
+        // (Optional) Geids to include. Other geids found will be evicted before stow.
+        repeated uint64 geids = 8;
+
+        // (Optional) Sync command to submit to shard before stowing
+        SyncCommand sync = 9;
+        // (Optional) if set, the target inventory will be lazily created if it doesn't exist
+        CreateInventoryArguments target_inventory_lazy_creation = 10;
+    }
+    repeated Body stow = 1;
+}
+
+/*
+    UnstowCommand
+
+    Command used to unstow aggregates from inventories
+
+    Unstowing an entity will:
+    - Remove the `STOWED_IN` edge from this root
+*/
+message UnstowCommand {
+    message Body {
+        // The entity to unstow
+        uint64 entity_id = 1;
+        // Ensures entity_id is stowed in this inventory before unstow.
+        string from_inventory_id = 2;
+        // (Optional) EntityGraphCommands to run transactionally on the shard scope after unstow
+        repeated EntityGraphCommand post_commands = 3;
+        // (Optional) additional fields to be sent within the activation notification push message
+        map<string, ScalarValue> activation_context = 4;
+    }
+    repeated Body unstow = 1;
+}
+
+/*
+  AttachmentOwnershipBehavior
+
+  Specifies how ownership should be treated when Attach/Detach commands
+  are executed on a root that has no owner.
+*/
+enum AttachmentOwnershipBehavior {
+    ATTACHMENT_OWNERSHIP_BEHAVIOR_UNSPECIFIED = 0;
+    // Do nothing to ownership
+    ATTACHMENT_OWNERSHIP_BEHAVIOR_NONE = 1;
+    // Sets the owner to the current tree owner if no owner if set
+    ATTACHMENT_OWNERSHIP_BEHAVIOR_INHERIT = 2;
+    // Sets the ownerto the new tree owner if no owner is set
+    ATTACHMENT_OWNERSHIP_BEHAVIOR_ADOPT = 3;
+}
+
+/*
+    AttachCommand
+
+    Command to attach entities to other entities
+
+    Attaching an entity will:
+    - `Detach` it from any adjacent parent
+    - `Drop` the item if the entity `OWNED_BY` points to the same current tree owner
+*/
+message AttachCommand {
+    message Body {
+        uint64 entity_id = 1;
+        uint64 parent_id = 2;
+        AttachmentType attachment_type = 3;
+        uint64 attachment_port = 4;
+        uint64 attachment_geid = 5;
+        AttachmentOwnershipBehavior ownership = 6;
+    }
+    repeated Body attachments = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+
+/*
+  DetachCommand
+
+  Command to detach entities
+
+  Detach an entity will:
+  - Create a `OWNED_BY` edge to the current tree owner if no owner is currently set
+  - Delete the `ATTACHED_TO` edge of this entity
+*/
+message DetachCommand {
+    message Body {
+        uint64 entity_id = 1;
+        AttachmentOwnershipBehavior ownership = 2;
+    }
+    repeated Body detaches = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  TransferCommand
+
+  Command to transfer ownership of an entity to another player or organization.
+
+  Transfer of an entity will:
+  - Erase the `OWNED_BY` edge of the entity
+  - Create a new `OWNED_BY` edge to pointer to the player or organization, if (`clear` not specified)
+*/
+message TransferCommand {
+    message Body {
+        bool clear = 1;
+        uint64 entity_id = 2;
+        oneof owner {
+            uint64 player_id = 3;
+            uint64 organization_id = 4;
+        }
+        bool include_children = 5;
+    }
+    repeated Body transfers = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  MoveCommand
+
+  Command to move a stowed entity from an inventory to another.
+  Will verify entity is currently stowed in `from_inventory_id`.
+  If an inventory node for `to_inventory_id` doesn't exist it will be lazily created.
+
+  Move of an entity will:
+  - Remove the `STOWED_IN` edge of the entity
+  - Create a new `STOWED_IN` edge to the new inventory
+*/
+message MoveCommand {
+    message Body {
+        // The entity to move
+        uint64 entity_id = 1;
+        // Move only if entity is currently stowed in this inventory
+        string from_inventory_id = 2;
+        // Inventory to move to
+        string to_inventory_id = 3;
+        // (Optional) Updated lexorank if applicable
+        string rank = 4;
+        // (Optional) if set, the target inventory will be lazily created if it doesn't exist
+        CreateInventoryArguments target_inventory_lazy_creation = 5;
+    }
+    repeated Body moves = 1;
+}
+
+/*
+    AddLabelsCommand
+
+    Command to add labels to entity.
+
+    AddLabels on entities will:
+    - Add the labels if it's not already present
+*/
+message AddLabelsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        repeated EntityNodeLabel labels = 2;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+    RemoveLabelsCommand
+
+    Command to remove labels from entity.
+
+    RemoveLabels on entities will:
+    - Remove the labels
+*/
+message RemoveLabelsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        repeated EntityNodeLabel labels = 2;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  ChangeFlagsCommand
+
+  Command to change the game and entity flags on entities
+
+  ChangeFlags on entities will:
+  - Update the entity `flags` of the entity node
+  - Update the `gameFlags` of the entity node
+*/
+message ChangeFlagsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        uint64 flags = 2;
+        uint64 game_flags = 3;
+    }
+    repeated Body changes = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  ChangeLocation
+
+  Command to change all location fields of an entity.
+
+  ChangeFlags on entities will:
+  - Update the `orientation` of the entity nodes
+  - Update the `position` of the entity nodes
+  - Update the `location_id` of the entity nodes
+  - Update the `radius` of the entity nodes
+  - Update the `scale` of the entity nodes
+*/
+message ChangeLocationCommand {
+    message Body {
+        uint64 entity_id = 1;
+        sc.external.common.types.v1.Quatd orientation = 2;
+        sc.external.common.types.v1.Vec3d position = 3;
+        reserved 4;
+        reserved "star_hash";
+        uint32 location_id = 5;
+        float radius = 6;
+        double scale = 7;
+    }
+    repeated Body changes = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+
+
+/*
+  SetSnapshot
+
+  Command to set snapshot of entities.
+
+  SetSnapshot on entities will:
+  * Replace the entire snapshot document for an entity
+*/
+message SetSnapshotCommand {
+    message Body {
+        EntitySnapshot snapshot = 1;
+    }
+    repeated Body snapshots = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  ChangeSnapshot
+
+  Command to change snapshot of entities.
+
+  ChangeSnapshot on entities will:
+  * Change every key present in the command snapshot in the snapshot document
+  * Leave existing snapshot keys intact
+  * Snapshot property set to a null (bytes) will be removed from the document
+*/
+message ChangeSnapshotCommand {
+    message Body {
+        EntitySnapshot snapshot = 1;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  RemoveSnapshot
+
+  Command to remove the snapshot of entities
+
+  RemoveSnapshot on entities will:
+  - Erase the snapshot document of an entity
+*/
+message RemoveSnapshotCommand {
+    message Body {
+        uint64 entity_id = 1;
+    }
+    repeated Body removals = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  Stack
+
+  Command to add to the `stack_size` of an entity.
+
+  Stack on entities will:
+  - Increase the `stack_size` of the entity by the specified amount.
+*/
+message StackCommand {
+    message Body {
+        uint64 entity_id = 1;
+        int32 amount = 2;
+    }
+    repeated Body stacks = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  Unstack
+
+  Command to reduce from `stack_size` of an entity.
+
+  Unstack on entities will:
+  - Decrease the `stack_size` of the entity by the specified amount.
+*/
+message UnstackCommand {
+    message Body {
+        uint64 entity_id = 1;
+        int32 amount = 2;
+    }
+    repeated Body unstacks = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  SetStack
+
+  Command to absolutely set the `stack_size` of an entity.
+
+  SetStack on entities will:
+  - Overwrite the `stack_size` of the entity.
+*/
+message SetStackCommand {
+    message Body {
+        uint64 entity_id = 1;
+        int32 amount = 2;
+    }
+    repeated Body changes = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  ChangeRank
+
+  Command to change the rank on the stowed_in edge between the entity and the inventory
+
+  ChangeRank on entity and inventory pair will:
+  - Overwrite the `rank` on the stowed_in edge between the entity and inventory.
+*/
+message ChangeRankCommand {
+    message Body {
+        uint64 entity_id = 1;
+        string inventory_id = 2;
+        string rank = 3;
+    }
+    repeated Body changes = 1;
+}
+
+message ActivateCommand {
+    message Body {
+        repeated uint64 geids = 1;
+        map<string, ScalarValue> activation_context = 2;
+    }
+    repeated Body activations = 1;
+}
+
+/*
+  AddTagsCommand
+
+  Command to add tags to the tags on entities
+
+  AddTags on entities will:
+  - Update the entity `tags` of the entity node
+*/
+message AddTagsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        repeated uint32 tags = 2;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  RemoveTagsCommand
+
+  Command to remove tags from the tags on entities
+
+  RemoveTags on entities will:
+  - Update the entity `tags` of the entity node
+*/
+message RemoveTagsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        repeated uint32 tags = 2;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+/*
+  SetTags
+
+  Command to absolutely set the `tags` of an entity.
+
+  SetTags on entities will:
+  - Overwrite the `tags` of the entity.
+*/
+message SetTagsCommand {
+    message Body {
+        uint64 entity_id = 1;
+        repeated uint32 tags = 2;
+    }
+    repeated Body updates = 1;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 2;
+}
+
+message MeltCommand {
+    message Body {
+        // The parentUrns of the entities to melt
+        repeated string parent_urns = 1;
+        // owner of the entities to melt
+        uint64 owner_id = 3;
+        reserved 2;
+        reserved "melt_by_owner";
+    }
+    repeated Body melts = 1;
+}
+
+message DeactivateCommand {
+    message Body {
+        repeated uint64 geids = 1;
+        map<string, ScalarValue> deactivation_context = 2;
+    }
+    repeated Body deactivations = 1;
+}
+
+message SyncCommandEntityProperties {
+    // Entity flags of this entity (EEntityFlags)
+    uint64 entity_flags = 1;
+    // Parent relative orientation
+    sc.external.common.types.v1.Quatd orientation = 2;
+    // Parent relative position
+    sc.external.common.types.v1.Vec3d position = 3;
+    // Parent relative scale
+    double scale = 4;
+    // Radius of the entitiy
+    double radius = 5;
+    // tags for the entity
+    repeated uint32 tags = 6;
+    // Flag entity as streaming group or not
+    bool is_streaming_group = 7;
+    reserved 8;
+    reserved "parent_urn";
+}
+
+message SyncCommand {
+    message Body {
+        // Min version of the entity to consider this sync request valid
+        uint32 version = 1;
+        // The entity id to update
+        uint64 entity_id = 2;
+        // (Deprecated) The entity node properties to update. Use entity_properties instead.
+        reserved 3;
+        // (Optional) The full snapshot to update if dirty_flags(8) is set
+        EntitySnapshot snapshot = 4;
+        // (Optional) full attachment edge to update if dirty_flags(4) is set
+        EntityEdge attachment_edge = 5;
+        // Dirty flags for updating entity properties. Only set bits will be updated
+        // in either the entity node, snapshot or attachment edge.
+        // bit0: flags (update entity game_flags)
+        // bit1: position (update entity position)
+        // bit2: orientation (update entity orientation)
+        // bit3: scale (update entity scale)
+        // bit4: parent (update attachment edge)
+        // bit5: tags (update entity tags)
+        // bit6: stream_group_root label (update streaming group label presence)
+        // bit7: radius (update entity radius)
+        // bit8: variables (update entity snapshot)
+        uint32 dirty_flags = 6;
+        // (Optional) The entity node properties to update (see dirty_flags)
+        SyncCommandEntityProperties entity_properties = 7;
+    }
+    repeated Body sync_tasks = 1;
+}
+
+message CreateLTRecordCommand {
+    message Body {
+        // The record to create
+        sc.external.services.longterm.v1.OwnershipRecord record = 1;
+    }
+    repeated Body creates = 2;
+}
+
+message DeleteLTRecordCommand {
+    // The URNs of the LTP records to delete
+    repeated string urns = 1;
+}
+
+/*
+  MoveAllCommand
+
+  Command to move all stowed entities from an inventory to another.
+
+  MoveAll  will:
+  - Remove the `STOWED_IN` edge of the entities inside an inventory
+  - Create a new `STOWED_IN` edge from each entity to the new inventory
+*/
+message MoveAllCommand {
+    message Body {
+        // Inventory to move from
+        string from_inventory_id = 1;
+        // Inventory to move to
+        string to_inventory_id = 2;
+        // (Optional) if set, the target inventory will be lazily created if it doesn't exist
+        CreateInventoryArguments target_inventory_lazy_creation = 3;
+    }
+    repeated Body moves = 1;
+}
+
+message CreateStowContextsCommand {
+    message Body {
+        // The context to create
+        EntityStowContext context = 1;
+    }
+    repeated Body creates = 2;
+}
+
+message UpdateParentUrnsCommand {
+    message Body {
+        // entity geid of the entity to update
+        uint64 entity_geid = 1;
+        // The new parent_urn of the entity
+        string new_parent_urn = 2;
+    }
+    repeated Body updates = 2;
+    // inventoryId/sharding key - required if scope is global
+    string inventory_id = 3;
+}

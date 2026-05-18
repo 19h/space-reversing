@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sc.internal.services.push.v1;
+
+import "sc/external/services/push/v1/messages.proto";
+
+message EnqueuedEnvelope {
+    message Body {
+        sc.external.services.push.v1.PushEnvelope push_envelope = 2; 
+        
+        reserved 1;
+        reserved "envelope";
+    }
+    string name = 1;
+    Body body = 2;
+}

@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package sc.internal.services.mightybridge.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "MightyBridge service"
+      version: "1.0",
+      description: "Service protocol responsible for Engine to external DCC connections."
+    }
+};
+
+message RemoteCommand {
+    string method = 1;
+    string ticket = 2;
+    bytes json = 3;
+}
+
+message RemoteCommandResponse {
+    string ticket = 1;
+    bytes json = 2;
+}
+
+message Packet {
+    oneof data {
+        RemoteCommand command = 1;
+        RemoteCommandResponse response = 2;
+    }
+}
+
+message MightyStreamRequest { 
+    repeated Packet packets = 1;
+}
+
+message MightyStreamResponse {
+    repeated Packet packets = 1;
+}
+
+
+service MightyBridgeService {
+    rpc MightyStream(stream MightyStreamRequest) returns (stream MightyStreamResponse) {
+        option (google.api.http) = {
+            post : "/v1/stream",
+            body: "*"
+        };
+    }
+}

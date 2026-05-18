@@ -1,0 +1,243 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_subscription.v1;
+import "sc/external/common/command/v1/types.proto";
+
+import "google/api/annotations.proto";
+import "sc/internal/services/entity_subscription/v1/types.proto";
+
+message QuerySubscriberEntitiesRequest {
+  // The list of subscribers
+  repeated uint64 subscribers = 1;
+  // The list of entities
+  repeated uint64 entities = 2;
+  // (Optional) The list of tags to filter the results by
+  repeated string tags = 3;
+}
+message QuerySubscriberEntitiesResponse {
+  repeated SubscriberEntities results = 1;
+}
+
+message SubscribeRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to subscribe to
+  repeated string tags = 2;
+  // The list of geids of subscribers to subscribe
+  repeated uint64 subscribers = 3;
+}
+message SubscribeResponse {}
+
+message UnsubscribeRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to unsubscribe from
+  repeated string tags = 2;
+  // The list of geids of subscribers to unsubscribe
+  repeated uint64 subscribers = 3;
+}
+message UnsubscribeResponse {}
+
+message TagEntitiesRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to add entities to
+  repeated string tags = 2;
+  // The list of geids of ids to tag
+  repeated uint64 entities = 3;
+}
+message TagEntitiesResponse {}
+
+message UntagEntitiesRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to remove from entities
+  repeated string tags = 2;
+  // The list of geids of entity ids to untag
+  repeated uint64 entities = 3;
+}
+message UntagEntitiesResponse {}
+
+message DeleteTagsRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to delete from ESS
+  repeated string tags = 2;
+}
+message DeleteTagsResponse {}
+
+message RemoveEntitiesByTagsRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to remove entities from ESS
+  repeated string tags = 2;
+  // If true, remove entities from all tags, otherwise only from the provided tags.
+  // Default value is false.
+  //
+  // example usage:
+  // Tag A has entities 1,2,3
+  // Tag B has entities 3,4,5
+  // RemoveEntitiesByTagsRequest { tags: ["B"], from_all_tags: false } will remove 3,4,5 from Tag B
+  // RemoveEntitiesByTagsRequest { tags: ["B"], from_all_tags: true  } will remove 3,4,5 from Tag B and remove 3 from Tag A
+  bool from_all_tags = 3;
+}
+message RemoveEntitiesByTagsResponse {}
+
+message RemoveSubscribersByTagsRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of tags to remove subscribers from ESS
+  repeated string tags = 2;  
+  // If true, remove subscribers from all tags, otherwise only from the provided tags.
+  // Default value is false.
+  bool from_all_tags = 3;
+}
+message RemoveSubscribersByTagsResponse {}
+
+message RemoveEntitiesRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of entity ids to remove from ESS
+  repeated uint64 entities = 2;
+}
+message RemoveEntitiesResponse {}
+
+message RemoveSubscribersRequest {
+  // command arguments
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // The list of subscriber ids to remove from ESS
+  repeated uint64 subscribers = 2;
+}
+message RemoveSubscribersResponse {}
+
+service EntitySubscriptionService {
+  /*
+    QuerySubscriberEntities
+
+    Query for entity subscriptions. 
+    This returns the subscription groups queried reduced to their pairs of one to one connection.
+    No duplicates returned
+  */
+  rpc QuerySubscriberEntities(QuerySubscriberEntitiesRequest) returns (stream QuerySubscriberEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/query",
+      body: "*"
+    };
+  }
+
+  /*
+    Subscribe
+
+    Subscribe to tags
+  */
+  rpc Subscribe(SubscribeRequest) returns (SubscribeResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/subscribe",
+      body: "*"
+    };
+  }
+
+  /*
+    Unsubscribe
+
+    Unsubscribe from tags
+  */
+  rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/unsubscribe",
+      body: "*"
+    };
+  }
+
+  /*
+    TagEntities
+
+    Add tags to entities
+  */
+  rpc TagEntities(TagEntitiesRequest) returns (TagEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/tag-entities",
+      body: "*"
+    };
+  }
+
+  /*
+    UntagEntities
+
+    Remove tags from entities
+  */
+  rpc UntagEntities(UntagEntitiesRequest) returns (UntagEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/untag-entities",
+      body: "*"
+    };
+  }
+
+  /*
+    DeleteTags
+
+    Remove tags from ESS, removing both subscribers and entities.
+  */
+  rpc DeleteTags(DeleteTagsRequest) returns (DeleteTagsResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/delete-tags",
+      body: "*"
+    };
+  }
+
+  /*
+    RemoveEntitiesByTags
+
+    Remove entities by tags.
+    fromAllTags false: For when you want to empty a tag of all of it's entities
+    fromAllTags true: For when you want to empty a tag of all of it's entities AND untag these entities from all other tags.
+  */
+  rpc RemoveEntitiesByTags(RemoveEntitiesByTagsRequest) returns (RemoveEntitiesByTagsResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/remove-entities-by-tags",
+      body: "*"
+    };
+  }
+
+  /*
+    RemoveSubscribersByTags
+
+    Remove subscribers by tags.
+    fromAllTags false: For when you want to empty a tag of all of it's subscribers
+    fromAllTags true: For when you want to empty a tag of all of it's subscribers AND remove these subscribers from all other tags they are subscribed to.
+  */
+  rpc RemoveSubscribersByTags(RemoveSubscribersByTagsRequest) returns (RemoveSubscribersByTagsResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/remove-subscribers-by-tags",
+      body: "*"
+    };
+  }
+
+  /*
+    RemoveEntities
+
+    Remove entities from ESS. 
+    For when you know the id of the entity, but not which tags it's tagged with.
+    Use only when it make sense to remove from all of ESS. Use UntagEntities for partial removals.
+  */
+  rpc RemoveEntities(RemoveEntitiesRequest) returns (RemoveEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/remove-entities",
+      body: "*"
+    };
+  }
+
+  /*
+    RemoveSubscribers
+
+    Remove subscribers from ESS. 
+    For when you know the id of the subscriber, but not which tags it's subscribed to. 
+    Use only when it make sense to remove from all of ESS. Use Unsubscribe for partial removals.
+  */
+  rpc RemoveSubscribers(RemoveSubscribersRequest) returns (RemoveSubscribersResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/remove-subscribers",
+      body: "*"
+    };
+  }
+}

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sc.internal.services.identity.v1;
+
+import "sc/external/common/platform/v1/types.proto";
+
+message Account {
+  uint64 created_at = 1;
+  uint64 updated_at = 2;
+  // Unique identifier on rsi-platform
+  uint32 id = 3;
+  // Nickname set on platform account
+  string nickname = 4;
+  // Display name set on platform account
+  string display_name = 5;
+  // Link to the account avatar
+  string avatar_url = 6;
+  // List of badges for account: attributions and game access
+  repeated sc.external.common.platform.v1.PlatformBadge badges = 7;
+  // List of roles for the account: permissions
+  repeated sc.external.common.platform.v1.PlatformRole roles = 8;
+  // Tracking metrics id used by game client to send tracking events anonymously
+  string tracking_metrics_id = 9;
+  // (Optional) Player id. Will be included if it was part of the query
+  uint64 player_id = 10;
+}
+
+message AccountHistory {
+  uint64 created_at = 1;
+  // Unique identifier of the log
+  string id = 2;
+  // Unique identifier of the account
+  uint32 account_id = 3;
+  // Unique identifier of the player on which it occured, if relevant
+  uint64 player_id = 4;
+  // History log message
+  string log_message = 5;
+}

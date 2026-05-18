@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/internal/services/entitlement/v1/commands.proto";
+import "sc/external/common/command/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Entitlement service"
+      version: "1.0",
+      description: "Service responsible for processing and persisting player entitlements."
+    }
+};
+
+message GrantRequest {
+    GrantCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message GrantResponse {}
+
+message RevokeRequest {
+    RevokeCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message RevokeResponse {}
+
+message ClaimRequest {
+    ClaimCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message ClaimResponse {}
+
+message QueryRequest {
+    sc.external.common.api.v1.Query query = 2;
+    reserved 1;
+}
+message QueryResponse {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated sc.external.services.entitlement.v1.Entitlement results = 2;
+}
+
+message QueryHistoryRequest {
+    sc.external.common.api.v1.Query query = 2;
+    reserved 1;
+}
+message QueryHistoryResponse {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated sc.external.services.entitlement.v1.EntitlementHistory results = 2;
+}
+
+message RevokeAllRequest {
+    RevokeAllCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+message RevokeAllResponse {}
+
+message UpdateInsuredLoadoutsRequest {
+    UpdateInsuredLoadoutsCommand command = 1;
+    sc.external.common.command.v1.CommandArguments arguments = 2;
+}
+
+message UpdateInsuredLoadoutsResponse {}
+
+service EntitlementService {
+
+    /*
+      Grant
+      
+      Enqueue a request to grant a given entity to a player. Creating an entitlement will effectively give the player in-game
+      items and record the entitlement request as fulfilled.
+    */
+    rpc Grant(GrantRequest) returns (GrantResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/grant",
+            body: "*"
+        };
+    }
+
+    /*
+        Revoke
+
+        Enqueue a revoke request to remove an entitlement and resulting persistent items from a player account.
+    */
+    rpc Revoke(RevokeRequest) returns (RevokeResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/revoke",
+            body: "*"
+        };
+    }
+
+    /*
+      Claim
+      
+      Enqueue a request to claim an entitlement, enabling fulfillment 
+    */
+    rpc Claim(ClaimRequest) returns (ClaimResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/claim",
+            body: "*"
+        };
+    }
+
+    /*
+        Query
+
+        Query entitlement records.
+    */
+    rpc Query(QueryRequest) returns (QueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/query",
+            body: "*"
+        };
+    }
+
+    /*
+        QueryHistory
+
+        Query entitlement logs.
+    */
+    rpc QueryHistory(QueryHistoryRequest) returns (QueryHistoryResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/history",
+            body: "*"
+        };
+    }
+
+    /*
+        RevokeAll
+
+        Enqueue a revoke all request to remove all entitlements for a playerId or accountId.
+    */
+    rpc RevokeAll(RevokeAllRequest) returns (RevokeAllResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/revokeAll",
+            body: "*"
+        };
+    }
+
+    /* 
+        UpdateInsuredLoadouts
+
+        Allows for updating the Custom Loadouts tied to Insurance on a ship
+    */
+    rpc UpdateInsuredLoadouts(UpdateInsuredLoadoutsRequest) returns (UpdateInsuredLoadoutsResponse) {
+        option (google.api.http) = {
+            post : "/v1/entitlement/updateInsuredLoadouts",
+            body: "*"
+        };
+    }
+
+}

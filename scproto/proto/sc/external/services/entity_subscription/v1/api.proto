@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sc.external.services.entity_subscription.v1;
+
+import "google/api/annotations.proto";
+
+message SubscriberEntities {
+  uint64 subscriber = 1;
+  repeated uint64 entities = 2;
+}
+
+message QueryEntitiesRequest {
+  // The list of entities
+  repeated uint64 entities = 1;
+  // (Optional) The list of tags to filter the results by
+  repeated string tags = 2;
+}
+message QueryEntitiesResponse {
+  repeated SubscriberEntities results = 1;
+}
+
+service EntitySubscriptionService {
+  /*
+    QueryEntities
+
+    Query for entity subscriptions for the player id in the metadata
+    This returns the subscription groups queried reduced to their pairs of one to one connection.
+    No duplicates returned
+  */
+  rpc QueryEntities(QueryEntitiesRequest) returns (stream QueryEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/entity-subscription/query",
+      body: "*"
+    };
+  }
+}

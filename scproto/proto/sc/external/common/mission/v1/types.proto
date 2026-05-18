@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+import "sc/external/common/types/v1/transforms.proto";
+
+// subsumption variable value
+message MissionVariableValue {
+    oneof value {
+        bool bool_val = 1;
+        int64 integer_val = 2;
+        double double_val = 3;
+        string string_val = 4;
+        uint64 geid_val = 5;
+        sc.external.common.types.v1.Vec3d vec3d_val = 6;
+        sc.external.common.types.v1.Vec4d vec4d_val = 7;
+    }
+}
+
+// list of subsumption variables
+message MissionVariables {
+    map<string, MissionVariableValue> variables = 1;
+}
+
+// mission token
+message MissionToken {
+    // crc of the dataforge record for this token
+    string id = 1;
+
+    // optional expiry time for this token. Once expired it will be automatically removed from the players wallet
+    google.protobuf.Timestamp expiry = 2;
+
+    // token creation timestamp in ms
+    uint64 created_at = 3;
+
+    // reason the token was given / token description
+    string reason = 4;
+
+    // owner of the token
+    string owner_urn = 5;
+
+    // number of times this token has been given (balance of additions/subtractions of token)
+    int32 count = 6;
+}
+
+enum TokenLogAction {
+    TOKEN_LOG_ACTION_UNSPECIFIED = 0;
+    TOKEN_LOG_ACTION_CREATED = 1;
+    TOKEN_LOG_ACTION_DELETED = 2;
+}
+
+// mission token log entry
+message MissionTokenLog {
+    // crc of the token
+    string id = 1;
+
+    // primary owner of the token this log is for
+    string owner_urn = 2;
+
+    // token creation timestamp in ms
+    uint64 created_at = 3;
+
+    // action that triggered log entry
+    TokenLogAction action = 4;
+
+    // reason the token was given OR deleted / token description
+    string reason = 5;
+
+    // number of times this token has been given (balance of additions/subtractions of token)
+    uint32 count = 6;
+}
+
+// template of a mission variation for a contract
+message MissionTemplate {
+    // identifier - UUID
+    string contract_definition_id = 1;
+
+    // mission variables that is passed to the initial mission modules on creation
+    MissionVariables variables = 2;
+
+    // random seed
+    uint32 seed = 3;
+
+    // is the seed player salted
+    bool is_salted = 4;
+
+    // max number of instances of this mission that can be created per player (-1 = unlimited)
+    int32 max_instances_per_player = 5;
+}
+
+// represents mission reward
+message MissionReward {
+    repeated google.protobuf.Any rewards = 1;
+}
+
+// mission particicpant
+message MissionParticipant {
+    // playerUrn
+    string player_urn = 1;
+
+    // list of reward pairs, in order of reward list defined in datacore
+    repeated float share = 2;
+}
+
+message FilterOptions {
+    // disable location prerequisites
+    bool disable_location_prerequisites = 1;
+    // disable token prerequisites
+    bool disable_token_prerequisites = 2;
+    // disable reputation prerequisites
+    bool disable_reputation_prerequisites = 3;
+    // (Optional) list of contract defintion ids to filter by
+    repeated string filter_by_contract_definition_ids = 4;
+}
+
+message ClusterMember {
+    // shardId
+    string shard_id = 1;
+
+    // cluster id
+    string cluster_id = 2;
+
+    // member id
+    string member_id = 3;
+
+    // datacore GUID
+    string type_guid = 4;
+
+    // initial variables
+    MissionVariables variables = 5;
+}

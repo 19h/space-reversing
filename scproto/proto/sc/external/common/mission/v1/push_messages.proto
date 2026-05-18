@@ -1,0 +1,315 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/scenarios.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+/////////////////////////////////////////////////////
+// Mission Updates
+//
+// TOPIC: missions/{mission_id}/updates
+
+// Mission activated
+message MissionActivated {
+  message Body {
+    // id of the mission
+    string mission_id = 1;
+    // current active shard for this mission
+    string shard_id = 2;
+  }
+  repeated Body missions = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// Mission ended
+// TOPIC: shard/${shardId}/missions/${missionId}/updates
+message MissionEnded {
+  message Body {
+    // id of the mission
+    string mission_id = 1;
+    // final mission state (completed/failed/expired/abandoned etc.)
+    MissionState mission_state = 2;
+  }
+  repeated Body missions = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+/////////////////////////////////////////////////////
+// Mission Participant Updates
+//
+// TOPIC: shard/${shardId}/missions/${missionId}/updates
+
+// Player joined mission
+message PlayerJoined {
+  message Body {
+    // id of the mission
+    string mission_id = 1;
+    // player urn joining the mission
+    string player_urn = 2;
+  }
+  repeated Body players = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// Player left mission
+message PlayerLeft {
+  message Body {
+    // id of the mission
+    string mission_id = 1;
+    // player urn leaving the mission
+    string player_urn = 2;
+    // state for mission
+    MissionState end_state = 3;
+    // reason for ending
+    uint32 end_reason = 4;
+    // reason for analytics
+    string analytics_reason = 5;
+  }
+  repeated Body players = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+
+/////////////////////////////////////////////////////
+// Mission Objective Updates
+//
+// TOPIC: missions/{mission_id}/objectives
+
+// New objectives upserted
+message ObjectiveUpserted {
+  message Body {
+    // objective
+    MissionObjective objective = 1;
+    // if it was created or not
+    bool created = 2;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// objective update
+message ObjectiveUpdate {
+  message Body {
+        // objective id
+        string objective_id = 1;
+        // current progress
+        int64 progress = 2;
+        // current flags on the objective
+        uint32 flags = 3;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// objectives completed
+message ObjectiveComplete {
+  message Body {
+        // objective id
+        string objective_id = 1;
+        // final state (complete/failed/exipred)
+        MissionObjectiveState state = 2;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;  
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+/////////////////////////////////////////////////////
+// Mission Phase Updates
+//
+// TOPIC: 
+// TOPIC: shard/${shardId}/mission_phase/{active_phase_key}/state
+
+// Mission phase state changed
+message MissionPhaseStateChange {
+  message Body {
+      // active mission phase key
+      string active_phase_key = 1;
+
+      // state of the mission phase
+      sc.external.common.mission.v1.MissionPhaseState state = 2;
+  }
+  repeated Body phases = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+
+// TOPIC: missions/{mission_id}/shared
+// Mission shared
+message MissionShared {
+  message Body {
+    // id of the mission
+    string mission_id = 1;
+    // owner of the mission
+    string owner_urn = 2;
+    // mission template
+    sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+  }
+  
+  repeated Body shares = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// TOPIC: missions/${missionId}/objectives
+// player objective update
+message PlayerObjectiveUpdate {
+  message Body {
+    // objective id
+    string objective_id = 1;
+    // current progress
+    int64 progress = 2;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// TOPIC: missions/${missionId}/objectives
+// player added to objective
+message ContributorAddedToObjective {
+  message Body {
+    // objective id
+    string objective_id = 1;
+    // contributor playerUrn
+    string player_urn = 2;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// TOPIC: missions/${missionId}/objectives
+// player removed from objective
+message ContributorRemovedFromObjective {
+  message Body {
+    // objective id
+    string objective_id = 1;
+    // contributor playerUrn
+    string player_urn = 2;
+  }  
+  // list of new objectives
+  repeated Body objectives = 1;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 2;
+}
+
+// TOPIC: missions/scenarios
+// A scenario command or event & variables have been changed
+message ScenarioCommand {
+  string message_id = 1;
+  sc.external.common.mission.v1.ScenarioCommandWord word = 2;
+  sc.external.common.mission.v1.Scenario scenario = 3;
+}
+
+// TOPIC: missions/scenarios
+// A scenario cycle event has occured
+message ScenarioCyclePhaseChange {
+  string message_id = 1;
+  optional google.protobuf.Timestamp timestamp = 2;
+  // Scenario concerned by this phase change
+  sc.external.common.mission.v1.Scenario scenario = 3;
+  // Cycle id concerned by this phase change
+  string cycle_id = 4;
+  // Deprecated cycle_phase
+  reserved 5;
+  reserved "phase";
+  // Cycle state of this cycle
+  CycleState cycle_state = 6;
+}
+
+// TOPIC: missions/${scenarioId}/scenarios
+// player added to scenario
+message ContributorAddedToScenario {
+  // scenario id
+  string scenario_id = 1;
+  // contributors playerUrn
+  repeated string player_urn = 2;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 3;
+}
+
+// TOPIC: missions/${scenarioId}/scenarios
+// player removed from scenario
+message ContributorRemovedFromScenario {
+  // scenario id
+  string scenario_id = 1;
+  // contributor playerUrn
+  repeated string player_urn = 2;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 3;
+}
+
+// TOPIC: missions/${scenarioId}/scenarios
+// scenario progress update
+message ScenarioProgressUpdate {
+  // objective id
+  string scenario_id = 1;
+  // overall progress
+  map<string, int64> overall_progress = 2;
+  // Optional context passed from requestor
+  google.protobuf.Any context = 3;
+}
+
+// Entity Cluster Service
+// Topic: 'cluster/<cluster_id>/member'
+message OnClusterMemberAdded {
+  // cluster info
+  ClusterMember member = 1;
+}
+
+// Topic: 'cluster/<cluster_id>/member'
+message OnClusterMemberRemoved {
+  // cluster info
+  ClusterMember member = 1;
+}
+
+// Topic: 'cluster/<cluster_id>/<member_id>'
+message OnClusterMemberUpdated {
+  // cluster info
+  ClusterMember member = 1;
+}
+
+/////////////////////////////////////////////////////
+// Contract Updates
+//
+// TOPIC: shard/${shardId}/contracts/{contract_id}/updates
+message OnContractVariablesUpdated {
+  // active mission ids that were updated
+  repeated string updated_mission_ids = 1;
+  // updated mission variables
+  sc.external.common.mission.v1.MissionVariables variables = 2;
+}
+
+message ContractIdList {
+  repeated string ids = 1;
+}
+
+// TOPIC: shard/${shardId}/contracts/created
+message OnContractsCreated {
+  // Map of contract definition ID to created contract IDs
+  map<string, ContractIdList> contracts_by_definition_id = 1;
+}
+
+// TOPIC: shard/${shardId}/contracts/deleted
+message OnContractsDeleted {
+  // Map of contract definition ID to deleted contract IDs
+  map<string, ContractIdList> contracts_by_definition_id = 1;
+}

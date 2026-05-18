@@ -1,0 +1,108 @@
+syntax = "proto3";
+package sc.external.services.social.v1;
+import "sc/external/services/social/v1/types.proto";
+
+
+// Targets group members
+
+message GroupDestroyed {
+  string group_id = 1;
+}
+
+message GroupRenamed {
+  string group_id = 1;
+  string group_name = 2;
+}
+
+message MemberInvited {
+  Invitation invitation = 1;
+}
+
+message InvitationDeclined {
+  string invitation_id = 1;
+  string declined_by_urn = 2;
+  string group_id = 3;
+}
+
+message InvitationRevoked {
+  string invitation_id = 1;
+  string revoked_by_urn = 2;
+  string group_id = 3;
+}
+
+message MemberJoined {
+  string group_id = 1;
+  GroupMember member = 2;
+}
+message MemberLeft {
+  string group_id = 1;
+  string member_urn = 2;
+  bool kicked = 3;
+  // Only defined if kicked by a player
+  string kicked_by_urn = 4;
+}
+
+message LeadershipTransferred {
+  string group_id = 1;
+  string player_urn = 2;
+}
+
+message MemberMuted {
+  string group_id = 1;
+  string member_urn = 2;
+  // The current mute state of the member, after applying the mute operation.
+  bool chat = 3;
+  bool rtc = 4;
+}
+
+message MemberUnmuted {
+  string group_id = 1;
+  string member_urn = 2;
+  // The current mute state of the member, after applying the unmute operation.
+  bool chat = 3;
+  bool rtc = 4;
+}
+
+message GroupCreated {
+  Group group = 1;
+}
+
+message ModeratorAdded {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+message ModeratorRemoved {
+  string group_id = 1;
+  string member_urn = 2;
+}
+
+message MemberReadyStatusChanged {
+  string group_id = 1;
+  string member_urn = 2;
+  bool ready = 3;
+}
+
+// Targets actors
+
+message InvitationReceived {
+  Invitation invitation = 1;
+}
+
+message JoinedGroup {
+  Group group = 1;
+}
+
+message LeftGroup {
+  string group_id = 1;
+  bool kicked = 2;
+  // Only defined if kicked by a player
+  string kicked_by_urn = 3;
+}
+
+
+// ArenaCommander broadcast
+message ACGameModeSettingsUpdated {
+  map<string, GameModeSetting> game_mode_settings = 1;
+  bool partial = 2;
+}

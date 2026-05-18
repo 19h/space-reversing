@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package sc.internal.services.gim.v1;
+
+import "google/api/annotations.proto";
+import "sc/internal/services/gim/v1/types.proto";
+
+// Overview: https://cloudimperiumgames.atlassian.net/wiki/spaces/SCB/pages/317755491/General+Instance+Manager+GIM+Service+API
+
+// ----------------------------------------------------------------------------
+// [GetGameModeSettings]
+// ----------------------------------------------------------------------------
+message GetGameModeSettingsRequest {
+  bool get_all = 1;
+  // Note: Only used if get_all := false.
+  int32 game_type = 2;
+}
+
+message GetGameModeSettingsResponse {
+  int32 code = 1;
+  int32 success = 2;
+  map<string, GameModeSetting> game_mode_settings = 3;    // Note: map<GameModeName, GameModeSettings>
+  repeated GameType game_types = 4;
+}
+
+// ----------------------------------------------------------------------------
+// [GetMatchInfo]
+// ----------------------------------------------------------------------------
+message GetMatchInfoRequest {
+  // At least one of these fields must be defined
+  repeated string match_ids = 1;
+  repeated uint64 character_geids = 2;
+  repeated int32 account_ids = 3;
+}
+
+message GetMatchInfoResponse {
+  repeated MatchInfo match_infos = 1;
+}
+
+// ----------------------------------------------------------------------------
+// [FindMatchStart]
+// ----------------------------------------------------------------------------
+message FindMatchStartRequest {
+  // Group Service's group_id (GIM will just use this for book-keeping).
+  string group_id = 1;
+  // Group leader's player_geid.
+  uint64 leader_geid = 2;
+  // If set to 1, match-maker will attempt to match into given game-type with any map currently being played. If 0, then up to DGS game-rules for given game_type on what map dynamically gets used - then reports back to GIM.
+  bool any_map_flag = 3;
+
+  // --------------------------------------------------------------------------
+  // Game Settings (gets validated by GIM).
+  // -------------------------------------------------------------------------- 
+  // Set "map" to something regardless if "any_map_flag" := 1.
+  string map = 4;
+  // {Invalid:-1, DFM_BattleRoyale=0, DFM_FreeFlight=1, DFM_PirateSwarm=2, DFM_SquadronBattle=3, DFM_VanduulSwarm=4, DFM_Race=5, FPS_Elimination=6, FPS_TeamElimination=7, FPS_Control=8, SC_Default=9 }
+  int32 game_type = 5;
+  // Used by DFM_Race.
+  int32 level_variant = 6;
+  // Legacy - but not really being used.  Just set to -1 default for now. Value <= 0 will overwrite the time_limit. (0 is no time limit)
+  int32 time_limit = 7;
+  // Legacy - but not really being used.  Think Battelfield Starting Points - first time to zero looses.
+  int32 target_score = 8;
+  // Legacy - but not really being used.  Think Battelfield Starting Points - first time to zero looses.
+  int32 starting_tickets = 9;
+   // This should generally be set to that found in game_mode_settings for the given map/mode; however, exposed as an override.  Support for small, medium, large modes for example.
+  int32 max_players = 10;
+  // Public or Private Game.
+  bool public_server = 11;
+  // If true, then no new players allowed once match starts (used by DFM_Race for example).  Set based on what is found in game_mode_settings. Exposed as a possible override.
+  bool no_dynamic_join = 12;
+  // List of group members (including the group leader).  May be a group of one (solo-queue).
+  repeated PlayerInfo group_members = 13;
+  
+  // --------------------------------------------------------------------------
+  // Spectator support. Note: Total game-server/instance number of players will
+  // be: total:= "max_players" + "max_spectators".
+  // --------------------------------------------------------------------------
+   // [-1:UseDefault, field-missing:UseDefault] If default, game_mode_settings.max_spectators_default will be set for the given map/mode. Incoming override can be set anywhere between 0 and game_mode_settings.max_spectators_default.
+  int32 max_spectators = 14;
+  // List of players that will have SMsgGIMGameServerAuthorizePlayerRequest's PlayerSessionInfo set to true for is_spectator() for each player.
+  repeated PlayerInfo spectators = 15;
+}
+
+message FindMatchStartResponse {
+  // FindMatch result.
+  bool success = 1;
+  // If success, GIM generated group-uuid (used by match-maker and for tracking via Engineering QA sessions).  Caller can ignore - but worth logging.
+  string gim_group_uuid = 2;
+  // For human readable dev info only.
+  string msg = 3;
+   // max_squad_size as seen by the current GameType.  Note: For ToW, this will be 20.  Echoing back to the caller just for reference.
+  int32 max_squad_size = 4;
+  // 0:None | 1:INVALID_GAME_SERVER_SETTINGS | 2:MAX_SQUAD_SIZE_EXCEEDED | 3:CatchAll | 4:INVALID_PERMISSIONS (i.e. 1 ore more players in group did not have required badge).
+  int32 validation_error_code = 5;
+}
+
+// ----------------------------------------------------------------------------
+// [GameEndedAutoRequeue]
+// ----------------------------------------------------------------------------
+message GameEndedAutoRequeueRequest {
+  // Group leader's player_geid.
+  uint64 leader_geid = 1;
+   // If set to 1, match-maker will attempt to match into given game-type with any map currently being played. If 0, then up to DGS game-rules for given game_type on what map dynamically gets used - then reports back to GIM.
+  bool any_map_flag = 2;
+}
+
+message GameEndedAutoRequeueResponse {
+  // If true, the gim-group was successfully resubmitted to the matchmaker - actions will be send from GIM, DGS, and Star Citizen client when instance is ready to be connected with.
+  bool success = 1;
+  // If true, the gim-group was found (if false, then success will be false as well).
+  bool gim_group_found = 2;
+  // If true, the leader_geid from the request was valid and was the current leader of the gim-group; otherwise, if they were not the current leader, then this will be false and success will be false as well.
+  bool leader_geid_was_valid = 3;
+}
+
+// ----------------------------------------------------------------------------
+// GimService
+// ----------------------------------------------------------------------------
+service GimService {
+
+  // --------------------------------------------------------------------------
+  // [GetGameModeSettings]
+  // Description: Special GIM RPC to allow Group Service to review what the GIM config.json's "/gameRules/game_mode_settings" is set with.  Note that "game_types" is also returned so the one can determine what game-mode-name that the game_type int value maps to. 
+  // --------------------------------------------------------------------------
+  rpc GetGameModeSettings(GetGameModeSettingsRequest) returns (GetGameModeSettingsResponse) {
+    option (google.api.http) = {
+      post: "/v1/gim/GetGameModeSettings",
+      body: "*"
+    };
+  }
+  
+  // --------------------------------------------------------------------------
+  // [GetMatchInfo]
+  // Description: Returns match information based on list of either character_geid or match_id information.
+  // --------------------------------------------------------------------------
+  rpc GetMatchInfo(GetMatchInfoRequest) returns (GetMatchInfoResponse) {
+    option (google.api.http) = {
+      post: "/v1/gim/GetMatchInfo",
+      body: "*"
+    };
+  }
+  
+  // --------------------------------------------------------------------------
+  // [FindMatchStart]
+  // Description: Special GIM RPC to allow Group Service to initiate a "Find a Game to Join" request (i.e. a GIM MatchMaker Find Match request).
+  // --------------------------------------------------------------------------
+  rpc FindMatchStart(FindMatchStartRequest) returns (FindMatchStartResponse) {
+    option (google.api.http) = {
+      post: "/v1/gim/FindMatchStart",
+      body: "*"
+    };
+  }
+  
+  // --------------------------------------------------------------------------
+  // [GameEndedAutoRequeue]
+  // Description: Special GIM RPC to allow Group Service to initiate a "Auto Requeue the Group to the MatchMaker" request (i.e. a GIM MatchMaker Find Match request).
+  // --------------------------------------------------------------------------
+  rpc GameEndedAutoRequeue(GameEndedAutoRequeueRequest) returns (GameEndedAutoRequeueResponse) {
+    option (google.api.http) = {
+      post: "/v1/gim/GameEndedAutoRequeue",
+      body: "*"
+    };
+  }
+
+}

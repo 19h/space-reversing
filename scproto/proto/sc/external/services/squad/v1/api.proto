@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package sc.external.services.squad.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/squad/v1/types.proto";
+
+message UpdateSettingsRequest {
+    string group_id = 1;
+    SquadSettings settings = 2;
+}
+message UpdateSettingsResponse {
+}
+
+message CreateRequest {
+    SquadSettings settings = 1;
+}
+message CreateResponse {
+    Squad squad = 1;
+}
+
+message CreateFromPartyRequest {
+    SquadSettings settings = 1;
+}
+message CreateFromPartyResponse {
+    Squad squad = 1;
+}
+
+message GetRequest {
+    // (Optional) If not provided, the service will return the squad the player is part of.
+    string group_id = 1;
+}
+message GetResponse {
+    Squad squad = 1;
+}
+
+/* Match Related */
+
+message FindMatchRequest {
+}
+message FindMatchResponse {
+    // If any problem occurs, the response will be an error instead
+}
+
+message AutoRequeueRequest {
+}
+message AutoRequeueResponse {
+    // If any problem occurs, the response will be an error instead
+}
+
+message RecoverMatchRequest {
+    // (Optional) If set to true, the player will also rejoin the last squad they were in
+    bool rejoin = 1;
+}
+message RecoverMatchResponse {
+    string match_instance_id = 1;
+}
+
+service SquadService {
+    /*
+        UpdateSettings
+
+        Update the settings of a squad. Requires being the leader or moderator
+    */
+    rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/UpdateSettings"
+            body: "*"
+        };
+    }
+
+    /*
+        Create
+
+        Create a squad
+    */
+    rpc Create(CreateRequest) returns (CreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/Create"
+            body: "*"
+        };
+    }
+
+    /*
+        CreateFromParty
+
+        Create a squad from a party
+    */
+    rpc CreateFromParty(CreateFromPartyRequest) returns (CreateFromPartyResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/CreateFromParty"
+            body: "*"
+        };
+    }
+
+    /*
+        Get
+
+        Get the squad properties of a group
+    */
+    rpc Get(GetRequest) returns (GetResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/Get"
+            body: "*"
+        };
+    }
+
+    
+    /*
+        FindMatch
+
+        Find a match for the squad, requires being the leader of the squad
+    */
+    rpc FindMatch(FindMatchRequest) returns (FindMatchResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/FindMatch"
+            body: "*"
+        };
+    }
+
+    /*
+        AutoRequeue
+
+        Automatically requeue the squad for a match
+    */
+    rpc AutoRequeue(AutoRequeueRequest) returns (AutoRequeueResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/AutoRequeue"
+            body: "*"
+        };
+    }
+
+    /*
+        RecoverMatch
+
+        Recovers the match the player was in. Optionally rejoins the last squad
+    */
+    rpc RecoverMatch(RecoverMatchRequest) returns (RecoverMatchResponse) {
+        option (google.api.http) = {
+            post: "/v1/squad/external/RecoverMatch"
+            body: "*"
+        };
+    }
+}

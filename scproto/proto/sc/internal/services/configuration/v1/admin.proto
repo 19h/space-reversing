@@ -1,0 +1,250 @@
+syntax = "proto3";
+
+/*
+Configuration Service API
+*/
+package sc.internal.services.configuration.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/configuration/v1/matchers.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Configuration Admin Service"
+    version: "1.0",
+    description: "Service for distributing configurations using ETCD"
+  }
+};
+
+message WriteConfigMatchers {
+  string environment = 1;
+  string session_uuid = 2;
+  string host_uuid = 3;
+  string product = 4;
+  string branch = 5;
+  string build_cl = 6;
+  float probability = 7;
+}
+
+message WriteRequest {
+  // config group - ex /cvars/x/y/x (cvars is the group)
+  string config_group = 1;
+  // config key - /x/y/z/variables (variables is the key)
+  string config_key = 2;
+  // config value
+  string value = 3;
+  // config matchers
+  WriteConfigMatchers matchers = 4;
+}
+
+message WriteResponse {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+}
+
+message WriteConfigRequest { 
+  WriteRequest request = 1;
+}
+
+message WriteConfigResponse { 
+  WriteResponse response = 1;
+}
+
+message UpdateRequest {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+  // config value
+  string value = 3;
+}
+
+message UpdateResponse {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+}
+
+message UpdateConfigRequest { 
+  UpdateRequest request = 1;
+}
+
+message UpdateConfigResponse { 
+  UpdateResponse response = 1;
+}
+
+message DeleteRequest {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+}
+
+message DeleteResponse {
+  //
+}
+
+message DeleteConfigRequest { 
+  DeleteRequest request = 1;
+}
+
+message DeleteConfigResponse { 
+  DeleteResponse response = 1;
+}
+
+message QueryAllConfigurationsRequestBody {
+  // config group - ex /cvars/x/y/x (cvars is the group)
+  string config_group = 1;
+  // config key - /x/y/z/variables (variables is the key)
+  string config_key = 2;
+  // config matchers
+  sc.external.services.configuration.v1.ConfigMatchers matchers = 5;
+}
+
+message QueryAllConfigurationMatch {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+  // config value
+  string value = 3;
+}
+
+message QueryAllConfigurationsResponseBody {
+  repeated QueryAllConfigurationMatch matches = 1;
+}
+
+message QueryAllConfigurationsRequest {
+  QueryAllConfigurationsRequestBody query = 1;
+}
+
+message QueryAllConfigurationsResponse {
+  QueryAllConfigurationsResponseBody response = 1;
+}
+
+message QueryConfigurationNodeHistoryRequestBody {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string node = 1;
+}
+
+message QueryConfigurationNodeHistoryVersion {
+  string value = 1;
+  uint64 version = 2;
+}
+
+message QueryConfigurationNodeHistoryResponseBody {
+  repeated QueryConfigurationNodeHistoryVersion versions = 1;
+}
+
+message QueryConfigurationNodeHistoryRequest {
+  QueryConfigurationNodeHistoryRequestBody query = 1;
+}
+
+message QueryConfigurationNodeHistoryResponse {
+  QueryConfigurationNodeHistoryResponseBody response = 1;
+}
+
+message QueryAllConfigurationsByGroupRequestBody {
+  repeated string config_groups = 1;
+}
+
+message QueryAllConfigurationsByGroupMatch {
+  // full path to current config node (/cvars/product_name:dgs_pu/variables)
+  string curr_node = 1;
+  // config version
+  uint64 curr_version = 2;
+  // config value
+  string value = 3;
+  // matcher used
+  sc.external.services.configuration.v1.ConfigMatchers matchers = 4;
+}
+
+message QueryAllConfigurationsByGroupRequest {
+  QueryAllConfigurationsByGroupRequestBody query = 1;
+}
+
+message QueryAllConfigurationsByGroupResponse {
+  message QueryAllConfigurationsByGroupResponseBody {
+    message QueryAllConfigurationsByGroupResponseBodyGroup {
+      repeated QueryAllConfigurationsByGroupMatch matches = 1;
+    }
+  
+    map<string, QueryAllConfigurationsByGroupResponseBodyGroup> variables = 1;
+  }
+
+  map<string, QueryAllConfigurationsByGroupResponseBody> response = 1;
+}
+
+service ConfigAdminService {
+
+  /* WriteConfig
+     Accepts a WriteConfigRequest
+     Returns a boolean whether the config was written or not
+  */
+  rpc WriteConfig(WriteConfigRequest) returns (WriteConfigResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/write",
+      body: "*"
+    };
+  }
+
+  /* UpdateConfig
+     Accepts a UpdateConfigRequest
+     Returns a boolean whether the config was written or not
+  */
+  rpc UpdateConfig(UpdateConfigRequest) returns (UpdateConfigResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/update",
+      body: "*"
+    };
+  }
+
+  /* DeleteConfig
+     Accepts a DeleteConfigRequest
+     Returns a boolean whether the config was written or not
+  */
+  rpc DeleteConfig(DeleteConfigRequest) returns (DeleteConfigResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/delete",
+      body: "*"
+    };
+  }
+
+  /*  QueryAllConfigurations
+      Accepts a QueryAllConfigurationsRequest
+      Returns all matching configurations
+  */
+  rpc QueryAllConfigurations(QueryAllConfigurationsRequest) returns (QueryAllConfigurationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/query-all",
+      body: "*"
+    };
+  }
+
+  /*  QueryConfigurationNodeHistory
+      Accepts a QueryConfigurationNodeHistoryRequest
+      Returns all versions of a specific node
+  */
+  rpc QueryConfigurationNodeHistory(QueryConfigurationNodeHistoryRequest) returns (QueryConfigurationNodeHistoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/query-node-history",
+      body: "*"
+    };
+  }
+
+  /*  QueryAllConfigurationsByGroup
+      Accepts a QueryAllConfigurationsByGroupRequest
+      Returns all matching configurations, by group, by variable
+  */
+  rpc QueryAllConfigurationsByGroup(QueryAllConfigurationsByGroupRequest) returns (QueryAllConfigurationsByGroupResponse) {
+    option (google.api.http) = {
+      post: "/v1/config/query-all-by-group",
+      body: "*"
+    };
+  }
+}

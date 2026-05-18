@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message Target {
+  // Host of the target
+  string host = 1;
+
+  // Listening http port for /metrics
+  uint32 port = 2;
+}
+
+message MetricsTargetsRequest {}
+
+message MetricsTargetsResponse {
+  // List of targets to monitor
+  repeated Target targets = 1;
+}

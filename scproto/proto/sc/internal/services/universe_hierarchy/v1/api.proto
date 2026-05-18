@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package sc.internal.services.universe_hierarchy.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+	info: {
+		title: "Universe Hierarchy Service"
+		version: "1.0",
+		description: "Service to manage Universe Hierarchy Data."
+	}
+};
+
+
+//////////////////////////////////////////////////
+message EntityMetadata
+{
+	string entity_name = 1;
+	uint32 entity_flags = 2;
+	uint32 entity_type = 3;
+	string oc_name = 4;
+	uint32 location_id = 5;
+	string location_name = 6;
+	int32 num_entities = 7;
+	int32 num_entities_movable = 8;
+	int32 num_entities_immovable = 9;
+}
+
+//////////////////////////////////////////////////
+// rpc ResolveSuperGUIDs(ResolveSuperGUIDsRequest) returns (ResolveSuperGUIDsResponse);
+//
+// called to resolve superguids in a shard
+//
+message ResolveSuperGUIDsRequest {
+	message Body
+	{
+		// the entity id the superguid is relative to.
+		uint64 relative_to_entity_id = 1;
+
+		// the chain of guids from that entity to the target
+		repeated string guids = 2;
+	}
+
+	string shard_id = 1;
+	repeated Body resolves = 2;
+	bool include_metadata = 3;
+}
+
+
+message ResolveSuperGUIDsResponse {
+	message Body
+	{
+		// the most-resolved entity possible in the hierarchy.
+		uint64 entity_id = 1;
+
+		// If there are remaining entries in guids when the call returns, the superguid was only partially resolved.
+		repeated string remaining_guids = 2;
+
+		// optional metadata
+		EntityMetadata entity_metadata = 3;
+	}
+
+	repeated Body results = 1;
+}
+
+//////////////////////////////////////////////////
+// rpc ResolveSuperGUIDs(ResolveSuperGUIDsRequest) returns (ResolveSuperGUIDsResponse);
+//
+// called to resolve superguids in a shard
+//
+message ResolveEntityGEIDsRequest {
+	message Body
+	{
+		// the entity id the resolved superguid will be relative to.
+		uint64 relative_to_entity_id = 1;
+
+		// the entity id to resolve
+		uint64 entity_id = 2;
+	}
+
+	string shard_id = 1;
+	repeated Body resolves = 2;
+	bool include_metadata = 3;
+}
+
+message ResolveEntityGEIDsResponse {
+	message Body
+	{
+		// resolved entity id
+		uint64 entity_id = 1;
+
+		// Resolved superGUID
+		repeated string guids = 2;
+
+		// optional metadata
+		EntityMetadata entity_metadata = 3;
+	}
+
+	repeated Body results = 1;
+}
+
+//////////////////////////////////////////////////
+// rpc ResolveLocationIds(ResolveLocationIdsRequest) returns (ResolveLocationIdsResponse);
+//
+// called to resolve TlocationId to the entity id representing the location in a shard
+//
+message ResolveLocationIdsRequest {
+	string shard_id = 1;
+	repeated uint32 location_ids = 2;
+}
+
+message ResolveLocationIdsResponse {
+	repeated uint64 entity_ids = 1;
+}
+
+// service to manage universe hierarchy data
+service UniverseHierarchyService {
+	// called to resolve superguid for a shard
+	rpc ResolveSuperGUIDs(ResolveSuperGUIDsRequest) returns (ResolveSuperGUIDsResponse) {
+		option (google.api.http) = {
+			post: "/v1/universe-hierarchy/resolve/superguid"
+			body : "*",
+		};      
+	}
+
+	// called to resolve geid for a shard
+	rpc ResolveEntityGEIDs(ResolveEntityGEIDsRequest) returns (ResolveEntityGEIDsResponse) {
+		option (google.api.http) = {
+			post: "/v1/universe-hierarchy/resolve/entityid"
+			body : "*",
+		};      
+	}
+
+	// called to resolve TlocationId to the entity id representing the location in a shard
+	rpc ResolveLocationIds(ResolveLocationIdsRequest) returns (ResolveLocationIdsResponse) {
+		option (google.api.http) = {
+			post: "/v1/universe-hierarchy/resolve/locationid"
+			body : "*",
+		};      
+	}
+};

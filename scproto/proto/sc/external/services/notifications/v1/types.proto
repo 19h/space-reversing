@@ -1,0 +1,123 @@
+
+syntax = "proto3";
+
+package sc.external.services.notifications.v1;
+
+import "sc/external/services/notifications/v1/ui_components.proto";
+
+/*
+  Notification recipient addressing.
+*/
+message Recipient {
+  string service_id = 3;
+  map<string, string> args = 4;
+  map<string, string> metadata = 5;
+  string target_urn = 6;
+
+  reserved 1, 2;
+  reserved "account_urn", "player_urn";
+}
+
+enum NotifyMode {
+  NOTIFY_MODE_UNSPECIFIED = 0;
+  NOTIFY_MODE_ALWAYS = 1;
+  NOTIFY_MODE_IFNONE = 2;
+  NOTIFY_MODE_NEVER = 3;
+}
+
+/*
+  Message behaviors detail how the notification should behave when received by
+  rendering clients.
+*/
+message Behaviors {
+  // Time the notification should stay on screen in seconds.
+  uint32 time_on_screen = 1;
+  // Whether this notification should be persisted in offline notifications.
+  bool persists = 2;
+  // Epoch time in second when this notification expires.
+  uint32 expire_at = 3;
+  // Whether this notification require user interaction before being dismissed.
+  bool require_interaction = 4;
+  // Whether replacing this notification causes a re-notification.
+  NotifyMode renotify = 5;
+  NotifyMode notify = 6;
+  // Whether this notification is silent.
+  bool silent = 7;
+
+}
+
+enum Facility { 
+  FACILITY_UNSPECIFIED = 0;
+  FACILITY_PERSONAL = 1;
+  FACILITY_SYSTEM = 2; 
+  FACILITY_HINT = 3;
+}
+
+message Body {
+  repeated sc.external.services.notifications.v1.Block blocks = 1;
+}
+
+message NotificationRequest {
+  Facility facility = 1;
+  string type = 2;
+  string category = 3;
+  // Title of the notification.
+  string title = 4;
+  // Message body.
+  NotificationMessage message = 5;
+  // Optional icon url or resource name.
+  string icon = 7;
+  // Priority of the notification from 1 to 10, 10 being highest priority.
+  uint32 priority = 8;
+  // List of recipients who should receive this notification message.
+  repeated Recipient recipients = 9;
+  // Group id for this notification should stack with.
+  string group_id = 10;
+  // Tag identifier for this notification for on-screen replacement.
+  string tag = 11;
+  Behaviors behaviors = 12;
+}
+
+message NotificationMessage {
+  oneof message {
+    string text = 1;
+    Body body = 2;
+  }
+}
+
+message Notification {
+  // UUID identifier for this notification
+  string id = 1;
+  string player_urn = 2;
+  Facility facility = 3;
+  string type = 4;
+  string category = 5;
+  // Title of the notification.
+  string title = 6;
+  // Message body.
+  NotificationMessage message = 7;
+  // Optional icon url or resource name.
+  string icon = 8;
+  // Priority of the notification from 1 to 10, 10 being highest priority.
+  uint32 priority = 9;
+  Recipient recipient = 10;
+  // Group id for this notification should stack with.
+  string group_id = 11;
+  // Tag identifier for this notification for on-screen replacement.
+  string tag = 12;
+  // Whether the current user has read this notification or not
+  bool read = 13;
+  Behaviors behaviors = 14;
+  uint32 created_at = 15;
+  uint32 updated_at = 16;
+}
+
+message NotificationRead {
+  // notification UUID
+  string id = 1;
+}
+
+message NotificationUnread {
+  // notification UUID
+  string id = 1;
+}

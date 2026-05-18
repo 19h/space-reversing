@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package sc.external.services.land_claim.v1;
+import "google/type/latlng.proto";
+import "google/protobuf/timestamp.proto";
+
+// Plot is identified using 2 points, bottom left and top right
+message Plot {
+    // UUID
+    string id = 1;
+    // 2 points to identify the plot
+    google.type.LatLng bottom_left = 2;
+    google.type.LatLng top_right = 3;
+}
+
+enum ClaimType {
+    CLAIM_TYPE_UNSPECIFIED = 0;
+    CLAIM_TYPE_GENERAL = 1;
+    CLAIM_TYPE_PROSPECTING = 2;
+    CLAIM_TYPE_BEACON = 3;
+}
+
+message LandClaim {
+    string id = 1;
+    uint32 location_id = 2;
+    string owner_urn = 3;
+    repeated Plot plots = 4;
+    ClaimType type = 5;
+    message Tax {
+        google.protobuf.Timestamp last_paid_at = 1;
+        google.protobuf.Timestamp last_processed_at = 2;
+    }
+    Tax tax_history = 6;
+}
+
+message AreaFilter {
+    // Id of the location (like planet) where the claims are being queried
+    uint32 location_id = 1;
+    // Shape of the area to query all claims intersecting with it
+    // GeoJSON Polygon, end point of the polygon should be the same as the start point
+    repeated google.type.LatLng area = 2;
+}

@@ -1,0 +1,427 @@
+
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+enum ComparisonOperator {
+  COMPARISON_OPERATOR_UNSPECIFIED = 0;
+  COMPARISON_OPERATOR_LESS_THAN = 1;
+  COMPARISON_OPERATOR_LESS_THAN_OR_EQUAL = 2;
+  COMPARISON_OPERATOR_GREATER_THAN = 3;
+  COMPARISON_OPERATOR_GREATER_THAN_OR_EQUAL = 4;
+  COMPARISON_OPERATOR_EQUAL = 5;
+  COMPARISON_OPERATOR_NOT_EQUAL = 6;
+  // regex match (case insensitive, modifiers not supported)
+  COMPARISON_OPERATOR_MATCH = 7;
+  COMPARISON_OPERATOR_NOT_MATCH = 8;
+  COMPARISON_OPERATOR_IN = 9;
+  COMPARISON_OPERATOR_NOT_IN = 10;
+}
+
+enum LogicalOperator {
+  LOGICAL_OPERATOR_UNSPECIFIED = 0;
+  LOGICAL_OPERATOR_AND = 1;
+  LOGICAL_OPERATOR_OR = 2;
+}
+
+enum SortComparator {
+  SORT_COMPARATOR_UNSPECIFIED = 0;
+  SORT_COMPARATOR_LEXICOGRAPHIC = 1;
+  SORT_COMPARATOR_NUMERICAL = 2;
+}
+
+message EntityGraphQuery {
+  // Filter to select root nodes that match
+  EntityFilter filter = 1;
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  // Options for the data returned
+  EntityProjection projection = 3;
+  // filter to use to additionally query entity classes
+  // the filter passed here will filter any entity classes that
+  // match any of the entities (found by the entity filter) by class_guid_crc
+  EntityClassFilter entity_class_filter = 4;
+  // Query sorting for roots matching constraints
+  EntitySortingArguments sort = 5;
+  // Preferred language of the query for localized fields
+  string language = 6;
+  // if scope is global, inventoryId MUST be passed here
+  string inventory_id = 7;
+}
+
+message EntityGraphStreamQuery {
+  // root entity geid to start from
+  uint64 entity_id = 1;
+  // Optional constraint to prune the tree loaded when tree is set to true
+  EntityPruneConstraint prune = 2;
+  // Optional filter to filter the tree
+  EntityFilter filter = 3;
+  // Whether snapshot data should be additionally queried and returned
+  bool snapshots = 4;
+  // Bitmask of EntitySnapshotVariableFlags to filter snapshot variables by. 0 = no filter (backwards compat).
+  uint32 snapshot_flags = 5;
+}
+
+message EntitySortingByProperty { string property = 1; SortComparator sort_comparator = 2; }
+
+message EntitySortingByClassProperty { string property = 1; SortComparator sort_comparator = 2; }
+
+message EntitySortingByEdgeProperty { string property = 1; string edge_type = 2; SortComparator sort_comparator = 3; }
+
+message EntitySortingArguments {
+  sc.external.common.api.v1.PaginationOrder order = 1;
+  oneof property {
+    EntitySortingByProperty entity_property = 2;
+    EntitySortingByClassProperty class_property = 3;
+    EntitySortingByEdgeProperty edge_property = 4;
+  }
+}
+
+message PruneEdgePropertyFilter {
+  // Allowed indexed properties from nodes
+  string property = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+  string edge_type = 4;
+}
+
+message PruneEdgeCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated PruneEdgePropertyFilter filters = 2;
+}
+
+message PruneEdgeFilter {
+  oneof filter_type {
+    PruneEdgeCompositeFilter composite_filter = 1;
+    PruneEdgePropertyFilter property_filter = 2;
+  }
+}
+
+message EntityPruneConstraint {
+  // Optionally ignore prune filter for first node
+  bool from_root_node = 1;
+  // Optional prune filter to prune the tree
+  EntityFilter from = 2;
+  // Optional filter to prune based on edge properties
+  // AND combined with 'from' filter if passed
+  PruneEdgeFilter edge_filter = 3;
+  // Optional constraint to prune the tree when an inventory condition is hit
+  // will only be allowed if 'include_inventory_nodes' is set
+  InventoryFilter inventory_filter = 4;
+}
+
+message EntityTreeProjection {
+  // Whether the query should load matching entity attachment trees
+  bool enabled = 1;
+  // Optional constraint to prune the tree loaded when tree is set to true
+  EntityPruneConstraint prune = 2;
+  // Optional filter to filter the tree
+  EntityFilter filter = 3;
+  // Optional: Perform a path mode query so all paths matching are returned
+  bool path_mode = 4;
+  // whether or not to include inventory nodes (and reference edges) in the tree query result
+  bool include_inventory_nodes = 5;
+  // Optional filter to filter the tree when an inventory condition is hit
+  // will only be allowed if 'include_inventory_nodes' is set
+  InventoryFilter inventory_filter = 6;
+}
+
+message EntityProjection {
+  EntityTreeProjection tree = 1;
+  // Whether snapshot data should be additionally queried and returned
+  bool snapshots = 2;
+  // Whether entity classes data should be additionally queried and returned
+  bool entity_classes = 3;
+  // whether or not to include the outgoing edges from the query result root
+  bool outgoing_edges = 4;
+  // Bitmask of EntitySnapshotVariableFlags to filter snapshot variables by. 0 = no filter (backwards compat).
+  uint32 snapshot_flags = 5;
+}
+
+message EntityFilter {
+  oneof filter_type {
+    EntityCompositeFilter composite_filter = 1;
+    NodeLabelFilter label_filter = 2;
+    PropertyFilter property_filter = 3;
+    EdgeFilter edge_filter = 4;
+    BitFilter bit_filter = 5;
+    EntityClassFilter entity_classes_filter = 6;
+  }
+}
+
+message NodeLabelFilter {
+  LabelOperator operator = 1;
+  repeated EntityNodeLabel labels = 2;
+}
+
+message EntityCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated EntityFilter filters = 2;
+}
+
+message ContainerGraphQuery {
+  // Filter to select root nodes that match
+  ContainerFilter filter = 1;
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  // Options for the data returned
+  ContainerProjection projection = 3;
+  // Sorting options
+  sc.external.common.api.v1.PaginationSort sort = 4;
+}
+
+message ContainerPruneConstraint {
+  // Optionally ignore prune filter for first node
+  bool from_root_node = 1;
+  // Optional prune filter to prune the tree
+  ContainerFilter from = 2;
+}
+
+message ContainerTreeProjection {
+  // Whether the query should load matching entity attachment trees
+  bool enabled = 1;
+  // Optional constraint to prune the tree loaded when tree is set to true
+  ContainerPruneConstraint prune = 2;
+  // Optional filter to filter the tree
+  ContainerFilter filter = 3;
+}
+
+message ContainerProjection {
+  ContainerTreeProjection tree = 1;
+  // Whether snapshot data should be additionally queried and returned
+  bool snapshots = 2;
+  // Whether entity classes data should be additionally queried and returned
+  bool entity_classes = 3;
+  // Bitmask of EntitySnapshotVariableFlags to filter snapshot variables by. 0 = no filter (backwards compat).
+  uint32 snapshot_flags = 4;
+}
+
+message ContainerFilter {
+  oneof filter_type {
+    ContainerCompositeFilter composite_filter = 1;
+    ContainerLabelFilter label_filter = 2;
+    PropertyFilter property_filter = 3;
+    EdgeFilter edge_filter = 4;
+  }
+}
+
+message ContainerLabelFilter {
+  LabelOperator operator = 1;
+  repeated ContainerNodeLabel labels = 2;
+}
+
+message ContainerCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated ContainerFilter filters = 2;
+}
+
+message ContainerGraphStreamQuery {
+  // root container geid to start from
+  uint64 geid = 1;
+  // Optional constraint to prune the tree loaded when tree is set to true
+  ContainerPruneConstraint prune = 2;
+  // Optional filter to filter the tree
+  ContainerFilter filter = 3;
+
+}
+
+message PropertyFilter {
+  // Allowed indexed properties from nodes
+  string property = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+}
+
+message BitFilter {
+  string property = 1;
+  BitOperator operator = 2;
+  int32 value = 3;
+}
+
+message EdgeFilter {
+  string edge_type = 1;
+  repeated ScalarValue values = 2;
+}
+
+message SnapshotQuery {
+  message DocumentQuery {
+    uint64 entity_id = 1;
+    repeated SnapshotVariableFilter filter = 2;
+  }
+  repeated DocumentQuery queries = 1;
+  // inventoryId/sharding key - required if scope is global
+  string inventory_id = 2;
+}
+
+message SnapshotVariableFilter {
+  oneof filter_type {
+    SnapshotVariableNameFilter name_filter = 1;
+    SnapshotVariableTypeFilter type_filter = 2;
+  }
+}
+
+message SnapshotVariableNameFilter {
+  // Filter snapshot for a variable name crc
+  uint32 name = 1;
+}
+
+message SnapshotVariableTypeFilter {
+  // Filter snapshot for a variable type crc
+  uint32 type = 2;
+}
+
+/* Meta Records */
+
+message MetaRecordsQuery {
+  MetaRecordsFilter filter = 1;
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  // Sorting options
+  sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message MetaRecordCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated MetaRecordsFilter filters = 2;
+}
+
+message MetaRecordPropertyFilter {
+  string property = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+}
+
+message MetaRecordsFilter {
+  oneof filter_type {
+    MetaRecordCompositeFilter composite_filter = 1;
+    MetaRecordPropertyFilter property_filter = 3;
+  }
+}
+
+/* Entity classes */
+
+message EntityClassesQuery {
+  EntityClassFilter filter = 1;
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  // Sorting options
+  sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message EntityClassNameFilter {
+  string language = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+}
+
+message EntityClassPropertyFilter {
+  string property = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+}
+
+message EntityClassFilter {
+  oneof filter_type {
+    EntityClassCompositeFilter composite_filter = 1;
+    EntityClassPropertyFilter property_filter = 2;
+    EntityClassNameFilter name_filter = 3;
+  }
+}
+
+message EntityClassCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated EntityClassFilter filters = 2;
+}
+
+
+/* Shards */
+
+message ShardQuery {
+  ShardFilter filter = 1;
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+  // Sorting options
+  sc.external.common.api.v1.PaginationSort sort = 3;
+}
+
+message ShardPropertyFilter {
+  string property = 1;
+  ComparisonOperator operator = 2;
+  repeated ScalarValue values = 3;
+}
+
+message ShardFilter {
+  oneof filter_type {
+    ShardCompositeFilter composite_filter = 1;
+    ShardPropertyFilter property_filter = 2;
+  }
+}
+
+message ShardCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated ShardFilter filters = 2;
+}
+
+message InventoryFilter {
+  oneof filter_type {
+    InventoryCompositeFilter composite_filter = 1;
+    PropertyFilter property_filter = 2;
+    EdgeFilter edge_filter = 3;
+  }
+}
+
+message InventoryCompositeFilter {
+  LogicalOperator operator = 1;
+  repeated InventoryFilter filters = 2;
+}
+
+message InventoryPruneConstraint {
+  // Optional constraint to prune the tree loaded when tree is set to true
+  InventoryFilter from = 1;
+  // Optional filter to prune based on edge properties
+  // AND combined with 'from' filter OR 'entity_filter' if passed
+  PruneEdgeFilter edge_filter = 2;
+  // Optional constraint to prune the tree when an entity condition is hit
+  // in the loaded tree when tree is set to true
+  EntityFilter entity_filter = 3;
+  // only from OR entity_filter may be passed not chnaging to oneof to ensure
+  // backwards compatibility
+}
+
+message InventoryTreeFilter  {
+  // root node to start from
+  oneof root {
+    uint64 entity_geid = 1;
+    string inventory_id = 2;
+  }
+  // Optional constraint to prune the tree loaded when tree is set to true
+  InventoryPruneConstraint prune = 3;
+  // Optional filter to filter the tree loaded when tree is set to true
+  InventoryFilter filter = 4;
+}
+
+message InventoryQuery {
+  oneof find_by {
+    InventoryFilter filter = 1;
+    InventoryTreeFilter  tree = 2;
+  }
+  // Pagination parameters to limit and walk matching nodes
+  sc.external.common.api.v1.PaginationArguments pagination = 3;
+  // Sorting options
+  sc.external.common.api.v1.PaginationSort sort = 4;
+}
+
+message InventoryGraphStreamQuery {
+  oneof find_by {
+    // Stream all entities stowed in a specific inventory
+    string inventory_id = 1;
+    // Stream all entities stowed in any inventory owned by this player
+    string player_id = 2;
+  }
+  // Whether snapshot data should be additionally queried and returned
+  bool snapshots = 3;
+  // Whether entity class data should be additionally queried and returned
+  bool entity_classes = 4;
+}

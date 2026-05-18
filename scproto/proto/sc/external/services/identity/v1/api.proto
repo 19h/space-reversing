@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package sc.external.services.identity.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/identity/v1/player.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Identity External Service"
+      version: "1.0",
+      description: "Account and Player Service"
+    }
+};
+
+message GetCurrentPlayerRequest {
+  // account_id is took from call authentication
+}
+
+message GetCurrentPlayerResponse {
+  // Current player associated to the caller's account
+  Player player = 1;
+  string jwt = 2;
+}
+
+message PreallocatePlayerRequest {
+  // account_id is took from call authentication
+  // (Optional) Character name. Can be provided now or later during character creation
+  optional string name = 1;
+}
+
+message PreallocatePlayerResponse {
+  // Preallocated player with a reserved GEID. State will be STATE_PREALLOCATED.
+  // If a preallocated player already exists for this account, it is returned as-is.
+  Player player = 1;
+}
+
+message GetPlayersNamesRequest {
+  // List of player geids to get the names for
+  repeated uint64 player_geids = 1;
+}
+
+message GetPlayersNamesResponse {
+  message PlayerName {
+    uint64 geid = 1;
+    string name = 2;
+  }
+  repeated PlayerName names = 1;
+}
+
+service IdentityService {
+  /*
+      PreallocatePlayer
+
+      Preallocates a player GEID for the authenticated account before first login.
+      If a preallocated player already exists for this account, it is returned as-is.
+      The preallocated player must be claimed via FulfillPlayers to complete character creation.
+  */
+  rpc PreallocatePlayer(PreallocatePlayerRequest) returns (PreallocatePlayerResponse) {
+    option (google.api.http) = {
+      post: "/v1/player/preallocate",
+      body: "*"
+    };
+  }
+
+  /*
+      GetCurrentPlayer
+
+      Get the currently active player for the authenticated account
+  */
+  rpc GetCurrentPlayer(GetCurrentPlayerRequest) returns (GetCurrentPlayerResponse) {
+    option (google.api.http) = {
+      get: "/v1/player/get-current",
+    };
+  }
+
+  /*
+      GetPlayersNames
+
+      Get the names for a list of players
+  */
+  rpc GetPlayersNames(GetPlayersNamesRequest) returns (GetPlayersNamesResponse) {
+    option (google.api.http) = {
+      post: "/v1/player/get-names",
+      body: "*"
+    };
+  }
+}

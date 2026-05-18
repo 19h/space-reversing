@@ -1,0 +1,35 @@
+
+syntax = "proto3";
+
+package sc.internal.services.claim_cost.v1;
+
+import "sc/external/services/land_claim/v1/types.proto";
+import "sc/external/services/ledger/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+// Enum representing the stages of failing to pay tax.
+enum TaxPenaltyStage {
+    TAX_PENALTY_STAGE_UNSPECIFIED = 0;     // Default value, no penalty.
+    TAX_PENALTY_STAGE_MISSED_PAYMENT = 1;  // First missed payment, warning stage.
+    TAX_PENALTY_STAGE_DECAY = 2;           // Loss of planetary shield, building decay.
+    TAX_PENALTY_STAGE_OWNERSHIP_LOSS = 3;  // Loss of ownership, unrestricted attacks.
+}
+
+message LandClaimArea
+{
+    string id = 1;
+    uint32 location_id = 2;
+    string owner_urn = 3;
+    uint64 area = 4;
+    sc.external.services.land_claim.v1.ClaimType type = 5;
+    google.protobuf.Timestamp last_paid_at = 6;
+}
+
+message LandClaimRenewalInfo {
+    // Id of the land claim
+    string land_claim_id = 1;
+    // Currency amount of the renewal
+    sc.external.services.ledger.v1.Funds amount = 2;
+    // Associated penality for current renewal query request
+    TaxPenaltyStage penality = 3;
+}

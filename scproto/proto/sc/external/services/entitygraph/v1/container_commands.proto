@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+
+/** Container Graph **/
+
+/*
+    ContainerGraphCommand
+
+  A command to modify the container graph
+*/
+message ContainerGraphCommand {
+    oneof params {
+        CreateContainerCommand create = 1;
+        EraseContainerCommand erase = 2;
+    }
+}
+
+/*
+    CreateContainerCommand
+
+    Command to add aggregates or entities to the graph
+
+    The create command will:
+    - Append every node to the container graph
+    - Process and append every edge  to existing entity nodes
+*/
+message CreateContainerCommand {
+    message Body {
+        ContainerGraph graphs = 1;
+    }
+    repeated Body creates = 1;
+}
+
+/*
+    EraseContainerCommand
+
+    Command to erase entities or entire aggregates
+
+    The erase command on entities will:
+    - Erase any entity node `CONTAINED_IN` the Container recursively
+    - Erase all edges to and from the Container
+    - Erase all snapshots of matched entities
+*/
+message EraseContainerCommand {
+    message Body {
+        uint64 geid = 1;
+    }
+    repeated Body erasures = 1;
+}

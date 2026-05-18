@@ -1,0 +1,247 @@
+syntax = "proto3";
+package sc.internal.services.ledger.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/ledger/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Ledger Service internal API"
+      version: "1.0",
+      description: "Definitions of the internal API of the ledger service"
+    }
+};
+
+message CreateRequest {
+  message CreateLedger {
+    // URN
+    string owner_urn = 1;
+
+    // account id
+    uint32 account_id = 2;
+
+    // name of the ledger
+    string name = 3;
+
+    // currency of the ledger
+    sc.external.services.ledger.v1.Currency currency = 4;
+
+    // log message
+    string log_message = 5;
+
+    // starting funds of the ledger
+    uint64 amount = 6; 
+  }
+
+  repeated CreateLedger ledgers = 1;
+};
+
+message CreateResponse {
+
+}
+
+
+message DestroyRequest {
+  // LedgerId who must be destroy
+  string id = 1;
+  // number of modification
+  uint32 version = 2;
+  // log message
+  string log_message = 3;
+};
+
+message DestroyResponse {
+  
+}
+
+message DepositRequest {
+ sc.external.services.ledger.v1.Transaction transaction = 1;
+}
+
+message DepositResponse {
+
+}
+
+message TransferRequest {
+  sc.external.services.ledger.v1.TransferTransaction transaction = 1;
+}
+
+message TransferResponse {
+
+}
+
+message WithdrawRequest {
+ sc.external.services.ledger.v1.Transaction transaction = 1;
+}
+
+message WithdrawResponse {
+
+}
+
+message CopyRequest {
+  string from_owner_urn = 1;
+  string to_owner_urn = 2;
+}
+
+message CopyResponse {
+}
+
+message QueryRequest {
+  // URN
+  string owner_urn = 1;
+}
+
+message QueryResponse {
+  // array of ledgers
+  repeated sc.external.services.ledger.v1.Ledger ledgers = 1;
+}
+
+message GetFundsRequest {
+  // Urn
+  string owner_urn = 1;
+  // name of the ledger
+  string ledger_name = 2;
+}
+
+message GetFundsResponse {
+  repeated sc.external.services.ledger.v1.Ledger ledgers = 1;
+}
+
+message QueryHistoryRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryHistoryResponse {
+  // ledger history results
+  repeated sc.external.services.ledger.v1.LedgerHistory results = 1;
+  // page info (first page, last page, current page)
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+
+service LedgerService {
+
+  /*
+      CreateLedger
+
+      Create a ledger
+  */
+
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post : "/v1/ledger/create",
+      body: "*"
+    };
+  }
+
+  /*
+      Destroy
+
+      Close a ledger
+  */
+
+  rpc Destroy(DestroyRequest) returns (DestroyResponse) {
+    option (google.api.http) = {
+      post : "/v1/ledger/destroy",
+      body: "*"
+    };
+  }
+
+  /*
+      Query
+      
+      List all the ledgers owned by a player
+  */
+
+  rpc Query(QueryRequest) returns (QueryResponse) {
+    option (google.api.http) = {
+      get : "/v1/ledger/list"
+    };
+  }
+
+  /*
+      GetFunds
+      
+      Get the funds by a player Id and ledger name
+  */
+
+  rpc GetFunds(GetFundsRequest) returns (GetFundsResponse) {
+    option (google.api.http) = {
+      get : "/v1/ledger/funds"
+    };
+  }
+
+  /*
+      Deposit
+      
+      Deposit funds on a specific ledger for a player.
+  */
+
+  rpc Deposit(DepositRequest) returns (DepositResponse) {
+    option (google.api.http) = {
+      post : "/v1/ledger/deposit",
+      body: "*"
+    };
+  }
+
+  /*
+      Withdraw
+      
+      Withdraw funds on a specific ledger for a player.
+  */
+
+  rpc Withdraw(WithdrawRequest) returns (WithdrawResponse) {
+    option (google.api.http) = {
+      post : "/v1/ledger/withdraw",
+      body: "*"
+    };
+  }
+
+
+  /*
+      Transfer
+
+      Transfer funds from ledger to another different ledger
+  */
+
+  rpc Transfer(TransferRequest) returns (TransferResponse) {
+    option (google.api.http) = {
+      post : "/v1/ledger/transfer",
+      body: "*"
+    };
+  }
+
+  /*
+    Copy
+
+    Copy all the ledger from an owner to another one.
+  */
+
+  rpc Copy(CopyRequest) returns (CopyResponse) {
+    option (google.api.http) = {
+      post: "/v1/ledger/copy",
+      body: "*"
+    };
+  }
+
+
+  /*
+      QueryHistory
+      
+      Get Ledger History
+  */
+
+  rpc QueryHistory(QueryHistoryRequest) returns (QueryHistoryResponse) {
+    option (google.api.http) = {
+      get : "/v1/ledger/history"
+    };
+  }
+};

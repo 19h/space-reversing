@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package sc.external.services.presence.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/services/presence/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Presence External Service"
+    version: "1.0",
+    description: "Allow current account to get and set its presence information"
+  }
+};
+
+message PresenceStreamRequest {
+  PresenceCommand command = 1;
+}
+
+message PresenceStreamResponse {}
+
+message SetPresenceCommand {
+  Presence presence = 1;
+  string environment = 2;
+}
+
+message PresenceCommand {
+  oneof command {
+    SetPresenceCommand set_presence = 1;
+  }
+}
+
+service PresenceService {
+  /*
+    Stream
+
+    Opens a presence stream. When connection opened, consider online. Goes offline automatically on disconnect
+  */
+  rpc PresenceStream(stream PresenceStreamRequest) returns (PresenceStreamResponse) {
+    option (google.api.http) = {
+      post: "/v1/presence/stream",
+      body: "*"
+    };
+  }
+}

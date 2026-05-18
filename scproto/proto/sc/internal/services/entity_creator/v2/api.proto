@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_creator.v2;
+
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/services/entitlement/v2/types.proto";
+import "sc/internal/services/entity_creator/v2/types.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/command/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Entity Creator Service"
+      version: "2.0",
+      description: "Service responsible for creating, attributing and persisting entity hierarchies."
+    }
+};
+
+message EntitlementSnapshotRecords {
+    // Updated list of entitlements
+    repeated sc.external.services.entitlement.v2.Entitlement entitlements = 1;
+    // Updated list of snapshots
+    repeated sc.external.services.entitlement.v2.SnapshotRecord snapshots = 2;
+}
+
+message CreateEntitiesFromEntitlementsRequest {
+    message Body
+    {
+        // Destination where we'll create the entity.
+        sc.external.services.entitygraph.v1.InventoryDestination inventory_destination = 1;
+        // entitlement root URN of the snapshot holder
+        string root_entitlement_urn = 2;
+        // snapshot id of the delivery
+        sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 3;
+        // list of all entitlements referenced by the snapshot
+        repeated sc.external.services.entitlement.v2.Entitlement entitlements = 4;
+        // all snapshot records for the entitlement root + snapshot ID
+        repeated sc.external.services.entitlement.v2.SnapshotRecord snapshots = 5;
+    }
+
+    // Character Id of the owner
+    uint64 player_id = 1;
+
+    // fallback inventory for entities that failed to attach
+    string fallback_inventory_id = 2;
+
+    // List of entites to create
+    repeated Body creation_requests = 3;
+}
+
+message CreateEntitiesFromEntitlementsResponse {
+    // List of entitlement and snapshots for each root entitlements that was requested.
+    repeated EntitlementSnapshotRecords created_records = 1;
+
+    // List of entities ids created in the fallback inventory
+    repeated uint64 fallback_entities_geids = 2;
+}
+
+message CreateEntitiesRequest {
+    message Body {
+        // Entity Class Guid
+        string entity_class_guid = 1;
+        // Stack size of the entity if the entity is a Stack
+        int32 stack_size = 2;
+        // URN in the ltp record
+        string urn = 3;
+        // entity persistent properties (variables filtered by eSVF_Type_LTPBacked flag, components, generation)
+        sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 4;
+    }
+    repeated Body creations = 1;
+
+    // (Optional) Inventory id this item was stowed into
+    string inventory_id = 2;
+    // id of the owner of the record
+    optional uint64 owner_id = 3;
+    // arguments for the command
+    sc.external.common.command.v1.CommandArguments arguments = 4;
+}
+
+message CreateEntitiesResponse {
+  // List of URNs that were rejected due to LTP constraints in Patch B (was LTP in Patch A but no longer on B)
+  repeated string rejected_urn = 1;
+  // List of entity class GUIDs that were not found
+  repeated string unknown_entity_class_guid = 2;
+}
+
+message RestoreExistingEntityFromEntitlementsRequest {
+    // entitlement root URN of the snapshot holder
+    string root_entitlement_urn = 1;
+    // Snapshot slot ID
+    sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 2;
+    // list of all entitlements referenced by the snapshot
+    repeated sc.external.services.entitlement.v2.Entitlement entitlements = 3;
+    // all snapshot records for the entitlement root + snapshot ID
+    repeated sc.external.services.entitlement.v2.SnapshotRecord snapshots = 4;
+    // List of empty editable item port on the item
+    repeated MissingItemStructure missing_item_structures = 5;
+    // Shard id
+    string shard_id = 6;
+}
+
+message RestoreExistingEntityFromEntitlementsResponse {
+    // List of entitlement and snapshots for each root entitlement that was requested.
+    repeated EntitlementSnapshotRecords restored_records = 1;
+}
+
+service EntityCreatorService {
+
+    /*
+      CreateEntitiesFromEntitlements
+
+      Create entities from entitlements
+      this will return a list of all entitlements that got updated (i.e. entity_geid assigned)
+      but can also create new entitlements.
+      the request will also return the full list of snapshots for the entitlement root + snapshot ID.
+    */
+    // Create entities from entitlements with snapshot
+    rpc CreateEntitiesFromEntitlements(CreateEntitiesFromEntitlementsRequest) returns (CreateEntitiesFromEntitlementsResponse) {
+        option (google.api.http) = {
+            post : "/v2/entityCreator/createEntitiesFromEntitlements",
+            body: "*"
+        };
+    }
+
+    /*
+      CreateEntities
+
+      batch creation of entities
+    */
+    rpc CreateEntities(CreateEntitiesRequest) returns (CreateEntitiesResponse) {
+        option (google.api.http) = {
+            get : "/v2/entityCreator/createEntities"
+        };
+    }
+
+    /*
+      RestoreExistingEntityFromEntitlements
+
+      Restore an existing entity hierarchy from its entitlements and snapshot records.
+    */
+    rpc RestoreExistingEntityFromEntitlements(RestoreExistingEntityFromEntitlementsRequest) returns (RestoreExistingEntityFromEntitlementsResponse) {
+        option (google.api.http) = {
+            post : "/v2/entityCreator/restoreExistingEntityFromEntitlements",
+            body: "*"
+        };
+    }
+}

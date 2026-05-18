@@ -1,0 +1,233 @@
+syntax = "proto3";
+
+package sc.internal.services.rental.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/entitlement/v2/types.proto";
+import "sc/external/services/rental/v1/types.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Rental service"
+      version: "1.0",
+      description: "Service responsible for managing entity rentals and their lifecycles."
+    }
+};
+
+
+message RentRequest {
+    message Body {
+        // Account URN of the owner
+        string account_urn = 1;
+        // Player geid
+        uint64 player_id = 2;
+        // Name of the rental
+        string name = 3;
+        // GUID of the Entity Class
+        string entity_class_guid = 4;
+        // Duration of the rental in ms
+        uint32 duration = 5;
+        // Whether the rental should start immediately or await user start.
+        bool start_now = 6;
+        // Log message for history log
+        string log_message = 7;
+        // (Optional) Inventory to create the rental to, only used if start_now is true
+        string target_inventory = 8;
+        // Config from Entity Creator
+        sc.external.services.entitlement.v2.EntityConfiguration entity_configuration = 9;
+        // Snapshot slot id to create the entitlement in
+        sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 10;
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+
+}
+
+message RentResponse {
+    // Unique identifier of the rental
+    string id = 1;
+    // URN of the entitlement (built with rentalID)
+    string entitlement_urn = 2;
+}
+
+message CancelRequest {
+    message Body {
+        // Unique identifier of the rental
+        string id = 1;
+        // Log message for history log
+        string log_message = 2;
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+}
+message CancelResponse {}
+
+message RenewRequest {
+    message Body {
+        // Unique identifier of the rental
+        string id = 1;
+        // Duration to renew the rental for
+        uint32 duration = 2;
+        // Log message for history log
+        string log_message = 3;
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+}
+message RenewResponse {}
+
+message QueryRequest {
+    sc.external.common.api.v1.Query query = 1;
+}
+message QueryResponse {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated sc.external.services.rental.v1.Rental results = 2;
+}
+
+message QueryHistoryRequest {
+    uint64 player_id = 1;
+    optional string rental_id = 2;
+    sc.external.common.api.v1.PaginationArguments pagination = 3;
+    sc.external.common.api.v1.PaginationSort sort = 4;
+}
+message QueryHistoryResponse {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated sc.external.services.rental.v1.RentalHistory results = 2;
+}
+
+message RentOrRenewRequest {
+    message Body {
+        uint64 player_id = 1;
+        string entity_class_guid = 2;
+        uint32 duration = 3;
+        string log_message = 4;
+        // Used only when creating a new rental, if no rental for this player found with this entity class guid
+        message RentParams {
+            string account_urn = 1;
+            string name = 2;
+            bool start_now = 3;
+            string target_inventory = 4;
+            sc.external.services.entitlement.v2.EntityConfiguration entity_configuration = 5;
+            sc.external.services.entitlement.v2.SnapshotSlotId snapshot_slot_id = 6;
+        }
+        RentParams rent_params = 5;
+    }
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    Body body = 2;
+}
+
+message RentOrRenewResponse {
+    string rental_id = 1;
+    string entitlement_urn = 2;
+}
+
+message QueryRentalsStreamRequest {
+    // Required player id
+    uint64 player_id = 1;
+    // (Optional) if not provided, all player's rentals will be returned.
+    optional sc.external.services.rental.v1.RentalFilter filter = 2;
+}
+
+message QueryRentalsStreamResponse {
+    repeated sc.external.services.rental.v1.Rental results = 1;
+}
+
+service RentalService {
+
+    /*
+        Rent
+
+        Submit a rental request. This will create a rental and entitlement for the given
+        player and entity class guid. After the rental period expires, the entitlement wil be melted.
+
+    */
+    rpc Rent(RentRequest) returns (RentResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/rent",
+            body: "*"
+        };
+    }
+
+    /*
+        Cancel
+
+        Cancel an existing rental, effectively issuing an immediate melt of the entitlement if it is active.
+    */
+    rpc Cancel(CancelRequest) returns (CancelResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/cancel",
+            body: "*"
+        };
+    }
+
+    /*
+        Renew
+
+        Renew a rental by providing a new expiration date. The rental must still
+        be active to renew.
+    */
+    rpc Renew(RenewRequest) returns (RenewResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/renew",
+            body: "*"
+        };
+    }
+
+
+    /*
+        RentOrRenew
+
+        Attempt to renew an existing rental by player_geid + entity_class_guid.
+        If no AVAILABLE/ACTIVE rental is found, create a new one using the provided rent_params.
+    */
+    rpc RentOrRenew(RentOrRenewRequest) returns (RentOrRenewResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/rentOrRenew",
+            body: "*"
+        };
+    }
+
+    /*
+        Query
+
+        Query rental records.
+        Kept for backward compatibility. Prefer QueryRentalsStream for new features.
+    */
+    rpc Query(QueryRequest) returns (QueryResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/query",
+            body: "*"
+        };
+    }
+
+    /*
+        QueryHistory
+
+        Query rental history log records
+    */
+    rpc QueryHistory(QueryHistoryRequest) returns (QueryHistoryResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/history",
+            body: "*"
+        };
+    }
+
+    /*
+        QueryRentalsStream
+
+        Query rental records for a player, sends a stream of rentals.
+    */
+    rpc QueryRentalsStream(QueryRentalsStreamRequest) returns (stream QueryRentalsStreamResponse) {
+        option (google.api.http) = {
+            post : "/v1/rental/queryRentals",
+            body: "*"
+        };
+    }
+
+}

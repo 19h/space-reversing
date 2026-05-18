@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+// template that defines a single subsumption mission module
+message ReputationRequirement {
+  // SCURN  of the organisation
+  string organisation_urn = 1;
+  // name of reputation within the organisation
+  string scope_name = 2;
+  // list of standings ids that represent a standing
+  // eg. x id is for "hero"
+  repeated string standing_ids = 3;
+}
+
+message TokenRequirement {
+  // token id
+  string id = 1;
+  // requiredtoken count
+  int32 count = 2;
+}
+
+// defines availability for mission contract
+message ContractPrerequisites {
+  // only available within certain star-engine location id (landing zone) (-1 = all locations)
+  uint32 location_id = 1;
+
+  // player must be in possession of certain token(s)
+  repeated TokenRequirement required_token = 2;
+
+  // player must be in possession of certain token(s)
+  repeated TokenRequirement excluded_token = 3;
+
+  // player must have certain reputation(s)
+  repeated ReputationRequirement required_reputation = 4;
+
+  // player must NOT have certain reputation(s)
+  repeated ReputationRequirement excluded_reputation = 5;
+
+  // optional shardId - mission only available on this shard
+  string shard_id = 6;
+
+  // (Optional) also get tokens from these wallets for the prerequitites check
+  repeated string wallet_ids = 7;
+}
+
+// represents an acceptable mission contract
+message MissionContract {
+  // identifier for this contract - service managed UUID
+  string id = 1;
+
+  // mission template for this contract, which defines type of mission it it's variant
+  MissionTemplate mission_template = 2;
+
+  // mission pre-requisites to define if a player is able to see/accept this mission
+  ContractPrerequisites prerequisites = 3;
+
+  // optional mission pre-requisites when shared. if not set, use prerequisites
+  ContractPrerequisites prerequisites_sharing = 4;
+
+  // contact type
+  string contact_type = 5;
+
+  // (Optional) time to expire and remove contract
+  google.protobuf.Timestamp expiration_time = 6;
+
+  // a list of reserved locations
+  repeated MissionLocationReservation reserved_locations = 7;
+
+  // how many times the mission can be accepted, -1 = unlimited
+  int32 count = 8;
+
+  // can the mission be paused/resumed when leaving/joining a shard
+  bool suspendable = 9;
+
+  // (Optional) if this contracts is a mission that is being shared, this is the id of the shared mission
+  string shared_mission_id = 10;
+
+  // (Optional) if this contract was created from a mission
+  bool created_from_mission = 11;
+}

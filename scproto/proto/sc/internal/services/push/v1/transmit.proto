@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+/*
+  Push Transmit API
+
+  Part of the Push System, the Push Transmit API is allows to submit a push message
+  to a client connected to a specific push listener instance.
+*/
+package sc.internal.services.push.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+// A list of envelopes to transmit to addressed local clients
+message TransmitRequest {
+  repeated sc.external.services.push.v1.PushEnvelope envelopes = 1;
+}
+
+message TransmitResponse {}
+
+// A broadcast envelope to submit to all connected clients
+message TransmitBroadcastRequest {
+  sc.external.services.push.v1.PushEnvelope envelope = 1;
+}
+
+message TransmitBroadcastResponse {}
+
+service PushTransmitService {
+  /*
+    Transmit
+
+    Transmit a push message to recipients connected on a push instance
+  */
+  rpc Transmit(TransmitRequest) returns (TransmitResponse) {
+    option (google.api.http) = {
+      post: "/v1/transmit/push",
+      body: "*"
+    };
+  }
+
+  /*
+    Broadcast
+
+    Broadcast a push message to all clients on all push servers
+  */
+  rpc TransmitBroadcast(TransmitBroadcastRequest) returns (TransmitBroadcastResponse) {
+    option (google.api.http) = {
+      post: "/v1/transmit/broadcast",
+      body: "*"
+    };
+  }
+}

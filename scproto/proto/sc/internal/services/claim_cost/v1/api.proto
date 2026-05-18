@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package sc.internal.services.claim_cost.v1;
+
+import "sc/internal/services/claim_cost/v1/types.proto";
+import "sc/external/services/ledger/v1/types.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.internal.services.ClaimCost.v1.Claim Cost"
+      version: "1.0",
+      description: "Service responsible for to claculate the price of land claim."
+    }
+};
+
+message GetLandClaimBuyPriceRequest {
+    // The land claim area to claim
+    LandClaimArea new_land_claim_area = 1;
+    
+    // The total area (in m^2) already claimed at that location of the same type as the new land claim. Used to calculate the buy price of the new claim.
+    uint64 total_area_of_same_type = 2;
+}
+
+message GetLandClaimBuyPriceResponse {
+    // Land claim buy price
+    sc.external.services.ledger.v1.Funds amount = 1;
+}
+
+message GetLandClaimRenewalPriceRequest {
+    // The land claims area to renew
+    LandClaimArea land_claim_area = 1;
+    // The total area (in m^2) already claimed at that location of the same type as the new land claim. Used to calculate the renewal price.
+    uint64 total_area_of_same_type = 2;
+}
+
+message GetLandClaimRenewalPriceResponse {
+    // The renewal price for each claim
+     LandClaimRenewalInfo renewal_info = 1;
+}
+
+service ClaimCostService {
+    /*
+        Get land claim buy price
+    */ 
+    rpc GetLandClaimBuyPrice(GetLandClaimBuyPriceRequest) returns (GetLandClaimBuyPriceResponse) {
+        option (google.api.http) = {
+            post : "/v1/claim_cost/external/get_land_claim_buy_price_request",
+            body: "*"
+        };
+    }
+
+    /*
+        Get land claim renewal price
+    */
+    rpc GetLandClaimRenewalPrice(GetLandClaimRenewalPriceRequest) returns (GetLandClaimRenewalPriceResponse) {
+        option (google.api.http) = {
+            post : "/v1/claim_cost/external/get_land_claim_renewal_price_request",
+            body: "*"
+        };
+    }
+}

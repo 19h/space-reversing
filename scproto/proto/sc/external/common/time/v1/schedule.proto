@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package sc.external.common.time.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Continuous rule
+message Continuous {}
+
+// Recurrence rule
+message Recurrence {
+  // Cron expression (i.e. * 5 * * *)
+  string cron = 1;
+  // How long each recurrence is active for
+  uint32 duration_seconds = 2;
+}
+
+// A schedule
+message Schedule {
+  // Optional start time stamp
+  optional google.protobuf.Timestamp start_ts = 1;
+
+  // Optional end time stamp
+  optional google.protobuf.Timestamp end_ts = 2;
+
+  oneof run_pattern {
+    // Active between start and end date.
+    // Example: "Run continuously from start_date to end_date"
+    //   continuous {}
+    Continuous continuous = 3;
+
+    // Recurring active between start and end date.
+    // Recurrence is based on a cron expression and a duration in seconds.
+    Recurrence recurring = 4;
+  }
+
+  // Toggle whether this schedule is enabled
+  optional bool enabled = 5;
+
+  // Optional field to hold the resolve expression representation of this schedule
+  optional string resolved_expression = 6;
+}

@@ -1,0 +1,827 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/rpc/status.proto";
+// buf:lint:ignore IMPORT_USED
+import "google/rpc/error_details.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/types/v1/localization.proto";
+import "sc/external/common/types/v1/transforms.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+
+enum ScopeType {
+    SCOPE_TYPE_UNSPECIFIED = 0;
+    SCOPE_TYPE_SHARD = 1;
+    SCOPE_TYPE_GLOBAL = 2;
+    SCOPE_TYPE_GRAVEYARD = 3;
+    reserved 4;
+    reserved "SCOPE_TYPE_ADMIN";
+}
+
+enum Purpose {
+    PURPOSE_UNSPECIFIED = 0;
+    PURPOSE_ADMIN = 1;
+    PURPOSE_LOGIN = 2;
+    PURPOSE_GAMEPLAY_PLAYER = 3;
+    PURPOSE_GAMEPLAY_SYSTEM = 4;
+}
+
+message Scope {
+    ScopeType type = 1;
+    // For SHARD type scopes, the shard_id specifier of the desired shard
+    string shard_id = 2;
+}
+
+enum EntityNodeLabel {
+    ENTITY_NODE_LABEL_UNSPECIFIED = 0;
+    ENTITY_NODE_LABEL_AGGREGATE_ROOT = 1;
+    ENTITY_NODE_LABEL_STREAMING_GROUP = 2;
+    ENTITY_NODE_LABEL_ROOT = 3;
+    ENTITY_NODE_LABEL_SYSTEM_ROOT = 4;
+    ENTITY_NODE_LABEL_UNSTREAMABLE = 5;
+    ENTITY_NODE_LABEL_STATIC_ZONE = 6;
+    ENTITY_NODE_LABEL_PLAYER = 7;
+    ENTITY_NODE_LABEL_UNSTOWED = 8;
+    ENTITY_NODE_LABEL_LONGTERM = 9;
+    ENTITY_NODE_LABEL_SHARD_STOW = 10;
+    ENTITY_NODE_LABEL_SHARD_STOW_NESTING_ELIGIBLE = 11;
+    ENTITY_NODE_LABEL_TRACK_STOW_CONTEXT = 12;
+    ENTITY_NODE_LABEL_INSTANCE_ENTRY = 13;
+    ENTITY_NODE_LABEL_INSTANCE_MAIN = 14;
+}
+
+enum EntityEdgeType {
+    ENTITY_EDGE_TYPE_UNSPECIFIED = 0;
+    ENTITY_EDGE_TYPE_ATTACHED_TO = 1;
+    ENTITY_EDGE_TYPE_STOWED_IN = 2;
+    ENTITY_EDGE_TYPE_REFERENCES = 3;
+}
+
+enum NodeType {
+    NODE_TYPE_UNSPECIFIED = 0;
+    NODE_TYPE_ENTITY = 1;
+    NODE_TYPE_INVENTORY = 2;
+}
+
+enum AttachmentType {
+    ATTACHMENT_TYPE_UNSPECIFIED = 0;
+    // Attachment to an item port in the parent. Refer to `attachment_port` for specifics.
+    ATTACHMENT_TYPE_ITEM_PORT = 1;
+    // Legacy Entity attachment without an itemport
+    ATTACHMENT_TYPE_ATTACHMENT = 2;
+    // Attachment to a spawn point
+    ATTACHMENT_TYPE_SPAWN = 3;
+    // Attachment to a persistent area
+    ATTACHMENT_TYPE_PERSISTENT_AREA = 4;
+    // Attachment to a hosted zone
+    ATTACHMENT_TYPE_ZONE = 5;
+    // Attachment to a shard (in global)
+    ATTACHMENT_TYPE_SHARD = 6;
+}
+
+// Bitmask flags for entity snapshot variables, matching the C++ eSVF_Type / eSVF_Status BIT indices
+enum EntitySnapshotVariableFlags {
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_UNSPECIFIED = 0;
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_NETWORK_SNAPSHOT = 2; // BIT(1) - eSVF_Type_NetworkSnapshot
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_PERSISTENCE = 4; // BIT(2) - eSVF_Type_Persistence
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_GLOBAL_READ_ONLY = 8; // BIT(3) - eSVF_Type_GlobalReadOnly
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_GLOBAL_WRITE = 16; // BIT(4) - eSVF_Type_GlobalWrite
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_LTP_BACKED = 64; // BIT(6) - eSVF_Type_LTPBacked
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_CREATION_SNAPSHOT = 2048; // BIT(11) - eSVF_Status_CreationSnapshot
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_DIRTY_ON_REGISTRATION = 4096; // BIT(12) - eSVF_Status_DirtyOnRegistration
+    ENTITY_SNAPSHOT_VARIABLE_FLAGS_SET_IN_SNAPSHOT = 8192; // BIT(13) - eSVF_Status_SetInSnapshot
+}
+
+message NodeProperties {
+    oneof properties {
+        EntityNodeProperties entity_properties = 1;
+        InventoryNodeProperties inventory_properties = 2;
+    }
+}
+
+message EntityComponent {
+    uint32 hash_id = 1;
+    bool server_only = 2;
+}
+
+message NodeDebugProperties {
+    // debug entity class name
+    string entity_class_name = 20;
+    // debug location name
+    string location_name = 21;
+}
+
+message StowContextFields {
+    optional string inv = 1;
+    optional string shd = 2;
+}
+
+message EntityNodeProperties {
+    // Global unique entity identifier
+    uint64 geid = 1;
+    // Item class GUID crc
+    uint32 class_guid_crc = 2;
+    reserved 3;
+    reserved "item_type";
+    // Type of ownership of this item (cig::RSIOwnership), Owned_PU, Owned_AC...
+    uint64 ownership_type = 4;
+    // Entity flags of this entity (EEntityFlags)
+    uint64 entity_flags = 5;
+    // Game flags of the entity (EPersistentItemGameFlags)
+    uint64 game_flags = 6;
+    // Parent relative orientation
+    sc.external.common.types.v1.Quatd orientation = 7;
+    // Parent relative position
+    sc.external.common.types.v1.Vec3d position = 8;
+    // Parent relative scale
+    double scale = 9;
+    // Radius of the entitiy (float64)
+    double radius = 10;
+    reserved 11;
+    reserved "star_hash";
+    // Stack size of the entity if the entity is a Stack
+    uint32 stack_size = 12;
+    // Optional legal owner of the entity
+    uint64 owner_id = 13;
+    // parent URN of the entity from entitlement
+    string parent_urn = 14;
+    // Labels representing the compound type of node (Entity, AggregateRoot, etc)
+    repeated EntityNodeLabel labels = 15;
+    // Generation (gen) of the entity for patch versioning
+    uint32 generation = 16;
+    // tags for the entity
+    repeated uint32 tags = 17;
+    // components for the entity
+    repeated EntityComponent components = 18;
+    // Location of the entity (as hash crc of DF records guid)
+    uint32 location_id = 19;
+    // debug properties, game should set when creates/updates/move/etc on a DEBUG/non release build
+    map<string, string> debug = 20;
+    // (Optional) Version of the entity if applicable
+    uint32 version = 21;
+    reserved "status";
+    reserved 22;
+    // entity creation time in ms
+    uint64 created_at = 23;
+    // entity last modified time in ms
+    uint64 updated_at = 24;
+
+    string unstowed_from_inventory_id = 25;
+
+    // stow context fields
+    reserved "stow_ctx";
+    reserved 26;
+
+    // Item type enum (from Entity Class)
+    int32 item_type_enum = 27;
+    // Item subtype enum (from Entity Class)
+    int32 item_sub_type_enum = 28;
+
+    // ownership status imprint
+    sc.external.common.game.v1.OwnershipStatus ownership_status = 29;
+    // ownership timestamp imprint
+    google.protobuf.Timestamp ownership_timestamp = 30;
+}
+
+enum InventoryType {
+    INVENTORY_TYPE_UNSPECIFIED = 0;
+    // An infinite bag of holding inventory
+    INVENTORY_TYPE_INFINITE = 1;
+    // An inventory with a volumetric capacity
+    INVENTORY_TYPE_PHYSICAL = 2;
+}
+
+message PhysicalInventoryConfiguration {
+    int32 capacity = 1;
+    int32 occupancy = 2;
+}
+
+message InventoryConfiguration {
+    oneof configuration {
+        // Physical inventory configuration
+        PhysicalInventoryConfiguration physical = 9;
+    }
+}
+
+message InventoryNodeProperties {
+    // Global unique entity identifier of the entity this inventory represents
+    reserved "geid";
+    reserved 1;
+    // Inventory creation time in ms
+    reserved "time_created";
+    reserved 2;
+    // Inventory last modified time in ms
+    reserved "time_modified";
+    reserved 3;
+    // The type of inventory (infinite, physical)
+    InventoryType inventory_type = 4;
+    // Optional legal owner of the inventory
+    uint64 owner_id = 5;
+    // Shard id where this entity is unstowed
+    string unstowed_in = 6;
+    // Generation (gen) for patch versioning
+    uint32 generation = 7;
+    // Wether this inventory is shared bewtween actors
+    bool shared = 8;
+    // Type specific inventory configuration
+    InventoryConfiguration configuration = 9;
+    // (Optional) inventory name
+    string name = 10;
+    // debug properties, game should set when creates/updates/move/etc on a DEBUG/non release build
+    map<string, string> debug = 11;
+    // unique identifier for the inventory
+    string id = 12;
+    // the kind of inventory for the reference
+    string context = 13;
+    // identifier of the targetof the reference
+    uint64 subject_id = 14;
+    // Inventory creation timestamp in ms
+    uint64 created_at = 15;
+    // Inventory last modified timestamp in ms
+    uint64 updated_at = 16;
+    reserved "status";
+    reserved 22;
+}
+
+message PhysicalInventoryEdgeConfiguration {
+    // Occupancy (size) of this item in the inventory
+    uint32 occupancy = 2;
+}
+
+message EntityEdgeProperties {
+    // Type / Reason of this attachment
+    AttachmentType attachment_type = 1;
+    // Parent port when attaching as `ITEM_PORT`
+    uint32 attachment_port_crc = 2;
+    // Lexorank string for the item ordered in the inventory.
+    string rank = 3;
+    // Type-specific inventory edge properties
+    oneof inventory {
+        PhysicalInventoryEdgeConfiguration physical = 4;
+    }
+    // the kind of inventory for the reference
+    string context = 5;
+    // identifier of the targetof the reference
+    uint64 subject_id = 6;
+    // (Optional) Version of the entity
+    uint32 version = 7;
+}
+
+/*
+  Node
+
+  A node in the graph.
+  Can represent the many type of objects the graph carries like Entities, Players,
+  Organizations, Inventories.
+*/
+message Node {
+    NodeProperties properties = 1;
+    NodeType type = 2;
+}
+
+
+// An edge vertex, by type and identifier
+message EntityEdgeVertex {
+    // Identifier (usually geid) of this edge vertex
+    oneof id {
+        uint64 entity_id = 1;
+        string inventory_id  = 2;
+        string shard_id = 4;
+    }
+    // Type of the edge vertex
+    NodeType type = 3;
+}
+
+/*
+    EntityEdge
+
+    An edge of the graph , connecting nodes via a relationship type
+    with a set of qualifying properties.
+*/
+message EntityEdge {
+    // Type of edge (ATTACHMENT, STOWED_IN, etc)
+    EntityEdgeType type = 1;
+    // type/id of the node this edge starts at
+    EntityEdgeVertex start = 2;
+    // type/id of the node this edge ends at
+    EntityEdgeVertex end = 3;
+    // Properties of the edge
+    EntityEdgeProperties properties = 4;
+}
+
+
+/*
+    EntityGraph
+
+    A subgraph of the ShardGraph, with nodes and edges that is used to transport
+    an entity tree, ownership and inventory information back to the game.
+*/
+message EntityGraph {
+    repeated Node nodes = 1;
+    repeated EntityEdge edges = 2;
+}
+
+/** Entity Snapshots **/
+
+message EntitySnapshot {
+
+    uint64 entity_id = 1;
+
+    // Serialized variables of the snapshot
+    repeated EntityVariable variables = 2;
+
+    // (Optional) Version of the entity
+    uint32 version = 3;
+}
+
+message EntityVariable {
+    // CRC of the  name of the variable
+    uint32 name_crc = 1;
+    // variable type
+    uint32 type = 2;
+    // Bitmask flags (snapshot, network, persistent)
+    uint32 flags = 3;
+    // The serialized byte data of the variable
+    bytes snapshot = 4;
+}
+
+/* Query values */
+
+message Value {
+    oneof value_type {
+        ScalarValue scalar_value = 1;
+        ArrayValue array_value = 2;
+        StructValue map_value = 3;
+    }
+}
+
+message ScalarValue {
+    oneof scalar_type {
+        google.protobuf.NullValue null_value = 1;
+        string string_value = 2;
+        bool boolean_value = 3;
+        int32 integer_value = 4;
+        double double_value = 5;
+        int64 bigint_value = 6;
+        google.protobuf.Timestamp timestamp_value = 7;
+        bytes blob_value = 8;
+        uint32 unsigned_integer_value = 9;
+        uint64 unsigned_bigint_value = 10;
+    }
+}
+
+message ArrayValue {
+    repeated Value values = 1;
+}
+
+message StructValue {
+    map<string, Value> fields = 1;
+}
+
+message PersistentEntityProperties {
+    // Serialized variables of the entity
+    // only variables flagged as ENTITY_SNAPSHOT_VARIABLE_FLAGS_LTP_BACKED
+    repeated EntityVariable variables = 1;
+
+    // Persistent Entity Components
+    repeated EntityComponent components = 2;
+
+    // entity generation this snapshot was generated
+    uint32 generation = 3;
+}
+
+/** Container Graph  **/
+
+
+enum ContainerNodeLabel {
+    CONTAINER_NODE_LABEL_UNSPECIFIED = 0;
+    CONTAINER_NODE_LABEL_CONTAINER = 1;
+    CONTAINER_NODE_LABEL_STAR_SYSTEM = 2;
+    CONTAINER_NODE_LABEL_HAS_PHYSICS_GRID = 3;
+    CONTAINER_NODE_LABEL_UNIVERSE_ROOT = 4;
+    CONTAINER_NODE_LABEL_LOCATION = 5;
+}
+
+/*
+  ContainerNode
+
+  A node in the static Object Container graph of a shard
+*/
+message ContainerNode {
+    // Labels representing the compound type of node (Entity, AggregateRoot, etc)
+    repeated ContainerNodeLabel labels = 1;
+    ContainerNodeProperties properties = 2;
+}
+
+message ContainerNodeProperties {
+    message Identifiers {
+        uint64 start_id = 1;
+        bool has_planet = 2;
+        uint32 unstreamable_count = 3;
+        uint32 streaming_immovable_count = 4;
+        uint32 streaming_movable_count = 5;
+    }
+
+    string guid = 1;
+    uint64 geid = 2;
+    uint32 socpak_content_hash = 3;
+    uint32 socpak_file_path_hash = 4;
+    Identifiers identifiers = 5;
+    // Generation (gen) for patch versioning
+    uint32 generation = 6;
+    // container creation time in ms
+    uint64 created_at = 23;
+    // container last modified time in ms
+    uint64 updated_at = 24;
+}
+
+enum ContainerEdgeType {
+    CONTAINER_EDGE_TYPE_UNSPECIFIED = 0;
+    CONTAINER_EDGE_TYPE_CONTAINED_IN = 1;
+}
+
+enum LabelOperator {
+    LABEL_OPERATOR_UNSPECIFIED = 0;
+    LABEL_OPERATOR_HAS_ANY = 1;
+    LABEL_OPERATOR_HAS_ALL = 2;
+    LABEL_OPERATOR_HAS_NONE = 3;
+}
+
+enum BitOperator {
+    BIT_OPERATOR_UNSPECIFIED = 0;
+    BIT_OPERATOR_AND = 1;
+    BIT_OPERATOR_OR = 2;
+    BIT_OPERATOR_NOT = 3;
+}
+
+message ContainerEdgeProperties {}
+
+/*
+    ContainerEdge
+
+    An edge of the OC graph , connecting nodes via a relationship type
+    with a set of qualifying properties.
+*/
+message ContainerEdge {
+    // Type of edge (ATTACHMENT, OWNER_BY, etc)
+    ContainerEdgeType type = 1;
+    // id of the node that start this edge
+    uint64 start = 2;
+    // id of the node that ends this edge
+    uint64 end = 3;
+
+    ContainerEdgeProperties properties = 4;
+}
+
+
+message ContainerGraph {
+    repeated ContainerNode nodes = 1;
+    repeated ContainerEdge edges = 2;
+}
+
+
+/*
+    MetaRecord
+
+    An entry for lookup in the MetaRecords library. MetaRecords
+    are used to provide reverse lookups from hash/crc stored in the
+    entity graph in compact form to structured and human readable records.
+
+    Mostly used for visual tools lookups.
+*/
+message MetaRecord {
+    // Kind identifier of the key, each key is unique per kind.
+    string kind = 1;
+    // The hash or CRC for this meta record
+    string key = 2;
+    // Human-readable name
+    string name = 3;
+    // Human-readable type classification
+    string type = 4;
+    // Optional human-readable description
+    string description = 5;
+    // Optional list of references to game files or other services
+    repeated MetaReference references = 6;
+    // Additional data dictionary that is relevant
+    map<string, ScalarValue> dictionary = 7;
+    // Generation (gen) of the record for versioning
+    uint32 generation = 8;
+}
+
+/*
+    MetaReference
+
+    Meta Reference offers a way to add references
+    to game files or other services from a metarecord
+    for the purpose of cross systems identification.
+*/
+message MetaReference {
+    // Refers to a datacore guid
+    string datacore_guid = 1;
+    // Refers to a global entity id
+    string geid = 2;
+    // Refers to a service SCURN
+    string scurn = 3;
+}
+
+message EntityOwner {
+    message Owner {
+        double account_id = 1;
+        string player_id = 2;
+        string name = 3;
+        string nick_name = 4;
+        string display_name = 5;
+    }
+
+    string entity_id = 1;
+    Owner owner = 2;
+}
+
+message StarHash {
+    uint64 level0 = 1;
+    uint64 level1 = 2;
+}
+
+/*
+  EntityClass
+
+  An entity class node in the graph.
+  This is an abstraction of certain entity properties into a 'class'
+  the crc will match an entity node in the graph and this will contain
+  additional info such as localised name, type and subtype
+*/
+message EntityClass {
+    EntityClassProperties properties = 1;
+}
+
+message EntityClassProperties {
+    // Unique entity class identifier
+    string guid = 1;
+    // Item class GUID crc - should match an entity's class_guid_crc
+    uint32 guid_hash_crc = 2;
+    // String name for the class
+    string class_name = 3;
+    // Item type
+    string item_type = 4;
+    // Item subtype
+    string item_sub_type = 5;
+    // localised name for entity
+    sc.external.common.types.v1.LocalizedString name = 6;
+    // localised description for entity
+    sc.external.common.types.v1.LocalizedString description = 7;
+    // tags for the entity class
+    repeated uint32 tags = 8;
+    // gen of the class
+    uint32 generation = 9;
+    // Item type enum
+    int32 item_type_enum = 10;
+    // Item subtype enum
+    int32 item_sub_type_enum = 11;
+    // component hashes for the entity class
+    repeated uint32 components = 12;
+}
+
+/* Shards */
+
+enum ShardStatus {
+    SHARD_STATUS_UNSPECIFIED = 0;
+    // Shard was created but not seeded
+    SHARD_STATUS_IDLE = 1;
+    // Shard is seeding
+    SHARD_STATUS_SEEDING = 2;
+    // Shard is fully active
+    SHARD_STATUS_ACTIVE = 3;
+    // Shard was set to inactive
+    SHARD_STATUS_INACTIVE = 4;
+    // Shard is destroyed
+    SHARD_STATUS_DESTROYED = 5;
+    // Shard is crashed
+    SHARD_STATUS_CRASHED = 6;
+    // Shard is created
+    SHARD_STATUS_CREATED = 7;
+    // Shard is acquired
+    SHARD_STATUS_ACQUIRED = 8;
+}
+
+message Shard {
+    // Shard identifier
+    string id = 1;
+    // Shard status
+    ShardStatus status = 2;
+    // human readable name of the sahrd
+    string name = 3;
+    // Shard generation version
+    uint32 generation = 4;
+    // (Optional): region of the shard
+    sc.external.common.network.v1.Region region = 5;
+    // Database host of the shard
+    string host = 6;
+}
+
+/* Mutations */
+
+enum QueueingBehavior {
+   QUEUEING_BEHAVIOR_UNSPECIFIED = 0;
+    // Command will be queued and processed asynchronously.
+    QUEUEING_BEHAVIOR_ASYNC = 1;
+    // RPC/Command will wait for completion and return
+    QUEUEING_BEHAVIOR_SYNC = 2;
+}
+
+message NotificationBehavior {
+    repeated sc.external.common.command.v1.NotifyDestination destinations = 1;
+    // (Optional) If true, only send notifications on failure
+    bool only_on_failure = 2;
+}
+
+message MutationArguments {
+    // Identifier of the mutation
+    string id = 1;
+    // Scope of this mutation (shard/global)
+    Scope scope = 2;
+    // (Optional) A partitioning key used to enforce orgering guarantees
+    string partitioning_key = 3;
+    // (Optional) Queueing behavior for the mutation
+    QueueingBehavior queueing = 4;
+    // (Optional) Notification Behavior of the mutation
+    NotificationBehavior notifications = 5;
+    // (Optional) arbitrary name for collection of commands
+    string name = 6;
+    // (Optional) Unix timestamp (in ms) until which the request is valid
+    uint64 expiry = 7;
+    // (Optional) affected inventory ids list for cache invalidation
+    //  if the commands effect any inventories at all
+    repeated string affected_inventories = 8;
+    // Purpose of this mutation
+    Purpose purpose = 9;
+}
+
+message TransMutationArguments {
+    // Identifier of the mutation
+    string id = 1;
+    // (Optional) A partitioning key used to enforce orgering guarantees
+    string partitioning_key = 3;
+    // (Optional) Queueing behavior for the mutation
+    QueueingBehavior queueing = 4;
+    // (Optional) Notification Behavior of the mutation
+    NotificationBehavior notifications = 5;
+    // (Optional) Unix timestamp (in ms) until which the request is valid
+    uint64 expiry = 6;
+    // (Optional) affected inventory ids list for cache invalidation
+    //  if the commands effect any inventories at all
+    repeated string affected_inventories = 7;
+    // Purpose of this mutation
+    Purpose purpose = 9;
+}
+
+message ShardArguments {
+    // Identifier of the mutation
+    string id = 1;
+    // (Optional) A partitioning key used to enforce orgering guarantees
+    string partitioning_key = 2;
+    // (Optional) Queueing behavior for the mutation
+    QueueingBehavior queueing = 3;
+    // (Optional) Notification Behavior of the mutation
+    NotificationBehavior notifications = 4;
+    // (Optional) Unix timestamp (in ms) until which the request is valid
+    uint64 expiry = 5;
+    // Purpose of this mutation
+    Purpose purpose = 9;
+}
+
+enum MutationResponseStatus {
+    MUTATION_RESPONSE_STATUS_UNSPECIFIED = 0;
+    // Mutation is done executing
+    MUTATION_RESPONSE_STATUS_DONE = 1;
+    // Mutation failed to enqueue
+    MUTATION_RESPONSE_STATUS_FAILED = 2;
+    // Mutation was queued
+    MUTATION_RESPONSE_STATUS_QUEUED = 3;
+}
+
+message MutationResponse {
+    string id = 1;
+    MutationResponseStatus status = 2;
+    google.rpc.Status result = 3;
+}
+
+message Inventory {
+    InventoryNodeProperties properties = 1;
+}
+
+message UnstowNotificationContext {
+    string from_inventory_id = 1;
+    map<string, ScalarValue> activation_context = 2;
+    // (Optional) destinations forwarded from the request to be sent in the notification
+    repeated sc.external.common.command.v1.NotifyDestination destinations = 3;
+}
+
+message ActivateNotificationContext {
+    map<string, ScalarValue> activation_context = 2;
+}
+
+message DeactivateNotificationContext {
+    map<string, ScalarValue> deactivation_context = 2;
+}
+
+message EntitySyncNotificationContext {
+    message EntityVersionUpdate {
+        uint64 geid = 1;
+        uint32 version = 2;
+    }
+    repeated EntityVersionUpdate entity_version_updates = 1;
+}
+
+message EntityStowContext {
+    // geid of the entity
+    uint64 entity_id = 1;
+    // entitlement URN of the entity
+    string parent_urn = 2;
+    // owner id of the entity
+    uint64 owner_id = 3;
+    // Whether the entity is stowed
+    bool is_stowed = 4;
+
+    reserved "parent";
+    optional string shard_id = 5;
+    optional string inventory_id = 6;
+
+    uint32 class_guid_crc = 7;
+    // inventory id unstowed from
+    string unstowed_from_inventory_id = 8;
+}
+
+enum EntityPreconditionOperator {
+    ENTITY_PRECONDITION_OPERATOR_UNSPECIFIED = 0;
+    ENTITY_PRECONDITION_OPERATOR_EQUALS = 1;
+    ENTITY_PRECONDITION_OPERATOR_GREATER_THAN = 2;
+    ENTITY_PRECONDITION_OPERATOR_LESS_THAN = 3;
+}
+
+message EntityPreCondition {
+    string field = 1;
+    EntityPreconditionOperator operator = 2;
+    ScalarValue value = 3;
+}
+
+message ItemPort {
+    // parent entity geid OR parent URN
+    oneof parent {
+        uint64 parent_geid = 1;
+        string parent_urn = 2;
+    }
+    // item port name
+    string item_port_name = 3;
+}
+
+// destination for the entity inside a shard
+// this should follow the same structure we have in the entity creation batch
+message ShardDestination {
+    message ZonePosition {
+        // zone geid
+        uint64 zone_geid = 1;
+
+        // zone relative orientation
+        sc.external.common.types.v1.Quatd orientation = 2;
+
+        // zone relative position
+        sc.external.common.types.v1.Vec3d position = 3;
+    }
+
+    // shard id
+    string shard_id = 1;
+
+    // parent attachment
+    // either zone position or item port
+    oneof parent_attach {
+        ZonePosition zone_position = 3;
+        ItemPort item_port = 4;
+    }
+}
+
+// destination for the entity inside an inventory
+message InventoryDestination {
+    // inventory id
+    string inventory_id = 1;
+
+    // optional attachment to the parent entity
+    // if not provided, the entity will be created in the inventory
+    optional ItemPort parent_attach = 2;
+}
+
+// destination for the entity
+message EntityGraphDestination {
+    // destination for the entity
+    oneof destination {
+        // destination is an inventory
+        InventoryDestination inventory_destination = 1;
+
+        // destination is a shard
+        ShardDestination shard_destination = 2;
+    }
+}

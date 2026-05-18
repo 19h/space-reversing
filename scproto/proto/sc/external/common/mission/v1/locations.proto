@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package sc.external.common.mission.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// should be index on coontract broker (combination of location_entity_id and contract_slot_type)
+message MissionLocationReservation {
+  // unique id of this mission location
+  // should be indexed as well since we query only by location when occupied
+  uint64 location_entity_id = 1;
+
+  // slot type
+  string contract_slot_type = 2;
+}
+
+message MissionLocationAquisition {
+  // contractId 
+  string contract_id = 1;
+
+  // slot type
+  string contract_slot_type = 2;
+  
+  // acquisition tag
+  string acquisition_tag = 3;
+
+  // contract definition id
+  string contract_definition_id = 4;
+}
+
+message MissionLocationTag {
+  // the tag
+  string tag_name = 1;
+
+  // (Optional) expiry
+  google.protobuf.Timestamp expiry = 2;
+
+  // (Optional) created at
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// definition for a mission location
+message MissionLocation {
+  // unique id of this mission location
+  uint64 location_entity_id = 1;
+
+  //shard id
+  string shard_id = 2;
+
+  // is location occupied
+  bool is_occupied = 3;
+
+  // missions that currently acquired this location
+  repeated MissionLocationAquisition acquisitions = 4;
+
+  // location tags
+  repeated MissionLocationTag location_tags = 5;
+}
+

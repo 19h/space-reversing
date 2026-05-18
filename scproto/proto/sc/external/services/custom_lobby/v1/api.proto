@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package sc.external.services.custom_lobby.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/services/custom_lobby/v1/types.proto";
+
+
+// Custom Lobby
+message ChangeTeamRequest {
+    string destination_team_id = 1;
+}
+message ChangeTeamResponse {
+}
+
+message ChangeTeammateTeamRequest {
+    string destination_team_id = 1;
+    string member_urn = 2;
+}
+message ChangeTeammateTeamResponse {
+}
+
+message GetRequest {
+    string group_id = 1;
+}
+message GetResponse {
+    CustomLobby custom_lobby = 1;
+}
+
+message CreateRequest {
+    CustomLobbySettings settings = 1;
+    // (Optional) In case the lobby is password protected
+    string password = 2;
+}
+message CreateResponse {
+    CustomLobby custom_lobby = 1;
+}
+
+message UpdateSettingsRequest {
+    CustomLobbySettings settings = 1;
+    // (Optional) In case the lobby is password protected
+    string password = 2;
+}
+message UpdateSettingsResponse {
+}
+
+message FindMatchRequest {
+}
+message FindMatchResponse {
+}
+
+message JoinRequest {
+    string group_id = 1;
+    string password = 2;
+}
+
+message JoinResponse {
+}
+
+service CustomLobbyService {
+    /*
+        ChangeTeam 
+
+        Change own team when inside a custom lobby
+    */
+    rpc ChangeTeam(ChangeTeamRequest) returns (ChangeTeamResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/ChangeTeam"
+            body: "*"
+        };
+    }
+
+    /*
+        ChangeTeammateTeam
+
+        Change the team of other member in a custom lobby. Requires being the leader or moderator of the lobby
+    */
+    rpc ChangeTeammateTeam(ChangeTeammateTeamRequest) returns (ChangeTeammateTeamResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/ChangeTeam"
+            body: "*"
+        };
+    }
+
+    /*
+        Get
+
+        Get the custom lobby properties of a group
+    */
+    rpc Get(GetRequest) returns (GetResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/Get"
+            body: "*"
+        };
+    }
+
+    /*
+        Create
+
+        Create a custom lobby
+    */
+    rpc Create(CreateRequest) returns (CreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/Create"
+            body: "*"
+        };
+    }
+
+    /*
+        UpdateSettings
+
+        Update the settings of a custom lobby. Requires being the leader of the lobby
+    */
+    rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/UpdateSettings"
+            body: "*"
+        };
+    }
+
+    /*
+        FindMatch
+
+        Find a match for a custom lobby. Requires being the leader of the lobby
+    */
+    rpc FindMatch(FindMatchRequest) returns (FindMatchResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/FindMatch"
+            body: "*"
+        };
+    }
+    
+    /*
+        Join
+
+        Joins a public group. A password can be provided if necessary.
+    */
+    rpc Join(JoinRequest) returns (JoinResponse) {
+        option (google.api.http) = {
+            post: "/v1/custom_lobby/external/Join"
+            body: "*"
+        };
+    }
+}

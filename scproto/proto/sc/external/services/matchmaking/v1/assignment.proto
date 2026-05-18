@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package sc.external.services.matchmaking.v1;
+
+import "google/protobuf/any.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+
+
+
+/*
+ * A match request has been initiated for the player, possibly by another player (if in a squad or a party, the match request could be have be initiated by the leader)
+ * This message is sent to game clients through the push-system, as a protobuf Any type.
+ */
+message MatchmakingInProgress {
+  oneof group {
+    // The party for which match process has been initiated
+    string party_id = 1;
+
+    // The squad for which match process has been initiated
+    string squad_id = 2;
+  }
+
+  // The unique identifier of the match ticket created for this search
+  string ticket_id = 3;
+
+  // Group leader
+  string creator_name = 4;
+
+  // What game is being played
+  sc.external.common.game.v1.Game game = 5;
+
+  // Which mode specific to game is being played
+  sc.external.common.game.v1.Mode mode = 6;
+}
+
+/*
+ * A Request for a match has been cancelled
+ */
+message MatchmakingCancelled {
+  // The unique identifier of the match ticket that found assignment
+  string ticket_id = 1;
+}
+
+/*
+ * An Assignment is sent to a client with the connection information for a Shard  Gateway
+ */
+message Assignment {
+  // Endpoint where the client should connect
+  sc.external.common.network.v1.Endpoint endpoint = 1;
+
+  // Connection information for authentication, received from Seat reservation response
+  google.protobuf.Any credentials = 2;
+
+  // The unique identifier of the match ticket that found assignment
+  string ticket_id = 3;
+
+  // The unique identifier of game instance where the player is being sent (e.g. shard id)
+  string instance_id = 4;
+}
+
+/*
+ * Proposal is sent if we can have a match to offer to the player, even if it does not fit his selected settings. Proposals have to be "accepted" by calling Accept
+ */
+message Proposal {
+  // Unique identifier of the Match proposal
+  string id = 1;
+
+  // In which region is the server/shard
+  sc.external.common.network.v1.Region region = 2;
+
+  // What game is being played
+  sc.external.common.game.v1.Game game = 3;
+
+  // Which mode specific to game is being played
+  sc.external.common.game.v1.Mode mode = 4;
+
+  // A textual description of the game session, to be displayed directly
+  string match_description = 5;
+
+  // How many players are currently in the game session
+  uint32 current_players = 6;
+
+  // How many players can the game session accept
+  uint32 max_players = 7;
+
+  // How many of the player's friends are currently in the game
+  uint32 current_friends = 8;
+
+  // Which map is loaded for the game
+  string map = 9;
+
+  // For how long has the game session been active
+  uint32 time_elapsed = 10;
+
+  // What is the total duration of the game session
+  uint32 total_duration = 11;
+}

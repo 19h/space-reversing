@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+/*
+  Push Service API
+
+  Service responsible for submitting push messages to connected clients.
+*/
+package sc.external.services.push.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+message ListenRequest {
+  // Subscription commands
+  repeated PushCommand commands = 1;
+}
+
+message ListenResponse {
+  // Incoming Push Messages
+  repeated PushEnvelope envelopes = 1;
+}
+
+service PushService {
+  rpc Listen(stream ListenRequest) returns (stream ListenResponse) {
+    option (google.api.http) = {
+      get : "/v1/listen"
+    };
+  }
+}
+

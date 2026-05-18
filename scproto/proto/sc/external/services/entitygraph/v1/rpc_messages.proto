@@ -1,0 +1,618 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/rpc/status.proto";
+import "google/protobuf/timestamp.proto";
+// buf:lint:ignore IMPORT_USED
+import "google/rpc/error_details.proto";
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/services/entitygraph/v1/entity_commands.proto";
+import "sc/external/services/entitygraph/v1/container_commands.proto";
+import "sc/external/services/entitygraph/v1/inventory_commands.proto";
+import "sc/external/services/entitygraph/v1/query.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+import "sc/external/common/api/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+
+/* Entities */
+
+message EntityMutationStreamRequestBody {
+    // Argument of the mutation
+    MutationArguments arguments = 1;
+
+    // Commands to execute in this mutation
+    repeated EntityGraphCommand commands = 5;
+}
+message EntityMutationStreamResponseBody {
+    // Identifier of the mutation
+    string id = 1;
+    bool success = 2;
+    google.rpc.Status status = 3;
+    sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 4;
+}
+
+message LoadAllRequestBody {
+    string shard_id = 1;
+}
+
+message LoadAllResponseBody {
+    repeated EntityGraph graphs = 1;
+    repeated EntitySnapshot snapshots = 2;
+}
+
+message GetEntitiesOwnersRequestBody {
+    Scope scope = 1;
+    repeated string entity_ids = 2;
+}
+message GetEntitiesOwnersResponseBody {
+    repeated EntityOwner entity_owners = 1;
+}
+
+/* Inventory */
+
+message ChangeInventoryConfigurationRequestBody {
+    TransMutationArguments arguments = 1;
+    ChangeInventoryConfigurationCommand command = 2;
+}
+message ChangeInventoryConfigurationResponseBody {}
+
+/* Transmutations */
+
+message StowRequestBody {
+    TransMutationArguments arguments = 1;
+    StowCommand stow = 2;
+    string from_shard_id = 3;
+}
+message StowResponseBody {
+    string id = 1;
+}
+
+message UnstowRequestBody {
+    TransMutationArguments arguments = 1;
+    UnstowCommand unstow = 2;
+    string to_shard_id = 3;
+}
+message UnstowResponseBody {
+    string id = 1;
+}
+
+message BuryRequestBody {
+    TransMutationArguments arguments = 1;
+    BuryCommand bury = 2;
+    Scope from = 3;
+}
+message BuryResponseBody {
+    string id = 1;
+}
+
+/* Snapshots */
+
+message SnapshotQueryRequestBody {
+    // Scope of this entity query (shard/global)
+    Scope scope = 1;
+    SnapshotQuery query = 2;
+}
+
+message SnapshotQueryResponseBody {
+    message EntitySnapshotResults {
+        EntitySnapshot snapshot = 1;
+    }
+    repeated EntitySnapshotResults results = 1;
+}
+
+/* MetaRecords */
+
+message CreateMetaRecordsRequestBody {
+    MutationArguments arguments = 1;
+    repeated MetaRecord records = 2;
+}
+message CreateMetaRecordsResponseBody {}
+
+message QueryMetaRecordsRequestBody {
+    Scope scope = 1;
+    MetaRecordsQuery query = 2;
+}
+
+message QueryMetaRecordsResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated MetaRecord results = 2;
+}
+
+message EraseMetaRecordsRequestBody {
+    message Body {
+        string key = 1;
+        string kind = 2;
+        uint32 generation = 3;
+    }
+    MutationArguments arguments = 1;
+    repeated Body erasures = 2;
+}
+message EraseMetaRecordsResponseBody {}
+
+/* Entity Classes */
+
+message CreateEntityClassesRequestBody {
+    MutationArguments arguments = 1;
+    repeated EntityClass entity_classes = 2;
+}
+message CreateEntityClassesResponseBody {}
+
+message EraseEntityClassesRequestBody {
+    message Body {
+        string guid = 1;
+        uint32 generation = 2;
+    }
+    MutationArguments arguments = 1;
+    repeated Body erasures = 2;
+}
+message EraseEntityClassesResponseBody {}
+
+message QueryEntityClassesRequestBody {
+    Scope scope = 1;
+    EntityClassesQuery query = 2;
+}
+
+message QueryEntityClassesResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated EntityClass results = 2;
+}
+
+/* Shards */
+
+message CreateShardRequestBody {
+    // Generation of the shard to create
+    uint32 generation = 1;
+    // Command arguments
+    ShardArguments arguments = 2;
+    // Optional shard id to give the created shard
+    string shard_id = 3;
+    // Optional: Regions to create the shard in
+    sc.external.common.network.v1.Region region = 4;
+    // Optional: host for the shard data
+    string host = 5;
+}
+message CreateShardResponseBody {
+    Shard shard = 1;
+}
+
+message DestroyShardRequestBody {
+    // Shard id to destroy
+    string shard_id = 1;
+    // Command arguments
+    ShardArguments arguments = 2;
+}
+message DestroyShardResponseBody {}
+
+message GetShardRequestBody {
+    // Shard id to retrieve
+    string shard_id = 1;
+}
+message GetShardResponseBody {
+    Shard shard = 1;
+}
+
+message AcquireShardRequestBody {
+    // Command arguments
+    ShardArguments arguments = 1;
+    // (Optional): Regions the shard must be in
+    repeated sc.external.common.network.v1.Region regions = 2;
+}
+message AcquireShardResponseBody {
+    Shard shard = 1;
+}
+
+message ChangeShardStatusRequestBody {
+    // Shard id to change
+    string shard_id = 1;
+    // New status of the shard
+    ShardStatus status = 2;
+    // Command arguments
+    ShardArguments arguments = 3;
+}
+message ChangeShardStatusResponseBody {}
+
+message StowShardRequestBody {
+    // Shard id to stow
+    string shard_id = 1;
+    // Command arguments
+    ShardArguments arguments = 2;
+    // Prevent individual errors from halting whole operation
+    bool force = 3;
+}
+message StowShardResponseBody {
+
+    message StowError {
+        // Error name
+        string name = 1;
+        // Error message
+        string message = 2;
+        // Entity geid
+        string geid = 3;
+    }
+
+    // How many players were stowed
+    uint32 stowed_player_count = 1;
+    reserved "stowed_ship_count";
+    reserved 2;
+    // How many players were not stowed due to errors
+    uint32 failed_player_count = 3;
+    reserved "failed_ship_count";
+    reserved 4;
+    // player errors
+    repeated StowError player_errors = 5;
+    reserved "ship_errors";
+    reserved 6;
+    // How many non-player entities were stowed
+    uint32 stowed_entity_count = 7;
+    // How many non-player entities were not stowed due to errors
+    uint32 failed_entity_count = 8;
+    // non-player entity errors
+    repeated StowError entity_errors = 9;
+}
+
+message QueryShardsRequestBody {
+    // Shard query to execute
+    ShardQuery query = 1;
+}
+message QueryShardsResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated Shard results = 2;
+}
+
+message RepairShardRequestBody {
+    // Shard id to repair
+    string shard_id = 1;
+    // Command arguments
+    ShardArguments arguments = 2;
+    // Optionally delete orphaned edges
+    bool remove_orphaned_edges = 3;
+    // Optionally delete orphaned nodes
+    bool remove_orphaned_nodes = 4;
+}
+message RepairShardResponseBody {}
+
+message RepairShardSchemaRequestBody {
+    // Shard id to repair
+    string shard_id = 1;
+    // Command arguments
+    ShardArguments arguments = 2;
+}
+message RepairShardSchemaResponseBody {}
+
+/* Containers */
+
+message MutateContainerGraphRequestBody {
+    // Argument of the mutation
+    MutationArguments arguments = 1;
+    // Commands to execute in this mutation
+    repeated ContainerGraphCommand commands = 2;
+}
+message MutateContainerGraphResponseBody {}
+
+message ContainerMutationStreamRequestBody {
+    // Argument of the mutation
+    MutationArguments arguments = 1;
+    // Commands to execute in this mutation
+    repeated ContainerGraphCommand commands = 2;
+}
+message ContainerMutationStreamResponseBody {
+    // Identifier of the mutation
+    string id = 1;
+    bool success = 2;
+    google.rpc.Status status = 3;
+    sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 4;
+}
+
+
+message ContainerQueryRequestBody {
+    Scope scope = 1;
+    ContainerGraphQuery query = 2;
+}
+
+message ContainerQueryResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    ContainerGraph results = 2;
+}
+
+message ContainerQueryStreamRequestBody {
+    Scope scope = 1;
+    ContainerGraphStreamQuery query = 2;
+    int32 batch_size = 3;
+}
+
+message ContainerQueryStreamResponseBody {
+    ContainerGraph results = 1;
+}
+
+message MoveRequestBody {
+    MutationArguments arguments = 1;
+    MoveCommand move = 2;
+}
+message MoveResponseBody {}
+
+message GetInventoriesRequestBody {
+    string owner_id = 1;
+}
+
+message GetInventoriesResponseBody {
+    repeated Node inventories = 1;
+}
+
+message EntityQueryRequestBody {
+    // Scope of this entity query (shard/global)
+    Scope scope = 1;
+    EntityGraphQuery query = 2;
+}
+message EntityQueryResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    EntityGraph results = 2;
+    repeated EntitySnapshot snapshots = 3;
+    repeated EntityClass entity_classes = 4;
+}
+
+message EntityQueryStreamRequestBody {
+    // Scope of this entity query (shard/global)
+    Scope scope = 1;
+    EntityGraphStreamQuery query = 2;
+    int32 batch_size = 3;
+}
+message EntityQueryStreamResponseBody {
+    EntityGraph results = 1;
+    repeated EntitySnapshot snapshots = 2;
+    repeated EntityClass entity_classes = 3;
+}
+
+/* Entities */
+
+message MutateEntitiesRequestBody {
+    // Argument of the mutation
+    sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+
+    // Commands to execute in this mutation
+    repeated sc.external.services.entitygraph.v1.EntityGraphCommand commands = 5;
+}
+message MutateEntitiesResponseBody {}
+
+/* Inventories */
+
+message MutateInventoriesRequestBody {
+    // Argument of the mutation
+    sc.external.services.entitygraph.v1.MutationArguments arguments = 1;
+
+    // Commands to execute in this mutation
+    repeated sc.external.services.entitygraph.v1.InventoryCommand commands = 2;
+}
+message MutateInventoriesResponseBody {}
+
+message InventoryQueryRequestBody {
+    InventoryQuery query = 1;
+}
+
+message InventoryQueryResponseBody {
+    sc.external.common.api.v1.PaginationInfo page_info = 1;
+    repeated Inventory results = 2;
+}
+
+message InventoryQueryStreamRequestBody {
+  InventoryGraphStreamQuery query = 1;
+  int32 batch_size = 2;
+}
+
+message InventoryQueryStreamResponseBody {
+  EntityGraph results = 1;
+  repeated EntitySnapshot snapshots = 2;
+  repeated EntityClass entity_classes = 3;
+}
+
+message MeltRequestBody {
+    TransMutationArguments arguments = 1;
+    MeltCommand melt = 2;
+}
+message MeltResponseBody {}
+
+message GetOverloadControlMetricsRequestBody {
+    // (Optional) Shard id to get metrics for
+    string shard_id = 1;
+}
+message GetOverloadControlMetricsResponseBody {
+    sc.external.common.api.v1.ServiceOverloadControlMetrics metrics = 1;
+}
+
+message GetEntitiesRootsRequestBody {
+    Scope scope = 1;
+    repeated string entity_ids = 2;
+    bool tree = 3;
+    bool snapshots = 4;
+    bool entity_classes = 5;
+    // Bitmask of EntitySnapshotVariableFlags to filter snapshot variables by. 0 = no filter (backwards compat).
+    uint32 snapshot_flags = 6;
+}
+message GetEntitiesRootsResponseBody {
+    message Body {
+        string entity_id = 1;
+        Node root = 2;
+        EntityGraph graph = 3;
+    }
+    repeated Body entity_roots = 1;
+    repeated EntitySnapshot snapshots = 2;
+    repeated EntityClass entity_classes = 3;
+}
+
+message MoveAllRequestBody {
+    MutationArguments arguments = 1;
+    MoveAllCommand move = 2;
+}
+message MoveAllResponseBody {}
+
+message GetEntityStowContextsByGeidsRequestBody {
+    // geids to match
+	repeated uint64 geids = 1;
+    // ownerId to match (AND combined with geids)
+    uint64 owner_id = 2;
+    // optionally also filter by entity class crcs (AND combined with geids and ownerId if passed)
+    repeated uint32 entity_class_crcs = 3;
+}
+message GetEntityStowContextsByGeidsResponseBody {
+    repeated EntityStowContext results = 1;
+}
+
+message GetEntityStowContextsByParentUrnsRequestBody {
+    // parentUrns to match
+	repeated string parent_urns = 1;
+    // ownerId to match (AND combined with geids)
+    uint64 owner_id = 2;
+    // optionally also filter by entity class crcs (AND combined with parentUrns and ownerId if passed)
+    repeated uint32 entity_class_crcs = 3;
+}
+message GetEntityStowContextsByParentUrnsResponseBody {
+    repeated EntityStowContext results = 1;
+}
+
+message GetEntitiesByStowContextRequestBody {
+    message EntityIdentifier {
+        oneof identifier {
+            // geids to match
+            uint64 entity_id = 1;
+            // parentUrns to match
+            string parent_urn = 2;
+        }
+    }
+    reserved "identifier";
+    reserved 1;
+    reserved "entity_id";
+    reserved 2;
+    reserved "parent_urn";
+
+    // filter by ownerId (AND combined with geid/parentUrn)
+    uint64 owner_id = 3;
+    // also return snapshots
+    bool snapshots = 4;
+    // repeated identifiers to match
+    repeated EntityIdentifier identifiers = 5;
+    // Bitmask of EntitySnapshotVariableFlags to filter snapshot variables by. 0 = no filter (backwards compat).
+    uint32 snapshot_flags = 6;
+}
+message GetEntitiesByStowContextResponseBody {
+    repeated Node results = 1;
+    repeated EntitySnapshot snapshots = 2;
+}
+
+message UpdateEntitiesByStowContextRequestBody {
+    message EntityUpdate {
+        message OwnershipUpdate {
+            uint64 owner_id = 1;
+        }
+
+        message OwnershipStatusUpdate {
+            sc.external.common.game.v1.OwnershipStatus ownership_status = 1;
+            google.protobuf.Timestamp ownership_timestamp = 2;
+        }
+
+        message ParentUrnUpdate {
+            oneof parent_urn_update {
+                // The new parent URN to set
+                string parent_urn = 1;
+                // Clear the parent URN
+                bool clear = 2;
+            }
+        }
+
+        oneof identifier {
+            uint64 entity_id = 1;
+            string parent_urn = 2;
+        };
+
+        message LocationUpdate {
+            uint32 location_id = 1;
+        }
+
+        message LtpUpdate {
+            // persistent properties (variables filtered by eSVF_Type_LTPBacked flag, components, generation)
+            // that need to be stored on the LTP record
+            optional sc.external.services.entitygraph.v1.PersistentEntityProperties persistent_properties = 2;
+        }
+
+        // only update if set
+        optional OwnershipUpdate ownership_update = 3;
+
+        // Stow context side effects based on ownership_status:
+        //   OWNERSHIP_STATUS_IMPRINTED:
+        //     - If no stow context exists, a new one will be created using create_stow_context_if_missing
+        //       (if not set, the request will be rejected).
+        //   OWNERSHIP_STATUS_NONE (un-imprinting):
+        //     - If the entity does NOT have the TRACK_STOW_CONTEXT label, the stow context will be deleted.
+        optional OwnershipStatusUpdate ownership_status_update = 4;
+        optional ParentUrnUpdate parent_urn_update = 5;
+
+        // also update/create ltp record for this entity
+        // clear the parentUrn
+        // If in inventory, create an ltp record for the ownerOf the inventory
+        // then update the entities with the new ltp urn created
+        // NOTE - cannot be combined with parentUrnUpdate - if both are set, the parentUrnUpdate will be ignored
+        bool update_ltp_records = 6;
+
+        // only update if set
+        optional LocationUpdate location_update = 7;
+
+        // If no stow context exists for the entity, create one using this seed.
+        // Only applied when ownership_status_update is OWNERSHIP_STATUS_IMPRINTED.
+        message StowContextSeed {
+            bool is_stowed = 1;
+            oneof location {
+                string shard_id = 2;
+                string inventory_id = 3;
+            }
+            uint32 class_guid_crc = 4;
+        }
+        optional StowContextSeed create_stow_context_if_missing = 8;
+
+        // LTP-backed snapshot vars to persist to the LTP record alongside the ltp update.
+        // Only applied when update_ltp_records is true.
+        optional LtpUpdate ltp_update = 9;
+    }
+    repeated EntityUpdate entity_updates = 1;
+    TransMutationArguments arguments = 2;
+    // ownerId to match (AND combined with entity_id/parent_urn)
+    uint64 owner_id = 3;
+}
+message UpdateEntitiesByStowContextResponseBody {}
+
+message SnapshotQueryByStowContextRequestBody {
+    SnapshotQuery query = 1;
+    uint64 owner_id = 2;
+}
+message SnapshotQueryByStowContextResponseBody {
+    message EntitySnapshotResults {
+        EntitySnapshot snapshot = 1;
+    }
+    repeated EntitySnapshotResults results = 1;
+}
+
+message ChangeSnapshotsByStowContextRequestBody {
+    message Changes {
+        uint64 entity_id = 1;
+        EntitySnapshot snapshot = 2;
+        uint64 owner_id = 3;
+    }
+    repeated Changes changes = 1;
+    TransMutationArguments arguments = 2;
+}
+message ChangeSnapshotsByStowContextResponseBody {}
+
+message GetDatabaseVersionRequestBody {}
+
+message GetDatabaseVersionResponseBody {
+    string version = 1;
+}
+
+message SetDatabaseVersionRequestBody {
+    string version = 1;
+}
+
+message SetDatabaseVersionResponseBody {
+    string version = 1;
+    bool set = 2;
+}

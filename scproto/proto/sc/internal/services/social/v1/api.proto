@@ -1,0 +1,517 @@
+syntax = "proto3";
+
+package sc.internal.services.social.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/social/v1/types.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.external.services.Social.v1.Social Service"
+      version: "1.0",
+      description: "Service responsible for group management"
+    }
+};
+
+message CreateGroupRequest {
+    // Group id must be provided at creation
+    string id = 1;
+    // Engine defined group type
+    sc.external.services.social.v1.GroupType type = 2;
+    // (Optional) Group name
+    string name = 3;
+    // (Optional) Player who is the leader of this group
+    string leader_urn = 4;
+    // Group settings defined by the caller
+    sc.external.services.social.v1.GroupSettings settings = 5;
+    // Members to add to the group (npcs and players)
+    repeated sc.external.services.social.v1.GroupMember members = 6;
+    // (Optional) Temporary until we fully integrate all social related services into social
+    string parent_urn = 7;
+    // (Optional) List containing the urns of the moderators. They must be members.
+    repeated string moderators = 8;
+}
+
+message CreateGroupResponse { 
+    sc.external.services.social.v1.Group group = 1;
+}
+
+message InviteToNewGroupRequest {
+    // Group id must be specified before creation
+    string group_id = 1;
+    // Engine defined group type
+    sc.external.services.social.v1.GroupType group_type = 2;
+    // (Optional) Group name
+    string group_name = 3;
+    // (Optional) Group settings
+    sc.external.services.social.v1.GroupSettings group_settings = 5;
+    // Member to be invited. The group will only be created if the invite is accepted.
+    string member_urn = 6;
+}
+
+message InviteToNewGroupResponse {
+    sc.external.services.social.v1.Invitation invitation = 1;
+}
+  
+message RenameGroupRequest {
+    string group_id = 1;
+    string name = 2;
+}
+
+message RenameGroupResponse {
+}
+
+message DestroyGroupRequest {
+    string group_id = 1;
+}
+message DestroyGroupResponse {
+
+}
+
+message GetGroupsByIdRequest {
+    // Group ids to fetch, maximum of 100 groups can be returned.
+    repeated string group_ids = 1;
+}
+message GetGroupsByIdResponse {
+    repeated sc.external.services.social.v1.Group groups = 1;
+}
+
+message AddGroupMembersRequest {
+    string group_id = 1;
+    repeated sc.external.services.social.v1.GroupMember members = 2;
+    // If true, when the request fails to add a member because he is already in group
+    // the request will continue to add the rest of the members
+    bool allow_partial_existing = 3;
+}
+message AddGroupMembersResponse {}
+
+message RemoveGroupMemberRequest {
+    string group_id = 1;
+    string member_urn = 2;
+}
+message RemoveGroupMemberResponse {}
+
+message TransferGroupLeadershipRequest {
+    string group_id = 1;
+    string player_urn = 2;
+}
+message TransferGroupLeadershipResponse {
+}
+
+message ListMemberGroupsRequest {
+    string member_urn = 1;
+    sc.external.services.social.v1.GroupFilters filters = 2;
+    // (Optional) pagination argument to help with large result
+    // Restriction: max page size is 100
+    sc.external.common.api.v1.PaginationArguments pagination = 3;
+}
+
+message ListMemberGroupsResponse {
+    repeated sc.external.services.social.v1.Group groups = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+message GetMemberPreferencesRequest {
+        string member_urn = 1;
+        string group_id = 2;
+}
+message GetMemberPreferencesResponse {
+    sc.external.services.social.v1.GroupMemberPreferences preferences = 1;
+}
+
+message SetMemberPreferencesRequest {
+    sc.external.services.social.v1.GroupMemberPreferences preferences = 1;
+}
+message SetMemberPreferencesResponse {}
+
+message SendGroupInvitationRequest {
+    string group_id = 1;
+    repeated string member_urn = 2;
+    // Inviter doesn't need to be part of the group
+    string from_urn = 4;
+    map<string, string> metadata = 5;
+}
+message SendGroupInvitationResponse {
+    repeated sc.external.services.social.v1.Invitation invitations = 1;
+}
+
+message RevokeInvitationsFromMemberRequest {
+    string member_urn = 1;
+}
+message RevokeInvitationsFromMemberResponse {
+
+}
+
+message ListGroupsByTypeRequest {
+    sc.external.services.social.v1.GroupType type = 1;
+    // (Optional) pagination argument to help with large result sets
+    // Restriction: max page size is 100
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListGroupsByTypeResponse {
+    repeated sc.external.services.social.v1.Group groups = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+// List pending invitations sent to the player.
+message ListPendingInvitationsRequest {
+    string member_urn = 1;
+    // (Optional) filter pending invitations by group type
+    sc.external.services.social.v1.GroupType group_type = 2;
+    sc.external.common.api.v1.PaginationArguments pagination = 3;
+}
+
+message ListPendingInvitationsResponse {
+    repeated sc.external.services.social.v1.Invitation invitations = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message MuteMemberRequest {
+    sc.external.services.social.v1.Mute mute = 1;
+}
+
+message MuteMemberResponse {
+}
+
+message UnmuteMemberRequest {
+    sc.external.services.social.v1.Mute unmute = 1;
+}
+
+message UnmuteMemberResponse {
+}
+
+
+message ListMutesRequest {
+    string member_urn = 1;
+}
+
+message ListMutesResponse {
+    repeated sc.external.services.social.v1.Mute mutes = 1;
+}
+
+message AddGroupModeratorRequest {
+    string group_id = 1;
+    string moderator_urn = 2;
+}
+
+message AddGroupModeratorResponse {
+}
+
+message RemoveGroupModeratorRequest {
+    string group_id = 1;
+    string moderator_urn = 2;
+}
+
+message RemoveGroupModeratorResponse {
+}
+
+message SetGameModeSettingsRequest {
+  map<string, sc.external.services.social.v1.GameModeSetting> game_mode_settings = 1;
+  // Set this to true if the game_mode_settings map only includes the GameModeSetting that has been changed and not all entries. If set to false we will replace the whole existing map with the provided one.
+  bool partial = 2;
+}
+
+message SetGameModeSettingsResponse {
+}
+
+message GetGameModeSettingsRequest {
+}
+
+message GetGameModeSettingsResponse {
+  map<string, sc.external.services.social.v1.GameModeSetting> game_mode_settings = 1;
+}
+
+service SocialService {
+    /*
+        CreateGroup
+
+        Creates a group with given specifications
+        Settings cannot be changed after creation
+    */
+    rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/CreateGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        InviteToNewGroup
+
+        Sends a group invitation to a player. If the player accepts, a new group is created.
+    */
+    rpc InviteToNewGroup(InviteToNewGroupRequest) returns (InviteToNewGroupResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/InviteToNewGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        RenameGroup
+
+        Updates the name of a group.
+    */
+    rpc RenameGroup(RenameGroupRequest) returns (RenameGroupResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RenameGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        DestroyGroup
+
+        Removes a group and removes all members.
+    */
+    rpc DestroyGroup(DestroyGroupRequest) returns (DestroyGroupResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/DestroyGroup",
+            body: "*"
+        };
+    }
+
+    /*
+        GetGroupsById
+
+        Returns all groups that match the provided ids.
+    */
+    rpc GetGroupsById(GetGroupsByIdRequest) returns (GetGroupsByIdResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/internal/GetGroupsById",
+        };
+    }
+
+    /*
+        ListMemberGroups
+
+        Returns all group member groups that match the provided filters, paginated.
+    */
+    rpc ListMemberGroups(ListMemberGroupsRequest) returns (ListMemberGroupsResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/internal/ListMemberGroups",
+        };
+    }
+
+    /*
+        AddGroupMembers
+
+        Adds a multiple members to a group
+    */
+    rpc AddGroupMembers(AddGroupMembersRequest) returns (AddGroupMembersResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/AddGroupMembers",
+            body: "*"
+        };
+    }
+
+    /*
+        RemoveGroupMember
+
+        Removes a single member from a group
+    */
+    rpc RemoveGroupMember(RemoveGroupMemberRequest) returns (RemoveGroupMemberResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RemoveGroupMember",
+            body: "*"
+        };
+    }
+
+    /*
+        TransferGroupLeadership
+
+        Transfers leadership of a group to a new player. Only players can be leaders.
+    */
+    rpc TransferGroupLeadership(TransferGroupLeadershipRequest) returns (TransferGroupLeadershipResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/TansferLeadership",
+            body: "*"
+        };
+    }
+
+    /*
+        GetMemberPreferences
+
+        Get preferences map for a member in a group.
+    */
+    rpc GetMemberPreferences(GetMemberPreferencesRequest) returns (GetMemberPreferencesResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/internal/GetMemberPreferences",
+        };
+    }
+
+    /*
+        SetMemberPreferences
+
+        Set preferences map for a member in a group.
+    */
+    rpc SetMemberPreferences(SetMemberPreferencesRequest) returns (SetMemberPreferencesResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/SetMemberPreferences",
+            body: "*"
+        };
+    }
+
+
+    /*
+        SendGroupInvitation
+
+        Send Group Invitations to a set of actors.
+    */
+    rpc SendGroupInvitation(SendGroupInvitationRequest) returns (SendGroupInvitationResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/SendGroupInvitation",
+            body: "*"
+        }; 
+    }
+
+    /*
+        RevokeInvitationsFromMember
+
+        Revoke Group Invitations sent by a member.
+    */
+    rpc RevokeInvitationsFromMember(RevokeInvitationsFromMemberRequest) returns (RevokeInvitationsFromMemberResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RevokeInvitationsFromMember",
+            body: "*"
+        }; 
+    }
+
+    /*
+        ListGroupsByType
+
+        List groups by type. Paginated.
+    */
+    rpc ListGroupsByType(ListGroupsByTypeRequest) returns (ListGroupsByTypeResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/internal/ListGroupsByType",
+        };
+    }
+
+
+    /*
+        ListPendingInvitations
+        
+        List pending invitations sent to the player.
+    */
+    rpc ListPendingInvitations(ListPendingInvitationsRequest) returns (ListPendingInvitationsResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/external/ListPendingInvitations",
+        };
+    }
+
+
+    /* 
+        MuteMember
+
+        Mute a member in the specified social activities.
+
+        If global mute (no group id) is set, the mute is considered global, muting the member in all current
+        groups and future groups. The only way to unmute is to remove the global mute by calling UnmutePlayer with
+        no group id.
+    */
+
+    rpc MuteMember(MuteMemberRequest) returns (MuteMemberResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/MutePlayer",
+            body: "*"
+        };
+    }
+
+    /* 
+        UnmuteMember
+
+        Unmute a member in the specified social activities.
+
+        If global unmute (no group id) is set, the unmute is considered global, removing only the global mute,
+        while any specific group mutes will remain in place.
+        To unmute a member in a specific group, the group id must be provided.
+    */
+    rpc UnmuteMember(UnmuteMemberRequest) returns (UnmuteMemberResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/UnmutePlayer",
+            body: "*"
+        };
+    }
+
+    /*
+        ListMutes
+
+        List mute records for a member.
+    */
+    rpc ListMutes(ListMutesRequest) returns (ListMutesResponse) {
+        option (google.api.http) = {
+            get : "/v1/social/internal/ListMutes",
+        };
+    }
+
+    /*
+        AddGroupModerator
+
+        Add a moderator to a group.
+    */
+    rpc AddGroupModerator(AddGroupModeratorRequest) returns (AddGroupModeratorResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/AddGroupModerator",
+            body: "*"
+        };
+    }
+
+    /*
+        RemoveGroupModerator
+
+        Remove a moderator from a group.
+    */
+    rpc RemoveGroupModerator(RemoveGroupModeratorRequest) returns (RemoveGroupModeratorResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/RemoveGroupModerator",
+            body: "*"
+        };
+    }
+
+    /*
+        SetGameModeSettings
+
+        When AC/SM game_mode_settings are dynamically modified (either by phase-1 GIM or phase-2 Hex), then the Social Service needs to be informed of these changes.
+
+        Note-1: {phase-1 GIM} At startup, the Social Service calls GetGameModeSettings() {From internal\services\gim\v1\api.proto} to get the intial game_mode_settings. {phase-2 Hex} Will call the Hex version of GetGameModeSettings.
+
+        Note: Comment from GetClientGameModeSettings() {From external\services\social\v1\api.proto}:
+
+        Each time the SC client reaches the SC FrontEnd, the SC client should fetch the current game_mode_settings.
+        1. GameTypes (e.g. EA_BattleRoyal, EA_ClassicRace) can dyanmically be enabled/disabled by GMs/DevOps (example: Turn on a Seasonal GameType/Map).
+        2. Maps for each GameType can be dynamically enabled/disabled as well.
+        3. required_badge can also be dynamically changed.  This allows for another way of enabling/disabling groupings of GameTypes/maps based on required_badge.
+        
+        The SC client's' AC/SM UI will dyanmically update based on the results of enabled GameTypes/Maps and required_badge settings (as seen in CEALobby::ValidateGameModes).
+    */
+    rpc SetGameModeSettings(SetGameModeSettingsRequest) returns (SetGameModeSettingsResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/internal/SetGameModeSettings",
+            body: "*"
+        };
+    }
+
+    /*
+        GetGameModeSettings
+
+        Returns all the persisted GameModeSettings from Social Service in the form of a map<GameModeName, GameModeSetting>.
+    */
+    rpc GetGameModeSettings(GetGameModeSettingsRequest) returns (GetGameModeSettingsResponse) {
+        option (google.api.http) = {
+            post : "/v1/social/external/GetGameModeSettings",
+            body: "*"
+        };
+    }
+  }

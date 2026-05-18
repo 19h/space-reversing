@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package sc.internal.services.land_claim.v1;
+import "sc/external/services/land_claim/v1/types.proto";
+import "google/protobuf/timestamp.proto";
+
+message CollectTaxBody {
+    string claim_id = 1;
+    uint32 location_id = 2;
+    string owner_urn = 3;
+    uint64 area = 4;
+    sc.external.services.land_claim.v1.ClaimType type = 5;
+    google.protobuf.Timestamp last_paid = 6;
+}
+

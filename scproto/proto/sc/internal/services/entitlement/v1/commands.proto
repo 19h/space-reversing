@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package sc.internal.services.entitlement.v1;
+
+import "sc/external/services/entitlement/v1/types.proto";
+import "sc/external/services/entitygraph/v1/types.proto";
+
+message ReconcileAccountCommand {
+    // Source account URN to entitlement from
+    string account_urn = 1;
+    // Destination player URN to fulfill to
+    string player_urn = 2;
+    // Meaninful log message for administrative review
+    string log_message = 3;
+    // (Optional)If set to true, forces reconciliation of LTP records
+    bool force_reconcile_ltp = 4;
+}
+
+message ReconcileAccountResult { 
+    // Amount of new entitlement records created during reconciliation
+    uint32 new_entitlements_count = 1; 
+}
+
+message GrantCommand {
+    message Grant {
+        // Requestor supplied URN identifier for the new record
+        string urn = 1;
+        // Account URN who owns this record
+        string account_urn = 2;
+        // Player URN of the player who will receive the fulfillment 
+        string player_urn = 3;
+        // Type of entitlement (permanent, rental)
+        sc.external.services.entitlement.v1.EntitlementType type = 4;
+        // Origin source of this entitlement record
+        sc.external.services.entitlement.v1.EntitlementSource source = 5;
+        // Whether or not this record was funded with real-money
+        bool real_money = 6;
+        // Optional) String identifier of the source SKU or catalog item purchased
+        string source_sku = 7;
+        // Human readable and recognizable name of the entitlement 
+        string name = 8;
+        // Entity class guid identifier of the item to fulfill
+        string entity_class_guid = 9;
+        // Quantity of item to fulfill
+        uint32 stack_size = 10;
+        // How to fulfill the entitlement
+        sc.external.services.entitlement.v1.EntitlementFulfillment fulfillment = 12;
+        // Meaninful log message for administrative review
+        string log_message = 13;
+        // (Optional) Used only when fulfillment is IMMEDIATE, will create the entities in the specified inventory; will use default otherwise
+        string target_inventory = 14;
+        // Insurance to give on granting
+        sc.external.services.entitlement.v1.Insurance insurance = 15;
+        // Optional entity configuration / specifications
+        sc.external.services.entitlement.v1.NewEntityConfiguration entity_config = 16;
+        // Optional EntitlementItemType 
+        sc.external.services.entitlement.v1.EntitlementItemType item_type = 17;
+
+        reserved 11;
+        reserved "config";
+    }
+    repeated Grant grants = 1;
+}
+
+message MeltByPlayer {
+    string player_urn = 1;
+    bool enabled = 2;
+}
+
+message RevokeCommand {
+    message Revoke {
+        // URN identifier of the record to revoke
+        string urn = 1;
+        // Whether or not fulfilled entities should be melted as well
+        bool melt = 2;
+        // Meaninful log message for administrative review
+        string log_message = 3;
+        // (Optional) use player_urn with urn to revoke from a specific player (on melt)
+        MeltByPlayer melt_by_player = 4;
+    }
+    repeated Revoke revokes = 1;
+}
+message RevokeResult {}
+
+message ClaimCommand {
+    message Claim {
+        // URN identifier of the record to claim
+        string urn = 1;
+        // Meaninful log message for administrative review
+        string log_message = 3;
+        // (Optional) If set, will create the entities in the specified inventory; will use default otherwise
+        string target_inventory = 4;
+        // (Optional) NewEntityConfiguration overrides when claiming
+        sc.external.services.entitlement.v1.NewEntityConfiguration entity_config = 5;
+
+        reserved 2;
+        reserved "config";
+    }
+    repeated Claim claims = 1;
+    bool fulfill = 2;
+    sc.external.services.entitygraph.v1.Purpose purpose = 3;
+}
+
+message ClaimResult {
+}
+
+message UrnIdentifier {
+    // Unique Resource Name of players to be deleted
+    oneof urn {
+        // URN of the player
+        string player_urn = 1;
+        // URN of the account
+        string account_urn = 2;
+      }
+}
+
+message RevokeAllCommand {
+    UrnIdentifier identifier = 1;
+    // Whether or not fulfilled entities should be melted as well
+    bool melt = 2;
+    // Meaninful log message for administrative review
+    string log_message = 3;
+}
+
+message UpdateInsuredLoadoutsCommand {
+    message LoadoutUpdates {
+        string urn = 1;
+        string player_urn = 2;
+        sc.external.services.entitlement.v1.InsuranceItemPortLoadout insurance_item_port_loadouts = 3;
+    }
+    
+    repeated LoadoutUpdates loadout_updates = 1;
+}

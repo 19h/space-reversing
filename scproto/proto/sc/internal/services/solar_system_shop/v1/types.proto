@@ -1,0 +1,55 @@
+syntax = "proto3";
+package sc.internal.services.solar_system_shop.v1;
+
+// Shop Inventory
+message RentalOffering {
+  uint32 days = 1;
+  double price = 2;
+}
+message ShopLoadout {
+  string id = 1;
+  string name = 2;
+}
+message InventoryItem {
+  string shop_inventory_id = 1;
+  string id = 2;
+  double buy_price = 3;
+  double sell_price = 4;
+  uint32 current_inventory = 5;
+  uint32 max_inventory = 6;
+  string timestamp = 7;
+  uint32 gold_licenses_required = 8;
+  uint32 platinum_licenses_required = 9;
+  repeated RentalOffering rental_offerings = 10;
+  bool hidden_perk_item = 11;
+  bool licence_perk_item = 12;
+  uint32 available_box_sizes = 13;
+  repeated ShopLoadout shop_loadouts = 14;
+}
+message ShopInventory {
+  repeated InventoryItem inventory = 1;
+}
+
+// Global Commodities
+message GlobalCommoditiesData {
+  string item_id = 1;
+  string name = 2;
+  double base_price = 3;
+  double max_discount_percentage = 4;
+  double max_premium_percentage = 5;
+}
+
+// Shop Transaction
+enum TransactionType
+{
+  TRANSACTION_TYPE_UNSPECIFIED = 0;
+  TRANSACTION_TYPE_BUY = 1;
+  TRANSACTION_TYPE_RENT = 2;
+  TRANSACTION_TYPE_SELL = 3;
+}
+
+message ShopTransactionItem
+{
+  string item_id = 1;
+  uint32 quantity = 2;
+}

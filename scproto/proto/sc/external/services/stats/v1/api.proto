@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto"; 
+
+
+
+import "sc/external/services/stats/v1/stat.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Stats Service External"
+    version: "1.0",
+    description: "Service responsible for persisting Stat Defintions and Stat values for Subjects"
+  }
+};
+
+message FindStatsRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message FindStatsResponse {
+  repeated sc.external.services.stats.v1.Stat results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+service StatsService {
+  /*
+    Find Stat
+
+    Allows for Finding Stat Defintions based on a recursive Query lookup with Pagination
+  */
+
+  rpc FindStats(FindStatsRequest) returns (FindStatsResponse) {
+    option (google.api.http) = {
+      post: "/v1/stats/find",
+      body: "*"
+    };
+  }
+}

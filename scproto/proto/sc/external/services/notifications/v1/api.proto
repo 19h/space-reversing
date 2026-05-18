@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+/*
+  Notifications Service API
+
+  Service responsible for sending and retrieving cross-platform notifications to
+  end-users.
+*/
+package sc.external.services.notifications.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/notifications/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Notifcations Service"
+      version: "1.0",
+      description: "Star Citizen notifications Service"
+    }
+};
+
+message RemoveRequest {
+  // List of notification UUIDs
+  repeated string ids = 1;
+}
+
+message RemoveResponse {}
+
+message FindRequest {
+  // A notification query for searching
+  sc.external.common.api.v1.Query query = 2;
+  reserved 1;
+}
+
+message FindResponse {
+  // Notifications results
+  repeated Notification results = 1;
+  // Pagination information
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ReadRequest {
+  // List of notification UUIDs
+  repeated string ids = 1;
+}
+
+message ReadResponse {}
+
+message UnreadRequest {
+  // List of notification UUIDs
+  repeated string ids = 1;
+}
+
+message UnreadResponse {}
+
+message ReadAllRequest {}
+
+message ReadAllResponse {}
+
+message RemoveAllRequest {}
+
+message RemoveAllResponse {}
+
+service NotificationsService {
+  /*
+    Remove
+
+    Removes notification by ids
+  */
+  rpc Remove(RemoveRequest) returns (RemoveResponse) {
+    option (google.api.http) = {
+      delete : "/v1/notifications",
+      body : "*"
+    };
+  }
+
+  /*
+    Find
+
+    Allows players to search for their own notifications.
+  */
+  rpc Find(FindRequest) returns (FindResponse) {
+    option (google.api.http) = {
+      get : "/v1/notifications/find",
+    };
+  }
+
+  /*
+    Read
+
+    Allows marking notifications as read
+  */
+  rpc Read(ReadRequest) returns (ReadResponse) {
+    option (google.api.http) = {
+      post : "/v1/notifications/read",
+      body : "*"
+    };
+  }
+
+  /*
+    Unread
+
+    Allows marking notifications as unread
+  */
+  rpc Unread(UnreadRequest) returns (UnreadResponse) {
+    option (google.api.http) = {
+      post : "/v1/notifications/unread",
+      body : "*"
+    };
+  }
+
+  /*
+    ReadAll
+
+    Allows marking all notifications as read
+  */
+  rpc ReadAll(ReadAllRequest) returns (ReadAllResponse) {
+    option (google.api.http) = {
+      post : "/v1/notifications/readAll",
+      body : "*"
+    };
+  }
+
+  /*
+    RemoveAll
+
+    Allows removing all notifications for a player_id
+  */
+  rpc RemoveAll(RemoveAllRequest) returns (RemoveAllResponse) {
+    option (google.api.http) = {
+      post : "/v1/notifications/unreadAll",
+      body : "*"
+    };
+  }
+}

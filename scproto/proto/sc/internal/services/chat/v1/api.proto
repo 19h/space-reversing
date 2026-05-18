@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package sc.internal.services.chat.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/chat/v1/types.proto";
+import "sc/external/services/social/v1/types.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Social Service - Chat"
+      version: "1.0",
+      description: "Service responsible for chat management"
+    }
+};
+
+message SendSystemMessageRequest {
+    string content = 1;
+    // (Optional) Can optionally target members of a specific group
+    string group_id = 2;
+}
+
+message SendSystemMessageResponse {
+    sc.external.services.chat.v1.SystemMessage message = 1;
+}
+
+message EditMessageRequest {
+    string message_id = 1;
+    string content = 2;
+}
+message EditMessageResponse {
+    sc.external.services.chat.v1.Message message = 1;
+}
+
+message EraseMessageRequest {
+    string message_id = 1;
+}
+
+message EraseMessageResponse {
+}
+
+
+message ListMessagesRequest{
+    // At least group_id or sender_urn must be specified
+    // Time range queries can only be used if group_id is provided
+    message Filters {
+        string group_id = 1;
+        string sender_urn = 2;
+        int64 from_time = 3;
+        int64 to_time = 4;
+    }
+    Filters filters = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListMessagesResponse {
+    message MessageEdit {
+        int64 edited_at = 1;
+        // Previous content before editing
+        string previous_content = 2;
+    }
+    message MessageWithEdit {
+        sc.external.services.chat.v1.Message message = 1;
+        repeated MessageEdit edits = 2;
+    }
+    repeated MessageWithEdit messages = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+message SendMessageRequest {
+    string group_id = 1;
+    string content = 2;
+    sc.external.services.social.v1.GroupMember sender = 3;
+}
+
+message SendMessageResponse {
+    sc.external.services.chat.v1.Message message = 1;
+}
+
+service ChatService {
+    /*
+        Broadcasts a message to all players in the game.
+    */
+    rpc SendSystemMessage (SendSystemMessageRequest) returns (SendSystemMessageResponse) {
+        option (google.api.http) = {
+            post: "/v1/internal/chat/SendSystemMessage"
+            body: "*"
+        };
+    }
+
+    /*
+        Send a message as a member of a group. May be used to send messages to a group as an NPC.
+    */
+    rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {
+        option (google.api.http) = {
+            post: "/v1/internal/chat/npc/SendMessage"
+            body: "*"
+        };
+    }
+
+    /*
+        Edit the content of a message. Previous content is stored in the message's edit history.
+    */
+    rpc EditMessage (EditMessageRequest) returns (EditMessageResponse) {
+        option (google.api.http) = {
+            post: "/v1/internal/chat/EditMessage"
+            body: "*"
+        };
+    }
+
+    /*
+        Mark message as deleted. Message will not be visible to other players but can still be queried using the internal interface.
+    */
+    rpc EraseMessage (EraseMessageRequest) returns (EraseMessageResponse) {
+        option (google.api.http) = {
+            delete: "/v1/internal/chat/EraseMessage",
+        };
+    }
+
+    /*
+        List messages, includes previously edited messages.
+
+        Must provide at least group_id or sender_urn in the filters. Time range filters can only be used if group_id is provided
+    */
+    rpc ListMessages (ListMessagesRequest) returns (ListMessagesResponse) {
+        option (google.api.http) = {
+            get: "/v1/internal/chat/ListMessages",
+        };
+ 
+    }
+
+}

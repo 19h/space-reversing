@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package sc.external.services.chat.v1;
+
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/services/chat/v1/types.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Social Service - Chat"
+      version: "1.0",
+      description: "Service responsible for chat management"
+    }
+};
+
+
+message SendMessageRequest {
+    message MessageMetadata {
+        string shard_id = 1;
+        string build_cl = 2;
+    }
+
+    string group_id = 1;
+    string content = 2;
+    MessageMetadata metadata = 3;
+}
+
+message SendMessageResponse {
+
+}
+
+message EraseMessageRequest {
+    string message_id = 2;
+}
+
+message EraseMessageResponse {
+}
+
+message EditMessageRequest {
+    string message_id = 1;
+    string content = 2;
+}
+
+message EditMessageResponse {
+}
+
+message ListMessagesRequest {
+    string group_id = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListMessagesResponse {
+    repeated Message messages = 1;
+    // has_next_previous_page is always false for this endpoint
+    // because it is not possible to query messages to go back in current implementation
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+service ChatService {
+    /*
+        Send a message to a group. Requires being a member of the group.
+    */
+    rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {
+        option (google.api.http) = {
+            post: "/v1/chat/external/SendMessage"
+            body: "*"
+        };
+    }
+
+    /*
+        Mark message as erased. Requires being the author of the message.
+    */
+    rpc EraseMessage (EraseMessageRequest) returns (EraseMessageResponse) {
+        option (google.api.http) = {
+            delete: "/v1/chat/external/EraseMessage",
+        };
+    }
+
+    /*
+        Edit message content. Requires being the author of the message.
+    */
+    rpc EditMessage (EditMessageRequest) returns (EditMessageResponse) {
+        option (google.api.http) = {
+            post: "/v1/chat/external/EditMessage"
+            body: "*"
+        };
+    }
+
+    /*
+        Get messages from a group. Requires being a member of the group.
+    */
+    rpc ListMessages (ListMessagesRequest) returns (ListMessagesResponse) {
+        option (google.api.http) = {
+            get: "/v1/chat/external/ListMessages",
+        };
+    }
+}

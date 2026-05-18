@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+import "sc/internal/services/fleet/v1/claim.proto";
+
+// List of possible signals to be sent to units
+enum SignalType {
+  SIGNAL_TYPE_UNSPECIFIED = 0;
+
+  // Request the unit to send full report
+  SIGNAL_TYPE_REPORT = 1;
+
+  // Request the unit to initiate a termination procedure
+  SIGNAL_TYPE_TERMINATE = 2;
+
+  // Request a unit to join a fleet
+  SIGNAL_TYPE_JOIN = 3;
+
+  // Request the unit to initiate a termination procedure
+  SIGNAL_TYPE_RESTART = 4;
+}
+
+
+message Signal {
+  // Type of signal
+  SignalType type = 1;
+
+  // Data attached to the signal
+  oneof payload {
+    JoinParameters join_parameters = 2;
+  }
+}
+
+message SendSignalRequest {
+  // List of units to send signal to
+  repeated string unit_ids = 1;
+
+  // List of fleets to send signal to all their units
+  repeated string fleet_ids = 2;
+
+  // Signal to send
+  Signal signal = 3;
+}
+
+message SendSignalResponse {}

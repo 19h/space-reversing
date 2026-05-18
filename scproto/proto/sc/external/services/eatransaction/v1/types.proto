@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package sc.external.services.eatransaction.v1;
+
+message TransactionLogContext {
+    string message = 1;
+    map<string, string> details = 2;
+}
+ 

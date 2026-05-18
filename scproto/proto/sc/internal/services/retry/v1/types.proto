@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sc.internal.services.retry.v1;
+
+import "google/protobuf/any.proto";
+import "sc/external/common/trace/v1/types.proto";
+
+message RetryConfiguration {
+    // The topic to enqueue the envelope after retry processing
+    string topic = 1;
+    // Do not retry-process this message after this timestamp (ms epoch)
+    uint64 until = 2;
+    // Retry this message at most `max` times
+    uint32 max = 3;
+}
+
+message RetryState {
+    // The next retry timestamp for this message
+    uint64 at = 1;
+    // How many times we retried this envelope 
+    uint32 count = 2;
+}
+
+message RetryEnvelope {
+    // The retry configuration for this envelope
+    RetryConfiguration configuration = 1;
+    // The state of this retry envelope
+    RetryState state = 2;
+    // Original payload 
+    google.protobuf.Any payload = 3;
+    // Distributed Tracing data
+    sc.external.common.trace.v1.TraceContext trace_context = 4;
+}

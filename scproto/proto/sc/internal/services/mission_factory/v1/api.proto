@@ -1,0 +1,227 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_factory.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+    	title: "Mission Factory Service"
+    	version: "1.0",
+    	description: "Service to manage Missions and Mission Objectives lifetime."
+	}
+};
+
+
+//////////////////////////////////////////////////
+// rpc CreateMission(CreateMissionRequest) returns (CreateMissionResponse);
+//
+// called to create all mission phases for a newly accepted mission
+//
+message CreateMissionRequest {
+    // identifier for this mission
+    string mission_id = 1;
+
+    // contract id that spawned this mission
+    string contract_id = 2;
+
+    // mission template that was used to create this mission
+    sc.external.common.mission.v1.MissionTemplate mission_template = 3;
+
+    // reserved locations
+    repeated sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 4; 
+
+    // current shard for this mission
+    string shard_id = 5;
+
+    // primary owner of the mission
+    string mission_owner_urn = 6;
+
+    // active mission key
+    string active_mission_key = 7;
+
+    // current player salt of the primary mission owner
+    uint64 mission_owner_salt = 8;
+}
+
+message CreateMissionResponse {
+    // list of phases for this mission
+    repeated sc.external.common.mission.v1.MissionPhase phases = 1;
+    // optional time to complete the current mission
+    google.protobuf.Timestamp expiry = 2;
+    // objectives on the mission
+    repeated sc.external.common.mission.v1.MissionObjective mission_objectives = 3;
+    // ignore contributers and only track overall progess - defaults to false
+    bool ignore_objective_contributors = 4;
+    // updated mission template. if set, the mission template will be updated to the new one.
+    sc.external.common.mission.v1.MissionTemplate mission_template = 5;
+    // can be 0 if the contract is unsalted
+    uint64 mission_owner_salt = 6;
+}
+
+//////////////////////////////////////////////////
+// rpc ActivateMission(ActivateMissionRequest) returns (ActivateMissionResponse);
+//
+// called when mission is activated
+//
+message ActivateMissionRequest {
+    // mission to be activated
+    sc.external.common.mission.v1.ActiveMission mission = 1;
+}
+
+message ActivateMissionResponse {
+    repeated sc.external.common.mission.v1.MissionPhase mission_phases = 1;
+    // objectives on the mission
+    repeated sc.external.common.mission.v1.MissionObjective mission_objectives = 2;
+    // reserved locations
+    repeated sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 3;
+}
+
+//////////////////////////////////////////////////
+// rpc AdvanceMission(AdvanceMissionRequest) returns (AdvanceMissionResponse);
+//
+// called when any mission phase completed
+//
+message AdvanceMissionRequest {
+    // mission to be activated
+    sc.external.common.mission.v1.ActiveMission mission = 1;
+}
+
+message AdvanceMissionResponse {
+    // In case we need to create additional mission phases (the state should be active and mission_phase_active_key already set)
+   repeated sc.external.common.mission.v1.MissionPhase additional_mission_phases  = 1;
+   // In case mission state changed
+   sc.external.common.mission.v1.MissionState mission_state = 2;
+   // objectives on the mission
+   repeated sc.external.common.mission.v1.MissionObjective mission_objectives = 3;
+}
+
+////////////////////////////////////////////////
+// rpc ReconcileContracts(ReconcileContractsRequest) returns (ReconcileContractsResponse);
+// called from contract broker to seed missions of certain type when numbers are low for a shard
+message ReconcileContractsRequest {
+    message LocationInfo {
+        // location entity id
+        uint64 location_entity_id = 1;
+        // map<contract_slot_type, count>
+        map<string, uint32> reserved_locations = 3;
+    }
+
+    message Body {
+        // the current number of contracts that with the contract_definition_id (count_available+count_active)
+        uint32 count = 1;
+ 
+        // the creation time of the last contract with the contract_definition_id was created at
+        google.protobuf.Timestamp last_creation_time = 2;
+
+        // all reserved location slots for this shard
+        repeated LocationInfo reserved_locations = 3;
+
+        // available contracts that haven't been accepted
+        uint32 count_available = 4;
+
+        // active missions from this contract
+        uint32 count_active = 5;
+    }
+ 
+    string shard_id = 1;
+ 
+    // list of contracts - string is contract_definition_id
+    map<string, Body> contracts = 2;
+}
+message ReconcileContractsResponse {
+    // optional timestamp for when we want to get the next noficiation from contract broker
+    google.protobuf.Timestamp next_notification_time = 1;
+}
+
+////////////////////////////////////////////////
+// rpc JoinMission(JoinMissionRequest) returns (JoinMissionRequest);
+message JoinMissionRequest {
+    sc.external.common.mission.v1.ActiveMission mission = 1;
+    repeated string player_urns = 2;
+}
+
+message JoinMissionResponse {}
+
+////////////////////////////////////////////////
+// rpc LeaveMission(LeaveMissionRequest) returns (LeaveMissionResponse);
+message LeaveMissionRequest {
+    // This is the same information passed in via MissionService::LeaveMissionRequest
+    message Body {
+        // player urn leaving the mission
+        string player_urn = 1;
+
+        // reason for leaving the mission
+        string reason = 2;
+
+        // state for mission
+        sc.external.common.mission.v1.MissionState end_state = 3;
+        
+        // reason for ending
+        uint32 end_reason = 4;
+        
+        // reason for analytics
+        string analytics_reason = 5;
+    }
+    sc.external.common.mission.v1.ActiveMission mission = 1;
+
+    repeated Body missions = 2;
+}
+
+message LeaveMissionResponse {}
+
+// service to instantiate missions
+service MissionFactoryService {
+    // called to create all mission phases for a newly accepted mission
+    rpc CreateMission(CreateMissionRequest) returns (CreateMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/missions/create"
+            body : "*",
+        };      
+    }
+
+    // called when mission is activated
+    rpc ActivateMission(ActivateMissionRequest) returns (ActivateMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/missions/activate"
+            body : "*",
+        };      
+    }
+
+    // called when any mission phase completed
+    rpc AdvanceMission(AdvanceMissionRequest) returns (AdvanceMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/missions/advance"
+            body : "*",
+        };      
+    }
+
+    // called when broker has low numbers of contract type for a shard
+    rpc ReconcileContracts(ReconcileContractsRequest) returns (ReconcileContractsResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/contracts/reconcile"
+            body : "*",
+        };      
+    }
+    
+    // called when mission is joined
+    rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/missions/join"
+            body : "*",
+        };      
+    }
+    // called when mission is left
+    rpc LeaveMission(LeaveMissionRequest) returns (LeaveMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission-factory/missions/leave"
+            body : "*",
+        };      
+    }
+};

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package sc.internal.services.entity_document.v1;
+
+import "sc/external/services/entity_document/v1/types.proto";
+import "sc/external/services/entity_document/v1/documents.proto";
+import "sc/external/common/types/v1/loadout.proto";
+
+message EntityDocumentBody {
+    oneof class {
+        sc.external.services.entity_document.v1.EntityTestDocument test = 1;
+        sc.external.services.entity_document.v1.EntityClassArenaCommanderLoadoutsDocument entity_class_loadouts_ac = 2;
+        sc.external.services.entity_document.v1.EntityClassStarMarineLoadoutsDocument entity_class_loadouts_ea = 3;
+        EntityClassPULoadoutsDocument entity_class_loadouts_pu = 4;
+        sc.external.services.entity_document.v1.EntityClassCharacterCustomizerDocument character_customizer_loadouts = 5;
+        sc.external.services.entity_document.v1.PlayerHomeLocationDocument player_home_location = 6;
+        sc.external.services.entity_document.v1.PlayerSpawnLocationDocument player_spawn_location = 7;
+        PersistentSnapshotsDocument persistent_snapshots = 10;
+        sc.external.services.entity_document.v1.PlayerTutorialDocument player_tutorial = 14;
+        sc.external.services.entity_document.v1.ShopLicensesDocument shop_licenses = 15;
+        sc.external.services.entity_document.v1.PlayerCombatLogout combat_logout = 16;
+        sc.external.services.entity_document.v1.PlayerWarehouseOrderDocument player_warehouse_order = 18;
+        sc.external.services.entity_document.v1.VehicleStateDocument vehicle_state = 19;
+    }
+
+    reserved 8, 9, 11, 12, 13, 17;
+    reserved "prisoner_sentence", "criminal_record", "player_insured_entities", "insurance_document", "player_home_inventory", "ship_last_spawn_location";
+}
+
+message EntityDocument {
+    sc.external.services.entity_document.v1.DocumentHeader header = 1;
+    EntityDocumentBody body = 2;
+}
+
+message EntityClassPULoadoutsDocument {
+    sc.external.common.types.v1.EntityClassLoadout insurance = 1;
+}
+
+message PersistentSnapshotsDocument {
+    message PersistentSnapshotEntry {
+        reserved 1, 2;
+        reserved "name", "bytes";
+
+        // CRC of the  name of the variable
+        uint32 name_crc = 3;
+        // variable type
+        uint32 type = 4;
+        // Bitmask flags (snapshot, network, persistent)
+        uint32 flags = 5;
+        // The serialized byte data of the variable
+        string snapshot = 6;
+    };
+
+    repeated PersistentSnapshotEntry persistent_snapshot_entries = 1;
+}
+
+message PlayerHomeInventoryDocument {
+    string home_inventory_id = 1;
+}
+

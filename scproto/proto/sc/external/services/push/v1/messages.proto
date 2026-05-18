@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package sc.external.services.push.v1;
+import "sc/external/common/trace/v1/types.proto";
+
+import "google/protobuf/any.proto";
+
+// A push destination
+message PushDestination {
+  repeated string addresses = 1;
+  repeated string topics = 2;
+}
+
+// A Push server control message that clients should obey or read upon reception
+message PushControlMessage {
+  enum Command {
+    COMMAND_UNSPECIFIED = 0;
+    // Indicate to the clients the stream is opened
+    COMMAND_STREAM_OPENED = 1;
+    // Client should close the connection and attempt to reconnect
+    COMMAND_CLOSE_RECONNECT = 2;
+    // Control event
+    COMMAND_EVENT = 4;
+  }
+
+  message SubscriptionEvent {
+    repeated string subscribed = 2;
+    repeated string unsubscribed = 3;
+  }
+
+  // The command is the action submitted to the client
+  Command command = 1;
+
+  // In the case of a Control `Event` event body informs type of event and data
+  oneof event {
+    SubscriptionEvent subscription_event = 2;
+  }
+}
+
+// Priority of the push message defines the queue used for transmission
+enum PushMessagePriority {
+  PUSH_MESSAGE_PRIORITY_UNSPECIFIED = 0;
+  PUSH_MESSAGE_PRIORITY_NORMAL = 1;
+  PUSH_MESSAGE_PRIORITY_HIGH = 2;
+  PUSH_MESSAGE_PRIORITY_LOW = 3;
+}
+
+enum PushEnvelopeType {
+  PUSH_ENVELOPE_TYPE_UNSPECIFIED = 0;
+  PUSH_ENVELOPE_TYPE_MESSAGE = 1;
+  PUSH_ENVELOPE_TYPE_BROADCAST = 2;
+}
+
+message PushRetry {
+  uint64 until = 1;
+  uint32 max = 2;
+}
+
+message PublishRequest {
+  reserved 1;
+  // What type of envelope this is (broadcast or message)
+  PushEnvelopeType type = 2;
+  // List of recipient addresses
+  // made up of dimension (address:account_id: for accountId, address:player_id: for playerId, address:service_id: for serviceId)
+  // and then the identifier, eg: address:user:accountId:1234
+  // then dimension 
+  repeated string addresses = 3;
+  // List of recipient topics
+  repeated string topics = 4;
+  // (Optional) `transit` used to control transmission ordering
+  string transit = 5;
+  // Priority of the envelope controls the queue it's enqueued on
+  PushMessagePriority priority = 6;
+  // Retry state and configuration
+  PushRetry retry = 7;
+  // List of messages carried by the envelope
+  repeated PushMessage messages = 8;
+  // (Optional) subscription cuckoo filter
+  bytes subscription_filter = 9;
+}
+
+message PushEnvelope {
+  // Identifier of this envelope
+  string id = 1;
+  // What type of envelope this is (broadcast or message)
+  PushEnvelopeType type = 2;
+  // List of recipient addresses
+  // made up of dimension (address:account_id: for accountId, address:player_id: for playerId, address:service_id: for serviceId)
+  // and then the identifier, eg: address:user:accountId:1234
+  // then dimension 
+  repeated string addresses = 3;
+  // List of recipient topics
+  repeated string topics = 4;
+  // (Optional) `transit` used to control transmission ordering
+  string transit = 5;
+  // Priority of the envelope controls the queue it's enqueued on
+  PushMessagePriority priority = 6;
+  // Retry state and configuration
+  PushRetry retry = 7;
+  // List of messages carried by the envelope
+  repeated PushMessage messages = 8;
+  // Distributed Tracing data
+  sc.external.common.trace.v1.TraceContext trace_context = 9;
+  // (Optional) subscription cuckoo filter
+  bytes subscription_filter = 10;
+}
+
+
+// A Push message that is sent to a specific client recipient
+message PushMessage {
+  // The message payload
+  oneof data {
+    PushControlMessage control = 3;
+    google.protobuf.Any any = 4;
+  }
+}
+
+/*
+  PushCommand
+
+  Commands available on a push stream
+*/
+message PushCommand {
+  oneof command {
+    SubscribeCommand subscribe = 1;
+    UnsubscribeCommand unsubscribe = 2;
+    AckCommand ack = 3;
+  }
+}
+
+/*
+    SubscribeCommand
+
+    Command to subscribe to topics
+*/
+message SubscribeCommand {
+  repeated string topics = 1;
+  // (Optional) subscription key for subscription filters
+  string key = 2;
+}
+
+/*
+    UnsubscribeCommand
+
+    Command to unsubscribe from topics
+*/
+message UnsubscribeCommand {
+  repeated string topics = 1;
+}
+
+/*
+    AckCommand
+
+    Acknowledge reception of an envelope
+*/
+message AckCommand {
+  repeated string envelope_ids = 1;
+}
+
+/*
+  An generic message to submit
+*/
+message PushExampleMessage {
+  string message = 1;
+}

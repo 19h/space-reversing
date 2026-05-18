@@ -1,0 +1,261 @@
+syntax = "proto3";
+
+package sc.external.services.contacts.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/contacts/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+
+message SearchAccountRequest {
+    // Partial nickname or display name to search for
+    string search = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message SearchAccountResponse {
+    repeated AccountInfo accounts = 1;
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message GetShardInfoRequest {
+    oneof identifier {
+        int32 account_id = 1;
+        uint64 player_id = 2;
+    }
+}
+
+message GetShardInfoResponse {
+    sc.external.common.shard.v1.ShardInfo shard_info = 1;
+}
+
+
+message ListContactsRequest {
+    // (Optional) If provided, will return only contacts that contain at least one of the specified types. If not provided all contacts are returned.
+    repeated RelationshipType relationship_types = 1;
+    // (Optional) If provided, will return only contacts that contain at least one of the specified targetAccountIds. If not provided all contacts are returned.
+    repeated int32 target_account_ids = 3;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListContactsResponse {
+    repeated Contact contacts = 1;
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message RemoveFriendRequest {
+    uint32 account_id = 1;
+}
+
+message RemoveFriendResponse {
+}
+
+message SendFriendRequestRequest {
+    oneof identifier {
+        int32 account_id = 1;
+        uint64 player_id = 2;
+    }
+}
+
+message SendFriendRequestResponse {
+    FriendRequest request = 1;
+}
+
+message CancelFriendRequestRequest {
+    string request_id = 1;
+}
+
+message CancelFriendRequestResponse {
+}
+
+message ListPendingFriendRequestsRequest {
+    sc.external.common.api.v1.PaginationArguments pagination = 1;
+}
+
+message ListPendingFriendRequestsResponse {
+    repeated FriendRequest pending_friend_requests = 1;
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message AcceptFriendRequestRequest {
+    string request_id = 1;
+}
+
+message AcceptFriendRequestResponse {
+}
+
+message DeclineFriendRequestRequest {
+    string request_id = 1;
+}
+
+message DeclineFriendRequestResponse {
+}
+
+message SetUnilateralRelationshipRequest {
+    oneof identifier {
+        int32 account_id = 1;
+        uint64 player_id = 2;
+    }
+    RelationshipType relationship_type = 3;
+}
+
+message SetUnilateralRelationshipResponse {
+    int32 target_account_id = 1;
+}
+
+message RemoveUnilateralRelationshipRequest {
+    oneof identifier {
+        int32 account_id = 1;
+        uint64 player_id = 2;
+    }
+    RelationshipType relationship_type = 3;
+}
+
+message RemoveUnilateralRelationshipResponse {
+    int32 target_account_id = 1;
+}
+
+message SetNoteRequest {
+    oneof identifier {
+        int32 account_id = 1;
+        uint64 player_id = 2;
+    }
+    string content = 3;
+}
+
+message SetNoteResponse {
+}
+
+
+service ContactsService {
+    /*
+        ListContacts
+        List contacts including relationship information, and presence if applicable. 
+        When filtering by contacts with certain relationship types, other relationships are also included in the contact.
+    */
+    rpc ListContacts(ListContactsRequest) returns (ListContactsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contacts/external/ListContacts"
+        };
+    }
+
+    /*
+        SearchAccount
+        Search an account by nickname, return the list of corresponding account
+    */
+    rpc SearchAccount(SearchAccountRequest) returns (SearchAccountResponse) {
+        option (google.api.http) = {
+            get: "/v1/contacts/external/SearchAccount"
+        };
+    }
+
+    /*
+        RemoveFriend
+        Remove a friend from the friend list
+    */
+    rpc RemoveFriend(RemoveFriendRequest) returns (RemoveFriendResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/RemoveFriend",
+            body: "*"
+        };
+    }
+
+    /*
+        GetShardInfo
+        Query the shard information of where a friend is
+    */
+    rpc GetShardInfo(GetShardInfoRequest) returns (GetShardInfoResponse) {
+        option (google.api.http) = {
+            get: "/v1/contacts/external/GetShardInfo"
+        };
+    }
+
+    /*
+        SendFriendRequest
+        Send a friend request to either an account or a player
+    */
+    rpc SendFriendRequest(SendFriendRequestRequest) returns (SendFriendRequestResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/SendFriendRequest",
+            body: "*"
+        };
+    }
+
+    /*
+        CancelFriendRequest
+    */
+    rpc CancelFriendRequest(CancelFriendRequestRequest) returns (CancelFriendRequestResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/CancelFriendRequest",
+            body: "*"
+        };
+    }
+
+    /*
+        ListPendingFriendRequests
+    */
+    rpc ListPendingFriendRequests(ListPendingFriendRequestsRequest) returns (ListPendingFriendRequestsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contacts/external/ListPendingFriendRequests"
+        };
+    }
+
+    /*
+        AcceptFriendRequest
+        Accept a friend request based on the  request id
+    */
+    rpc AcceptFriendRequest(AcceptFriendRequestRequest) returns (AcceptFriendRequestResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/AcceptFriendRequest",
+            body: "*"
+        };
+    }
+
+    /*
+        DeclineFriendRequest
+        Decline a friend request based on the id of the request
+    */
+    rpc DeclineFriendRequest(DeclineFriendRequestRequest) returns (DeclineFriendRequestResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/DeclineFriendRequest",
+            body: "*"
+        };
+    }
+
+    /*
+        SetUnilateralRelationship
+        Set a unilateral relationship to a contact. 
+        Only works for unilateral relationships, not for friends for example.
+    */
+    rpc SetUnilateralRelationship(SetUnilateralRelationshipRequest) returns (SetUnilateralRelationshipResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/SetUnilateralRelationship",
+            body: "*"
+        };
+    }
+
+    /*
+        RemoveUnilateralRelationship
+        Remove a unilateral relationship towards a contact. 
+        Only works for unilateral relationships, not for friends for example.
+    */
+    rpc RemoveUnilateralRelationship(RemoveUnilateralRelationshipRequest) returns (RemoveUnilateralRelationshipResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/RemoveUnilateralRelationship",
+            body: "*"
+        };
+    }
+
+    /*
+        SetNote
+        Set the note of a contact
+    */
+    rpc SetNote(SetNoteRequest) returns (SetNoteResponse) {
+        option (google.api.http) = {
+            post: "/v1/contacts/external/SetNote",
+            body: "*"
+        };
+    }
+}

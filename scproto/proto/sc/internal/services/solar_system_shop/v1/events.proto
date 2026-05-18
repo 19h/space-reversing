@@ -1,0 +1,16 @@
+syntax = "proto3";
+package sc.internal.services.solar_system_shop.v1;
+
+import "sc/internal/services/solar_system_shop/v1/types.proto";    // For InventoryItem
+
+message ShopInventoryUpdateEvent {
+  string shop_id = 1;
+  bool accepts_stolen_goods = 2;
+  repeated InventoryItem inventory_items = 3;
+  double cargo_price_pct = 4;
+  double cargo_time_pct = 5;
+}
+
+message ShopReadyEvent {
+  uint32 total_shops = 1;
+}

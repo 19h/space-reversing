@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package sc.internal.services.seeding.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/types/v1/gameversion.proto";
+import "sc/external/services/push/v1/messages.proto";
+
+message Heartbeat {
+	// ID of the command
+	string id = 1;
+	// Context including the current step
+	string context = 2;
+}
+
+message HeartbeatArguments {
+	// Time interval in ms
+	uint32 interval = 1;
+
+	// Push destination
+	sc.external.services.push.v1.PushDestination destination = 2;
+}
+
+message SeedGlobalRequest {
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+	HeartbeatArguments heartbeat_arguments = 2;
+}
+message SeedGlobalResponse {}
+
+message SeedShardRequest {
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  // ID of the shard to seed
+  string shard_id = 2;
+
+  message ShardParams {
+    // GIM game mode
+    string game_mode = 1;
+    // Name of the map file to load
+    string level = 2;
+  }
+  ShardParams params = 3;
+
+	HeartbeatArguments heartbeat_arguments = 4;
+}
+message SeedShardResponse {
+  // gameversion of the entity creator
+  sc.external.common.types.v1.GameVersion game_version = 1;
+}
+
+service SeedingService {
+
+  /*
+  Seed Global
+
+  Seed the needed global database for the current game environment.
+  Follows the command pattern.
+  */
+  rpc SeedGlobal(SeedGlobalRequest) returns (SeedGlobalResponse) {
+    option (google.api.http) = {
+      post : "/v1/seeding/seed-global",
+      body : "*"
+    };
+  }
+
+  /*
+  Seed Shard
+
+  Seed the needed shard database to run an instance of the universe.
+  Follows the command pattern and will add a sc.external.services.entitygraph.v1.Shard in the payload in the CommandResponseBody on success.
+  */
+  rpc SeedShard(SeedShardRequest) returns (SeedShardResponse) {
+    option (google.api.http) = {
+      post : "/v1/seeding/seed-shard",
+      body : "*"
+    };
+  }
+}

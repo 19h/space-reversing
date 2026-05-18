@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package sc.external.services.stats.v1;
+
+import "sc/external/services/stats/v1/stat_def.proto";
+
+message RollingAverageValue {
+  // Timestamp for when the value was recorded
+  uint32 timestamp = 1;
+  // Numerical rolling average data point
+  uint32 value = 2;
+}
+
+message RollingAverage {
+  // Rolling Average type that describes the window and interval
+  sc.external.services.stats.v1.RollingAvergeType type = 1;
+  // Array of Rolling Average values
+  repeated RollingAverageValue values = 2;
+}
+
+message Stat {
+  // UUID of the Stat
+  string id = 1;
+  // URN for the Subject
+  string subject = 2;
+  // UUID for the Stat Defintion tracked
+  string stat_def_id = 3;
+  // Season Identifier for the Stat
+  string season = 4;
+  // Value of the stat
+  uint32 value = 5;
+  // Type of Stat Gauge, Counter, Avg, RollingAvg
+  string type = 6;
+  // String identifier for the unit of stat (%, Meters, Time etc..)
+  string unit = 7;
+  // Game mode identifier from the Stat Def
+  string game_mode = 8;
+  // Category identifer from the Stat Def
+  string category = 9;
+  // The best value acheived for this Stat
+  uint32 best = 10;
+  // Rolling Average array of values
+  RollingAverage rolling_avg = 11;
+  // Version of the stat
+  uint32 version = 12;
+  // Rankable boolean from the Stat Def
+  bool rankable = 13;
+}
+
+message StatTableValues {
+  // UUID of the Stat
+  string id = 1;
+  // UUID for the Stat Defintion tracked
+  string stat_def_id = 2;
+  // URN for the Subject
+  string subject = 3;
+  // Value of the stat
+  uint32 value = 4;
+  // The best value acheived for this Stat
+  uint32 best = 5;
+  // Type of Stat Gauge, Counter, Avg, RollingAvg
+  string type = 6;
+  // String identifier for the unit of stat (%, Meters, Time etc..)
+  string unit = 7;
+  // Version of the stat
+  uint32 version = 8;
+}
+
+
+message StatTable {
+  // URN for the Subject
+  string subject = 1;
+  // Array of Stats for the Subject
+  repeated StatTableValues stats = 2;
+}

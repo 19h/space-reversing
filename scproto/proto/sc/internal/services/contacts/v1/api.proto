@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package sc.internal.services.contacts.v1;
+
+import "google/api/annotations.proto";
+
+import "sc/external/services/contacts/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+
+
+message ListContactsRequest {
+  int32 account_id = 1;
+  // (Optional) If provided, will return only contacts that contain at least one of the specified types. If not provided all contacts are returned.
+  repeated sc.external.services.contacts.v1.RelationshipType relationship_types = 2;
+  // (Optional) If provided, will return only contacts that contain at least one of the specified targetAccountIds. If not provided all contacts are returned.
+  repeated int32 target_account_ids = 4;
+  sc.external.common.api.v1.PaginationArguments pagination = 3;
+}
+
+message ListContactsResponse {
+  repeated sc.external.services.contacts.v1.Contact contacts = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+message ListPendingFriendRequestsRequest {
+  int32 account_id = 1;
+  sc.external.common.api.v1.PaginationArguments pagination = 2;
+}
+
+message ListPendingFriendRequestsResponse {
+  repeated sc.external.services.contacts.v1.FriendRequest pending_friend_requests = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+service ContactsService {
+    /*
+      ListContacts
+      List contacts of an accountId including relationship information, and presence if applicable. When filtering by contacts with certain relationship types, other relationships are also included in the contact.
+  */
+  rpc ListContacts(ListContactsRequest) returns (ListContactsResponse) {
+    option (google.api.http) = {
+      get: "/v1/contacts/internal/ListContacts"
+    };
+  }
+
+  /*
+      ListPendingFriendRequests
+      List pending friend requests of an accountId.
+  */
+  rpc ListPendingFriendRequests(ListPendingFriendRequestsRequest) returns (ListPendingFriendRequestsResponse) {
+    option (google.api.http) = {
+      get: "/v1/contacts/internal/ListPendingFriendRequests"
+    };
+  }
+
+}

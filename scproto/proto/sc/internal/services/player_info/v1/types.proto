@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package sc.internal.services.player_info.v1;
+
+// ----------------------------------------------------------------------------
+// PlayerInfo
+// ----------------------------------------------------------------------------
+message PlayerInfo {
+  // Legacy.
+  string session_id = 1;
+  // 1:online 0:offline 2:partial-offline (waiting for client to reconnect from ungraceful disconnection).
+  int32 online_state = 2;
+  // Routable session_id of the client/player to (for examples) sends actions to (via diffusion_router -> hub_server -> client).
+  string player_service_id = 3;
+  // game-server's service_id that player is connect with.
+  string dgs_service_id = 4;
+  int32 account_id = 5;
+  string nickname = 6;
+  string display_name = 7;
+  string ip = 8;
+  uint64 character_geid = 9;
+  // Legacy: If in party.
+  string party_id = 10;
+  // If in a game-server instance, match_id bound to instance.
+  string match_id = 11;
+  string online_time = 12;
+}

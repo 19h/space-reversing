@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package sc.external.services.entitlement.v1;
+
+import "sc/external/common/platform/v1/types.proto";
+
+
+message RealtimeFulfillmentProcessorMessage {
+  string name = 1;
+  RealtimeFulfillmentProcessorBody body = 2;
+}
+
+message RealtimeFulfillmentProcessorBody {
+  int32 account_id = 1;
+  sc.external.common.platform.v1.PlatformRealtimeFulfillmentItems fulfillment_items = 2;
+}

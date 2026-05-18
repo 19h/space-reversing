@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package sc.internal.services.spawn_resolution.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/common/types/v1/transforms.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Spawn Resolution Service"
+      version: "1.0",
+      description: "Service responsible for resolving player spawn locations during login."
+    }
+};
+
+// Double-precision quaternion with translation (maps to C++ QuatTw / QuatT_tpl<double>)
+// Represents a rigid body transform: rotation (quaternion) + world position (translation)
+message QuatTd {
+    sc.external.common.types.v1.Quatd rotation = 1;
+    sc.external.common.types.v1.Vec3d translation = 2;
+}
+
+enum SpawnResolutionResultCode {
+    SPAWN_RESOLUTION_RESULT_CODE_UNSPECIFIED = 0;
+    // Everything worked as expected
+    SPAWN_RESOLUTION_RESULT_CODE_SUCCESS = 1;
+    // The request was canceled
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_CANCELED = 2;
+    // Failed to cross shard stow the player's entity
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_CROSS_SHARD_STOW = 3;
+    // Could not generate valid player unstow params (likely couldn't figure out a safe parent)
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_INVALID_UNSTOW = 4;
+    // Error returned while querying entities intended for unstow
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_UNSTOW_RESULT = 5;
+    // Entity graph returned an unhandled gRPC error
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_QUERY_RESULT = 6;
+    // Player entity could not be found (may have been deleted, character reset needed)
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_MISSING_PLAYER = 7;
+    // Could not find the ship to unstow the player into
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_INVALID_SHIP_UNSTOW = 8;
+    // Default error if result code was not updated
+    SPAWN_RESOLUTION_RESULT_CODE_ERROR_GENERAL = 9;
+    // No response received from spawn resolution service
+    SPAWN_RESOLUTION_RESULT_CODE_TIMEOUT = 10;
+    // Expected a response but had no inflight requests
+    SPAWN_RESOLUTION_RESULT_CODE_TIMEOUT_NO_ACTIVE_REQUESTS = 11;
+}
+
+message ResolveLocationRequest {
+    // Unique request identifier (CryGUID as string)
+    string request_id = 1;
+    // Player account ID
+    uint32 account_id = 2;
+    // Player entity ID in entity graph
+    uint64 player_geid = 3;
+    // Player's home location for hab fallback
+    uint64 home_location_id = 4;
+    // Requested spawn location
+    uint64 spawn_location_id = 5;
+    // Network node ID of the requesting client
+    uint64 client_node_id = 6;
+    // Player name (for logging)
+    string player_name = 7;
+
+    // Stowed parent info (captured at logout)
+    // Entity ID of the parent (bed/vehicle) the player was stowed in
+    uint64 stowed_parent_entity_id = 8;
+    // Inventory containing the stowed parent (SInventoryId as string)
+    string stowed_parent_inventory_id = 9;
+    // Cross-shard parent identifier (CSuperGUID as string)
+    string stowed_parent_parent_super_guid = 10;
+    // Cross-shard zone host identifier (CSuperGUID as string)
+    string stowed_parent_zone_host_super_guid = 11;
+    // Transform of the stowed parent
+    QuatTd stowed_parent_transform = 12;
+
+    // Tracking metrics identifier
+    string tracking_metrics_id = 13;
+    // RSI badge IDs associated with the connection
+    repeated int32 rsi_badges = 14;
+
+    // Distributed trace ID for observability
+    string trace_id = 15;
+    // Whether the player is allowed to unstow into an instanced interior
+    bool can_unstow_instanced_interior = 16;
+}
+
+message ResolveLocationResponse {
+    // Result of the spawn resolution
+    SpawnResolutionResultCode result_code = 1;
+    // Whether the caller should retry on failure
+    bool should_retry = 2;
+}
+
+message CancelResolveLocationRequest {
+    // Request ID to cancel (CryGUID as string)
+    string request_id = 1;
+}
+
+message CancelResolveLocationResponse {
+}
+
+service SpawnResolutionService {
+
+    /*
+      ResolveLocation
+
+      Resolves the spawn location for a player during login. The service runs a
+      multi-state fallback strategy (in-place, breadcrumbs, instanced interior, hab)
+      to determine where the player should be unstowed.
+    */
+    rpc ResolveLocation(ResolveLocationRequest) returns (ResolveLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/spawn-resolution/resolve-location",
+            body: "*"
+        };
+    }
+
+    /*
+      CancelResolveLocation
+
+      Cancels an in-progress spawn resolution request.
+    */
+    rpc CancelResolveLocation(CancelResolveLocationRequest) returns (CancelResolveLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/spawn-resolution/cancel",
+            body: "*"
+        };
+    }
+}

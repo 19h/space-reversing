@@ -1,0 +1,322 @@
+syntax = "proto3";
+
+package sc.internal.services.contract_broker.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/mission/v1/contracts.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/mission/v1/locations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Contract Broker Service"
+        version: "1.0",
+        description: "Service to manage contracts."
+    }
+};
+
+message CreateContractsRequest {
+    message Body {
+        // mission template for this contract
+        sc.external.common.mission.v1.MissionTemplate mission_template = 1;
+
+        // contract pre-requisites
+        sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+
+        // contract sharing pre-requisites
+        sc.external.common.mission.v1.ContractPrerequisites prerequisites_sharing = 3;
+
+        // (Optional) time to expire and remove contract
+        google.protobuf.Timestamp expiration_time = 4;
+
+        // Reserved locations on creation
+        repeated sc.external.common.mission.v1.MissionLocationReservation reserved_locations = 5;
+
+        // Optionally limit the number of times contract can be accepted
+        int32 count = 6;
+
+        // can the mission be paused/resumed when leaving/joining a shard
+        bool suspendable = 7;
+    }
+
+    repeated Body contracts = 1;
+}
+message CreateContractsResponse {
+    // contract id
+    repeated string ids = 1;
+}
+
+message DestroyContractsRequest {
+    repeated string contract_ids = 1;
+}
+message DestroyContractsResponse {}
+
+message DestroyContractsByDefinitionIdRequest {
+    // (Optional) shard id
+    string shard_id = 1;
+    // contract definition ids
+    repeated string contract_definition_ids = 2;
+}
+message DestroyContractsByDefinitionIdResponse {}
+
+message DestroyAllContractsRequest {
+    // (Optional) shard id
+    string shard_id = 1;
+}
+message DestroyAllContractsResponse {}
+
+message UpdateContractVariablesRequest {
+    // contract id
+    string id = 1;
+    // shard id
+    string shard_id = 2;  
+    // mission variables to update
+    sc.external.common.mission.v1.MissionVariables variables = 3;
+    // Optional context passed from requestor
+    google.protobuf.Any context = 4;
+}
+message UpdateContractVariablesResponse {}
+
+message AcceptContractRequest {
+    // contract id
+    string id = 1;
+    // shard id
+    string shard_id = 2;
+    // location ids
+    repeated uint32 location_ids = 3;
+    // player id
+    uint64 player_id = 4;
+    // command arguments to be passed through to MissionService.CreateMission
+    sc.external.common.command.v1.CommandArguments arguments = 5;
+}
+message AcceptContractResponse {
+    string active_mission_id = 1;
+}
+
+message CreateContractFromMissionRequest {
+    // mission id
+    string active_mission_id = 1;
+
+    // owner of the mission
+    string owner_urn = 2;
+
+    // (Optional) count to set as max acceptances for the created contract, if not set, use -1
+    int32 count = 3;
+}
+message CreateContractFromMissionResponse {
+    // contract id
+    string contract_id = 1;
+}
+
+message QueryAllAvailableContractsRequest {
+    // Optional current shard id
+    string shard_id = 1;
+
+    // location ids
+    repeated uint32 physical_location_ids = 2;
+}
+message QueryAllAvailableContractsResponse {
+    // batch of contracts (note this RPC will stream batches of contracts)
+    repeated sc.external.common.mission.v1.MissionContract contracts = 1;
+
+    // current player mission salt  
+    uint64 player_mission_salt = 2;
+}
+
+message QueryContractsRequest {
+    // query for contracts to match
+    sc.external.common.api.v1.Query query = 1;
+
+    message EligibilityOptions {
+        // player id
+        uint64 player_id = 1;
+        // optional location ids
+        repeated uint32 location_ids = 2;
+        // optional shard id
+        string shard_id = 3;
+    }
+    // show contracts that are eligible for this player
+    EligibilityOptions eligibility = 3;
+}
+message QueryContractsResponse {
+    message EligibilityInfo {
+        // is player eligible for this contract
+        bool eligible = 1;
+        // contract pre-requisites
+        sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+    }
+
+    message ContractsWithEligibility {
+        // matched contracts
+        sc.external.common.mission.v1.MissionContract contract = 1;
+        // eligibility info, if requested
+        EligibilityInfo eligibility_info = 2;
+    }
+
+    message Body {
+        oneof contracts {
+            // matched contracts
+            sc.external.common.mission.v1.MissionContract contract = 1;
+            // contracts with eligibility info
+            ContractsWithEligibility contract_with_eligibility = 2;
+        }
+    }
+
+    repeated Body body = 1;
+
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+
+    // current player mission salt  
+    uint64 player_mission_salt = 3;
+}
+
+message ActivateReconciliationRequest {
+    string shard_id = 1;
+}
+message ActivateReconciliationResponse {}
+
+
+message CancelContractsAtLocationRequest {
+    message Location {
+        // unique id of this mission location
+        uint64 location_entity_id = 1;
+        
+        // optional slot type (if not set, cancel ANY slot)
+        optional string contract_slot_type = 2;
+
+        // contract slots that aren't cancelled by occupation
+        repeated string ignored_contract_slot_types = 3;
+    }
+    // shard id
+    string shard_id = 1;
+    
+    // exclude contract ids
+    repeated string contract_ids = 2;
+    
+    // list of locations
+    repeated Location locations = 3;
+}
+message CancelContractsAtLocationResponse {}
+
+message CheckContractPrerequisitesRequest {
+    // player urn to check prerequisites for
+    string player_urn = 1;
+    
+    // list of contract prerequisites to check
+    repeated sc.external.common.mission.v1.ContractPrerequisites prerequisites = 2;
+}
+
+message CheckContractPrerequisitesResponse {
+    // boolean array where index corresponds to prerequisites array
+    // true if player meets prerequisites, false otherwise
+    repeated bool meets_prerequisites = 1;
+}
+
+/* 
+service to provide list of active contracts
+allows to create/destroy new contracts
+allows players to accept and share contracts 
+*/
+service ContractBrokerService {
+    // create new contracts
+    rpc CreateContracts(CreateContractsRequest) returns (CreateContractsResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/create"
+            body : "*",
+        };      
+    }
+
+    // retires contracts
+    rpc DestroyContracts(DestroyContractsRequest) returns (DestroyContractsResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/destroy"
+            body : "*",
+        };      
+    }
+
+    // destroys all contracts
+    rpc DestroyContractsByDefinitionId(DestroyContractsByDefinitionIdRequest) returns (DestroyContractsByDefinitionIdResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/destroy_by_definition_id"
+            body : "*",
+        };      
+    }    
+
+    // destroys all contracts
+    rpc DestroyAllContracts(DestroyAllContractsRequest) returns (DestroyAllContractsResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/destroy_all"
+            body : "*",
+        };      
+    }
+
+    // create contract from mission
+    rpc CreateContractFromMission(CreateContractFromMissionRequest) returns (CreateContractFromMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/create_from_mission"
+            body : "*",
+        };
+    }
+
+    // accepts contract
+    rpc AcceptContract(AcceptContractRequest) returns (AcceptContractResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/accept"
+            body : "*",
+        };      
+    }
+
+    // request list of available contracts
+    rpc QueryAllAvailableContracts(QueryAllAvailableContractsRequest) returns (stream QueryAllAvailableContractsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contract_broker/contracts/all"
+        };      
+    }
+
+    // qurry for contracts, internal use (hex)
+    rpc QueryContracts(QueryContractsRequest) returns (QueryContractsResponse) {
+        option (google.api.http) = {
+            get: "/v1/contract_broker/contracts"
+        };      
+    }
+
+    // start contract replenishing timer
+    rpc ActivateReconciliation(ActivateReconciliationRequest) returns (ActivateReconciliationResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/reconciliation/activate"
+            body : "*",
+        };      
+    }
+
+    // cancel all contracts at location (should be called by locaiton service when location is occupied or fully aquired for given slottypes)
+	rpc CancelContractsAtLocation(CancelContractsAtLocationRequest) returns (CancelContractsAtLocationResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/cancel_by_location"
+            body : "*",
+        };
+    }    
+
+    // update contract variables and propagate changes to active missions
+    rpc UpdateContractVariables(UpdateContractVariablesRequest) returns (UpdateContractVariablesResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/contracts/update/variables"
+            body : "*",
+        };      
+    }
+
+    // check if player meets contract prerequisites
+    rpc CheckContractPrerequisites(CheckContractPrerequisitesRequest) returns (CheckContractPrerequisitesResponse) {
+        option (google.api.http) = {
+            post: "/v1/contract_broker/prerequisites/check"
+            body : "*",
+        };
+    }
+};

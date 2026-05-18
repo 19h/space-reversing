@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sc.external.services.entitygraph.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/game/v1/types.proto";
+
+// TOPIC: `shard/${shardId}/entity_graph/entities/EntitiesOwnershipUpdate`
+message EntitiesOwnershipUpdated {
+  message Body {
+    uint64 entity_id = 1;
+    string parent_urn = 2;
+    sc.external.common.game.v1.OwnershipStatus ownership_status = 3;
+    google.protobuf.Timestamp ownership_timestamp = 4;
+    uint64 owner_id = 5;
+  }
+
+  repeated Body updates = 1;
+}

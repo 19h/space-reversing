@@ -1,0 +1,273 @@
+syntax = "proto3";
+
+package sc.external.services.mission_service.v1;
+
+import "sc/external/common/mission/v1/missions.proto";
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/command/v1/types.proto";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Mission Service"
+        version: "1.0",
+        description: "Allow to manage active missions"
+    }
+};
+
+//////////////////////////////////////////////////
+// rpc QueryActiveMissions(QueryActiveMissionsRequest) return (QueryActiveMissionsResponse);
+//
+// returns active mission ids for player
+//  client can only query for missions owned or participated by that client
+message QueryActiveMissionsRequest {
+    message Body {
+        // owner or participant of the mission
+        string urn = 1;
+    }
+    repeated Body queries = 1;
+}
+
+message QueryActiveMissionsResponse {
+    message Body {
+        // identifier for this mission
+        string mission_id = 1;
+        // active key required for mission updates
+        string active_mission_key = 2;
+    }
+    repeated Body mission_ids = 1;
+}
+
+//////////////////////////////////////////////////
+// rpc QueryMissions(QueryMissionsRequest) return (QueryMissionsResponse);
+//
+// query detailed mission info
+//  client can only query for missions owned or participated by that client
+//
+message QueryMissionsRequest {
+    message Body {
+        // id of the mission
+        string mission_id = 1;
+    }
+    repeated Body queries = 1;
+}
+
+message QueryMissionsResponse {
+    repeated sc.external.common.mission.v1.ActiveMissionInfo missions = 1;
+}
+
+//////////////////////////////////////////////////
+// rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse);
+//
+// join mission with another player
+// if called from client owner_urn must match player_urn from jwt
+//
+message JoinMissionRequest {
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+
+    // id of the mission
+    string mission_id = 2;
+        
+    // owner of the mission
+    string owner_urn = 3;
+    
+    // player urns for players joining the mission
+    repeated string player_urns = 4;
+
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+message JoinMissionResponse {}
+
+//////////////////////////////////////////////////
+// rpc LeaveMission(LeaveMissionRequest) returns (LeaveMissionResponse);
+//
+// leave shared mission
+// if the mission owner leaves a mission, the mission is abandoned
+// if called from client player_urn must match player_urn from jwt
+//
+message LeaveMissionRequest {
+    message Body {
+        // player urn leaving the mission
+        string player_urn = 1;
+
+        // reason for leaving the mission
+        string reason = 2;
+
+        // state for mission
+        sc.external.common.mission.v1.MissionState end_state = 3;
+        
+        // reason for ending
+        uint32 end_reason = 4;
+        
+        // reason for analytics
+        string analytics_reason = 5;
+    }
+    // id of the mission
+    string mission_id = 1;
+    // leaves
+    repeated Body missions = 2;
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 3;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+}
+
+message LeaveMissionResponse {}
+
+//////////////////////////////////////////////////
+// rpc ShareMission(ShareMissionRequest) returns (ShareMissionResponse);
+//
+// shared mission
+// called by mission owner to share the mission with other players
+// if called from client owner_urn must match player_urn from jwt
+//
+message ShareMissionRequest {
+    // command arguments
+    sc.external.common.command.v1.CommandArguments arguments = 1;
+    
+    // id of the mission
+    string mission_id = 2;
+
+    // owner of the mission
+    string owner_urn = 3;
+    
+    // player urns for players to share the mission with
+    repeated string player_urns = 4;
+    
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 5;
+}
+message ShareMissionResponse {}
+
+//////////////////////////////////////////////////
+// rpc QueryMissionObjectives(QueryMissionObjectivesRequest) return (QueryMissionObjectivesResponse);
+//
+// query detailed mission info
+//  client can only query for missions owned or participated by that client
+//
+message QueryMissionObjectivesRequest {
+    message Body {
+        // id of the mission
+        string mission_id = 1;
+        // (Optional) mission objectiveId
+        repeated string mission_objective_ids = 2;
+    }
+    repeated Body queries = 1;
+}
+
+message QueryMissionObjectivesResponse {
+    repeated sc.external.common.mission.v1.MissionObjective objectives = 1;
+}
+
+//////////////////////////////////////////////////
+// rpc QueryMissionPhases(QueryMissionPhasesRequest) return (QueryMissionPhasesResponse);
+//
+// query detailed mission info
+//  client can only query for missions owned or participated by that client
+//
+message QueryMissionPhasesRequest {
+    message Body {
+        // id of the mission
+        string mission_id = 1;
+        // (Optional) mission phase ids
+        repeated string mission_phase_ids = 2;
+    }
+    repeated Body queries = 1;
+}
+
+message QueryMissionPhasesResponse {
+    repeated sc.external.common.mission.v1.MissionPhase phases = 1;
+}
+
+message CheckMissionSharingEligibilityRequest {
+    // id of the Mission
+    string mission_id = 1;
+    // player urns
+    repeated string player_urns = 2;
+    // options for filtering
+    sc.external.common.mission.v1.FilterOptions options = 3;
+}
+
+message CheckMissionSharingEligibilityResponse {
+    message NotEligiblePlayer {
+        // player urn
+        string player_urn = 1;
+        // reason for not being eligible
+        string reason = 2;
+    }
+
+    repeated NotEligiblePlayer not_eligible_players = 1;
+    // eligible player urns
+    repeated string eligible_player_urns = 2;
+}
+
+service MissionService {
+    // returns active mission ids for player
+    //  client can only query for missions owned or participated by that client
+    rpc QueryActiveMissions(QueryActiveMissionsRequest) returns (QueryActiveMissionsResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/active-missions/query"
+        };      
+    }
+
+    // query detailed mission info
+    //  client can only query for missions owned or participated by that client
+    rpc QueryMissions(QueryMissionsRequest) returns (QueryMissionsResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/missions/query"
+        };      
+    }
+
+    // join mission with player
+    rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/join"
+            body : "*",
+        };      
+    }
+
+    // leave shared mission
+    // if the mission owner leaves a missoin, the mission is abandoned
+    rpc LeaveMission(LeaveMissionRequest) returns (LeaveMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/leave"
+            body : "*",
+        };      
+    }
+
+    // Share mission
+    rpc ShareMission(ShareMissionRequest) returns (ShareMissionResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/missions/share"
+            body : "*",
+        };      
+    }
+
+    // query detailed mission objective info
+    // client can only query for missions owned or participated by that client
+    rpc QueryMissionObjectives(QueryMissionObjectivesRequest) returns (QueryMissionObjectivesResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/objectives/query"
+        };      
+    }
+
+    // query detailed mission phase info
+    // client can only query for missions owned or participated by that client
+    rpc QueryMissionPhases(QueryMissionPhasesRequest) returns (QueryMissionPhasesResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/phases/query"
+        };      
+    }
+
+    // Get eligible players for a contract
+    rpc CheckMissionSharingEligibility(CheckMissionSharingEligibilityRequest) returns (CheckMissionSharingEligibilityResponse) {
+        option (google.api.http) = {
+            get: "/v1/mission/sharing/eligiblity"
+        };      
+    }
+}

@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package sc.external.services.social.v1;
+import "sc/external/services/presence/v1/types.proto";
+
+message Invitation {
+    string id = 1;
+    // (Optional) If invitation is from system, then this will be empty
+    string from_urn = 2;
+    string to_urn = 3;
+    // (Optional) If invitation is to a new party, then this will be empty
+    string group_id = 4;
+    GroupType group_type = 5;
+    map<string, string> metadata = 6;
+    int64 created_at = 7;
+}
+
+enum InviteMode {
+    INVITE_MODE_UNSPECIFIED = 0;
+    INVITE_MODE_NONE = 1;
+    INVITE_MODE_LEADER_ONLY = 2;
+    INVITE_MODE_ANYONE = 3;
+}
+
+enum GroupType {
+    GROUP_TYPE_UNSPECIFIED = 0;
+    GROUP_TYPE_SYSTEM = 1;
+    GROUP_TYPE_SERVER = 2;
+    GROUP_TYPE_GROUP = 3;
+    GROUP_TYPE_PARTY = 4;
+    GROUP_TYPE_DM = 5;
+    GROUP_TYPE_SHIP = 6;
+    GROUP_TYPE_TEAM = 7;
+    GROUP_TYPE_SQUAD = 8;
+    GROUP_TYPE_CUSTOM_LOBBY = 9;
+    GROUP_TYPE_MATCH = 10;
+    GROUP_TYPE_CUSTOM_LOBBY_TEAM = 11;
+    GROUP_TYPE_MATCH_TEAM = 12;
+}
+
+message GroupSettings {
+    // if set, when a player goes offline, he will be removed from the group after this period of time in millseconds.
+    int32 auto_leave_timeout = 1;         
+    int32 min_member_count = 2;
+    int32 max_member_count = 3;
+    // if a member can leave the group by himself
+    bool can_leave = 4;
+    // if a group should always have a leader, then when leader leaves, random member will be promoted to leader.
+    bool requires_leader = 5;
+    // If true, the member will be kicked of other groups of same type.
+    bool unique_for_type = 6;
+    RTCSettings rtc = 7;
+    ChatSettings chat = 8;
+    // Who can invite members to the group
+    InviteMode invite_mode = 9;
+    // If this group is presence aware, then the members will be notified when other members are online or offline. 
+    bool presence_aware = 10;
+    // Amount of seconds before destroying a group. If 0, the group will never be destroyed.
+    int32 ttl = 11;
+}
+
+message RTCSettings {
+    // if voice channel is enabled
+    bool enabled = 1;
+    // if voice channel is positional that means the voice will be heard only by players nearby his place
+    bool positional = 2;
+}
+
+message ChatSettings {
+    bool enabled = 1;
+}
+
+message GroupMember {
+    string urn = 1;
+    // (Optional) Only for non-player entities
+    string display_name = 2;
+    // (Optional) Only if the group is presence aware
+    sc.external.services.presence.v1.Status presence_status = 3;
+}
+
+message Group {
+    string id = 1;
+    string name = 2;
+    // Npcs and Players
+    repeated GroupMember members = 3;
+    string leader_urn = 4;
+    GroupType type = 5;
+    GroupSettings settings = 6;
+    int64 created_at = 7;
+    // (Optional) Temporary until teams is moved into social
+    string parent_urn = 8;
+    reserved 9;    
+    reserved "entity_subscription_group_urn";
+    // A list of the moderator urns
+    repeated string moderators = 10;
+    // Members that are ready in the group
+    repeated string ready_members = 11;
+    // If all members in a group are ready, this is set to true
+    bool is_ready = 12;
+}
+
+message GroupMemberPreferences {
+    string group_id = 1;
+    string member_urn = 2;
+    // key value pairs of preferences like notifications and color
+    map<string, string> preferences = 3;
+}
+
+// Describes a Mute
+message Mute {
+    // (Optional) If not specified, it means the mute is for all groups
+    string group_id = 1;
+    string member_urn = 2;
+    bool chat = 3;
+    bool rtc = 4;
+}
+message GroupFilters {
+    // (Optional) If specified, groups with type in this list will be returned
+    repeated GroupType types = 1;
+}
+
+/* Chrono events */
+message GroupExpiredEvent {
+    string group_id = 1;
+}
+
+message AutoLeaveTriggeredEvent {
+    string group_id = 1;
+    string member_urn = 2;
+}
+
+// AC
+message ClientMapInfo {
+    string map_name = 1;
+    int32 required_badge = 2;
+    bool enabled = 3;
+}
+
+message ClientGameModeSetting {
+    string game_mode = 1;
+    int32 game_type = 2;
+    int32 required_badge = 3;
+    bool enabled = 4;
+    repeated ClientMapInfo maps = 5;
+}
+
+message MapInfo {
+    string map_name = 1;
+    int32 max_player_count = 2;
+    int32 required_badge = 3;
+    bool enabled = 4;
+  }
+  
+message GameModeSetting {
+    repeated MapInfo maps = 1;
+    int32 team_count = 2;
+    int32 min_player_count = 3;
+    int32 max_player_count = 4;
+    int32 max_squad_size = 5;
+    bool restrict_join_to_prematch = 6;
+    int32 required_badge = 7;
+    int32 game_type = 8;
+    bool enabled = 9;
+}

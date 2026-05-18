@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package sc.external.services.rental.v1;
+
+import "google/api/annotations.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/services/rental/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Rental service"
+      version: "1.0",
+      description: "Service responsible for managing entity rentals and their lifecycles."
+    }
+};
+
+message StartRequest {
+  message Body {
+    // Unique identifier of the rental
+    string id = 1; 
+    // Log message for history log
+    string log_message = 2;
+    // inventory to start the rental into
+    string target_inventory = 3;
+  }
+  sc.external.common.command.v1.CommandArguments arguments = 1;
+  Body body = 2;
+}
+
+message StartResponse {}
+
+message QueryRentalsRequest {
+  sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryRentalsResponse {
+  sc.external.common.api.v1.PaginationInfo page_info = 1;
+  repeated Rental results = 2;
+}
+
+message QueryRentalsStreamRequest {
+  // (Optional) Filter criteria, if not provided all player rentals will be returned.
+  optional RentalFilter filter = 1;
+}
+
+message QueryRentalsStreamResponse {
+  repeated Rental results = 1;
+}
+
+service ExternalRentalService {
+  /*
+      Start
+
+      Start a rental that was originally rented with a startNow flag set to false
+  */
+  rpc Start(StartRequest) returns (StartResponse) {
+      option (google.api.http) = {
+          post : "/v1/rental/start",
+          body: "*"
+      };
+  }
+
+  /*
+    QueryRentals
+
+    External Query API for Clients to query for Rentals.
+    Kept for backward compatibility. Prefer QueryRentalsStream for new features.
+  */
+  rpc QueryRentals(QueryRentalsRequest) returns (QueryRentalsResponse) {
+    option (google.api.http) = {
+      post : "/v1/rental/getRentals",
+      body: "*"
+    };
+    option deprecated = true;
+  }
+
+  /*
+    QueryRentalsStream
+
+    Query a player's own rental records, sends a stream of rentals.
+  */
+  rpc QueryRentalsStream(QueryRentalsStreamRequest) returns (stream QueryRentalsStreamResponse) {
+    option (google.api.http) = {
+      post : "/v1/rental/queryRentals",
+      body: "*"
+    };
+  }
+
+}

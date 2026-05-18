@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+/*
+  Analytics Service API
+
+  Service responsible for collecting and persisting analytics events.
+*/
+package sc.external.services.analytics.v1;
+
+import "google/api/annotations.proto";
+
+message CollectRequest {
+  // analytics events encoded JSON string
+  repeated string events = 1;
+}
+message CollectResponse {}
+
+message CollectionStreamRequest {
+  // analytics events encoded JSON string
+  repeated string events = 1;
+}
+message CollectionStreamResponse {}
+
+service AnalyticsService {
+  /*
+    Collect analytcis events
+
+    Submit a batch of events as a unary call
+  */
+  rpc Collect(CollectRequest) returns (CollectResponse) {
+    option (google.api.http) = {
+      post : "/v1/collect",
+      body : "*"
+    };
+  }
+
+  /**
+    Collect analytcis events
+
+    Open a persistent stream to submit analytics events
+  */
+  rpc CollectionStream(stream CollectionStreamRequest)
+      returns (CollectionStreamResponse) {
+    option (google.api.http) = {
+      post : "/v1/collectStream",
+      body : "*"
+    };
+  }
+}

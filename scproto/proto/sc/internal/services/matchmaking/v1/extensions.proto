@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package sc.internal.services.matchmaking.v1;
+
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/common/network/v1/types.proto";
+
+/*
+ * These messages are OpenMatch extensions, used to pass data that is not checked by OpenMatch
+ * For example:
+ *   - The frontend creates a ticket and encode PartyExtension "extensions.party" that contains the player_ids
+ *   - The matchfunction decodes the "extensions.party" key to know how many players should be matched
+ */
+
+/*
+ * Extension for Match Profile, that specifies matching options
+ */
+ message GameAndModeExtension {
+  // Identifier of the game (Persistent Universe, Star Marine...)
+  sc.external.common.game.v1.Game game = 1;
+  // Identifier of the mode to be played
+  sc.external.common.game.v1.Mode mode = 2;
+  // Region served by the servers
+  sc.external.common.network.v1.Region region = 3;
+  // List of maps loaded
+  repeated string maps = 4;
+  // Specific requested shard by the ticket creator
+  string shard_id = 5;
+}
+
+
+/*
+ * List of players to be matched in a ticket
+ */
+message SquadExtension {
+  // List of players in the squad
+  repeated string player_ids = 1;
+  // Unique identifier of the squad
+  string id = 2;
+}
+
+/*
+ * List of players to be matched in a ticket of Persistent Universe
+ */
+message PartyExtension {
+  // List of players in the party
+  repeated string player_ids = 1;
+  // Unique identifier of the party
+  string id = 2;
+}
+
+/*
+ * Information about the creator of a match ticket
+ */
+message TicketCreatorExtension {
+  // Unique identifier of the player who created the ticket
+  string id = 1;
+  // Display name of the player who created the ticket
+  string name = 2;
+}
+
+/*
+ * Additional info about the game instance where players are assigned
+ * Messages: Assignment
+ * Encoded by: Director
+ * Decoded by: Frontend (add to the Assignment message sent to the players)
+ */
+message InstanceExtension {
+  // Unique identifier of the game instance (e.g. shard id)
+  string id = 1;
+  // Address:port where to connect to reserve seats for players
+  string seat_reservation_endpoint = 2;
+}
+
+message BookingExtension {
+  // List of player ids for which we need to book seats
+  repeated string player_ids = 1;
+}
+

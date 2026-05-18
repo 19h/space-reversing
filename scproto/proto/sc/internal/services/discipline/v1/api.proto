@@ -1,0 +1,398 @@
+syntax = "proto3";
+
+package sc.internal.services.discipline.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "sc/internal/services/discipline/v1/rpc_messages.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Discipline  Service"
+      version: "1.0",
+      description: "This service is responsible for managing player discipline"
+    }
+};
+
+service DisciplineService {
+
+  /*
+      CreateSanction
+
+      Create a new sanction to disable features for a player.
+  */
+  rpc CreateSanction(CreateSanctionRequest) returns (CreateSanctionResponse) {
+    option (google.api.http) = {
+      post : "/v1/sanctions/create",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      ChangeSanction
+
+      Modify the parameters of a given sanction
+  */
+  rpc ChangeSanction(ChangeSanctionRequest) returns (ChangeSanctionResponse) {
+    option (google.api.http) = {
+      post : "/v1/sanctions/change",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      ActivateSanction
+
+      Activates a sanction, enabling its measures.
+  */
+  rpc ActivateSanction(ActivateSanctionRequest) returns (ActivateSanctionResponse) {
+    option (google.api.http) = {
+      post : "/v1/sanctions/activate",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      LiftSanction
+
+      Lift a player sanction, disable its measures.
+  */
+  rpc LiftSanction(LiftSanctionRequest) returns (LiftSanctionResponse) {
+    option (google.api.http) = {
+      post : "/v1/sanctions/lift",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      GetSanction
+
+      Retrieve a given sanction by id.
+  */
+  rpc GetSanction(GetSanctionRequest) returns (GetSanctionResponse) {
+    option (google.api.http) = {
+      get : "/v1/sanctions/{sanction_id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      QuerySanctions
+
+      Query sanctions of a given player.
+  */
+  rpc QuerySanctions(QuerySanctionsRequest) returns (QuerySanctionsResponse) {
+    option (google.api.http) = {
+      post : "/v1/sanctions/query",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Sanctions"
+    };
+  }
+
+  /*
+      CreateWatchList
+
+      Create a new watchlist of players
+  */
+  rpc CreateWatchList(CreateWatchListRequest) returns (CreateWatchListResponse) {
+    option (google.api.http) = {
+        post : "/v1/watchlist/create",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /*
+      ChangeWatchList
+
+      Edit details of a watchlist
+  */
+  rpc ChangeWatchList(ChangeWatchListRequest) returns (ChangeWatchListResponse) {
+    option (google.api.http) = {
+        patch : "/v1/watchlist/change",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+
+  /*
+      EraseWatchList
+
+      Erase an existing watchlist and its entries
+  */
+  rpc EraseWatchList(EraseWatchListRequest) returns (EraseWatchListResponse) {
+    option (google.api.http) = {
+        delete : "/v1/watchlist/erase",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /*
+      AddtoWatchList
+
+      Add targets to an existing watchlist
+  */
+  rpc AddToWatchList(AddToWatchListRequest) returns (AddToWatchListResponse) {
+    option (google.api.http) = {
+        post : "/v1/watchlist/add",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /*
+      RemoveFromWatchList
+
+      Remove targets from an existing watchlist
+  */
+  rpc RemoveFromWatchList(RemoveFromWatchListRequest) returns (RemoveFromWatchListResponse) {
+    option (google.api.http) = {
+        post : "/v1/watchlist/remove",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /*
+      SanctionWatchlist
+
+      Create and activate a sanction for all targets in a watchlist.
+  */
+  rpc SanctionWatchlist(SanctionWatchlistRequest) returns (SanctionWatchlistResponse) {
+    option (google.api.http) = {
+        post : "/v1/watchlist/sanction",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /* 
+      LiftSanctionWatchlist
+
+      Lift sanction for all targets in a watchlist
+  */
+
+  rpc LiftSanctionWatchlist(LiftSanctionWatchlistRequest) returns (LiftSanctionWatchlistResponse) {
+    option (google.api.http) = {
+        post: "/v1/watchlist/lift",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /* 
+    QueryWatchlists
+    
+    Query Watchlist with filters, sort, order and pagination
+  */
+
+  rpc QueryWatchlists(QueryWatchlistsRequest) returns (QueryWatchlistsResponse) {
+    option (google.api.http) = {
+      post: "/v1/watchlist/query",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+
+  /*
+     Query every watchlist for a given entry (player)
+  
+  */
+
+  rpc QueryWatchlistEntries(QueryWatchlistEntriesRequest) returns (QueryWatchlistEntriesResponse) {
+    option (google.api.http) = {
+      post: "/v1/watchlist/entry/query",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Watchlists"
+    };
+  }
+
+  /*
+      CreateInfraction
+
+      Record a new infraction for a target player.
+  */
+  rpc CreateInfraction(CreateInfractionRequest) returns (CreateInfractionResponse) {
+    option (google.api.http) = {
+        post : "/v1/infractions/create",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Infractions"
+    };
+  }
+
+  /*
+      EraseInfraction
+
+      Erase an existing infraction.
+  */
+  rpc EraseInfraction(EraseInfractionRequest) returns (EraseInfractionResponse) {
+    option (google.api.http) = {
+        delete : "/v1/infractions/erase",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Infractions"
+    };
+  }
+
+  /*
+      ChangeInfraction
+
+      Change an existing infraction.
+  */
+  rpc ChangeInfraction(ChangeInfractionRequest) returns (ChangeInfractionResponse) {
+    option (google.api.http) = {
+        patch : "/v1/infractions/change",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Infractions"
+    };
+  }
+
+  /*
+      QueryInfraction
+
+      Query for infractions of a player
+  */
+  rpc QueryInfraction(QueryInfractionRequest) returns (QueryInfractionResponse) {
+    option (google.api.http) = {
+        post : "/v1/infractions/query",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Infractions"
+    };
+  }
+
+
+  /*
+      CreateNote
+
+      Add a note to a player
+  */
+  rpc CreateNote(CreateNoteRequest) returns (CreateNoteResponse) {
+    option (google.api.http) = {
+        post : "/v1/notes/create",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Notes"
+    };
+  }
+
+  /*
+      ReplyNote
+
+      Reply to a note
+  */
+  rpc ReplyNote(ReplyNoteRequest) returns (ReplyNoteResponse) {
+    option (google.api.http) = {
+        post : "/v1/notes/reply",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Notes"
+    };
+  }
+
+  /*
+      ChangeNote
+
+      Edit a note to a player
+  */
+  rpc ChangeNote(ChangeNoteRequest) returns (ChangeNoteResponse) {
+    option (google.api.http) = {
+        patch : "/v1/notes/change",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Notes"
+    };
+  }
+
+  /*
+      EraseNote
+
+      Erase a note to a player
+  */
+  rpc EraseNote(EraseNoteRequest) returns (EraseNoteResponse) {
+    option (google.api.http) = {
+        delete : "/v1/notes/erase",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Notes"
+    };
+  }
+
+  /*
+      QueryNote
+
+      Query Notes on players
+  */
+  rpc QueryNote(QueryNoteRequest) returns (QueryNoteResponse) {
+    option (google.api.http) = {
+        post : "/v1/notes/query",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Notes"
+    };
+  }
+
+  /*
+      VerifyEnforcement
+
+      Verify that a player or account has an active Anti-Cheat session and retrieve a list of active sanctions for an (Optional) given game mode.
+  */
+  rpc VerifyEnforcement(VerifyEnforcementRequest) returns (VerifyEnforcementResponse) {
+    option (google.api.http) = {
+        post : "/v1/verify-enforcement",
+        body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        tags: "Enforcement"
+    };
+  }
+}

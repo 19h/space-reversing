@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package sc.internal.services.stats.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+
+import "sc/external/services/stats/v1/stat.proto";
+import "sc/external/services/stats/v1/stat_def.proto";
+import "sc/external/services/stats/v1/leaderboard.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Stats Service"
+    version: "1.0",
+    description: "Service responsible for persisting Stat Defintions and Stat values for Subjects"
+  }
+};
+
+
+/* Requests and Response */
+message CreateStatDefsRequest {
+  repeated sc.external.services.stats.v1.StatDef stat_defs = 1;
+  string log_message = 2;
+}
+
+message DeleteStatDefsRequest {
+  repeated string ids = 1;
+  string log_message = 2;
+}
+
+message UpdateStatDefsRequest {
+  repeated sc.external.services.stats.v1.StatDef stat_defs = 1;
+  string log_message = 2;
+}
+
+message FindStatDefsRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message FindStatDefsResponse {
+  repeated sc.external.services.stats.v1.StatDef results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message CheckoutStatsRequest {
+  repeated string subjects = 1;
+  repeated string stat_def_ids = 2;
+  string season = 3;
+}
+
+message CheckoutStatsResponse {
+  repeated sc.external.services.stats.v1.StatTable stat_table = 1;
+  string season = 2;
+}
+
+message CheckInStatsRequest {
+  repeated sc.external.services.stats.v1.StatTable stat_table = 1;
+  string season = 2;
+}
+
+message GetLeaderboardRequest {
+  sc.external.common.api.v1.PaginationArguments pagination = 1;
+  sc.external.services.stats.v1.LeaderboardRequest leaderboard_request = 2;
+}
+
+message GetLeaderboardResponse {
+  sc.external.services.stats.v1.Leaderboard results = 1;
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+
+service StatsService {
+  /*
+    CreateStatDefs
+
+    Allows the Creation of Stat Definitions
+
+    Typically stats will be created by Seeding through dataforge, this is another way to create stat defs.
+  */
+  rpc CreateStatDefs(CreateStatDefsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/statdef/create",
+      body: "*"
+    };
+  }
+
+  /*
+    DeleteStatDefs
+
+    Allows the Deletion of Stat Definitions
+  */
+  rpc DeleteStatDefs(DeleteStatDefsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/statdef/delete",
+      body: "*"
+    };
+  }
+
+  /*
+    UpdateStatDefs
+
+    Allows for Updating existing Stat Defintions
+
+    This RPC will not be used often, it is a better choice to create a new
+  */
+  rpc UpdateStatDefs(UpdateStatDefsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/statdef/update",
+      body: "*"
+    };
+  }
+
+  /*
+    FindStatDefs
+
+    Allows for Finding Stat Defintions based on a recursive Query lookup with Pagination
+  */
+  rpc FindStatDefs(FindStatDefsRequest) returns (FindStatDefsResponse) {
+    option (google.api.http) = {
+      post: "/v1/statdef/find",
+      body: "*"
+    };
+  }
+
+  /*
+    GetLeaderboard
+
+    Allows you to fetch a leaderboard by a Given Sorted Stat Id, and list of comlumns to display in the leaderboard.
+
+    Can request for Sorted Stat by Kills, with columns Deaths, K/D Ratio, Games Played, Games Won etc..
+  */
+  rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse) {
+    option (google.api.http) = {
+      post: "/v1/leaderboard/get",
+      body: "*"
+    };
+  }
+
+  /*
+    CheckoutStats
+
+    Allows to Checkout a list of stats for a the given Subjects
+
+    Checkout Stats Kills, Deaths etc... for Subjects 1, 2, 3
+
+    Will return the Stats per Subject verionsed
+  */
+  rpc CheckoutStats(CheckoutStatsRequest) returns (CheckoutStatsResponse) {
+    option (google.api.http) = {
+      post: "/v1/stats/checkout",
+      body: "*"
+    };
+  }
+
+  /*
+    CheckInStats
+
+    Allows to Checkin a list of stats for the given Subjects
+
+    Checking In Stats will only update the values if the provided version of the stats matches the current Stat version
+  */
+  rpc CheckInStats(CheckInStatsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/stats/checkin",
+      body: "*"
+    };
+  }
+}

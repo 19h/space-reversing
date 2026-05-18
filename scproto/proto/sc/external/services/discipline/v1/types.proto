@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package sc.external.services.discipline.v1;
+
+enum GameMode {
+    GAME_MODE_UNSPECIFIED = 0;
+    GAME_MODE_SC_PU = 1;
+    GAME_MODE_SC_AC = 2;
+}
+
+enum SanctionStatus {
+    SANCTION_STATUS_UNSPECIFIED = 0;
+    SANCTION_STATUS_PENDING = 1;
+    SANCTION_STATUS_ACTIVE = 2;
+    SANCTION_STATUS_LIFTED = 3;
+}
+
+enum MeasureScope {
+    MEASURE_SCOPE_UNSPECIFIED = 0;
+    MEASURE_SCOPE_SC_PU = 1;
+    MEASURE_SCOPE_SC_AC = 2;
+    MEASURE_SCOPE_PLATFORM = 3;
+}
+
+enum MeasureType {
+    MEASURE_TYPE_UNSPECIFIED = 0;
+    MEASURE_TYPE_GAMEACCESS = 1;
+    MEASURE_TYPE_CHAT = 2;
+    MEASURE_TYPE_VOICE = 3;
+    MEASURE_TYPE_MONEY_TRANSFER = 10;
+    MEASURE_TYPE_SHADOW_MATCHMAKING = 11;
+
+    // Reserved in a preserved order tag/name
+    reserved 4, 5, 6, 7, 8, 9;
+    reserved "MEASURE_TYPE_SOCIAL", "MEASURE_TYPE_ECONOMY", "MEASURE_TYPE_VEHICLES", "MEASURE_TYPE_REPUTATION", "MEASURE_TYPE_QUARTERDECK", "MEASURE_TYPE_CRIMINAL";
+}
+
+message Measure {
+    MeasureType type = 1;
+    repeated MeasureScope scope = 2;
+}
+
+// Action to immediately kick and disconnect the target
+message KickAction {}
+// Action to immediately send a system message to the target
+message MessageAction { string message = 1; }
+
+message Action {
+    oneof action {
+        KickAction kick = 1;
+        MessageAction message = 2;
+    }
+}
+
+message Sanction {
+    string id = 1;
+    string target_urn = 2;
+    SanctionStatus status = 3;
+    string author_id = 4;
+    oneof lifetime {
+        bool permanent = 5;
+        uint64 until = 6;
+    }
+    repeated Measure measures = 7;
+    repeated Action actions = 8;
+    InputNotes notes = 9;
+    string watchlist_id = 10;
+    uint64 created_at = 11;
+}
+
+message SanctionJob {
+    string id = 1;
+    SanctionStatus status = 2;
+}
+
+message InputNotes {
+    // Internal note
+    string note = 1;
+    // (Optional) Public note content
+    string public_note = 2;
+    // (Optional) Log for storing extra data (hex)
+    string log = 3;
+}

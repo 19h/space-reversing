@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sc.internal.services.dynamic_game_assets.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message AssetAssignment {
+    string id = 1;
+    string screen_id = 2;
+    string asset_id = 3;
+    // timestamp from which this asset becomes active
+    optional google.protobuf.Timestamp valid_from = 4;
+}

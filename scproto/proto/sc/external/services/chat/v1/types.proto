@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sc.external.services.chat.v1;
+
+import "sc/external/services/social/v1/types.proto";
+
+message Message {
+  string id = 1;
+  string group_id = 2;
+  string sender_urn = 3;
+  string sender_nickname = 4;
+  // Maximum 1024 characters
+  string content = 5;
+  int64 created_at = 6;
+  int64 erased_at = 7;
+  int64 edited_at = 8;
+  // The display name of the sender at the time of sending the message
+  string sender_display_name = 9;
+  // AccountId is only present for player sent messages
+  uint32 account_id = 10;
+  sc.external.services.social.v1.GroupType group_type = 11;
+}
+
+message SystemMessage {
+  string id = 1;
+  string content = 2;
+  // (Optional) Can optionally target members of a specific group
+  string group_id = 3;
+  int64 created_at = 4;
+}

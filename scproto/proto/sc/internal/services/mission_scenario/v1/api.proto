@@ -1,0 +1,295 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_scenario.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+
+import "sc/external/common/time/v1/schedule.proto";
+
+import "sc/external/common/mission/v1/scenarios.proto";
+import "sc/external/common/mission/v1/types.proto";
+
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Scenario Service"
+        version: "1.0",
+        description: "Allow to manage mission scenarios and schedules"
+    }
+};
+
+message CreateScenarioTemplateRequest {
+    repeated sc.external.common.mission.v1.ScenarioTemplate templates = 1;
+}
+message CreateScenarioTemplateResponse {
+    repeated string ids = 1;
+}
+
+message DestroyScenarioTemplateRequest {
+    repeated string template_ids = 1;
+}
+message DestroyScenarioTemplateResponse {}
+
+message QueryScenarioTemplatesRequest {
+    sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryScenarioTemplatesResponse {
+    // matched scenario templates
+    repeated sc.external.common.mission.v1.ScenarioTemplate results = 1;
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message CreateScenarioRequest {
+    optional string id = 1;
+    string template_id = 2;
+    string name = 3;
+    string description = 4;
+}
+message CreateScenarioResponse {
+    string id = 1;
+}
+
+message DestroyScenarioRequest {
+    repeated string ids = 1;
+}
+message DestroyScenarioResponse {}
+
+message QueryScenariosRequest {
+    // query for scenarios to match
+    sc.external.common.api.v1.Query query = 1;
+}
+
+message QueryScenariosResponse {
+    // matched scenario templates
+    repeated sc.external.common.mission.v1.Scenario results = 1;
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message ScheduleScenarioRequest {
+    string id = 1;
+    optional sc.external.common.time.v1.Schedule schedule = 2;
+}
+message ScheduleScenarioResponse { }
+
+message StartScenarioRequest {
+    string id = 1;
+    optional int32 delay_ms = 2;
+}
+message StartScenarioResponse { string message_id = 1;
+}
+
+
+message StopScenarioRequest {
+    string id = 1;
+    optional int32 delay_ms = 2;
+}
+message StopScenarioResponse { string message_id = 1; }
+
+
+message ConfigureScenarioRequest {
+    string id = 1;
+    reserved 2;
+    reserved "enabled";
+    repeated sc.external.common.mission.v1.Cycle cycles = 3;
+    optional sc.external.common.mission.v1.MissionVariables variables = 4;
+}
+message ConfigureScenarioResponse { string message_id = 1; }
+
+message AckScenarioCommandRequest {
+    string scenario_id = 1;
+    string message_id = 2;
+}
+message AckScenarioCommandResponse {}
+
+message ResolveScheduleExpressionsRequest {
+    optional string cron_expression = 1;
+    optional sc.external.common.time.v1.Schedule schedule = 2;
+}
+message ResolveScheduleExpressionsResponse {
+    optional string cron_expression = 1;
+    optional string schedule = 2;
+}
+
+//////////////////////////////////////////////////
+//rpc ResetContributionForScenario(ResetContributionForScenarioRequest) returns (ResetContributionForScenarioResponse);
+//
+// called to reset a player contribution to a scenario
+//
+message ResetContributionForScenarioRequest {
+    // player urns to remove from scenario
+    repeated string player_urns = 1;
+    // scenario id
+    string scenario_id = 2;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 4;
+
+    reserved 3;
+    reserved "reset_overall_progress";
+}
+message ResetContributionForScenarioResponse {}
+
+//////////////////////////////////////////////////
+//rpc UpdateScenarioProgress(UpdateScenarioProgressRequest) returns (UpdateScenarioProgressResponse);
+//
+// called to update the progress on a scenario
+//
+message UpdateScenarioProgressRequest {
+    message Body {
+        message Delta {
+            int32 contributor_delta = 1;
+            int32 global_delta = 2;
+        }
+        // contributor progress update
+        map<string, Delta> progress_delta = 2;
+  
+        // contributor playerUrn
+        string player_urn = 3;
+    }
+    // scenario id
+    string scenario_id = 1;
+    // updates
+    repeated Body scenarios = 2;
+    // Optional context to pass through to push message
+    google.protobuf.Any context = 3;
+}
+message UpdateScenarioProgressResponse {
+    // overall progress
+    map<string, int64> overall_progress = 1;
+    // progress for players
+    repeated sc.external.common.mission.v1.ContributorProgress contributor_progress = 2;
+}
+
+//////////////////////////////////////////////////
+//rpc GetScenarioProgress(GetScenarioProgressRequest) returns (GetScenarioProgressResponse);
+//
+// called to get the progress of a scenario for a player
+//
+message GetScenarioProgressRequest {
+  // scenario id
+  repeated string scenario_ids = 1;
+}
+message GetScenarioProgressResponse {
+  message ScenarioProgress {
+    string scenario_id = 1;
+    map<string, int64> progress = 2;
+  }
+  // progress per scenario
+  repeated ScenarioProgress scenario_progress = 1;
+}
+
+service ScenarioService {
+    rpc CreateScenarioTemplate(CreateScenarioTemplateRequest) returns (CreateScenarioTemplateResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario-templates/create"
+            body : "*",
+        };
+    }
+
+    rpc DestroyScenarioTemplate(DestroyScenarioTemplateRequest) returns (DestroyScenarioTemplateResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario-templates/destroy"
+            body : "*",
+        };
+    }
+
+    rpc QueryScenarioTemplates(QueryScenarioTemplatesRequest) returns (QueryScenarioTemplatesResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario-templates/query"
+            body : "*",
+        };
+    }
+
+    rpc CreateScenario(CreateScenarioRequest) returns (CreateScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/create"
+            body : "*",
+        };
+    }
+
+    rpc DestroyScenario(DestroyScenarioRequest) returns (DestroyScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/destroy"
+            body : "*",
+        };
+    }
+
+    rpc QueryScenarios(QueryScenariosRequest) returns (QueryScenariosResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/query"
+            body : "*",
+        };
+    }
+
+    rpc ScheduleScenario(ScheduleScenarioRequest) returns (ScheduleScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/schedule"
+            body : "*",
+        };
+    }
+
+    rpc ConfigureScenario(ConfigureScenarioRequest) returns (ConfigureScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/configure"
+            body : "*",
+        };
+    }
+
+    rpc StartScenario(StartScenarioRequest) returns (StartScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/start"
+            body : "*",
+        };
+    }
+
+    rpc StopScenario(StopScenarioRequest) returns (StopScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/stop"
+            body : "*",
+        };
+    }
+
+    rpc AckScenarioCommand(AckScenarioCommandRequest) returns (AckScenarioCommandResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/ack"
+            body : "*",
+        };
+    }
+    
+    rpc ResolveScheduleExpressions(ResolveScheduleExpressionsRequest) returns (ResolveScheduleExpressionsResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/ResolveScheduleExpressions"
+            body : "*",
+        };
+    }
+
+    // called to get progress for scenario
+    rpc GetScenarioProgress(GetScenarioProgressRequest) returns (GetScenarioProgressResponse) {
+        option (google.api.http) = {
+        post: "/v1/mission/scenario/progress/get"
+        body : "*",
+        };
+    }
+
+    // called to reset a player contribution to a scenario
+    rpc ResetContributionForScenario(ResetContributionForScenarioRequest) returns (ResetContributionForScenarioResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/contributor/reset"
+            body : "*",
+        };      
+    }
+
+    // update the progress on a scenario
+    rpc UpdateScenarioProgress(UpdateScenarioProgressRequest) returns (UpdateScenarioProgressResponse) {
+        option (google.api.http) = {
+            post: "/v1/mission/scenario/progress/update"
+            body : "*",
+        };
+    }
+}

@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package sc.internal.services.mission_token.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "sc/external/common/mission/v1/types.proto";
+import "sc/external/common/api/v1/pagination.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Mission Token Service internal API"
+      version: "1.0",
+      description: "Definitions of the internal API of the mission token service"
+    }
+};
+
+message QueryTokensRequest {
+    repeated string owner_urns = 1;
+}
+message QueryTokensResponse {
+    repeated sc.external.common.mission.v1.MissionToken tokens = 2;
+}
+
+message UpsertTokensRequest {
+    message TokenDetails {
+        // crc of the dataforge record for this token
+        string id = 1;
+        // optional expiry time for this token. Once expired it will be automatically removed from the players wallet
+        google.protobuf.Timestamp expiry = 2;
+        // reason the token was given / token description
+        string reason = 3;
+        // optional "count" of tokens to increase the count by, defaults to 1 if omitted
+        optional int32 count = 4;
+    }
+    message Body {
+        // owner of the token
+        string owner_urn = 1;
+        // optional expiry time for this token. Once expired it will be automatically removed from the players wallet
+        repeated TokenDetails tokens = 2;
+    }
+
+    repeated Body body = 1;
+}
+message UpsertTokensResponse {}
+
+message RemoveTokensRequest {
+    message Body {
+        // Owner of the tokens to erase
+        string owner_urn = 1;
+        // The tokens to erase
+        repeated string token_ids = 2;
+        // reason for removing token
+        string reason = 3;
+        // The tokens to erase
+        repeated string remove_all_token_ids = 4;
+    }
+    repeated Body body = 1;
+}
+message RemoveTokensResponse {}
+
+message QueryTokenLogsRequest {
+    // Both optional (at least one must be passed) will be AND combined if both passed
+    repeated string owner_urns = 1;
+    repeated string token_ids = 2;
+    // paging options
+    sc.external.common.api.v1.PaginationArguments pagination = 3;
+    // sorting options
+    sc.external.common.api.v1.PaginationSort sort = 4;
+}
+message QueryTokenLogsResponse {
+    repeated sc.external.common.mission.v1.MissionTokenLog logs = 1;
+    // page info
+    sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+service MissionTokenService {
+    rpc QueryTokens(QueryTokensRequest) returns (QueryTokensResponse) {
+        option (google.api.http) = {
+            get : "/v1/mission_token/tokens"
+        };      
+    }
+
+    rpc UpsertTokens(UpsertTokensRequest) returns (UpsertTokensResponse) {
+        option (google.api.http) = {
+            post : "/v1/mission_token/tokens/upsert",
+            body : "*",
+        };      
+    }
+
+    rpc RemoveTokens(RemoveTokensRequest) returns (RemoveTokensResponse) {
+        option (google.api.http) = {
+            post : "/v1/mission_token/tokens/remove",
+            body : "*",
+        };
+    }
+
+    rpc QueryTokenLogs(QueryTokenLogsRequest) returns (QueryTokenLogsResponse) {
+        option (google.api.http) = {
+            get : "/v1/mission_token/token/logs"
+        };      
+    }
+}

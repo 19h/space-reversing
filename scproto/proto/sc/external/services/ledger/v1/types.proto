@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package sc.external.services.ledger.v1;
+
+
+message Ledger {
+    // UUID 
+    string id = 1;
+    // URN
+    string owner_urn = 2;
+    // ID account (optionnal)
+    int32 account_id = 3;
+    // Ledger name
+    string name = 4;
+    // amount and currency
+    Funds funds = 5;
+    // Mutation number
+    uint32 version = 6;
+    // URN parent
+    string parent_urn = 7;
+    // timestamp created
+    uint64 created_at = 8;
+    // timestamp updated
+    uint64 updated_at = 9;
+    // URN[] children
+    repeated string children_urn = 10;
+    // Status of the ledger
+    string status = 11;
+}
+
+message Transaction {
+    // URN
+    string owner_urn = 1;
+    // amount and currency that will be withdraw from the account
+    sc.external.services.ledger.v1.Funds money = 2;
+    // name of the ledger
+    string ledger_name = 3;
+    // number of modification
+    uint32 version = 4;
+    // log message
+    string log_message = 5;
+    // metadata map
+    map<string, string> metadata = 6;
+}
+
+// transfer state enum
+enum TransferState {
+    TRANSFER_STATE_INVALID_UNSPECIFIED = 0;
+    TRANSFER_STATE_INITALIZED = 1;
+    TRANSFER_STATE_COMMITED = 2;
+    TRANSFER_STATE_FAILED = 3;
+    TRANSFER_STATE_ROLLED_BACK = 4;
+}
+message TransferTransaction {
+    string id = 1;
+    message LedgerIdentifier {
+        string owner_urn = 1;
+        string ledger_name = 2;
+        uint32 version = 3;
+    }
+    // From ledger
+    LedgerIdentifier from = 2;
+    // To ledger
+    LedgerIdentifier to = 3;
+
+    // transfer state
+    TransferState state = 4;
+
+    // amount and currency that will be transfered
+    sc.external.services.ledger.v1.Funds money = 5;
+
+    // tax paid by the from ledger to initiate the transfer (optionnal)
+    uint64 tax = 6;
+
+    // log message
+    string log_message = 7;
+
+    // metadata map
+    map<string, string> metadata = 8;
+}
+
+enum Currency {
+    CURRENCY_INVALID_UNSPECIFIED = 0;
+    CURRENCY_UEC = 1;
+    CURRENCY_REC = 2;
+    CURRENCY_AUEC = 3;
+    CURRENCY_MER = 4;
+}
+
+
+message Funds {
+    // Amount of money
+    uint64 amount = 1;
+    // Currency of the money
+    Currency currency = 2;
+}
+
+message LedgerHistory {
+    // UUID 
+    string id = 1;
+    // UUID of the ledger
+    string ledger_id = 2;
+    // timestamp updated
+    uint64 updated_at = 3;
+    // timestamp created
+    uint64 created_at = 4;
+    // Mutation number of the ledger
+    uint32 ledger_version = 5;
+    // URN
+    string owner_urn = 6;
+    // amount of money before the transaction
+    uint64 funds = 7;
+    // amount of the money given/taken in the transaction
+    uint64 change_in_funds = 8;
+    // what kind of transaction
+    string event_name = 9;
+    // log message
+    string log_message = 10;
+    // if the event is rollbacked, the id of the log that rollbacked it
+    string rollback_log_id = 11;
+    // metadata map
+    map<string, string> metadata = 12;
+}
+

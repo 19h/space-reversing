@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+package sc.external.services.matchmaking.v1;
+
+import "sc/external/services/matchmaking/v1/assignment.proto";
+import "sc/external/common/network/v1/types.proto";
+import "sc/external/common/game/v1/types.proto";
+import "sc/external/common/shard/v1/types.proto";
+
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Matchmaking Service"
+      version: "1.0",
+      description: ""
+    }
+};
+
+message PrivateSettings {
+  // How long will the game last
+  uint32 duration = 1;
+}
+
+message GamePersistentUniverseMatchRequest {
+  // Join a specific shard (optional)
+  string shard_id = 1;
+
+  // ID of pre-formed party to join the shard together (optional)
+  string party_id = 2;
+
+  // Metadata used by matchfunctions (ex: [mission_role] -> MissionRole.fighter)
+  map<string, google.protobuf.Any> match_options = 3;
+}
+
+message GameArenaCommanderMatchRequest {
+  // Game Mode specific to ArenaCommander
+  sc.external.common.game.v1.ArenaCommanderMode mode = 1;
+
+  // ID of pre-formed squad to join the game session together (optional)
+  string squad_id = 2;
+
+  // Selection of prefered maps
+  repeated string maps = 3;
+
+  // Dedicated settings for private games. If set, the match request is for a private game (optional)
+  PrivateSettings private_settings = 4;
+
+  // Metadata used by matchfunctions (ex: [mission_role] -> MissionRole.fighter)
+  sc.external.common.shard.v1.SeatCriterias seat_criteria = 5;
+}
+
+message GameStarMarineMatchRequest {
+  // Game Mode specific to StarMarine
+  sc.external.common.game.v1.StarMarineMode mode = 1;
+
+  // ID of pre-formed squad to join the game session together (optional)
+  string squad_id = 2;
+
+  // Selection of prefered maps
+  repeated string maps = 3;
+
+  // Dedicated settings for private games. If set, the match request is for a private game (options)
+  PrivateSettings private_settings = 4;
+
+  // Metadata used by matchfunctions (ex: mission_role -> fighter)
+  sc.external.common.shard.v1.SeatCriterias seat_criteria = 5;
+}
+
+/*
+ * Match Call
+ */
+message MatchRequest {
+  // A match for a game can be one of these disctinct "games" with specific settings
+  oneof game {
+    // Reuse the last ticket from the player.
+    string rematch_ticket_id = 1;
+
+    // Join a Persistent Universe session
+    GamePersistentUniverseMatchRequest persistent_universe = 2;
+
+    // Join an Arena Commander session
+    GameArenaCommanderMatchRequest arena_commander = 3;
+
+    // Join a Star Marine session
+    GameStarMarineMatchRequest star_marine = 4;
+  }
+
+  // In which region to match
+  sc.external.common.network.v1.Region region = 5;
+}
+
+message MatchResponse {
+  // Unique identifier of the created ticket
+  string ticket_id = 1;
+}
+
+/*
+ * Cancel Call
+ */
+message CancelRequest {
+  // Unique identifier of the created ticket
+  string ticket_id = 1;
+}
+
+message CancelResponse {}
+
+/*
+ * GetLastAssignment Call
+ * It uses player_id from the jwt claims
+ */
+message GetLastAssignmentRequest {}
+
+message GetLastAssignmentResponse {
+  // Latest assignment for the player. Undefined if there is no more active assignment
+  Assignment assignment = 1;
+}
+
+/*
+ * Accept Call
+ */
+message AcceptRequest {
+  // Identifier of the proposal to accept
+  string proposal_id = 1;
+}
+
+message AcceptResponse {
+}
+
+/*
+ * Service Definition
+ */
+service FrontendService {
+  /*
+      Match
+
+      Find a match for a player or a group of players
+
+      If no match is found, the server stream is used to send proposals that do not perfectly fit the requested settings
+      but could interest the player
+  */
+  rpc Match(MatchRequest) returns (MatchResponse) {
+    option (google.api.http) = {
+      post : "/v1/match",
+      body: "*"
+    };
+  }
+
+  /*
+      Cancel
+
+      Cancel a match request
+  */
+  rpc Cancel(CancelRequest) returns (CancelResponse) {
+    option (google.api.http) = {
+      post : "/v1/cancel",
+      body: "*"
+    };
+  }
+
+  /*
+      GetLastAssignment
+
+      Get the latest assignment for a player. Useful when a game client crashed to return to a game session
+      The assignment will be returned ONLY if it is not expired
+  */
+  rpc GetLastAssignment(GetLastAssignmentRequest) returns (GetLastAssignmentResponse) {
+    option (google.api.http) = {
+      post : "/v1/get-last-assignment",
+      body: "*"
+    };
+  }
+
+  /*
+      Accept
+
+      Accepted a receive match proposal. This is useful only if there is no direct match found.
+
+      Proposals can be received through Match, or through the PushSystem
+  */
+  rpc Accept(AcceptRequest) returns (AcceptResponse) {
+    option (google.api.http) = {
+      post : "/v1/accept",
+      body: "*"
+    };
+  }
+}
+

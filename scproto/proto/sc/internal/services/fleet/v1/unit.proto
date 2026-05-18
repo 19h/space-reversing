@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+enum UnitHealth {
+  UNIT_HEALTH_UNSPECIFIED = 0;
+  UNIT_HEALTH_HEALTHY = 1;
+  UNIT_HEALTH_UNHEALTHY = 2;
+  UNIT_HEALTH_RETIRED = 3;
+  UNIT_HEALTH_PENDING = 4;
+}
+
+message UnitDetail {
+  // UUID of the unit
+  string id = 1;
+
+  // Unit specific product classification
+  string product = 2;
+
+  // List of key/value describing the unit. For example: { "az": "us-east-1" }
+  map<string, string> labels = 3;
+
+  // Health status of the unit
+  UnitHealth health_status = 4;
+}
+
+message GetUnitsRequest {
+  // List of unit ids to retrieve
+  repeated string ids = 1;
+}
+
+message GetUnitsResponse {
+  // List of registered units
+  repeated UnitDetail units = 1;
+}

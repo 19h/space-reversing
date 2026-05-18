@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package sc.internal.services.fleet.v1;
+
+message UnitFilter {
+  // Product of the units that should be included in the response. Include all product if not
+  // specified (optional)
+  repeated string products = 1;
+
+  // A unit must match those labels to be included in the response. Will match all labels if
+  // none are specified (optional)
+  map<string, string> labels = 2;
+}

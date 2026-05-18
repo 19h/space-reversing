@@ -1,0 +1,476 @@
+syntax = "proto3";
+
+package sc.internal.services.identity.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/common/api/v1/pagination.proto";
+import "sc/external/common/api/v1/query.proto";
+import "sc/external/services/identity/v1/player.proto";
+import "sc/internal/services/identity/v1/account.proto";
+import "sc/internal/services/identity/v1/query.proto";
+import "sc/external/common/command/v1/types.proto";
+import "sc/external/common/platform/v1/types.proto";
+import "sc/external/common/types/v1/customization.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Identity Service"
+    version: "1.0",
+    description: "Proxy account identity from platform to be used by services and store players associated to the account"
+  }
+};
+
+// Account
+message QueryAccountsRequest {
+  message Query {
+    AccountFilter filter = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+    sc.external.common.api.v1.PaginationSort sort = 3;
+  }
+  Query query = 4 [deprecated = true];
+  // (Optional) Open format query. Eventually we will rename it to query once original `query` is deprecated
+  sc.external.common.api.v1.Query open_query = 5;
+  reserved 1, 2, 3;
+}
+
+message QueryAccountsResponse {
+  // List of units found according to filters
+  repeated Account results = 1;
+  // Pagination and cursors
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message QueryAccountsHistoryRequest {
+  sc.external.common.api.v1.Query query = 4;
+  reserved 1, 2, 3;
+}
+
+message QueryAccountsHistoryResponse {
+  // List of units found according to filters
+  repeated AccountHistory results = 1;
+  // Pagination and cursors
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+// Player
+
+message FulfillPlayersRequest {
+  message FulfillPlayerCommand {
+    string name = 1;
+    uint32 account_id = 3;
+
+    reserved 2;
+    reserved "creation_attributes";
+  }
+  sc.external.common.command.v1.CommandArguments arguments = 2;
+  FulfillPlayerCommand command = 4;
+  reserved 1;
+  reserved 3;
+  reserved "commands";
+}
+
+message FulfillPlayersResponse {
+  sc.external.services.identity.v1.Player player = 2;
+  reserved 1;
+  reserved "players";
+}
+
+message RenamePlayersRequest {
+  message RenamePlayerCommand {
+    string urn = 1;
+    string name = 2;
+  }
+  repeated RenamePlayerCommand commands = 1;
+}
+
+message RenamePlayersResponse {}
+
+message RepairPlayersRequest {
+  message RepairPlayerCommand {
+    // Unique Resource Name of players to be deleted
+    oneof identifier {
+      // URN of the account or player to be archive
+      string urn = 1;
+    }
+  }
+  repeated RepairPlayerCommand commands = 1;
+}
+
+message RepairPlayersResponse {}
+
+message ResetPlayersRequest {
+  message ResetPlayerCommand {
+    
+    oneof identifier {
+      string urn = 1;
+    }
+  }
+  repeated ResetPlayerCommand commands = 1;
+}
+
+message ResetPlayersResponse {}
+
+message ArchivePlayersRequest {
+  message ArchivePlayerCommand {
+    // Unique Resource Name of players to be deleted
+    oneof identifier {
+      // URN of the account or player to be archive
+      string urn = 1;
+    }
+  }
+  repeated ArchivePlayerCommand commands = 1;
+}
+
+message ArchivePlayersResponse {}
+
+message QueryPlayersRequest {
+  message Query {
+    PlayerFilter filter = 1;
+    sc.external.common.api.v1.PaginationArguments pagination = 2;
+    sc.external.common.api.v1.PaginationSort sort = 3;
+  }
+  Query query = 4 [deprecated = true];
+  // (Optional) Open format query. Eventually we will rename it to query once original `query` is deprecated
+  sc.external.common.api.v1.Query open_query = 5;
+  reserved 1, 2, 3;
+}
+
+message QueryPlayersResponse {
+  // List of units found according to filters
+  repeated sc.external.services.identity.v1.Player results = 1;
+  // Pagination and cursors
+  sc.external.common.api.v1.PaginationInfo page_info = 2;
+}
+
+message GetGameInventoryRequest {
+  int32 account_id = 1;
+}
+
+message GetGameInventoryResponse {
+  sc.external.common.platform.v1.PlatformGameInventoryData data = 1;
+}
+
+message GetAccountBadgesRequest {
+  uint32 account_id = 1;
+}
+
+message GetAccountBadgesResponse {
+  uint32 account_id = 1;
+  repeated sc.external.common.platform.v1.PlatformBadge badges = 2;
+}
+
+message GetEntitledKeyRequest {
+  // Account for which we retrieve the stored value
+  uint32 account_id = 1;
+}
+
+message GetEntitledKeyResponse {
+  // Stored value
+  bool is_entitled = 1;
+}
+
+message SetEntitledKeyRequest {
+  // Account for which we set the entitled key
+  uint32 account_id = 1;
+  // Value to store
+  bool is_entitled = 2;
+  // Expiration for the key
+  uint32 duration = 3;
+}
+
+message SetEntitledKeyResponse {
+}
+
+message RemoveEntitledKeysRequest {
+  repeated uint32 account_ids = 1;
+}
+
+message RemoveEntitledKeysResponse {
+}
+
+message GetRepairLockedKeyRequest {
+  // Account for which we retrieve the stored value
+  uint32 account_id = 1;
+}
+
+message GetRepairLockedKeyResponse {
+  // Stored value
+  bool is_locked = 1;
+}
+
+message SetRepairLockedKeyRequest {
+  // Account for which we set the locked key
+  uint32 account_id = 1;
+  // Value to store
+  bool is_locked = 2;
+  // Expiration for the key
+  uint32 duration = 3;
+}
+
+message SetRepairLockedKeyResponse {
+}
+
+message SaveCharacterCustomizationsRequest {
+  uint64 player_id = 1;
+  sc.external.common.types.v1.CharacterCustomization character_customizations = 2;
+}
+
+message SaveCharacterCustomizationsResponse {
+
+}
+
+message GetCharacterCustomizationsRequest {
+  uint64 player_id = 1;
+}
+
+message GetCharacterCustomizationsResponse {
+  sc.external.common.types.v1.CharacterCustomization character_customizations = 1;
+}
+
+message CheckAuthTokenRequest {
+  string token = 1;
+}
+
+message CheckAuthTokenResponse {
+  Account account = 1;
+  repeated sc.external.services.identity.v1.PlayerRanking ranking = 2;
+  string citizen_id = 3;
+  string username = 4;
+}
+
+// Service definition
+
+service IdentityService {
+  /*
+      QueryAccounts
+
+      Query accounts using the common query system
+  */
+  rpc QueryAccounts(QueryAccountsRequest) returns (QueryAccountsResponse) {
+    option (google.api.http) = {
+      post: "/v1/accounts/query",
+      body: "*"
+    };
+  }
+
+  /*
+      QueryAccountsHistory
+
+      Query account history logs using the common query system
+  */
+  rpc QueryAccountsHistory(QueryAccountsHistoryRequest) returns (QueryAccountsHistoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/accounts/history",
+      body: "*"
+    };
+  }
+
+  /*
+      FulfillPlayers
+
+      Fulfill players for accounts
+  */
+  rpc FulfillPlayers(FulfillPlayersRequest) returns (FulfillPlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/fulfill",
+      body: "*"
+    };
+  }
+
+  /*
+      RenamePlayers
+  */
+  rpc RenamePlayers(RenamePlayersRequest) returns (RenamePlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/rename",
+      body: "*"
+    };
+  }
+  
+  /*
+      RepairPlayers
+
+      Repair (delete avatar entities) players by ids
+  */
+  rpc RepairPlayers(RepairPlayersRequest) returns (RepairPlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/repair",
+      body: "*"
+    };
+  }
+
+  /*
+      ResetPlayers
+
+     Reset (reset avatar entities) players by ids
+  */
+  rpc ResetPlayers(ResetPlayersRequest) returns (ResetPlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/reset",
+      body: "*"
+    };
+  }
+
+  /*
+      ArchivePlayers
+
+      Archive (logical delete) players by ids
+  */
+  rpc ArchivePlayers(ArchivePlayersRequest) returns (ArchivePlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/archive",
+      body: "*"
+    };
+  }
+
+  /*
+      QueryPlayers
+
+      Query players using the common query system
+  */
+  rpc QueryPlayers(QueryPlayersRequest) returns (QueryPlayersResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/query",
+      body: "*"
+    };
+  }
+
+  /* 
+    GetAccountBadges
+
+    Passthrough from Identity to Platform to Get Account Badges
+    
+    http://tools.rsi.global/platform/api/game-universe-api/getAccountBadges.html
+  */
+  rpc GetAccountBadges(GetAccountBadgesRequest) returns (GetAccountBadgesResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/get-account-badges",
+      body: "*"
+    };
+  }
+
+  /*
+      GetGameInventory
+
+      Get platform game inventory for account_id
+
+      http://tools.rsi.global/platform/api/game-universe-api/getGameInventory.html
+  */
+  rpc GetGameInventory(GetGameInventoryRequest) returns (GetGameInventoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/get-game-inventory",
+      body: "*"
+    };
+  }
+
+  /* 
+    GetEntitledKey
+
+    Passthrough from Identity to Platform Redis to read the Entitled Key
+
+    Used for Login Fast lanes
+  */
+  rpc GetEntitledKey(GetEntitledKeyRequest) returns (GetEntitledKeyResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/get-entitled-key",
+      body: "*"
+    };
+  }
+
+  /* 
+    SetEntitledKey
+
+    Passthrough from Identity to Platform Redis to write the Entitled Key
+
+    Used for Login Fast lanes
+  */
+  rpc SetEntitledKey(SetEntitledKeyRequest) returns (SetEntitledKeyResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/set-entitled-key",
+      body: "*"
+    };
+  }
+
+  /* 
+    RemoveEntitledKeys
+
+    Passthrough from Identity to Platform Redis to clear the Entitled Key for multiple accounts
+
+    Used for Login Fast lanes
+  */
+  rpc RemoveEntitledKeys(RemoveEntitledKeysRequest) returns (RemoveEntitledKeysResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/remove-entitled-keys",
+      body: "*"
+    };
+  }
+
+  /*
+    GetRepairLockedKey
+
+    Passthrough from Identity to Platform Redis to read the Account RepairLocked Key
+  */
+  rpc GetRepairLockedKey(GetRepairLockedKeyRequest) returns (GetRepairLockedKeyResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/get-repair-locked-key",
+      body: "*"
+    };
+  }
+
+  /*
+    SetRepairLockedKey
+
+    Passthrough from Identity to Platform Redis to write the Account RepairLocked Key
+  */
+  rpc SetRepairLockedKey(SetRepairLockedKeyRequest) returns (SetRepairLockedKeyResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/set-repair-locked-key",
+      body: "*"
+    };
+  }
+
+  /* 
+    SaveCharacterCustomizations
+
+    Allows to save / upsert the Chracter Customization attributes
+
+    Gender
+    DNA
+    Loadouts
+  */
+  rpc SaveCharacterCustomizations(SaveCharacterCustomizationsRequest) returns (SaveCharacterCustomizationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/save-customizations",
+      body: "*"
+    };
+  }
+
+  /* 
+    GetCharacterCustomizations
+
+    Allows to Get Customization attributes
+
+    Gender
+    DNA
+    Loadouts
+  */
+  rpc GetCharacterCustomizations(GetCharacterCustomizationsRequest) returns (GetCharacterCustomizationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/players/get-customizations",
+      body: "*"
+    };
+  }
+
+  /*
+    CheckAuthToken
+
+    Checks if a user token is valid and returns account and character information
+  */
+  rpc CheckAuthToken(CheckAuthTokenRequest) returns (CheckAuthTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/check-auth-token",
+      body: "*"
+    };
+  }
+}

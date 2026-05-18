@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+/*
+  CharacterCustomizer Service API
+
+  CharacterCustomizer service to provide CC with customizations, save customizations and get current.
+*/
+package sc.external.services.character_customizer.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/common/types/v1/customization.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Character Customizer Service"
+      version: "1.0",
+      description: "Providing CC with customizations, save customizations and get current."
+    }
+};
+
+message SaveCharacterCustomizationsRequest {
+  sc.external.common.types.v1.CharacterCustomization character_customizations = 1;
+}
+
+message SaveCharacterCustomizationsResponse {
+
+}
+
+service CharacterCustomizerService {
+
+  /*
+    SaveCharacterCustomizations
+
+    to save and persist Character Customizations of the player.
+  */
+  rpc SaveCharacterCustomizations(SaveCharacterCustomizationsRequest) returns (SaveCharacterCustomizationsResponse) {
+    option (google.api.http) = {
+      get : "/v1/characterCustomizer/SaveCharacterCustomizations",
+    };
+  }
+}
