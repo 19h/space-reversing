@@ -1,0 +1,72 @@
+{
+    "Territories": [
+        {
+            "Name": "Stanton",
+            "UnitClaimLabel": "default",
+            "StreamingGroups": [
+                {
+                    "EntitiesMoveable": 40706,
+                    "Name": "",
+                    "SuperGUID": "f3132aed-f110-489b-a739-9f10208a033b",
+                    "LocationName": "StantonSolarSystem",
+                    "Type": 2,
+                    "LocationID": 1902223495,
+                    "Entities": 3349360,
+                    "EntitiesImmovable": 3308548,
+                    "TypeName": "SolarSystem"
+                }
+            ]
+        },
+        {
+            "Name": "Pyro",
+            "UnitClaimLabel": "default",
+            "StreamingGroups": [
+                {
+                    "EntitiesMoveable": 10803,
+                    "Name": "",
+                    "SuperGUID": "0df49e57-1114-4aa8-9d0b-0cf4399b1887",
+                    "LocationName": "PyroSolarSystem",
+                    "Type": 2,
+                    "LocationID": 3184339241,
+                    "Entities": 1172336,
+                    "EntitiesImmovable": 1161525,
+                    "TypeName": "SolarSystem"
+                }
+            ]
+        },
+        {
+            "UnitClaimLabel": "default",
+            "Name": "Nyx Space",
+            "StreamingGroups": [
+                {
+                    "SuperGUID": "db28aec7-9815-41bd-8200-46240692dcbb",
+                    "LocationName": "NyxSolarSystem",
+                    "Type": 2,
+                    "EntitiesMoveable": 30146,
+                    "Name": "",
+                    "LocationID": 2627827560,
+                    "Entities": 2020673,
+                    "EntitiesImmovable": 1988713,
+                    "TypeName": "SolarSystem"
+                }
+            ]
+        },
+        {
+            "UnitClaimLabel": "default",
+            "Name": "Nyx B",
+            "StreamingGroups": [
+                {
+                    "SuperGUID": "db28aec7-9815-41bd-8200-46240692dcbb,4d33884b-18a1-b4c3-a06b-6b4643936f8b,48a197a7-526e-26d6-2734-69a9f1c610ae,4cc9d051-efa8-4fc0-fd44-34e7a935e0ab",
+                    "LocationName": "Nyx_Levski",
+                    "Type": 3,
+                    "EntitiesMoveable": 914,
+                    "Name": "levski_all-001",
+                    "LocationID": 3723364946,
+                    "Entities": 15417,
+                    "EntitiesImmovable": 14503,
+                    "TypeName": "ObjectContainer"
+                }
+            ]
+        }
+    ]
+}
