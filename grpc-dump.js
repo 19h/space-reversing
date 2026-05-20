@@ -193,7 +193,7 @@ const MAX_DECOMPRESSED_SIZE = 0x2000000; // 32MB safety cutoff
 
 // The maximum number of bytes to dump per payload in hexdump format. This prevents extremely large
 // outputs when inspecting message contents.
-const MAX_DUMP_SIZE = 2048;
+const MAX_DUMP_SIZE = 20480;
 
 // ---------------------------------------------------------------------------
 // CONSOLE COLOR DEFINITIONS
