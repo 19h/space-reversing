@@ -1,0 +1,77 @@
+
+syntax = "proto3";
+
+package sc.internal.services.rental.v1;
+import "sc/external/services/entitlement/v1/types.proto";
+
+enum RentalStatus {
+  RENTAL_STATUS_UNSPECIFIED = 0;
+  // The rental is available to start
+  RENTAL_STATUS_AVAILABLE = 1;
+  // The rental is currently active
+  RENTAL_STATUS_ACTIVE = 2;
+  // The rental period finished
+  RENTAL_STATUS_FINISHED = 3;
+}
+
+enum RentalLogAction {
+  RENTAL_LOG_ACTION_UNSPECIFIED = 0;
+  // The rental was created
+  RENTAL_LOG_ACTION_CREATED = 1;
+  // The rental was started
+  RENTAL_LOG_ACTION_STARTED = 2;
+  // The rental was renewed
+  RENTAL_LOG_ACTION_RENEWED = 3;
+  // The rental was cancelled
+  RENTAL_LOG_ACTION_CANCELLED = 4;
+  // The rental has expired
+  RENTAL_LOG_ACTION_EXPIRED = 5;
+  // The rental start was reverted
+  RENTAL_LOG_ACTION_REVERTED_START = 6;
+}
+
+message Rental {
+  // Unique identifier of this rental
+  string id = 1;
+  // Rental status
+  RentalStatus status = 2;
+  // Creation time in ms
+  uint64 created_at = 3;
+  // (Once active): Begin time in ms
+  uint64 began_at = 4;
+  // (Once active): Expiration time POSIX timestamp in ms
+  uint64 expire_at = 5;
+  // Duration of the rental in ms
+  uint32 duration = 6;
+  // Account URN of the owner
+  string account_urn = 7;
+  // Player URN of who to entitle rental to
+  string player_urn = 8;
+  // URN of the of the entitlement created (created from rentalId)
+  string entitlement_urn = 9;
+  // How many times this rental was renewed or extended
+  uint32 renewals = 10;
+}
+
+message RentalHistory {
+  // Unique identifier of this rental
+  string id = 1;
+  // Account URN of the owner
+  string account_urn = 2;
+  // Player URN of who to entitle rental to
+  string player_urn = 3;
+  // URN of the of the entitlement created (created from rentalId)
+  string entitlement_urn = 4;
+  // Source of which game mode the entitlement is for (Platform, PU, Arena Commander etc..)
+  sc.external.services.entitlement.v1.EntitlementSource source = 5;
+  // Name of the rental
+  string name = 6;
+  // GUID of the Entity Class
+  string entity_class_guid = 7;
+  // Creation time in ms
+  uint64 created_at = 8;
+  // log action (rent, cancel, renew, expired)
+  RentalLogAction log_action = 9;
+  // log message
+  string log_message = 10;
+}
