@@ -1,0 +1,253 @@
+# Externally addressable gRPC RPCs (sc.external.*, sc.game.*)
+# Source: scproto/proto via proto-registry.js
+# Format per RPC:
+#   <stream>  ServiceMethod  (RequestType) -> ResponseType   [http]
+#     stream: u=unary, ss=server-stream, cs=client-stream, bidi=bidirectional
+#     [http]  present iff the proto declares a google.api.http annotation
+
+## sc.external.services.analytics.v1.AnalyticsService    (2 RPCs)
+  u     Collect  (CollectRequest) -> CollectResponse  [http]
+  cs    CollectionStream  (CollectionStreamRequest) -> CollectionStreamResponse  [http]
+
+## sc.external.services.blueprint_library.v1.BlueprintLibraryService    (2 RPCs)
+  u     QueryBlueprintEntries  (QueryBlueprintEntriesRequest) -> QueryBlueprintEntriesResponse  [http]
+  ss    QueryBlueprintEntriesStream  (QueryBlueprintEntriesStreamRequest) -> QueryBlueprintEntriesStreamResponse  [http]
+
+## sc.external.services.character_customizer.v1.CharacterCustomizerService    (1 RPC)
+  u     SaveCharacterCustomizations  (SaveCharacterCustomizationsRequest) -> SaveCharacterCustomizationsResponse  [http]
+
+## sc.external.services.chat.v1.ChatService    (4 RPCs)
+  u     SendMessage  (SendMessageRequest) -> SendMessageResponse  [http]
+  u     EraseMessage  (EraseMessageRequest) -> EraseMessageResponse  [http]
+  u     EditMessage  (EditMessageRequest) -> EditMessageResponse  [http]
+  u     ListMessages  (ListMessagesRequest) -> ListMessagesResponse  [http]
+
+## sc.external.services.configuration.v1.ConfigService    (3 RPCs)
+  u     QueryConfig  (QueryConfigRequest) -> QueryConfigResponse  [http]
+  ss    WatchConfig  (WatchConfigRequest) -> WatchConfigResponse  [http]
+  ss    WatchMultiConfigurations  (WatchMultiConfigurationsRequest) -> WatchMultiConfigurationsResponse  [http]
+
+## sc.external.services.contacts.v1.ContactsService    (12 RPCs)
+  u     ListContacts  (ListContactsRequest) -> ListContactsResponse  [http]
+  u     SearchAccount  (SearchAccountRequest) -> SearchAccountResponse  [http]
+  u     RemoveFriend  (RemoveFriendRequest) -> RemoveFriendResponse  [http]
+  u     GetShardInfo  (GetShardInfoRequest) -> GetShardInfoResponse  [http]
+  u     SendFriendRequest  (SendFriendRequestRequest) -> SendFriendRequestResponse  [http]
+  u     CancelFriendRequest  (CancelFriendRequestRequest) -> CancelFriendRequestResponse  [http]
+  u     ListPendingFriendRequests  (ListPendingFriendRequestsRequest) -> ListPendingFriendRequestsResponse  [http]
+  u     AcceptFriendRequest  (AcceptFriendRequestRequest) -> AcceptFriendRequestResponse  [http]
+  u     DeclineFriendRequest  (DeclineFriendRequestRequest) -> DeclineFriendRequestResponse  [http]
+  u     SetUnilateralRelationship  (SetUnilateralRelationshipRequest) -> SetUnilateralRelationshipResponse  [http]
+  u     RemoveUnilateralRelationship  (RemoveUnilateralRelationshipRequest) -> RemoveUnilateralRelationshipResponse  [http]
+  u     SetNote  (SetNoteRequest) -> SetNoteResponse  [http]
+
+## sc.external.services.contract_broker.v1.ContractBrokerService    (2 RPCs)
+  ss    QueryAvailableContracts  (QueryAvailableContractsRequest) -> QueryAvailableContractsResponse  [http]
+  u     QueryContracts  (QueryContractsRequest) -> QueryContractsResponse  [http]
+
+## sc.external.services.custom_lobby.v1.CustomLobbyService    (7 RPCs)
+  u     ChangeTeam  (ChangeTeamRequest) -> ChangeTeamResponse  [http]
+  u     ChangeTeammateTeam  (ChangeTeammateTeamRequest) -> ChangeTeammateTeamResponse  [http]
+  u     Get  (GetRequest) -> GetResponse  [http]
+  u     Create  (CreateRequest) -> CreateResponse  [http]
+  u     UpdateSettings  (UpdateSettingsRequest) -> UpdateSettingsResponse  [http]
+  u     FindMatch  (FindMatchRequest) -> FindMatchResponse  [http]
+  u     Join  (JoinRequest) -> JoinResponse  [http]
+
+## sc.external.services.discipline.v1.DisciplineService    (1 RPC)
+  u     QuerySanctions  (QuerySanctionsRequest) -> QuerySanctionsResponse  [http]
+
+## sc.external.services.dynamic_game_assets.v1.DynamicGameAssetsService    (1 RPC)
+  u     GetAssetForScreen  (GetAssetForScreenRequest) -> GetAssetForScreenResponse  [http]
+
+## sc.external.services.eatransaction.v1.ExternalEATransactionService    (2 RPCs)
+  u     EARent  (EARentRequest) -> EARentResponse  [http]
+  u     RenewEARental  (RenewEARentalRequest) -> RenewEARentalResponse  [http]
+
+## sc.external.services.echo.v1.EchoService    (7 RPCs)
+  u     Echo  (EchoRequest) -> EchoResponse  [http]
+  cs    EchoClientStream  (EchoClientStreamRequest) -> EchoClientStreamResponse  [http]
+  ss    EchoServerStream  (EchoServerStreamRequest) -> EchoServerStreamResponse  [http]
+  bidi  EchoDuplexStream  (EchoDuplexStreamRequest) -> EchoDuplexStreamResponse  [http]
+  bidi  EchoSimpleDuplexStream  (EchoSimpleDuplexStreamRequest) -> EchoSimpleDuplexStreamResponse  [http]
+  u     CloseAllStreams  (CloseAllStreamsRequest) -> CloseAllStreamsResponse  [http]
+  u     EchoError  (EchoErrorRequest) -> EchoErrorResponse  [http]
+
+## sc.external.services.entitlement.v1.ExternalEntitlementService    (3 RPCs)
+  u     Query  (QueryRequest) -> QueryResponse  [http]
+  u     Claim  (ClaimRequest) -> ClaimResponse  [http]
+  u     UpdateArenaCommanderLoadout  (UpdateArenaCommanderLoadoutRequest) -> UpdateArenaCommanderLoadoutResponse  [http]
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService    (8 RPCs)
+  ss    QueryEntitlementsStream  (QueryEntitlementsStreamRequest) -> QueryEntitlementsStreamResponse  [http]
+  ss    QuerySnapshotsStream  (QuerySnapshotsStreamRequest) -> QuerySnapshotsStreamResponse  [http]
+  ss    QuerySnapshotsWithEntitlementsStream  (QuerySnapshotsWithEntitlementsStreamRequest) -> QuerySnapshotsWithEntitlementsStreamResponse  [http]
+  ss    QueryEntitlementsByItemTypeStream  (QueryEntitlementsByItemTypeStreamRequest) -> QueryEntitlementsByItemTypeStreamResponse  [http]
+  ss    QueryEntitlementsBySourceTypeStream  (QueryEntitlementsBySourceTypeStreamRequest) -> QueryEntitlementsBySourceTypeStreamResponse  [http]
+  ss    QueryEntitlementsByEntityClassStream  (QueryEntitlementsByEntityClassStreamRequest) -> QueryEntitlementsByEntityClassStreamResponse  [http]
+  ss    QueryEntitlementsByEntityGeidsStream  (QueryEntitlementsByEntityGeidsStreamRequest) -> QueryEntitlementsByEntityGeidsStreamResponse  [http]
+  u     UpdateArenaCommanderLoadout  (UpdateArenaCommanderLoadoutRequest) -> UpdateArenaCommanderLoadoutResponse  [http]
+
+## sc.external.services.entity_document.v1.ExternalEntityDocumentService    (7 RPCs)
+  u     Create  (CreateRequest) -> CreateResponse  [http]
+  u     Upsert  (UpsertRequest) -> UpsertResponse  [http]
+  u     Update  (UpdateRequest) -> UpdateResponse  [http]
+  u     Prepare  (PrepareRequest) -> PrepareResponse  [http]
+  u     Commit  (CommitRequest) -> CommitResponse  [http]
+  u     Erase  (EraseRequest) -> EraseResponse  [http]
+  u     Fetch  (FetchRequest) -> FetchResponse  [http]
+
+## sc.external.services.entity_subscription.v1.EntitySubscriptionService    (1 RPC)
+  ss    QueryEntities  (QueryEntitiesRequest) -> QueryEntitiesResponse  [http]
+
+## sc.external.services.entitygraph.v1.EntityGraphService    (10 RPCs)
+  u     ContainerQuery  (ContainerQueryRequest) -> ContainerQueryResponse  [http]
+  u     Move  (MoveRequest) -> MoveResponse  [http]
+  u     GetInventories  (GetInventoriesRequest) -> GetInventoriesResponse  [http]
+  u     EntityQuery  (EntityQueryRequest) -> EntityQueryResponse  [http]
+  u     MutateEntities  (MutateEntitiesRequest) -> MutateEntitiesResponse  [http]
+  u     InventoryQuery  (InventoryQueryRequest) -> InventoryQueryResponse  [http]
+  ss    ContainerQueryStream  (ContainerQueryStreamRequest) -> ContainerQueryStreamResponse  [http]
+  u     GetEntityStowContextsByGeids  (GetEntityStowContextsByGeidsRequest) -> GetEntityStowContextsByGeidsResponse  [http]
+  u     GetEntityStowContextsByParentUrns  (GetEntityStowContextsByParentUrnsRequest) -> GetEntityStowContextsByParentUrnsResponse  [http]
+  u     GetDatabaseVersion  (GetDatabaseVersionRequest) -> GetDatabaseVersionResponse  [http]
+
+## sc.external.services.friends.v1.FriendService    (12 RPCs)
+  u     GetFriendList  (GetFriendListRequest) -> GetFriendListResponse  [http]
+  u     SearchAccount  (SearchAccountRequest) -> SearchAccountResponse  [http]
+  u     RemoveFriend  (RemoveFriendRequest) -> RemoveFriendResponse  [http]
+  u     GetShardInfo  (GetShardInfoRequest) -> GetShardInfoResponse  [http]
+  u     SendFriendRequest  (SendFriendRequestRequest) -> SendFriendRequestResponse  [http]
+  u     CancelFriendRequest  (CancelFriendRequestRequest) -> CancelFriendRequestResponse  [http]
+  u     GetPendingFriendRequest  (GetPendingFriendRequestRequest) -> GetPendingFriendRequestResponse  [http]
+  u     AcceptFriendRequest  (AcceptFriendRequestRequest) -> AcceptFriendRequestResponse  [http]
+  u     DeclineFriendRequest  (DeclineFriendRequestRequest) -> DeclineFriendRequestResponse  [http]
+  u     GetBlockedAccount  (GetBlockedAccountRequest) -> GetBlockedAccountResponse  [http]
+  u     BlockAccount  (BlockAccountRequest) -> BlockAccountResponse  [http]
+  u     UnblockAccount  (UnblockAccountRequest) -> UnblockAccountResponse  [http]
+
+## sc.external.services.identity.v1.IdentityService    (3 RPCs)
+  u     PreallocatePlayer  (PreallocatePlayerRequest) -> PreallocatePlayerResponse  [http]
+  u     GetCurrentPlayer  (GetCurrentPlayerRequest) -> GetCurrentPlayerResponse  [http]
+  u     GetPlayersNames  (GetPlayersNamesRequest) -> GetPlayersNamesResponse  [http]
+
+## sc.external.services.instance_manager.v1.InstanceManagerService    (1 RPC)
+  u     GetAvailableInstances  (GetAvailableInstancesRequest) -> GetAvailableInstancesResponse  [http]
+
+## sc.external.services.land_claim.v1.LandClaimService    (2 RPCs)
+  u     QueryAreaClaims  (QueryAreaClaimsRequest) -> QueryAreaClaimsResponse  [http]
+  u     QueryOwnedClaims  (QueryOwnedClaimsRequest) -> QueryOwnedClaimsResponse  [http]
+
+## sc.external.services.ledger.v1.LedgerService    (1 RPC)
+  u     GetFunds  (GetFundsRequest) -> GetFundsResponse  [http]
+
+## sc.external.services.login.v1.LoginService    (2 RPCs)
+  u     InitiateLogin  (InitiateLoginRequest) -> InitiateLoginResponse
+  u     CancelLogin  (CancelLoginRequest) -> CancelLoginResponse
+
+## sc.external.services.match.v1.MatchService    (1 RPC)
+  u     Get  (GetRequest) -> GetResponse  [http]
+
+## sc.external.services.matchmaking.v1.FrontendService    (4 RPCs)
+  u     Match  (MatchRequest) -> MatchResponse  [http]
+  u     Cancel  (CancelRequest) -> CancelResponse  [http]
+  u     GetLastAssignment  (GetLastAssignmentRequest) -> GetLastAssignmentResponse  [http]
+  u     Accept  (AcceptRequest) -> AcceptResponse  [http]
+
+## sc.external.services.mission_scenario.v1.ScenarioService    (2 RPCs)
+  u     GetContributorScenarioProgress  (GetContributorScenarioProgressRequest) -> GetContributorScenarioProgressResponse  [http]
+  u     QueryScenarioStatus  (QueryScenarioStatusRequest) -> QueryScenarioStatusResponse  [http]
+
+## sc.external.services.mission_service.v1.MissionService    (8 RPCs)
+  u     QueryActiveMissions  (QueryActiveMissionsRequest) -> QueryActiveMissionsResponse  [http]
+  u     QueryMissions  (QueryMissionsRequest) -> QueryMissionsResponse  [http]
+  u     JoinMission  (JoinMissionRequest) -> JoinMissionResponse  [http]
+  u     LeaveMission  (LeaveMissionRequest) -> LeaveMissionResponse  [http]
+  u     ShareMission  (ShareMissionRequest) -> ShareMissionResponse  [http]
+  u     QueryMissionObjectives  (QueryMissionObjectivesRequest) -> QueryMissionObjectivesResponse  [http]
+  u     QueryMissionPhases  (QueryMissionPhasesRequest) -> QueryMissionPhasesResponse  [http]
+  u     CheckMissionSharingEligibility  (CheckMissionSharingEligibilityRequest) -> CheckMissionSharingEligibilityResponse  [http]
+
+## sc.external.services.mission_token.v1.MissionTokenService    (1 RPC)
+  u     QueryTokens  (QueryTokensRequest) -> QueryTokensResponse  [http]
+
+## sc.external.services.notifications.v1.NotificationsService    (6 RPCs)
+  u     Remove  (RemoveRequest) -> RemoveResponse  [http]
+  u     Find  (FindRequest) -> FindResponse  [http]
+  u     Read  (ReadRequest) -> ReadResponse  [http]
+  u     Unread  (UnreadRequest) -> UnreadResponse  [http]
+  u     ReadAll  (ReadAllRequest) -> ReadAllResponse  [http]
+  u     RemoveAll  (RemoveAllRequest) -> RemoveAllResponse  [http]
+
+## sc.external.services.presence.v1.PresenceService    (1 RPC)
+  cs    PresenceStream  (PresenceStreamRequest) -> PresenceStreamResponse  [http]
+
+## sc.external.services.push.v1.PushService    (1 RPC)
+  bidi  Listen  (ListenRequest) -> ListenResponse  [http]
+
+## sc.external.services.rental.v1.ExternalRentalService    (3 RPCs)
+  u     Start  (StartRequest) -> StartResponse  [http]
+  u     QueryRentals  (QueryRentalsRequest) -> QueryRentalsResponse  [http]
+  ss    QueryRentalsStream  (QueryRentalsStreamRequest) -> QueryRentalsStreamResponse  [http]
+
+## sc.external.services.reputation.v1.ReputationService    (10 RPCs)
+  u     Get  (GetRequest) -> GetResponse  [http]
+  u     QueryReputations  (QueryReputationsRequest) -> QueryReputationsResponse  [http]
+  u     QueryFavorites  (QueryFavoritesRequest) -> QueryFavoritesResponse  [http]
+  u     GetPreferences  (GetPreferencesRequest) -> GetPreferencesResponse  [http]
+  u     SetPairs  (SetPairsRequest) -> SetPairsResponse  [http]
+  u     AddFavorites  (AddFavoritesRequest) -> AddFavoritesResponse  [http]
+  u     RemoveFavorites  (RemoveFavoritesRequest) -> RemoveFavoritesResponse  [http]
+  u     AddFavoriteEntities  (AddFavoriteEntitiesRequest) -> AddFavoriteEntitiesResponse  [http]
+  u     RemoveFavoriteEntities  (RemoveFavoriteEntitiesRequest) -> RemoveFavoriteEntitiesResponse  [http]
+  u     GetScoreHistory  (GetScoreHistoryRequest) -> GetScoreHistoryResponse  [http]
+
+## sc.external.services.rtc.v1.RTCService    (6 RPCs)
+  u     GetChannels  (GetChannelsRequest) -> GetChannelsResponse  [http]
+  u     Call  (CallRequest) -> CallResponse  [http]
+  u     AcceptCall  (AcceptCallRequest) -> AcceptCallResponse  [http]
+  u     DeclineCall  (DeclineCallRequest) -> DeclineCallResponse  [http]
+  u     HangupCall  (HangupCallRequest) -> HangupCallResponse  [http]
+  u     GetPendingCalls  (GetPendingCallsRequest) -> GetPendingCallsResponse  [http]
+
+## sc.external.services.social.v1.SocialService    (22 RPCs)
+  u     CreateDMGroup  (CreateDMGroupRequest) -> CreateDMGroupResponse  [http]
+  u     CreateGroup  (CreateGroupRequest) -> CreateGroupResponse  [http]
+  u     TransferGroupLeadership  (TransferGroupLeadershipRequest) -> TransferGroupLeadershipResponse  [http]
+  u     RenameGroup  (RenameGroupRequest) -> RenameGroupResponse  [http]
+  u     DestroyGroup  (DestroyGroupRequest) -> DestroyGroupResponse  [http]
+  u     GetGroupsById  (GetGroupsByIdRequest) -> GetGroupsByIdResponse  [http]
+  u     ListGroups  (ListGroupsRequest) -> ListGroupsResponse  [http]
+  u     SetGroupPreferences  (SetGroupPreferencesRequest) -> SetGroupPreferencesResponse  [http]
+  u     LeaveGroup  (LeaveGroupRequest) -> LeaveGroupResponse  [http]
+  u     KickGroupMember  (KickGroupMemberRequest) -> KickGroupMemberResponse  [http]
+  u     SendGroupInvitation  (SendGroupInvitationRequest) -> SendGroupInvitationResponse  [http]
+  u     InviteToParty  (InviteToPartyRequest) -> InviteToPartyResponse  [http]
+  u     AcceptInvitation  (AcceptInvitationRequest) -> AcceptInvitationResponse  [http]
+  u     DeclineInvitation  (DeclineInvitationRequest) -> DeclineInvitationResponse  [http]
+  u     RevokeInvitation  (RevokeInvitationRequest) -> RevokeInvitationResponse  [http]
+  u     ListPendingInvitations  (ListPendingInvitationsRequest) -> ListPendingInvitationsResponse  [http]
+  u     GetInstanceInfo  (GetInstanceInfoRequest) -> GetInstanceInfoResponse  [http]
+  u     GetSubscriptionKey  (GetSubscriptionKeyRequest) -> GetSubscriptionKeyResponse  [http]
+  u     AddGroupModerator  (AddGroupModeratorRequest) -> AddGroupModeratorResponse  [http]
+  u     RemoveGroupModerator  (RemoveGroupModeratorRequest) -> RemoveGroupModeratorResponse  [http]
+  u     SetMemberReadyStatus  (SetMemberReadyStatusRequest) -> SetMemberReadyStatusResponse  [http]
+  u     GetClientGameModeSettings  (GetClientGameModeSettingsRequest) -> GetClientGameModeSettingsResponse  [http]
+
+## sc.external.services.squad.v1.SquadService    (7 RPCs)
+  u     UpdateSettings  (UpdateSettingsRequest) -> UpdateSettingsResponse  [http]
+  u     Create  (CreateRequest) -> CreateResponse  [http]
+  u     CreateFromParty  (CreateFromPartyRequest) -> CreateFromPartyResponse  [http]
+  u     Get  (GetRequest) -> GetResponse  [http]
+  u     FindMatch  (FindMatchRequest) -> FindMatchResponse  [http]
+  u     AutoRequeue  (AutoRequeueRequest) -> AutoRequeueResponse  [http]
+  u     RecoverMatch  (RecoverMatchRequest) -> RecoverMatchResponse  [http]
+
+## sc.external.services.stats.v1.StatsService    (1 RPC)
+  u     FindStats  (FindStatsRequest) -> FindStatsResponse  [http]
+
+## sc.external.services.trace.v1.TraceService    (2 RPCs)
+  u     Collect  (CollectRequest) -> CollectResponse  [http]
+  cs    CollectionStream  (CollectionStreamRequest) -> CollectionStreamResponse  [http]
+
+# Total: 38 services, 169 RPCs

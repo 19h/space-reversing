@@ -1,0 +1,108 @@
+# Client-subscribed push event types (extracted from StarCitizen.exe.c)
+# Format: <STATUS> <fully.qualified.type>
+# STATUS:  OK = type is in proto registry and will auto-decode
+#          MISS = type fully-qualified name not found in scproto tree
+
+## sc.external.common.api.v1
+[ok]   sc.external.common.api.v1.ServiceOverloadControlMetrics
+
+## sc.external.common.command.v1
+[ok]   sc.external.common.command.v1.CommandResponseBody
+
+## sc.external.common.mission.v1
+[ok]   sc.external.common.mission.v1.MissionEnded
+[ok]   sc.external.common.mission.v1.MissionPhaseStateChange
+[ok]   sc.external.common.mission.v1.MissionShared
+[ok]   sc.external.common.mission.v1.ObjectiveComplete
+[ok]   sc.external.common.mission.v1.ObjectiveUpdate
+[ok]   sc.external.common.mission.v1.ObjectiveUpserted
+[ok]   sc.external.common.mission.v1.PlayerJoined
+[ok]   sc.external.common.mission.v1.PlayerLeft
+
+## sc.external.services.chat.v1
+[ok]   sc.external.services.chat.v1.MessageReceived
+[ok]   sc.external.services.chat.v1.SystemMessageReceived
+
+## sc.external.services.contacts.v1
+[ok]   sc.external.services.contacts.v1.FriendAdded
+[ok]   sc.external.services.contacts.v1.FriendRemoved
+[ok]   sc.external.services.contacts.v1.FriendRequestCanceled
+[ok]   sc.external.services.contacts.v1.FriendRequestDeclined
+[ok]   sc.external.services.contacts.v1.FriendRequestReceived
+
+## sc.external.services.custom_lobby.v1
+[ok]   sc.external.services.custom_lobby.v1.CustomLobbyMemberJoinedTeam
+[ok]   sc.external.services.custom_lobby.v1.CustomLobbySettingsChanged
+
+## sc.external.services.discipline.v1
+[ok]   sc.external.services.discipline.v1.Sanction
+
+## sc.external.services.entitlement.v1
+[ok]   sc.external.services.entitlement.v1.ReconcileAccountUpdateNotification
+
+## sc.external.services.entitygraph.v1
+[ok]   sc.external.services.entitygraph.v1.EntitiesOwnershipUpdated
+
+## sc.external.services.identity.v1
+[ok]   sc.external.services.identity.v1.LoginAllowedPushEvent
+
+## sc.external.services.ledger.v1
+[ok]   sc.external.services.ledger.v1.VariedFunds
+
+## sc.external.services.login.v1
+[ok]   sc.external.services.login.v1.AccountLoginCharacterStatus
+[ok]   sc.external.services.login.v1.AccountLoginQueueStatus
+[ok]   sc.external.services.login.v1.EntitlementStarted
+[ok]   sc.external.services.login.v1.LoginCompleted
+[ok]   sc.external.services.login.v1.LoginQueueError
+[ok]   sc.external.services.login.v1.ProcessingQueueHeartbeat
+[ok]   sc.external.services.login.v1.ProcessingQueueJoined
+[ok]   sc.external.services.login.v1.SessionCollision
+
+## sc.external.services.notifications.v1
+[ok]   sc.external.services.notifications.v1.Notification
+[ok]   sc.external.services.notifications.v1.NotificationRead
+[ok]   sc.external.services.notifications.v1.NotificationUnread
+
+## sc.external.services.presence.v1
+[ok]   sc.external.services.presence.v1.PresenceUpdated
+
+## sc.external.services.push.v1
+[ok]   sc.external.services.push.v1.PushExampleMessage
+
+## sc.external.services.reputation.v1
+[ok]   sc.external.services.reputation.v1.ReputationPushEvent
+
+## sc.external.services.rtc.v1
+[ok]   sc.external.services.rtc.v1.CallAccepted
+[ok]   sc.external.services.rtc.v1.CallDeclined
+[ok]   sc.external.services.rtc.v1.CallHungup
+[ok]   sc.external.services.rtc.v1.CallReceived
+[ok]   sc.external.services.rtc.v1.ChannelResharded
+
+## sc.external.services.social.v1
+[ok]   sc.external.services.social.v1.GroupDestroyed
+[ok]   sc.external.services.social.v1.GroupRenamed
+[ok]   sc.external.services.social.v1.InvitationDeclined
+[ok]   sc.external.services.social.v1.InvitationReceived
+[ok]   sc.external.services.social.v1.InvitationRevoked
+[ok]   sc.external.services.social.v1.JoinedGroup
+[ok]   sc.external.services.social.v1.LeadershipTransferred
+[ok]   sc.external.services.social.v1.LeftGroup
+[ok]   sc.external.services.social.v1.MemberInvited
+[ok]   sc.external.services.social.v1.MemberJoined
+[ok]   sc.external.services.social.v1.MemberLeft
+[ok]   sc.external.services.social.v1.MemberReadyStatusChanged
+[ok]   sc.external.services.social.v1.ModeratorAdded
+[ok]   sc.external.services.social.v1.ModeratorRemoved
+
+## sc.external.services.squad.v1
+[ok]   sc.external.services.squad.v1.SquadSettingsChanged
+
+## sc.game.shard_sup.v1
+[miss] sc.game.shard_sup.v1.ForeignStow
+
+## sc.internal.services.entitygraph.v1
+[ok]   sc.internal.services.entitygraph.v1.ActivationNotification
+
+# Total: 60 types (59 decodable, 1 missing from proto tree)

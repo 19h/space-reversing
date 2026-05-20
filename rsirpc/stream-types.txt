@@ -1,0 +1,406 @@
+# Streaming RPCs and their response-message shapes (sc.external.*, sc.game.*)
+# Each entry: Service.Method  (cs|ss|bidi)  Request -> Response
+# Followed by recursive field listing of the response type (2 levels deep).
+
+## sc.external.services.analytics.v1.AnalyticsService.CollectionStream  (cs)
+   request:  CollectionStreamRequest
+   response: CollectionStreamResponse
+
+   Response fields:
+
+
+## sc.external.services.blueprint_library.v1.BlueprintLibraryService.QueryBlueprintEntriesStream  (ss)
+   request:  QueryBlueprintEntriesStreamRequest
+   response: QueryBlueprintEntriesStreamResponse
+
+   Response fields:
+  - entries: repeated sc.external.services.blueprint_library.v1.BlueprintEntry
+    - blueprint_id: string optional
+    - category_id: string optional
+    - item_class_id: string optional
+    - tier: uint32 optional
+    - remaining_uses: int32 optional
+    - source: BlueprintSource optional
+    - last_used_at: google.protobuf.Timestamp optional
+    - process_type: BlueprintProcessType optional
+
+## sc.external.services.configuration.v1.ConfigService.WatchConfig  (ss)
+   request:  WatchConfigRequest
+   response: WatchConfigResponse
+
+   Response fields:
+  - response: ConfigResponse optional
+    - result: Result optional
+    - curr_node: string optional
+    - config_group: string optional
+    - config_key: string optional
+    - value: string optional
+    - version: uint64 optional
+
+## sc.external.services.configuration.v1.ConfigService.WatchMultiConfigurations  (ss)
+   request:  WatchMultiConfigurationsRequest
+   response: WatchMultiConfigurationsResponse
+
+   Response fields:
+  - response: ConfigResponse optional
+    - result: Result optional
+    - curr_node: string optional
+    - config_group: string optional
+    - config_key: string optional
+    - value: string optional
+    - version: uint64 optional
+
+## sc.external.services.contract_broker.v1.ContractBrokerService.QueryAvailableContracts  (ss)
+   request:  QueryAvailableContractsRequest
+   response: QueryAvailableContractsResponse
+
+   Response fields:
+  - contracts: repeated sc.external.common.mission.v1.MissionContract
+    - id: string optional
+    - mission_template: MissionTemplate optional
+      - contract_definition_id: string optional
+      - variables: MissionVariables optional
+      - seed: uint32 optional
+      - is_salted: bool optional
+      - max_instances_per_player: int32 optional
+    - prerequisites: ContractPrerequisites optional
+      - location_id: uint32 optional
+      - required_token: repeated TokenRequirement
+      - excluded_token: repeated TokenRequirement
+      - required_reputation: repeated ReputationRequirement
+      - excluded_reputation: repeated ReputationRequirement
+      - shard_id: string optional
+      - wallet_ids: repeated string
+    - prerequisites_sharing: ContractPrerequisites optional
+      - location_id: uint32 optional
+      - required_token: repeated TokenRequirement
+      - excluded_token: repeated TokenRequirement
+      - required_reputation: repeated ReputationRequirement
+      - excluded_reputation: repeated ReputationRequirement
+      - shard_id: string optional
+      - wallet_ids: repeated string
+    - contact_type: string optional
+    - expiration_time: google.protobuf.Timestamp optional
+    - reserved_locations: repeated MissionLocationReservation
+      - location_entity_id: uint64 optional
+      - contract_slot_type: string optional
+    - count: int32 optional
+    - suspendable: bool optional
+    - shared_mission_id: string optional
+    - created_from_mission: bool optional
+  - player_mission_salt: uint64 optional
+
+## sc.external.services.echo.v1.EchoService.EchoClientStream  (cs)
+   request:  EchoClientStreamRequest
+   response: EchoClientStreamResponse
+
+   Response fields:
+  - msgs: repeated string
+
+## sc.external.services.echo.v1.EchoService.EchoServerStream  (ss)
+   request:  EchoServerStreamRequest
+   response: EchoServerStreamResponse
+
+   Response fields:
+  - msg: string optional
+  - count: uint32 optional
+
+## sc.external.services.echo.v1.EchoService.EchoDuplexStream  (bidi)
+   request:  EchoDuplexStreamRequest
+   response: EchoDuplexStreamResponse
+
+   Response fields:
+  - msg: string optional
+  - count: uint32 optional
+
+## sc.external.services.echo.v1.EchoService.EchoSimpleDuplexStream  (bidi)
+   request:  EchoSimpleDuplexStreamRequest
+   response: EchoSimpleDuplexStreamResponse
+
+   Response fields:
+  - msg: string optional
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QueryEntitlementsStream  (ss)
+   request:  QueryEntitlementsStreamRequest
+   response: QueryEntitlementsStreamResponse
+
+   Response fields:
+  - results: repeated Entitlement
+    - urn: string optional
+    - source_urn: string optional
+    - source_type: EntitlementSourceType optional
+    - status: EntitlementStatus optional
+    - entity_class_guid: string optional
+    - player_id: uint64 optional
+    - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - id: string optional
+      - params: repeated EntityConfigurationParameters
+    - entity_geid: uint64 optional (oneof _entity_geid)
+    - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+    - claim_version: string optional (oneof _claim_version)
+    - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+    - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - items: repeated ItemPortParams
+    - created_at: google.protobuf.Timestamp optional
+    - modified_at: google.protobuf.Timestamp optional
+    - metadata: EntitlementMetadata optional
+      - name: string optional
+      - stack_size: int32 optional
+      - source_sku: string optional
+      - real_money: bool optional
+    - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+      - variables: repeated EntityVariable
+      - components: repeated EntityComponent
+      - generation: uint32 optional
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QuerySnapshotsStream  (ss)
+   request:  QuerySnapshotsStreamRequest
+   response: QuerySnapshotsStreamResponse
+
+   Response fields:
+  - results: repeated SnapshotRecord
+    - id: string optional
+    - player_id: uint64 optional
+    - root_urn: string optional
+    - item_urn: string optional
+    - slot_id: SnapshotSlotId optional
+    - attach_path: repeated string
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QuerySnapshotsWithEntitlementsStream  (ss)
+   request:  QuerySnapshotsWithEntitlementsStreamRequest
+   response: QuerySnapshotsWithEntitlementsStreamResponse
+
+   Response fields:
+  - results: repeated SnapshotWithEntitlement
+    - snapshot: SnapshotRecord optional
+      - id: string optional
+      - player_id: uint64 optional
+      - root_urn: string optional
+      - item_urn: string optional
+      - slot_id: SnapshotSlotId optional
+      - attach_path: repeated string
+    - entitlement: Entitlement optional
+      - urn: string optional
+      - source_urn: string optional
+      - source_type: EntitlementSourceType optional
+      - status: EntitlementStatus optional
+      - entity_class_guid: string optional
+      - player_id: uint64 optional
+      - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - entity_geid: uint64 optional (oneof _entity_geid)
+      - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+      - claim_version: string optional (oneof _claim_version)
+      - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+      - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - created_at: google.protobuf.Timestamp optional
+      - modified_at: google.protobuf.Timestamp optional
+      - metadata: EntitlementMetadata optional
+      - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QueryEntitlementsByItemTypeStream  (ss)
+   request:  QueryEntitlementsByItemTypeStreamRequest
+   response: QueryEntitlementsByItemTypeStreamResponse
+
+   Response fields:
+  - results: repeated Entitlement
+    - urn: string optional
+    - source_urn: string optional
+    - source_type: EntitlementSourceType optional
+    - status: EntitlementStatus optional
+    - entity_class_guid: string optional
+    - player_id: uint64 optional
+    - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - id: string optional
+      - params: repeated EntityConfigurationParameters
+    - entity_geid: uint64 optional (oneof _entity_geid)
+    - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+    - claim_version: string optional (oneof _claim_version)
+    - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+    - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - items: repeated ItemPortParams
+    - created_at: google.protobuf.Timestamp optional
+    - modified_at: google.protobuf.Timestamp optional
+    - metadata: EntitlementMetadata optional
+      - name: string optional
+      - stack_size: int32 optional
+      - source_sku: string optional
+      - real_money: bool optional
+    - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+      - variables: repeated EntityVariable
+      - components: repeated EntityComponent
+      - generation: uint32 optional
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QueryEntitlementsBySourceTypeStream  (ss)
+   request:  QueryEntitlementsBySourceTypeStreamRequest
+   response: QueryEntitlementsBySourceTypeStreamResponse
+
+   Response fields:
+  - results: repeated Entitlement
+    - urn: string optional
+    - source_urn: string optional
+    - source_type: EntitlementSourceType optional
+    - status: EntitlementStatus optional
+    - entity_class_guid: string optional
+    - player_id: uint64 optional
+    - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - id: string optional
+      - params: repeated EntityConfigurationParameters
+    - entity_geid: uint64 optional (oneof _entity_geid)
+    - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+    - claim_version: string optional (oneof _claim_version)
+    - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+    - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - items: repeated ItemPortParams
+    - created_at: google.protobuf.Timestamp optional
+    - modified_at: google.protobuf.Timestamp optional
+    - metadata: EntitlementMetadata optional
+      - name: string optional
+      - stack_size: int32 optional
+      - source_sku: string optional
+      - real_money: bool optional
+    - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+      - variables: repeated EntityVariable
+      - components: repeated EntityComponent
+      - generation: uint32 optional
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QueryEntitlementsByEntityClassStream  (ss)
+   request:  QueryEntitlementsByEntityClassStreamRequest
+   response: QueryEntitlementsByEntityClassStreamResponse
+
+   Response fields:
+  - results: repeated Entitlement
+    - urn: string optional
+    - source_urn: string optional
+    - source_type: EntitlementSourceType optional
+    - status: EntitlementStatus optional
+    - entity_class_guid: string optional
+    - player_id: uint64 optional
+    - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - id: string optional
+      - params: repeated EntityConfigurationParameters
+    - entity_geid: uint64 optional (oneof _entity_geid)
+    - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+    - claim_version: string optional (oneof _claim_version)
+    - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+    - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - items: repeated ItemPortParams
+    - created_at: google.protobuf.Timestamp optional
+    - modified_at: google.protobuf.Timestamp optional
+    - metadata: EntitlementMetadata optional
+      - name: string optional
+      - stack_size: int32 optional
+      - source_sku: string optional
+      - real_money: bool optional
+    - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+      - variables: repeated EntityVariable
+      - components: repeated EntityComponent
+      - generation: uint32 optional
+
+## sc.external.services.entitlement.v2.ExternalEntitlementService.QueryEntitlementsByEntityGeidsStream  (ss)
+   request:  QueryEntitlementsByEntityGeidsStreamRequest
+   response: QueryEntitlementsByEntityGeidsStreamResponse
+
+   Response fields:
+  - results: repeated Entitlement
+    - urn: string optional
+    - source_urn: string optional
+    - source_type: EntitlementSourceType optional
+    - status: EntitlementStatus optional
+    - entity_class_guid: string optional
+    - player_id: uint64 optional
+    - entity_configuration: EntityConfiguration optional (oneof _entity_configuration)
+      - id: string optional
+      - params: repeated EntityConfigurationParameters
+    - entity_geid: uint64 optional (oneof _entity_geid)
+    - claim_timestamp: google.protobuf.Timestamp optional (oneof _claim_timestamp)
+    - claim_version: string optional (oneof _claim_version)
+    - rental_expiry: google.protobuf.Timestamp optional (oneof _rental_expiry)
+    - arena_commander_loadout: ItemPortLoadout optional (oneof _arena_commander_loadout)
+      - items: repeated ItemPortParams
+    - created_at: google.protobuf.Timestamp optional
+    - modified_at: google.protobuf.Timestamp optional
+    - metadata: EntitlementMetadata optional
+      - name: string optional
+      - stack_size: int32 optional
+      - source_sku: string optional
+      - real_money: bool optional
+    - persistent_properties: sc.external.services.entitygraph.v1.PersistentEntityProperties optional (oneof _persistent_properties)
+      - variables: repeated EntityVariable
+      - components: repeated EntityComponent
+      - generation: uint32 optional
+
+## sc.external.services.entity_subscription.v1.EntitySubscriptionService.QueryEntities  (ss)
+   request:  QueryEntitiesRequest
+   response: QueryEntitiesResponse
+
+   Response fields:
+  - results: repeated SubscriberEntities
+    - subscriber: uint64 optional
+    - entities: repeated uint64
+
+## sc.external.services.entitygraph.v1.EntityGraphService.ContainerQueryStream  (ss)
+   request:  ContainerQueryStreamRequest
+   response: ContainerQueryStreamResponse
+
+   Response fields:
+  - body: sc.external.services.entitygraph.v1.ContainerQueryStreamResponseBody optional
+    - results: ContainerGraph optional
+      - nodes: repeated ContainerNode
+      - edges: repeated ContainerEdge
+
+## sc.external.services.presence.v1.PresenceService.PresenceStream  (cs)
+   request:  PresenceStreamRequest
+   response: PresenceStreamResponse
+
+   Response fields:
+
+
+## sc.external.services.push.v1.PushService.Listen  (bidi)
+   request:  ListenRequest
+   response: ListenResponse
+
+   Response fields:
+  - envelopes: repeated PushEnvelope
+    - id: string optional
+    - type: PushEnvelopeType optional
+    - addresses: repeated string
+    - topics: repeated string
+    - transit: string optional
+    - priority: PushMessagePriority optional
+    - retry: PushRetry optional
+      - until: uint64 optional
+      - max: uint32 optional
+    - messages: repeated PushMessage
+      - control: PushControlMessage optional (oneof data)
+      - any: google.protobuf.Any optional (oneof data)
+    - trace_context: sc.external.common.trace.v1.TraceContext optional
+      - traceparent: string optional
+      - tracestate: string optional
+    - subscription_filter: bytes optional
+
+## sc.external.services.rental.v1.ExternalRentalService.QueryRentalsStream  (ss)
+   request:  QueryRentalsStreamRequest
+   response: QueryRentalsStreamResponse
+
+   Response fields:
+  - results: repeated Rental
+    - id: string optional
+    - status: RentalStatus optional
+    - created_at: google.protobuf.Timestamp optional
+    - began_at: google.protobuf.Timestamp optional
+    - expire_at: google.protobuf.Timestamp optional
+    - duration: uint32 optional
+    - account_urn: string optional
+    - player_id: uint64 optional
+    - entitlement_urn: string optional
+    - renewals: uint32 optional
+    - entity_class_guid: string optional
+
+## sc.external.services.trace.v1.TraceService.CollectionStream  (cs)
+   request:  CollectionStreamRequest
+   response: CollectionStreamResponse
+
+   Response fields:
+
+
+# Total: 22 streaming RPCs

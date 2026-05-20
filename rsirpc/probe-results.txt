@@ -1,0 +1,55 @@
+# Live gateway probe — sc.external.* surface
+# Target: pub-sc-alpha-480-11825000.test1.cloudimperiumgames.com:443
+# Probes: 42
+
+## INVALID_ARGUMENT   — reachable (bad empty req)   (11)
+  sc.external.services.contacts.v1.ContactsService/GetShardInfo    — Either accountId or playerId must be provided
+  sc.external.services.social.v1.SocialService/GetInstanceInfo    — Validation failed
+  sc.external.services.chat.v1.ChatService/ListMessages    — Validation failed
+  sc.external.services.reputation.v1.ReputationService/Get    — Validation failed
+  sc.external.services.configuration.v1.ConfigService/QueryConfig    — Validation failed
+  sc.external.services.entitygraph.v1.EntityGraphService/EntityQuery    — Validation failed
+  sc.external.services.entitygraph.v1.EntityGraphService/GetDatabaseVersion    — Validation failed
+  sc.external.services.entitygraph.v1.EntityGraphService/InventoryQuery    — Validation failed
+  sc.external.services.mission_scenario.v1.ScenarioService/QueryScenarioStatus    — Validation failed
+  sc.external.services.rental.v1.ExternalRentalService/QueryRentals    — Validation failed
+  sc.external.services.contract_broker.v1.ContractBrokerService/QueryContracts    — Validation failed
+
+## NOT_FOUND   — reachable (no such resource)   (3)
+  sc.external.services.squad.v1.SquadService/Get    — Player urn:sc:global:player:geid:204747632653 is not in a squad
+  sc.external.services.match.v1.MatchService/Get    — Player urn:sc:global:player:geid:204747632653 is not in a Match group
+  sc.external.services.custom_lobby.v1.CustomLobbyService/Get    — Player urn:sc:global:player:geid:204747632653 is not in a custom lobby
+
+## OK   — OK   (17)
+  sc.external.services.identity.v1.IdentityService/GetCurrentPlayer    — (empty req returned ok)
+  sc.external.services.identity.v1.IdentityService/GetPlayersNames    — (empty req returned ok)
+  sc.external.services.contacts.v1.ContactsService/ListContacts    — (empty req returned ok)
+  sc.external.services.contacts.v1.ContactsService/ListPendingFriendRequests    — (empty req returned ok)
+  sc.external.services.social.v1.SocialService/ListGroups    — (empty req returned ok)
+  sc.external.services.social.v1.SocialService/ListPendingInvitations    — (empty req returned ok)
+  sc.external.services.rtc.v1.RTCService/GetChannels    — (empty req returned ok)
+  sc.external.services.rtc.v1.RTCService/GetPendingCalls    — (empty req returned ok)
+  sc.external.services.notifications.v1.NotificationsService/Find    — (empty req returned ok)
+  sc.external.services.reputation.v1.ReputationService/QueryReputations    — (empty req returned ok)
+  sc.external.services.reputation.v1.ReputationService/GetPreferences    — (empty req returned ok)
+  sc.external.services.discipline.v1.DisciplineService/QuerySanctions    — (empty req returned ok)
+  sc.external.services.ledger.v1.LedgerService/GetFunds    — (empty req returned ok)
+  sc.external.services.entity_document.v1.ExternalEntityDocumentService/Fetch    — (empty req returned ok)
+  sc.external.services.mission_service.v1.MissionService/QueryActiveMissions    — (empty req returned ok)
+  sc.external.services.mission_service.v1.MissionService/QueryMissions    — (empty req returned ok)
+  sc.external.services.mission_token.v1.MissionTokenService/QueryTokens    — (empty req returned ok)
+
+## SKIPPED   — SKIPPED   (1)
+  sc.external.services.push.v1.PushService/Listen    — streaming RPC
+
+## UNIMPLEMENTED   — NOT ROUTED   (10)
+  sc.external.services.echo.v1.EchoService/Echo    
+  sc.external.services.friends.v1.FriendService/GetFriendList    
+  sc.external.services.friends.v1.FriendService/GetBlockedAccount    
+  sc.external.services.entitlement.v1.ExternalEntitlementService/Query    
+  sc.external.services.instance_manager.v1.InstanceManagerService/GetAvailableInstances    
+  sc.external.services.land_claim.v1.LandClaimService/QueryAreaClaims    
+  sc.external.services.land_claim.v1.LandClaimService/QueryOwnedClaims    
+  sc.external.services.matchmaking.v1.FrontendService/GetLastAssignment    
+  sc.external.services.stats.v1.StatsService/FindStats    
+  sc.external.services.dynamic_game_assets.v1.DynamicGameAssetsService/GetAssetForScreen    
