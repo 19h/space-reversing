@@ -25,15 +25,71 @@ function dumpSpawnParams(params) {
         parentId0x28: params.add(0x28).readU64().toString(),
         parentAttachId0x30: params.add(0x30).readU32(),
         entityId0x38: params.add(0x38).readU64().toString(),
-        posX0x58: params.add(0x58).readDouble(),
-        posY0x60: params.add(0x60).readDouble(),
-        posZ0x68: params.add(0x68).readDouble(),
+        quatW0x58: params.add(0x58).readDouble(),
+        posX0x60: params.add(0x60).readDouble(),
+        posY0x68: params.add(0x68).readDouble(),
+        posZ0x70: params.add(0x70).readDouble(),
+        scale0x78: params.add(0x78).readDouble(),
         transformKind0x80: params.add(0x80).readU32(),
         context0x88: params.add(0x88).readPointer().toString(),
         flags0xB0: params.add(0xB0).readU32(),
         qword0x138: params.add(0x138).readPointer().toString(),
         qword0x148: params.add(0x148).readPointer().toString()
     };
+}
+
+function readHex(ptrValue, size) {
+    const bytes = ptr(ptrValue).readByteArray(size);
+    return Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+}
+
+function cloneNativeContext(bytes) {
+    if (!bytes || bytes.length === 0) {
+        return NULL;
+    }
+
+    const copy = Memory.alloc(bytes.length);
+    copy.writeByteArray(bytes);
+    return copy;
+}
+
+function cloneNativeCallbackRecord(bytes) {
+    if (!bytes || bytes.length === 0) {
+        return NULL;
+    }
+
+    const copy = Memory.alloc(bytes.length);
+    copy.writeByteArray(bytes);
+    return copy;
+}
+
+function writeBytes(dst, bytes) {
+    ptr(dst).writeByteArray(bytes);
+}
+
+function spawnBacktrace(context, limit = 12) {
+    if (!globalThis.__spawnDebugBacktrace) {
+        return undefined;
+    }
+
+    try {
+        return Thread.backtrace(context, Backtracer.ACCURATE)
+            .slice(0, limit)
+            .map(addr => {
+                const sym = DebugSymbol.fromAddress(addr);
+                return `${addr} ${sym.moduleName || ''}!${sym.name || ''}`;
+            });
+    } catch (e) {
+        return [`backtrace failed: ${e.message}`];
+    }
+}
+
+function isLikelyPointerString(value) {
+    try {
+        return BigInt(value) > 0x10000n;
+    } catch (_) {
+        return false;
+    }
 }
 
 // Helper to extract lower 48 bits of a pointer
@@ -1639,8 +1695,10 @@ class CEntityArray {
     toArray() {
         const out = [];
         for (let i = 0; i < this.maxSize; i++) {
-            const e = this.at(i);
-            if (e) out.push(e);
+            try {
+                const e = this.at(i);
+                if (e) out.push(e);
+            } catch (_) {}
         }
         return out;
     }
@@ -1880,7 +1938,10 @@ class CEntitySystem {
                 addSpawnFlags: new NativeFunction(gameAddr('0x14036AEF0'), 'void', ['pointer', 'uint32']),
                 setSpawnTransform: new NativeFunction(gameAddr('0x1403BBB30'), 'pointer', ['pointer', 'pointer', 'pointer', 'double']),
                 createCreationBatch: new NativeFunction(gameAddr('0x1462E3990'), 'void', ['pointer', 'pointer', 'pointer', 'uint8', 'uint32']),
-                submitCreationBatch: new NativeFunction(gameAddr('0x14632CA00'), 'void', ['pointer', 'pointer'])
+                createLocalSpawnBatch: new NativeFunction(gameAddr('0x1462E3A10'), 'pointer', ['pointer', 'pointer', 'pointer', 'pointer']),
+                createCreationCallback: new NativeFunction(gameAddr('0x1462E3AB0'), 'pointer', ['pointer', 'pointer']),
+                submitCreationBatch: new NativeFunction(gameAddr('0x14632CA00'), 'void', ['pointer', 'pointer']),
+                submitLocalSpawnBatch: new NativeFunction(gameAddr('0x14632D040'), 'uint32', ['pointer', 'pointer'])
             };
         }
         return this._native;
@@ -1909,6 +1970,26 @@ class CEntitySystem {
         CEntitySystem.native.createCreationBatch(this.ptr, outBatch, callerNamePtr, batchKind, flags);
         const batch = outBatch.readPointer();
         return batch.isNull() ? null : { batch, outBatch };
+    }
+
+    createCreationCallback() {
+        const callback = Memory.alloc(PTR_SIZE * 2);
+        callback.writePointer(NULL);
+        callback.add(PTR_SIZE).writePointer(NULL);
+        CEntitySystem.native.createCreationCallback(this.ptr, callback);
+        return callback;
+    }
+
+    createLocalSpawnBatch(callerName = 'centityx.js', callbackOrContext = NULL) {
+        const outBatch = Memory.alloc(PTR_SIZE);
+        outBatch.writePointer(NULL);
+        const callerNamePtr = Memory.allocUtf8String(callerName);
+        const callback = callbackOrContext.isNull() ? this.createCreationCallback() : NULL;
+        const storedCallback = callbackOrContext.isNull() ? callback.readPointer() : callbackOrContext;
+        CEntitySystem.native.createLocalSpawnBatch(this.ptr, outBatch, callerNamePtr, storedCallback);
+        const batch = outBatch.readPointer();
+        const innerBatch = batch.isNull() ? NULL : batch.add(0x28).readPointer();
+        return batch.isNull() ? null : { batch, outBatch, callback, storedCallback, innerBatch };
     }
 
     spawnEntityBatch(className, options = {}) {
@@ -1945,33 +2026,112 @@ class CEntitySystem {
         spawnParams.writeByteArray(new Array(0x200).fill(0));
         CEntitySystem.native.initSpawnParams(spawnParams);
         CEntitySystem.native.setSpawnClass(spawnParams, entityClass.ptr);
-        CEntitySystem.native.addSpawnFlags(spawnParams, options.flags === undefined ? 0x1000 : Number(options.flags));
 
-        const contextPtr = options.contextPtr ? ptr(options.contextPtr) : NULL;
+        if (options.parentId !== undefined) {
+            spawnParams.add(0x28).writeU64(uint64(options.parentId));
+        }
+        if (options.parentAttachId !== undefined) {
+            spawnParams.add(0x30).writeU32(Number(options.parentAttachId));
+        }
+
+        const useLocalSpawnBatch = options.localSpawnBatch === true;
+        const nativeContext = options.useLastNativeSpawnContext
+            ? (useLocalSpawnBatch ? (globalThis.__lastNativeLocalSpawnContext || globalThis.__lastNativeSpawnContext) : globalThis.__lastNativeSpawnContext)
+            : null;
+        if (useLocalSpawnBatch && options.useLastNativeSpawnContext && !nativeContext?.isLocalBatch && options.allowRawContextForLocal !== true) {
+            return {
+                success: false,
+                error: 'No native local-wrapper spawn context captured; raw batch context is not safe for localSpawnBatch replay',
+                lastContextSource: nativeContext?.source || null,
+                hint: 'Trigger a native createLocalSpawnBatch flow first, then retry, or pass allowRawContextForLocal:true for diagnostics only.'
+            };
+        }
+        const defaultSpawnFlags = useLocalSpawnBatch ? 0x10 : 0x1000;
+        const nativeFlags = nativeContext?.flags === undefined ? 0 : Number(nativeContext.flags);
+        const canReplayNativeFlags = !useLocalSpawnBatch || ((nativeFlags & 0x3030) === 0x10);
+        const spawnFlags = options.flags === undefined
+            ? (canReplayNativeFlags && nativeFlags ? nativeFlags : defaultSpawnFlags)
+            : Number(options.flags);
+        CEntitySystem.native.addSpawnFlags(spawnParams, spawnFlags);
+
+        const contextPtr = nativeContext?.contextPtr ? ptr(nativeContext.contextPtr) : (options.contextPtr ? ptr(options.contextPtr) : NULL);
         const transform = this.buildSpawnTransform(spawnPos, options.rotation, options.scale || 1.0);
         CEntitySystem.native.setSpawnTransform(spawnParams, transform, contextPtr, 0.0);
 
-        const debugSpawnParams = {
-            entityId0x38: spawnParams.add(0x38).readU64().toString(),
-            parentOrContext0x28: spawnParams.add(0x28).readU64().toString(),
-            attachOrFlags0x30: spawnParams.add(0x30).readU32(),
-            transformKind0x80: spawnParams.add(0x80).readU32(),
-            context0x88: spawnParams.add(0x88).readPointer().toString(),
-            flags0xB0: spawnParams.add(0xB0).readU32()
-        };
+        if (nativeContext?.spawnTransformBytes && options.position === undefined && options.replayNativeTransform !== false) {
+            writeBytes(spawnParams.add(0x40), nativeContext.spawnTransformBytes);
+        }
 
-        const batchInfo = this.createCreationBatch(options.callerName || 'centityx.js', options.batchKind === undefined ? 0x14 : Number(options.batchKind), options.batchFlags || 0);
+        if (options.forceFlags || (useLocalSpawnBatch && options.flags === undefined)) {
+            spawnParams.add(0xB0).writeU32(spawnFlags >>> 0);
+        }
+
+        if (!contextPtr.isNull() && (options.setContext148 || options.useLastNativeSpawnContext)) {
+            spawnParams.add(0x148).writePointer(contextPtr);
+        }
+
+        const debugSpawnParams = dumpSpawnParams(spawnParams);
+        const localSpawnCallback = options.localSpawnCallbackPtr
+            ? ptr(options.localSpawnCallbackPtr)
+            : (options.replayNativeLocalSpawnCallback === true && nativeContext?.localSpawnCallbackPtr ? ptr(nativeContext.localSpawnCallbackPtr) : NULL);
+
+        const batchInfo = useLocalSpawnBatch
+            ? this.createLocalSpawnBatch(options.callerName || 'centityx.js', localSpawnCallback)
+            : this.createCreationBatch(options.callerName || 'centityx.js', options.batchKind === undefined ? 0x14 : Number(options.batchKind), options.batchFlags || 0);
         if (!batchInfo) {
-            throw new Error('CEntitySystem::CreateEntityCreationBatch returned null');
+            throw new Error(useLocalSpawnBatch ? 'CEntitySystem::CreateLocalSpawnBatch returned null' : 'CEntitySystem::CreateEntityCreationBatch returned null');
         }
 
         const outEntityId = Memory.alloc(8);
         outEntityId.writeU64(uint64(0));
-        const addContext = options.addContextPtr ? ptr(options.addContextPtr) : NULL;
-        callVFunc(batchInfo.batch, 2, 'pointer', ['pointer', 'pointer', 'pointer'], [outEntityId, spawnParams, addContext], 'CEntityCreationBatch::AddEntity');
+        const addContext = nativeContext?.addContextBytes ? cloneNativeContext(nativeContext.addContextBytes) : (options.addContextPtr ? ptr(options.addContextPtr) : NULL);
+        const batchCallbackRecord = nativeContext?.batchCallbackBytes ? cloneNativeCallbackRecord(nativeContext.batchCallbackBytes) : (options.batchCallbackRecordPtr ? ptr(options.batchCallbackRecordPtr) : NULL);
 
-        const entityId = outEntityId.readU64();
-        CEntitySystem.native.submitCreationBatch(this.ptr, batchInfo.outBatch);
+        let callback = NULL;
+        if (useLocalSpawnBatch) {
+            if (!addContext.isNull() && options.replayNativeAddCallbackHeader !== true) {
+                const addCallback = this.createCreationCallback();
+                addContext.writePointer(addCallback.readPointer());
+                addContext.add(PTR_SIZE).writePointer(addCallback.add(PTR_SIZE).readPointer());
+            }
+            callVFunc(batchInfo.batch, 1, 'pointer', ['pointer', 'pointer', 'pointer'], [outEntityId, spawnParams, addContext], 'CLocalEntitySpawnBatch::AddEntity');
+        } else if (options.unsafeCallbackWrapper) {
+            callback = this.createCreationCallback();
+            callVFunc(batchInfo.batch, 0, 'pointer', ['pointer', 'pointer', 'pointer'], [spawnParams, callback, batchInfo.outBatch], 'CEntityCreationBatch::AddEntityWithCallback');
+            outEntityId.writeU64(spawnParams.add(0x38).readU64());
+        } else {
+            callVFunc(batchInfo.batch, 2, 'pointer', ['pointer', 'pointer', 'pointer'], [outEntityId, spawnParams, addContext], 'CEntityCreationBatch::AddEntity');
+        }
+
+        const outEntityIdValue = outEntityId.readU64();
+        const entityId = spawnParams.add(0x38).readU64();
+        const finalSpawnParams = dumpSpawnParams(spawnParams);
+        if (entityId.compare(uint64(0)) === 0 && options.submitEmptyBatch !== true) {
+            return {
+                success: false,
+                error: useLocalSpawnBatch
+                    ? 'CLocalEntitySpawnBatch::AddEntity did not forward; check flags/context before submit'
+                    : 'CEntityCreationBatch::AddEntity returned entity id 0',
+                className,
+                classPtr: entityClass.ptr.toString(),
+                batch: batchInfo.batch.toString(),
+                innerBatch: batchInfo.innerBatch?.toString?.() || undefined,
+                entityId: entityId.toString(),
+                outEntityId: outEntityIdValue.toString(),
+                contextPtr: contextPtr.toString(),
+                addContextPtr: addContext.toString(),
+                spawnFlags,
+                spawnParams: debugSpawnParams,
+                finalSpawnParams,
+                position: { x: spawnPos.x, y: spawnPos.y, z: spawnPos.z }
+            };
+        }
+        if (!useLocalSpawnBatch && !batchCallbackRecord.isNull() && options.skipBatchCallback !== true) {
+            callVFunc(batchInfo.batch, 4, 'pointer', ['pointer'], [batchCallbackRecord], 'CEntityCreationBatch::AddCallback');
+        }
+        const submitResult = useLocalSpawnBatch
+            ? CEntitySystem.native.submitLocalSpawnBatch(this.ptr, batchInfo.outBatch)
+            : (CEntitySystem.native.submitCreationBatch(this.ptr, batchInfo.outBatch), 0);
 
         return {
             success: entityId.compare(uint64(0)) !== 0,
@@ -1979,10 +2139,18 @@ class CEntitySystem {
             className,
             classPtr: entityClass.ptr.toString(),
             batch: batchInfo.batch.toString(),
+            innerBatch: batchInfo.innerBatch?.toString?.() || undefined,
             entityId: entityId.toString(),
+            outEntityId: outEntityIdValue.toString(),
             contextPtr: contextPtr.toString(),
             addContextPtr: addContext.toString(),
+            callbackPtr: callback.toString(),
+            localSpawnCallbackPtr: localSpawnCallback.toString(),
+            batchCallbackRecordPtr: batchCallbackRecord.toString(),
+            submitResult,
+            spawnFlags,
             spawnParams: debugSpawnParams,
+            finalSpawnParams,
             position: { x: spawnPos.x, y: spawnPos.y, z: spawnPos.z }
         };
     }
@@ -2817,11 +2985,13 @@ rpc.exports.spawnEntityByClass = function(className, options = {}) {
         // Default spawn parameters
         const spawnParams = {
             name: options.name || `Spawned_${className}_${Date.now()}`,
-            flags: options.flags === undefined ? 0x1000 : options.flags,
             zone: options.zone || null,
             parent: options.parent || null,
             ...options
         };
+        if (options.flags === undefined) {
+            delete spawnParams.flags;
+        }
 
         console.log(`[*] Attempting to spawn entity of class '${className}' with params:`, spawnParams);
 
@@ -2850,6 +3020,318 @@ rpc.exports.spawnEntityByClass = function(className, options = {}) {
 };
 
 rpc.exports.makeCorpsesLootable = () => rpc.exports.replaceEntityClassType("PlayerCorpse", "PU_Pilots-Human-Criminal-Gunner_Light");
+
+rpc.exports.installSpawnDebugHooks = function(options = {}) {
+    if (globalThis.__spawnDebugHooksInstalled) {
+        return { success: true, alreadyInstalled: true };
+    }
+    globalThis.__spawnDebugBacktrace = options.backtrace === true;
+    if (options.exceptionHandler === true && !globalThis.__spawnExceptionHandlerInstalled) {
+        Process.setExceptionHandler(details => {
+            console.log('[spawn-hook] exception', JSON.stringify({
+                type: details.type,
+                address: details.address?.toString?.() || null,
+                memory: details.memory || null,
+                context: details.context || null,
+                backtrace: details.context ? spawnBacktrace(details.context, 20) : undefined
+            }));
+            return false;
+        });
+        globalThis.__spawnExceptionHandlerInstalled = true;
+    }
+
+    const addEntityAddr = gameAddr('0x14621C880');
+    const addLocalEntityAddr = gameAddr('0x14621EE00');
+    const addBatchCallbackAddr = gameAddr('0x1462A1AC0');
+    const setTransformAddr = gameAddr('0x1403BBB30');
+    const createBatchAddr = gameAddr('0x1462E3990');
+    const createLocalSpawnBatchAddr = gameAddr('0x1462E3A10');
+    const createDefaultCallbackAddr = gameAddr('0x1462E3AB0');
+    const submitBatchAddr = gameAddr('0x14632CA00');
+    const submitLocalSpawnBatchAddr = gameAddr('0x14632D040');
+
+    Interceptor.attach(setTransformAddr, {
+        onEnter(args) {
+            this.spawnParams = args[0];
+            this.contextPtr = args[2];
+        },
+        onLeave() {
+            console.log('[spawn-hook] setSpawnTransform', JSON.stringify({
+                contextPtr: this.contextPtr.toString(),
+                spawnParams: dumpSpawnParams(this.spawnParams)
+            }));
+        }
+    });
+
+    Interceptor.attach(createBatchAddr, {
+        onEnter(args) {
+            this.outBatch = args[1];
+            this.callerName = readCString(args[2]);
+            console.log('[spawn-hook] createBatch enter', JSON.stringify({
+                outBatchPtr: args[1].toString(),
+                callerName: this.callerName,
+                batchKind: args[3].toUInt32(),
+                flags: args[4].toUInt32(),
+                backtrace: spawnBacktrace(this.context)
+            }));
+        },
+        onLeave() {
+            console.log('[spawn-hook] createBatch leave', JSON.stringify({
+                callerName: this.callerName,
+                batch: this.outBatch.readPointer().toString()
+            }));
+        }
+    });
+
+    Interceptor.attach(createLocalSpawnBatchAddr, {
+        onEnter(args) {
+            this.outBatch = args[1];
+            this.callerName = readCString(args[2]);
+            this.callbackOrContext = args[3];
+            console.log('[spawn-hook] createLocalSpawnBatch enter', JSON.stringify({
+                outBatchPtr: args[1].toString(),
+                callerName: this.callerName,
+                callbackOrContext: this.callbackOrContext.toString(),
+                backtrace: spawnBacktrace(this.context)
+            }));
+        },
+        onLeave() {
+            const wrapper = this.outBatch.readPointer();
+            let innerBatch = NULL;
+            let storedCallback = NULL;
+            try {
+                innerBatch = wrapper.isNull() ? NULL : wrapper.add(0x28).readPointer();
+                storedCallback = wrapper.isNull() ? NULL : wrapper.add(0x40).readPointer();
+            } catch (e) {
+                console.log('[spawn-hook] createLocalSpawnBatch read failed', e.message);
+            }
+            console.log('[spawn-hook] createLocalSpawnBatch leave', JSON.stringify({
+                callerName: this.callerName,
+                wrapper: wrapper.toString(),
+                innerBatch: innerBatch.toString(),
+                storedCallback: storedCallback.toString()
+            }));
+            if (!innerBatch.isNull()) {
+                if (!globalThis.__localSpawnBatchByInnerBatch) {
+                    globalThis.__localSpawnBatchByInnerBatch = {};
+                }
+                globalThis.__localSpawnBatchByInnerBatch[innerBatch.toString()] = {
+                    wrapper: wrapper.toString(),
+                    storedCallback: storedCallback.toString(),
+                    callerName: this.callerName
+                };
+            }
+        }
+    });
+
+    Interceptor.attach(createDefaultCallbackAddr, {
+        onEnter(args) {
+            this.outCallback = args[1];
+        },
+        onLeave() {
+            console.log('[spawn-hook] createDefaultCallback leave', JSON.stringify({
+                callbackPtr: this.outCallback.readPointer().toString(),
+                callbackOwner: this.outCallback.add(PTR_SIZE).readPointer().toString()
+            }));
+        }
+    });
+
+    Interceptor.attach(addEntityAddr, {
+        onEnter(args) {
+            this.outEntityId = args[1];
+            this.spawnParams = args[2];
+            this.addContext = args[3];
+            let contextDump = null;
+            let contextBytes = null;
+            let spawnTransformBytes = null;
+            if (!this.addContext.isNull()) {
+                try {
+                    contextBytes = Array.from(new Uint8Array(this.addContext.readByteArray(0x80)));
+                    contextDump = readHex(this.addContext, 0x80);
+                } catch (e) {
+                    contextDump = `read failed: ${e.message}`;
+                }
+            }
+
+            const paramsDump = dumpSpawnParams(this.spawnParams);
+            try {
+                spawnTransformBytes = Array.from(new Uint8Array(this.spawnParams.add(0x40).readByteArray(0x40)));
+            } catch (e) {}
+            const localBatch = globalThis.__localSpawnBatchByInnerBatch?.[args[0].toString()] || null;
+            if (contextBytes && paramsDump?.context0x88 !== '0x0' && isLikelyPointerString(paramsDump.context0x88)) {
+                const capturedContext = {
+                    addContextBytes: contextBytes,
+                    spawnTransformBytes,
+                    contextPtr: paramsDump.context0x88,
+                    flags: paramsDump.flags0xB0,
+                    classPtr: paramsDump.classPtr0x00,
+                    isLocalBatch: localBatch !== null,
+                    source: localBatch ? 'local-wrapper' : 'raw-batch',
+                    localSpawnCallbackPtr: localBatch?.storedCallback || null,
+                    localSpawnWrapper: localBatch?.wrapper || null,
+                    localSpawnCallerName: localBatch?.callerName || null
+                };
+                globalThis.__lastNativeSpawnContext = capturedContext;
+                if (localBatch) {
+                    globalThis.__lastNativeLocalSpawnContext = capturedContext;
+                }
+            }
+
+            console.log('[spawn-hook] AddEntity enter', JSON.stringify({
+                batch: args[0].toString(),
+                outEntityIdPtr: this.outEntityId.toString(),
+                addContextPtr: this.addContext.toString(),
+                addContextBytes: contextDump,
+                localBatch,
+                backtrace: spawnBacktrace(this.context),
+                spawnParams: paramsDump
+            }));
+        },
+        onLeave(retval) {
+            console.log('[spawn-hook] AddEntity leave', JSON.stringify({
+                retval: retval.toString(),
+                outEntityId: this.outEntityId.readU64().toString(),
+                spawnParams: dumpSpawnParams(this.spawnParams)
+            }));
+        }
+    });
+
+    Interceptor.attach(addLocalEntityAddr, {
+        onEnter(args) {
+            this.wrapper = args[0];
+            this.outEntityId = args[1];
+            this.spawnParams = args[2];
+            this.addContext = args[3];
+            let innerBatch = NULL;
+            let storedCallback = NULL;
+            let callerName = null;
+            try {
+                innerBatch = this.wrapper.add(0x28).readPointer();
+                storedCallback = this.wrapper.add(0x40).readPointer();
+                callerName = readCString(this.wrapper.add(0x20));
+            } catch (e) {}
+
+            console.log('[spawn-hook] LocalAddEntity enter', JSON.stringify({
+                wrapper: this.wrapper.toString(),
+                innerBatch: innerBatch.toString(),
+                outEntityIdPtr: this.outEntityId.toString(),
+                addContextPtr: this.addContext.toString(),
+                storedCallback: storedCallback.toString(),
+                callerName,
+                shouldForward: (dumpSpawnParams(this.spawnParams).flags0xB0 & 0x3030) === 0x10,
+                backtrace: spawnBacktrace(this.context),
+                spawnParams: dumpSpawnParams(this.spawnParams)
+            }));
+        },
+        onLeave(retval) {
+            console.log('[spawn-hook] LocalAddEntity leave', JSON.stringify({
+                retval: retval.toString(),
+                outEntityId: this.outEntityId.readU64().toString(),
+                wrapperFlag0x5A: this.wrapper.add(0x5A).readU8(),
+                spawnParams: dumpSpawnParams(this.spawnParams)
+            }));
+        }
+    });
+
+    Interceptor.attach(addBatchCallbackAddr, {
+        onEnter(args) {
+            this.batch = args[0];
+            this.callbackRecord = args[1];
+            let callbackRecordBytes = null;
+            let callbackRecordDump = null;
+            try {
+                callbackRecordBytes = Array.from(new Uint8Array(this.callbackRecord.readByteArray(0x18)));
+                callbackRecordDump = readHex(this.callbackRecord, 0x18);
+            } catch (e) {
+                callbackRecordDump = `read failed: ${e.message}`;
+            }
+
+            if (callbackRecordBytes) {
+                globalThis.__lastNativeBatchCallback = {
+                    bytes: callbackRecordBytes,
+                    batch: this.batch.toString()
+                };
+                if (globalThis.__lastNativeSpawnContext) {
+                    globalThis.__lastNativeSpawnContext.batchCallbackBytes = callbackRecordBytes;
+                }
+            }
+
+            console.log('[spawn-hook] AddBatchCallback enter', JSON.stringify({
+                batch: this.batch.toString(),
+                callbackRecordPtr: this.callbackRecord.toString(),
+                callbackRecordBytes: callbackRecordDump,
+                backtrace: spawnBacktrace(this.context)
+            }));
+        }
+    });
+
+    Interceptor.attach(submitBatchAddr, {
+        onEnter(args) {
+            console.log('[spawn-hook] submitBatch', JSON.stringify({
+                entitySystem: args[0].toString(),
+                batchRefPtr: args[1].toString(),
+                batch: args[1].readPointer().toString(),
+                backtrace: spawnBacktrace(this.context)
+            }));
+        }
+    });
+
+    Interceptor.attach(submitLocalSpawnBatchAddr, {
+        onEnter(args) {
+            console.log('[spawn-hook] submitLocalSpawnBatch enter', JSON.stringify({
+                entitySystem: args[0].toString(),
+                batchRefPtr: args[1].toString(),
+                batch: args[1].readPointer().toString(),
+                backtrace: spawnBacktrace(this.context)
+            }));
+        },
+        onLeave(retval) {
+            console.log('[spawn-hook] submitLocalSpawnBatch leave', JSON.stringify({
+                result: retval.toUInt32()
+            }));
+        }
+    });
+
+    globalThis.__spawnDebugHooksInstalled = true;
+    return {
+        success: true,
+        addEntity: addEntityAddr.toString(),
+        addLocalEntity: addLocalEntityAddr.toString(),
+        addBatchCallback: addBatchCallbackAddr.toString(),
+        setSpawnTransform: setTransformAddr.toString(),
+        createBatch: createBatchAddr.toString(),
+        createLocalSpawnBatch: createLocalSpawnBatchAddr.toString(),
+        createDefaultCallback: createDefaultCallbackAddr.toString(),
+        submitBatch: submitBatchAddr.toString(),
+        submitLocalSpawnBatch: submitLocalSpawnBatchAddr.toString(),
+        backtrace: globalThis.__spawnDebugBacktrace
+    };
+};
+
+rpc.exports.getLastNativeSpawnContext = function() {
+    const ctx = globalThis.__lastNativeSpawnContext;
+    if (!ctx) {
+        return { success: false, error: 'No native AddEntity context captured yet' };
+    }
+
+    return {
+        success: true,
+        contextPtr: ctx.contextPtr,
+        flags: ctx.flags,
+        classPtr: ctx.classPtr,
+        source: ctx.source || null,
+        isLocalBatch: ctx.isLocalBatch === true,
+        localSpawnCallbackPtr: ctx.localSpawnCallbackPtr || null,
+        localSpawnWrapper: ctx.localSpawnWrapper || null,
+        localSpawnCallerName: ctx.localSpawnCallerName || null,
+        addContextSize: ctx.addContextBytes.length,
+        addContextBytes: ctx.addContextBytes.map(b => b.toString(16).padStart(2, '0')).join(' '),
+        spawnTransformSize: ctx.spawnTransformBytes?.length || 0,
+        spawnTransformBytes: ctx.spawnTransformBytes ? ctx.spawnTransformBytes.map(b => b.toString(16).padStart(2, '0')).join(' ') : null,
+        batchCallbackSize: ctx.batchCallbackBytes?.length || 0,
+        batchCallbackBytes: ctx.batchCallbackBytes ? ctx.batchCallbackBytes.map(b => b.toString(16).padStart(2, '0')).join(' ') : null
+    };
+};
 
 // RPC method to replace a single entity's class type by pointer
 rpc.exports.replaceEntityClass = function(entityPtr, newClassName) {
@@ -2912,7 +3394,12 @@ rpc.exports.replaceEntityClass = function(entityPtr, newClassName) {
 };
 
 // RPC method to list all entities within a specific distance, sorted by distance
-rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
+rpc.exports.listEntitiesInRange = function(maxDistance = 100, options = {}) {
+    if (typeof maxDistance === 'object') {
+        options = maxDistance;
+        maxDistance = options.maxDistance === undefined ? 100 : Number(options.maxDistance);
+    }
+
     const entitySystem = gEnv.entitySystem;
     if (!entitySystem) {
         console.log("[!] Entity system not available");
@@ -2928,21 +3415,45 @@ rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
     try {
         console.log(`[*] Searching for entities within ${maxDistance}m range...`);
 
-        const allEntities = entitySystem.entityArray.toArray();
         const entitiesInRange = [];
+        const maxScan = options.maxScan === undefined ? entitySystem.entityArray.maxSize : Math.min(Number(options.maxScan), entitySystem.entityArray.maxSize);
+        const cameraPos = cSystem.cameraWorldPos;
 
-        // Filter entities by distance and collect metrics
-        for (const entity of allEntities) {
+        for (let i = 0; i < maxScan; i++) {
             try {
-                const distance = calculateDistance(entity);
+                const entity = entitySystem.entityArray.at(i);
+                if (!entity) {
+                    continue;
+                }
+
+                // Memory-only position read. Do not call CEntity::GetWorldPos across the full array.
+                const worldPos = entity.zonePos;
+                if (![worldPos.x, worldPos.y, worldPos.z].every(Number.isFinite)) {
+                    continue;
+                }
+
+                const dx = worldPos.x - cameraPos.x;
+                const dy = worldPos.y - cameraPos.y;
+                const dz = worldPos.z - cameraPos.z;
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
                 if (distance <= maxDistance && !(distance >= 1.7 && distance <= 7.9)) {
-                    const angles = calculateAngles(entity);
-                    const worldPos = entity.worldPos;
-                    const className = entity.entityClass ? entity.entityClass.name : "<unknown>";
-                    const name = entity.name || "<no-name>";
+                    let className = "<unknown>";
+                    let name = "<no-name>";
+                    let id = null;
+                    try { id = entity.id.toString(); } catch (_) {}
+                    try {
+                        const cls = entity.entityClass;
+                        className = cls ? cls.name : "<unknown>";
+                    } catch (_) {}
+                    try { name = entity.name || "<no-name>"; } catch (_) {}
+                    const angles = {
+                        yaw: Math.atan2(dx, dy) * 180 / Math.PI,
+                        pitch: Math.atan2(dz, Math.sqrt(dx * dx + dy * dy)) * 180 / Math.PI
+                    };
 
                     entitiesInRange.push({
                         entity: entity,
+                        id,
                         distance: distance,
                         angles: angles,
                         worldPos: worldPos,
@@ -2964,7 +3475,7 @@ rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
         entitiesInRange.forEach((item, index) => {
             const direction = formatRelativeDirection(item.angles);
             console.log(
-                `${(index + 1).toString().padStart(3, ' ')}. [${item.entity.ptr}] [ID ${item.entity.id}] Class: ${item.className}\n` +
+                `${(index + 1).toString().padStart(3, ' ')}. [${item.entity.ptr}] [ID ${item.id || '<unknown>'}] Class: ${item.className}\n` +
                 `     Name: ${item.name}\n` +
                 `     Position: (${item.worldPos.x.toFixed(2)}, ${item.worldPos.y.toFixed(2)}, ${item.worldPos.z.toFixed(2)})\n` +
                 `     Distance: ${item.distance.toFixed(2)}m | Direction: ${direction}`
@@ -2978,7 +3489,7 @@ rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
             totalFound: entitiesInRange.length,
             entities: entitiesInRange.map(item => ({
                 ptr: item.entity.ptr.toString(),
-                id: item.entity.id,
+                id: item.id,
                 className: item.className,
                 name: item.name,
                 distance: item.distance,
@@ -2996,6 +3507,54 @@ rpc.exports.listEntitiesInRange = function(maxDistance = 100) {
     } catch (e) {
         console.log(`[!] Error listing entities in range: ${e.message}`);
         return { success: false, error: e.message };
+    }
+};
+
+rpc.exports.findEntityById = function(entityId) {
+    const entitySystem = gEnv.entitySystem;
+    if (!entitySystem) {
+        return { success: false, error: "Entity system not available" };
+    }
+
+    const wanted = BigInt(entityId);
+    try {
+        const allEntities = entitySystem.entityArray.toArray();
+        for (const entity of allEntities) {
+            try {
+                if (BigInt(entity.id.toString()) !== wanted) {
+                    continue;
+                }
+
+                let worldPos = null;
+                let distance = null;
+                let className = "<unknown>";
+                let name = "<no-name>";
+                try {
+                    const cls = entity.entityClass;
+                    className = cls ? cls.name : "<unknown>";
+                } catch (_) {}
+                try {
+                    name = entity.name || "<no-name>";
+                } catch (_) {}
+                try {
+                    worldPos = entity.worldPos;
+                    distance = calculateDistance(entity);
+                } catch (_) {}
+                return {
+                    success: true,
+                    ptr: entity.ptr.toString(),
+                    id: entity.id.toString(),
+                    className,
+                    name,
+                    worldPos: worldPos ? { x: worldPos.x, y: worldPos.y, z: worldPos.z } : null,
+                    distance
+                };
+            } catch (_) {}
+        }
+
+        return { success: false, error: "Entity id not found", entityId: wanted.toString() };
+    } catch (e) {
+        return { success: false, error: e.message, entityId: wanted.toString() };
     }
 };
 
