@@ -436,6 +436,8 @@ const E_WEAPON_COMMAND      = {
 const E_WEAPON_TRIGGER      = { 0: 'Press', 1: 'Release' };
 // Weapon::Network::EValidationState @ types.h:118415
 const E_WEAPON_VAL_STATE    = { 2: 'TooLate', 3: 'OutOfOrder' };
+// Missile::ELaunchStates @ types.h:35718 (bitmask).
+const E_LAUNCH_STATES       = { 1: 'ReadyToFire', 2: 'Ejected' };
 
 function enumName(table, v) {
     if (v < 0) return '?';
@@ -598,8 +600,10 @@ const decoders = {
   // ============================================================================
 
   // ---- No-arg ----------------------------------------------------------------
-  // SArgRefs<>  (zero bits)
+  // SArgRefs<>  (zero bits) — these names all share dispatch 0x14850f690.
   'CTargetedEntries::m_rmAuthorityRemoveAllPinnedTargets': () => '(no args)',
+  'AuthorityRestoreMarkerState':                            () => '(no args)',
+  'rmAuthorityReportPersonalReputationData':                () => '(no args)',
 
   // ---- Single scalar / enum --------------------------------------------------
   // SArgRefs<EDisconnectType>  — single byte enum (size 8 bits)
@@ -1104,34 +1108,41 @@ const decoders = {
   },
 
   // ---- Big multi-arg interact -----------------------------------------------
+  // SInteractionMetaData @ types.h:296940 sizeof=0x14.
+  // IEntityPtr is sizeof=0x8 (raw entity ptr at offset 0).
+
   // SArgRefs<CTimeValue, u64, u32, EntityId, SInteractionMetaData, IEntityPtr>
-  // SInteractionMetaData @ types.h:296940 sizeof=0x14:
-  //   interactorDataType(EInteractorDataType u32)@0, interactorData(u32)@4,
-  //   interactableDataType[4]@8, interactableData(u32)@0xC,
-  //   skipUsableEntry(bool)@0x10, skipUseInteraction(bool)@0x11
-  // IEntityPtr is sizeof=0x8 (raw entity ptr).
+  // Handler: CInteractableComponent::OnSharedInteractImpl(
+  //   CTimeValue interactionStartTime, u64 requestId, u32 interactionId,
+  //   EntityId interactorId, SInteractionMetaData*, IEntityPtr pInitialInteractable, ...)
+  // @ decomp:132624
   'SvRequestSharedInteract': (argRefs) => {
-    const time    = readTimeValue(slotPtr(argRefs, 5));
-    const u64_    = argU64Hex(argRefs, 4);
-    const u32_    = argU32(argRefs, 3) >>> 0;
-    const ent     = argU64Hex(argRefs, 2);
-    const meta    = interactionMetaDecoder(slotPtr(argRefs, 1));
-    const ePtr    = slotPtr(argRefs, 0);
-    const rawEnt  = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
-    return `time=${time} u64=${u64_} u32=${u32_} entity=${ent} meta=${meta} pIEntity=${rawEnt}`;
+    const startTime     = readTimeValue(slotPtr(argRefs, 5));
+    const requestId     = argU64Hex(argRefs, 4);
+    const interactionId = argU32(argRefs, 3) >>> 0;
+    const interactorId  = argU64Hex(argRefs, 2);
+    const meta          = interactionMetaDecoder(slotPtr(argRefs, 1));
+    const ePtr          = slotPtr(argRefs, 0);
+    const pInitial      = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
+    return `startTime=${startTime} requestId=${requestId} interactionId=0x${interactionId.toString(16)} interactor=${interactorId} meta=${meta} pInitial=${pInitial}`;
   },
 
   // SArgRefs<CTimeValue, u64, u32, u32, EntityId, SInteractionMetaData, IEntityPtr>
+  // Handler: CInteractableComponent::OnInteractImpl(
+  //   CTimeValue interactionStartTime, u64 requestId,
+  //   u32 ipId, u32 interactionId,
+  //   EntityId interactorId, SInteractionMetaData*, IEntityPtr pInitialInteractable, ...)
+  // @ decomp:132555. ipId / interactionId are CRC32-style hashes of names.
   'SvRequestInteract': (argRefs) => {
-    const time    = readTimeValue(slotPtr(argRefs, 6));
-    const u64_    = argU64Hex(argRefs, 5);
-    const u32a    = argU32(argRefs, 4) >>> 0;
-    const u32b    = argU32(argRefs, 3) >>> 0;
-    const ent     = argU64Hex(argRefs, 2);
-    const meta    = interactionMetaDecoder(slotPtr(argRefs, 1));
-    const ePtr    = slotPtr(argRefs, 0);
-    const rawEnt  = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
-    return `time=${time} u64=${u64_} u32a=${u32a} u32b=${u32b} entity=${ent} meta=${meta} pIEntity=${rawEnt}`;
+    const startTime     = readTimeValue(slotPtr(argRefs, 6));
+    const requestId     = argU64Hex(argRefs, 5);
+    const ipId          = argU32(argRefs, 4) >>> 0;
+    const interactionId = argU32(argRefs, 3) >>> 0;
+    const interactorId  = argU64Hex(argRefs, 2);
+    const meta          = interactionMetaDecoder(slotPtr(argRefs, 1));
+    const ePtr          = slotPtr(argRefs, 0);
+    const pInitial      = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
+    return `startTime=${startTime} requestId=${requestId} ipId=0x${ipId.toString(16)} interactionId=0x${interactionId.toString(16)} interactor=${interactorId} meta=${meta} pInitial=${pInitial}`;
   },
 
   // SArgRefs<int, SPlayerTradeRequest>
@@ -1146,11 +1157,547 @@ const decoders = {
     try { amount = p.add(8).readS64().toString(); } catch (_) {}
     return `int=${intArg} currencyType=${curType} amount=${amount}`;
   },
+
+  // ============================================================================
+  // Names observed in live trace but not in the original triage JSON.
+  // Each is grounded against a decompile reference.
+  // ============================================================================
+
+  // pi.RmRequestOpenInventory @ decomp:15377232 dispatches <EntityId>.
+  // Shares argDispatch with CEntityComponentKioskInteraction::RmAuthoritySetUserId.
+  'pi.RmRequestOpenInventory': (argRefs) => `entity=${argU64Hex(argRefs, 0)}`,
+  // Same family.
+  'pi.RmRequestCloseInventory': (argRefs) => `entity=${argU64Hex(argRefs, 0)}`,
+
+  // CEntityComponentHealth::m_rmAuthorityRequestHit shares dispatch
+  // 0x148aa8400 with CSCPlayerGameRulesNetworkComponent::m_rmAuthorityRequestHit
+  // — both take <HitInfo> (decomp:182841, 186703).
+  'CEntityComponentHealth::m_rmAuthorityRequestHit': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const pShooter    = readPointer(p.add(0x00));
+    const pTarget     = readPointer(p.add(0x08));
+    const pWeapon     = readPointer(p.add(0x10));
+    const projId      = readU32(p.add(0x28));
+    const material    = readU32(p.add(0x74));
+    const type        = readU32(p.add(0x78));
+    const partId      = readU32(p.add(0x7C));
+    const projCls     = readU32(p.add(0xE4));
+    const weaponCls   = readU32(p.add(0xE8));
+    const remote      = readU8(p.add(0xEC));
+    const explosion   = readU8(p.add(0xED));
+    return `shooter=${pShooter} target=${pTarget} weapon=${pWeapon} projId=${projId} type=${type} material=${material} partId=${partId} projCls=0x${(projCls>>>0).toString(16)} weaponCls=0x${(weaponCls>>>0).toString(16)} remote=${remote} expl=${explosion}`;
+  },
+
+  // SArgRefs<float, bool>
+  // CEntityComponentMiningLaser::RmAuthoritySetDesiredThrottle(ctx, float throttle, bool immediate)
+  // @ decomp:188369. Reverse layout: @0=&bool, @8=&float.
+  'CEntityComponentMiningLaser::RmAuthoritySetDesiredThrottle': (argRefs) => {
+    const throttle  = argFloat(argRefs, 1);
+    const immediate = argBool(argRefs, 0);
+    return `throttle=${throttle} immediate=${immediate}`;
+  },
+
+  // SArgRefs<SReadWriteLockableValue<SNavigationRoute>>
+  // CSCItemNavigation::RmAuthoritySyncClientSetRoute(ctx, SReadWriteLockableValue<SNavigationRoute>*)
+  // @ decomp:231959. SReadWriteLockableValue is sizeof=0x530 wrapping
+  // SNavigationRoute (sizeof=0x508): m_Route(SNavigationNode[20])@0,
+  // m_CurrentIndex(char)@0x500, m_FinalStopInRoute(char)@0x501.
+  // SNavigationNode per-element size = 0x500/20 = 0x40.
+  'CSCItemNavigation:RmAuthoritySyncClientSetRoute': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const cur   = readU8(p.add(0x500));
+    const final_ = readU8(p.add(0x501));
+    // First node first 8 bytes (often an EntityId or a packed key) for orientation.
+    const firstNode = readU64(p.add(0));
+    return `currentIndex=${cur} finalStop=${final_} firstNode[0]=0x${firstNode}`;
+  },
+
+  // SArgRefs<CryGUID>
+  // CSCItemMissileController::RmAuthoritySetMissileClassKey(ctx, __m128 *newClassGUID)
+  // @ decomp:275330. __m128 here is the 16-byte CryGUID payload.
+  'RmAuthoritySetMissileClassKey': (argRefs) => {
+    const guid = readGuid(slotPtr(argRefs, 0));
+    return `classGuid=${guid}`;
+  },
+
+  // SArgRefs<CryGUID, int>
+  // CSCItemMissileController::RmAuthoritySetNetworkedUserMaxArmed(
+  //   ctx, __m128 *classGUID, int newMax) @ decomp:275331.
+  // Reverse layout: @0=&int, @8=&CryGUID.
+  'RmAuthoritySetNetworkedUserMaxArmed': (argRefs) => {
+    const newMax = argI32(argRefs, 0);
+    const guid   = readGuid(slotPtr(argRefs, 1));
+    return `classGuid=${guid} newMax=${newMax}`;
+  },
+
+  // SArgRefs<EASpawn::CClientItinerary>
+  // CSCElectronicAccessPlayerComponent::RmAuthRequestSpawn(ctx, CClientItinerary*)
+  // @ decomp:229140. CClientItinerary @ types.h:2550715 sizeof=0x50,
+  // extends CSpawnItinerary<CClientItinerary> (sizeof=0x28):
+  //   base (0..0x27):
+  //     m_spawnReservation (CSpawnReservation 0x20) @ 0:
+  //       m_spawnToken(u16)@0, m_spawnLocationId@8,
+  //       m_spawnGroupId@0x10, m_spawnSlotId@0x18
+  //     m_flags(CCryFlags<EItineraryFlags> u8)@0x20
+  //   m_vehicleLoadoutHandle(CTypesafeId u32)@0x28
+  //   m_loadoutItemExchange(vector)@0x30
+  //   m_loadoutSelectionIndex(u8)@0x48
+  'EAPlayer.authRequestSpawn': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const token   = readU16(p.add(0x00));
+    const loc     = readU64(p.add(0x08));
+    const grp     = readU64(p.add(0x10));
+    const slot    = readU64(p.add(0x18));
+    const flags   = readU8(p.add(0x20));
+    const loadout = readU32(p.add(0x28)) >>> 0;
+    const selIdx  = readU8(p.add(0x48));
+    return `token=${token} location=0x${loc} group=0x${grp} slot=0x${slot} flags=0x${flags.toString(16)} loadoutHandle=${loadout} selectionIdx=${selIdx}`;
+  },
+
+  // SArgRefs<CTimeValue, SActorTeleportParams>
+  // CSCActorActionHandler::RmTokenForceTeleportInStaging(ctx, CTimeValue ts, SActorTeleportParams*)
+  // @ decomp:264424. SActorTeleportParams @ types.h:330089 sizeof=0x80:
+  //   m_zoneEntityId@0, m_destination(QuatTS<double> 0x40)@8,
+  //   m_worldPos(Vec3<double>)@0x48, m_aimRotation(Quat<float>)@0x60,
+  //   m_lookOffsetAngles(AngYPR<float>)@0x70, m_bFadeAfterTeleport@0x7C,
+  //   m_bDephysicalizeAfterTeleport@0x7D, m_bWaitForFloor@0x7E,
+  //   m_bDelayAfterUnlink@0x7F
+  // Reverse layout: @0=&SActorTeleportParams, @8=&CTimeValue.
+  'CSCActorActionHandler::RmTokenForceTeleportInStaging': (argRefs) => {
+    const ts = readTimeValue(slotPtr(argRefs, 1));
+    const p  = slotPtr(argRefs, 0);
+    if (p.isNull()) return `ts=${ts} params=?`;
+    const zone   = readU64(p.add(0x00));
+    const wpos   = readVec3d(p.add(0x48));
+    const fade   = readU8(p.add(0x7C));
+    const dephys = readU8(p.add(0x7D));
+    const waitFl = readU8(p.add(0x7E));
+    const delay  = readU8(p.add(0x7F));
+    return `ts=${ts} zone=0x${zone} worldPos=${wpos} fade=${fade} dephys=${dephys} waitFloor=${waitFl} delay=${delay}`;
+  },
+
+  // SArgRefs<IEntityPtr>
+  // CEntityComponentEAPlayableAreaController::RmMulticastPlayAudio(this, IEntityPtr pPlayer)
+  // @ decomp:223164.
+  'CEntityComponentEAPlayableAreaController::m_rmMulticastPlayAudio': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const player = readPointer(p);
+    return `player=${player}`;
+  },
+
+  // SArgRefs<unsigned int>
+  // CWeaponCommandBuffer::RmMulticastReceiveFirePress(ctx, u32 tick)
+  // @ decomp:266242 / registration @ decomp:19532589 confirms template `<u32 const &>`.
+  // (Hex-Rays shows a `double a4` but the dispatch template is single-arg —
+  // that's a hallucinated register-state arg.)
+  'CWeaponCommandBuffer::RmMulticastReceiveFirePress': (argRefs) => {
+    return `tick=${argU32(argRefs, 0) >>> 0}`;
+  },
+
+  // SArgRefs<CryStringT<char>, bool, bool>
+  // CSubsumptionMissionAudioComponent::MulticastEnqueueMissionAudio(
+  //   ctx, CryStringT triggerName, bool isDialogue, bool isImmediate)
+  // @ decomp:169706, dispatch confirmed @ decomp:12710589.
+  // Reverse: @0=&bool isImmediate, @8=&bool isDialogue, @0x10=&CryStringT triggerName.
+  'smac.rmMulticastEnqueueMissionAudio': (argRefs) => {
+    const trig = readCryString(slotPtr(argRefs, 2), 96);
+    const dlg  = argBool(argRefs, 1);
+    const imm  = argBool(argRefs, 0);
+    return `trigger=${JSON.stringify(trig)} isDialogue=${dlg} isImmediate=${imm}`;
+  },
+
+  // SArgRefs<EntityId, bool> — shares 0x14859f530 with pi.RmAuthorityNotifyLootEntityAccessed.
+  // Different semantic: target entity + the new "attacker" flag value.
+  'CTargetedEntries::m_rmMulticastUpdateAttackerFlag': (argRefs) =>
+    `entity=${argU64Hex(argRefs, 1)} isAttacker=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<EntityId, EntityId> — shares 0x14859f478 with RequestNewLead.
+  // Different semantic: (lockedTarget, requestor). Kept distinct for clarity.
+  'RmAuthorityRequestLockTarget': (argRefs) =>
+    `target=${argU64Hex(argRefs, 1)} requester=${argU64Hex(argRefs, 0)}`,
+
+  // SArgRefs<float>
+  // Weapon::CSCItemMissile::RmAuthorityRequestLockRatio(ctx, float lockRatio)
+  // @ decomp:220848.
+  'RmAuthorityRequestLockRatio': (argRefs) => `lockRatio=${argFloat(argRefs, 0)}`,
+
+  // SArgRefs<float> — shares disp 0x1488b19c8 with LockRatio (same template,
+  // different semantic). CSCActorCombatStats::RmMulticastGetMostUsedNonKbInput(
+  //   this, float time) @ decomp:151520.
+  'RmMulticastGetMostUsedNonKbInput': (argRefs) => `time=${argFloat(argRefs, 0)}`,
+
+  // SArgRefs<EntityId, EntityId, __int16, unsigned __int8, unsigned int>
+  // CSCPlayerGameRulesNetworkComponent::RmMulticastAddPoints(
+  //   ctx, EntityId playerId, EntityId killedEntityId,
+  //   i16 changeToScore, u8 type, u32 currentTeamScore) @ decomp:186708.
+  // Reverse: @0=&u32, @8=&u8, @0x10=&i16, @0x18=&EntityId killed, @0x20=&EntityId player.
+  'CSCPlayerGameRulesNetworkComponent::m_rmMulticastAddPoints': (argRefs) => {
+    const player    = argU64Hex(argRefs, 4);
+    const killed    = argU64Hex(argRefs, 3);
+    const pChange   = slotPtr(argRefs, 2);
+    const change   = pChange.isNull() ? '?' : (pChange.readS16());
+    const type      = argU8(argRefs, 1);
+    const teamScore = argU32(argRefs, 0) >>> 0;
+    return `player=${player} killed=${killed} change=${change} type=${type} teamScore=${teamScore}`;
+  },
+
+  // SArgRefs<IEntityPtr, float>
+  // CEntityComponentHostility::AuthNotifyHostileAction(this, IEntityPtr pShooter, float damage)
+  // @ decomp:93464. Reverse: @0=&float, @8=&IEntityPtr.
+  'ph.rmAuthNotifyHostileAction': (argRefs) => {
+    const dmg     = argFloat(argRefs, 0);
+    const sp      = slotPtr(argRefs, 1);
+    const shooter = sp.isNull() ? '0x0' : readPointer(sp).toString();
+    return `shooter=${shooter} damage=${dmg}`;
+  },
+
+  // SArgRefs<IEntityPtr, bool, float>
+  // CEntityComponentHostility::AuthNotifyHostileActionPerformed(
+  //   this, IEntityPtr pVictim, bool hitByMissile, float damage) @ decomp:93465.
+  // Reverse: @0=&float, @8=&bool, @0x10=&IEntityPtr.
+  'ph.rmAuthNotifyHostileActionPerformed': (argRefs) => {
+    const dmg     = argFloat(argRefs, 0);
+    const missile = argBool(argRefs, 1);
+    const vp      = slotPtr(argRefs, 2);
+    const victim  = vp.isNull() ? '0x0' : readPointer(vp).toString();
+    return `victim=${victim} hitByMissile=${missile} damage=${dmg}`;
+  },
+
+  // SArgRefs<SKillParams>
+  // CActor::RmMulticastKill(this, SKillParams*) @ decomp:151521.
+  // SKillParams @ types.h:289195 sizeof=0x50:
+  //   pShooter(IEntityPtr)@0, recentAttackers(set)@8, pWeapon@0x18,
+  //   pProjectile@0x20, weaponClassId(u32)@0x28, impulseScale(float)@0x2C,
+  //   dir(Vec3f)@0x30, hit_type(int)@0x3C, hit_partId(u16)@0x40,
+  //   projectileClassId(u32)@0x44, winningKill(bool)@0x48
+  'CActor::RmMulticastKill': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const shooter   = readPointer(p.add(0x00));
+    const weapon    = readPointer(p.add(0x18));
+    const proj      = readPointer(p.add(0x20));
+    const wpnCls    = readU32(p.add(0x28)) >>> 0;
+    let imp = NaN;
+    try { imp = p.add(0x2C).readFloat(); } catch (_) {}
+    const dir       = readVec3f(p.add(0x30));
+    const hitType   = readU32(p.add(0x3C));
+    const partId    = readU16(p.add(0x40));
+    const projCls   = readU32(p.add(0x44)) >>> 0;
+    const winning   = readU8(p.add(0x48));
+    return `shooter=${shooter} weapon=${weapon} proj=${proj} weaponCls=0x${wpnCls.toString(16)} impulse=${imp} dir=${dir} hitType=${hitType} partId=${partId} projCls=0x${projCls.toString(16)} winning=${winning}`;
+  },
+
+  // SArgRefs<int, IEntityPtr, IEntityPtr>
+  // CEntityComponentEAPlayableAreaController::RmMulticastInvokeAreaListener(
+  //   this, int listenerToInvoke, IEntityPtr pPlayer, IEntityPtr pArea) @ decomp:223161.
+  // Reverse: @0=&IEntityPtr area, @8=&IEntityPtr player, @0x10=&int listener.
+  'CEntityComponentEAPlayableAreaController::m_rmMulticastInvokeAreaListener': (argRefs) => {
+    const listener = argI32(argRefs, 2);
+    const pPlayer  = slotPtr(argRefs, 1);
+    const pArea    = slotPtr(argRefs, 0);
+    const player   = pPlayer.isNull() ? '0x0' : readPointer(pPlayer).toString();
+    const area     = pArea.isNull()   ? '0x0' : readPointer(pArea).toString();
+    return `listener=${listener} player=${player} area=${area}`;
+  },
+
+  // SArgRefs<EntityId, CStringHash, SCommsConnectionParams>
+  // CSCCommsComponent::RmAuthorityEstablishCommunicationWith(
+  //   this, EntityId partnerId, CStringHash channelId, SCommsConnectionParams params)
+  // @ decomp:248081. SCommsConnectionParams @ types.h:373005 sizeof=0x30:
+  //   m_priority(int)@0, m_allowOutputVideo(bool)@4, m_allowInputVideo(bool)@5,
+  //   m_autoOpenMobiglas(bool)@6, m_receiverFilterAreas(vec)@8,
+  //   m_bFakeCommsCall(bool)@0x20, m_bDisableRTTCamera(bool)@0x21,
+  //   m_fakeCallVideoPath(CryStringT)@0x28.
+  // Reverse: @0=&SCommsConnectionParams, @8=&CStringHash, @0x10=&EntityId.
+  'm_rmAuthorityEstablishCommunicationWith': (argRefs) => {
+    const partner = argU64Hex(argRefs, 2);
+    const channel = stringHashStr(slotPtr(argRefs, 1));
+    const p       = slotPtr(argRefs, 0);
+    if (p.isNull()) return `partner=${partner} channel=${channel} params=?`;
+    const prio    = readU32(p.add(0));
+    const outVid  = readU8(p.add(4));
+    const inVid   = readU8(p.add(5));
+    const autoMG  = readU8(p.add(6));
+    const filtSz  = readVectorSize(p.add(8), 8);
+    const fakeCC  = readU8(p.add(0x20));
+    const noRTT   = readU8(p.add(0x21));
+    return `partner=${partner} channel=${channel} priority=${prio} outVid=${outVid} inVid=${inVid} autoMG=${autoMG} filterAreas.size=${filtSz} fakeCall=${fakeCC} noRTT=${noRTT}`;
+  },
+
+  // SArgRefs<SCommsConnection>
+  // CSCCommsComponent::RmMulticastAddConnection(this, SCommsConnection*)
+  // @ decomp:248088. SCommsConnection @ types.h:1518759 sizeof=0xC0:
+  //   m_connectionId(CStringHash 0x18)@0, m_channelId(CStringHash 0x18)@0x18,
+  //   m_private(bool)@0x30, m_hailStatus(u32)@0x34,
+  //   m_previousHailStatus(u32)@0x38, m_timeEnteredState(CTimeValue)@0x40,
+  //   m_removeFlag(bool)@0x48, m_commsPartner(SCommsConnectionPeer 0x10)@0x50,
+  //   m_receivingVideoType(u32)@0x80, m_preferredVideoType(u32)@0x84.
+  'm_rmMulticastAddConnection': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const connId   = stringHashStr(p.add(0x00));
+    const chanId   = stringHashStr(p.add(0x18));
+    const priv     = readU8(p.add(0x30));
+    const hail     = readU32(p.add(0x34));
+    const prevHail = readU32(p.add(0x38));
+    const ts       = readTimeValue(p.add(0x40));
+    const rmFlag   = readU8(p.add(0x48));
+    return `connId=${connId} channel=${chanId} private=${priv} hail=${hail}(${enumName(E_HAIL_STATUS, hail)}) prevHail=${prevHail}(${enumName(E_HAIL_STATUS, prevHail)}) enteredAt=${ts} removeFlag=${rmFlag}`;
+  },
+
+  // SArgRefs<EntityId, CLocTranslated>
+  // CSCPlayerGameRulesNetworkComponent::RmMulticastFriendlyFireMessage(
+  //   ctx, EntityId playerId, CLocTranslated msg) @ decomp:186713.
+  // CLocTranslated @ types.h:501160 sizeof=0x8: single CryStringT<wchar_t> m_content.
+  // Reverse: @0=&CLocTranslated, @8=&EntityId.
+  'CSCPlayerGameRulesNetworkComponent::m_rmMulticastFriendlyFireMessage': (argRefs) => {
+    const player = argU64Hex(argRefs, 1);
+    const msgP   = slotPtr(argRefs, 0);
+    // m_content is a CryStringT<wchar_t> (UTF-16). Surface the raw pointer.
+    const wstrPtr = msgP.isNull() ? NULL : readPointer(msgP);
+    return `player=${player} msg=${wstrPtr}`;
+  },
+
+  // SArgRefs<Missile::ELaunchStates>
+  // Weapon::CEntityComponentExplosiveOrdnance::RmAuthorityRequestLaunchState(
+  //   ctx, ELaunchStates state) @ decomp:220847.
+  'RmAuthorityRequestLaunchState': (argRefs) => {
+    const v = argU32(argRefs, 0) >>> 0;
+    return `state=${v}(${enumName(E_LAUNCH_STATES, v)})`;
+  },
+
+  // SArgRefs<Vec3<double>, Vec3<float>, EntityId, Vec3<float>, bool>
+  // Weapon::CEntityComponentExplosiveOrdnance::RmMulticastExplode(
+  //   ctx, Vec3<double> position_ws, Vec3<float> direction_ws,
+  //   EntityId colEntityId, Vec3<float> impactVelocity_ws, bool isImpact)
+  // @ decomp:220850, dispatch confirmed @ decomp:16224064.
+  // Reverse: @0=&bool, @8=&Vec3<float> impactVel, @0x10=&EntityId,
+  //   @0x18=&Vec3<float> dir, @0x20=&Vec3<double> pos.
+  'RmMulticastExplode': (argRefs) => {
+    const isImpact   = argBool(argRefs, 0);
+    const impactVel  = readVec3f(slotPtr(argRefs, 1));
+    const colEntity  = argU64Hex(argRefs, 2);
+    const direction  = readVec3f(slotPtr(argRefs, 3));
+    const position   = readVec3d(slotPtr(argRefs, 4));
+    return `position=${position} direction=${direction} colEntity=${colEntity} impactVel=${impactVel} isImpact=${isImpact}`;
+  },
+
+  // SArgRefs<EntityId, unsigned __int8>
+  // CSCElectronicAccessPlayerComponent::RmAuthEntitySpawnNotification(
+  //   ctx, EntityId entityId, u8 notificationId) @ decomp:229133.
+  // Dispatcher type confirmed @ decomp:16716159.
+  // Reverse layout: @0=&u8, @8=&EntityId.
+  'EAPlayer.authEntitySpawnNotification': (argRefs) => {
+    const entity         = argU64Hex(argRefs, 1);
+    const notificationId = argU8(argRefs, 0);
+    return `entity=${entity} notificationId=${notificationId}`;
+  },
+
+  // SArgRefs<Vec3<double>, Vec3<float>, EntityId>
+  // CEntityComponentHealth::m_rmMulticastExplode (registered as "Explode" at
+  // decomp:15792043). Dispatch template confirmed @ decomp:15792060.
+  // Reverse layout: @0=&EntityId, @8=&Vec3<float>, @0x10=&Vec3<double>.
+  'Explode': (argRefs) => {
+    const colEntity   = argU64Hex(argRefs, 0);
+    const direction   = readVec3f(slotPtr(argRefs, 1));
+    const position    = readVec3d(slotPtr(argRefs, 2));
+    return `position=${position} direction=${direction} colEntity=${colEntity}`;
+  },
+
+  // SArgRefs<IEntityPtr, float, double, __int64, IEntityPtr, __int64>
+  // CEntityComponentEAPlayableAreaController::RmMulticastUpdateUI(
+  //   this, IEntityPtr pPlayer, float timer, double redoutStrength,
+  //   __int64 phaseChange, IEntityPtr pClosestArea, __int64 reset)
+  // @ decomp:223170. Reverse layout: slot 0=reset, slot 1=pClosest,
+  //   slot 2=phaseChange, slot 3=redout, slot 4=timer, slot 5=pPlayer.
+  'CEntityComponentEAPlayableAreaController::m_rmMulticastUpdateUI': (argRefs) => {
+    const reset    = argI64Hex(argRefs, 0);
+    const closeP   = slotPtr(argRefs, 1);
+    const phase    = argI64Hex(argRefs, 2);
+    const redout   = argDouble(argRefs, 3);
+    const timer    = argFloat(argRefs, 4);
+    const playerP  = slotPtr(argRefs, 5);
+    const player   = playerP.isNull() ? '0x0' : readPointer(playerP).toString();
+    const closest  = closeP.isNull()  ? '0x0' : readPointer(closeP).toString();
+    return `player=${player} timer=${timer} redout=${redout} phaseChange=${phase} closestArea=${closest} reset=${reset}`;
+  },
+
+  // SArgRefs<EASpawn::CSpawnReservation>
+  // CSCElectronicAccessPlayerComponent::RmAuthRequestSlotBooking(ctx, CSpawnReservation*)
+  // dispatcher signature @ decomp:16716191; struct @ types.h:2550659 sizeof=0x20:
+  //   m_spawnToken(u16)@0, m_spawnLocationId(EntityId)@8,
+  //   m_spawnGroupId(EntityId)@0x10, m_spawnSlotId(EntityId)@0x18
+  'EAPlayer.authRequestSlotBooking': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const token = readU16(p.add(0x00));
+    const loc   = readU64(p.add(0x08));
+    const grp   = readU64(p.add(0x10));
+    const slot  = readU64(p.add(0x18));
+    return `token=${token} location=0x${loc} group=0x${grp} slot=0x${slot}`;
+  },
+
+  // SArgRefs<SAttachableSerializationDetach>
+  // CAttachableComponent::m_rmMulticastDetachFromEntity dispatcher signature
+  // confirmed via lambda binding @ decomp:10060442.
+  // SAttachableSerializationDetach @ types.h:564823 sizeof=0x28:
+  //   entity(EntityId)@0, port(SItemPortId 0x10)@8,
+  //   attachReason(EPersistentModificationReason u32)@0x18,
+  //   detachBehavior(ItemPort::SDetachBehavior u32)@0x1C,
+  //   bAnimationTriggered(bool)@0x24
+  'MulticastDetachFromEntity': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const entity     = readU64(p.add(0x00));
+    const portOwner  = readU64(p.add(0x08));
+    const portId     = readU16(p.add(0x10));
+    const reason     = readU32(p.add(0x18)) >>> 0;
+    const detach     = readU32(p.add(0x1C)) >>> 0;
+    const animTrig   = readU8(p.add(0x24));
+    return `entity=0x${entity} port=(owner=0x${portOwner} id=${portId}) reason=${reason} detach=${detach} anim=${animTrig}`;
+  },
 };
 
-function decodePayload(name, argRefs) {
-  const decoder = decoders[name];
-  if (!decoder || !argRefs || argRefs.isNull()) return null;
+// Dispatch-pointer fallback. When two RMIs share the same `argDispatch`
+// pointer they share an identical SArgRefs layout, so a decoder keyed by
+// dispatch resolves any newly observed name automatically.
+//
+// Pre-seeded from the original triage so the cache hits cold (the first
+// time we see e.g. `pi.RmRequestOpenInventory` we resolve it via the
+// `<EntityId>` decoder that ships with the script). Lazily extended at
+// runtime when a name-keyed lookup succeeds (see decodePayload).
+const dispatchDecoders = new Map();
+
+// Absolute dispatch pointers observed in /tmp/diffusion_rpc_triage.json
+// (module base 0x140000000). Each maps to the canonical decoder name in
+// the `decoders` table above; siblings sharing the same dispatch get
+// resolved through this map after the first name-keyed lookup.
+const KNOWN_DISPATCH_PTRS = {
+  '0x148f09f08': 'CSCActorActionHandler::RmAuthoritySendActions',
+  '0x148b520b0': 'RmAuthorityConsumeThrusterFuel',
+  '0x148b7dbe0': 'CVisionComponent::RmAuthorityRemoteObservableUpdate',
+  '0x148f25358': 'CWeaponCommandBuffer::RmAuthorityRequestCommand',
+  '0x14850f690': 'CTargetedEntries::m_rmAuthorityRemoveAllPinnedTargets',
+  '0x1487a6d98': 'AuthorityAttachToPort',
+  '0x148aa8400': 'CSCPlayerGameRulesNetworkComponent::m_rmAuthorityRequestHit',
+  '0x14850f5d0': 'AuthorityOnInteractionStateChange',
+  '0x148e3dab0': 'm_rmMulticastSetHailStatus',
+  '0x1488b19a8': 'RmAuthorityUpdateInputDevice',
+  '0x14859f478': 'CTractorBeamMultitractorUtils::RmAuthorityRequestNewLead',
+  '0x148e62600': 'RmAuthorityOnAlignedToTarget',
+  '0x1487a61b8': 'SvRequestSharedInteract',
+  '0x148b7dc88': 'AuthoritySendAISignal',
+  '0x148ad3ae8': 'pi.RmAuthorityOnContainerAccessed',
+  '0x148caee10': 'RmAuthorityRequestExplosionSafety',
+  '0x148d43980': 'RmHandleAppData',
+  '0x148f5e9f0': 'CWeaponActionFireTractorBeam::RmAuthoritySetTarget',
+  '0x1487a6198': 'SvRequestInteract',
+  '0x148de3e50': 'SvOnSetState',
+  '0x14850f4e0': 'CWeaponActionFireTractorBeam::RmAuthoritySetAmmoCount',
+  '0x14850f6d0': 'CEntityComponentKioskInteraction::RmAuthoritySetUserId',
+  '0x1489809e8': 'CTargetedEntries::m_rmAuthorityOnExchangedLockedTarget',
+  '0x148c02870': 'pi.RmAuthorityProcessInventoryManagementOperation',
+  '0x1487a7200': 'irc_authoritySetState',
+  '0x148a12e48': 'CSCItemElevator::RmMulticastSetTargetStop',
+  '0x148b1b0f8': 'CSCItemElevator::RmMulticastSetElevatorState',
+  '0x1485dc6b0': 'mbi.AuthAbandonMissionRequest',
+  '0x1485dc690': 'mbi.AuthAcceptMissionRequest',
+  '0x148c03be0': 'RmAuthoritySetInteractionState',
+  '0x148de4600': 'shopUI.m_rmAuthority_OnSelectedLocationChanged',
+  '0x1487ebef0': 'RmAuthRequestStateChange',
+  '0x1487a7608': 'shopUI.rmAuthSetTransactionMode',
+  '0x14897c1e8': 'ping.requestWaveState',
+  '0x1486fc678': 'CEntityComponentUserVariables::RmAuthorityChangeFloatVariable',
+  '0x148c4f490': 'RmAuthorityRequestDamageMapHitFromHitInfo',
+  '0x148bae918': 'ControllableManager_RequestMasterMode',
+  '0x148f16dc0': 'AuthorityReserveUser',
+  '0x148d163a8': 'RmAuthorityRequestVehicleInfos',
+  '0x148e3d9f0': 'm_rmAuthorityStopCommunicationWith',
+  '0x14859f530': 'pi.RmAuthorityNotifyLootEntityAccessed',
+  '0x1485d86c8': 'journal.rmAuthEntriesViewed',
+  '0x148b51d18': 'RmStandardItemBuyShopRequest',
+  '0x148baf038': 'CSCItemEnergyController::RmAuthorityRequestTogglePowerGroupState',
+  '0x148e62e30': 'RmAuthorityATCRequest',
+  '0x1486fc538': 'CEntityComponentUIBindingsInteractions::RmBuildingBlocksSetState',
+  '0x1489e1da0': 'RmAuthoritySetDrugDose',
+  '0x148e76ac0': 'CEntityComponentCloneLocationUIProvider::RmAuthorityOnPopupChanged',
+  '0x148e62620': 'RmAuthorityOnActionTryBeginQuantumTravel',
+  '0x1486fc558': 'CEntityComponentUIBindingsInteractions::RmBuildingBlocksPerformInteraction',
+  '0x148de47a0': 'commodityUI.m_rmAuthority_CargoLocationDataRequest',
+  '0x148bae058': 'ControlContext_AuthorityRequestOperatorMode',
+  '0x148ee8fd8': 'CSCActorSpatialAwareness::RmAuthorityLookAtPOIRequest',
+  '0x1487a74f8': 'rmAuthorityRequestPoolTargets',
+  '0x148c041b8': 'RmAuthorityOnSelectNavigationTab',
+  '0x148d50370': 'CSCItemNavigation:RmAuthorityBeginRouteCalculation',
+  '0x148de4800': 'commodityUI.m_rmAuthority_CargoInventoryDataRequest',
+  '0x14859f458': 'CEntityComponentCriminalRecordUIProvider::RmAuthoritySetBindingTriggerIds',
+  '0x148d502c0': 'RmAuthorityRequestActiveInventoryId',
+  '0x148d16388': 'RmAuthorityFetchPrices',
+  '0x148d16348': 'RmAuthorityRequestClaim',
+  '0x148de3718': 'RmAuthorityRequestPermission',
+  '0x1485db8d0': 'pml.AuthCreateMissionServiceBeacon',
+  '0x148b51d58': 'RmRentalRequest',
+  '0x1486fc638': 'CEntityComponentUserVariables::RmAuthorityChangeBoolVariable',
+  '0x148c02890': 'pi.m_rmAuthorityRequestChangePortOnEquippedItem',
+  '0x1488b1cd0': 'CActor::RmAuthorityRequestDisconnect',
+  '0x14859f438': 'CEntityComponentCriminalRecordUIProvider::RmAuthorityPayFine',
+  '0x148a81c58': 'SvRequestTrade',
+  // Additions discovered post-triage:
+  '0x148d50390': 'CSCItemNavigation:RmAuthoritySyncClientSetRoute',
+  '0x148ae8020': 'CEntityComponentMiningLaser::RmAuthoritySetDesiredThrottle',
+  '0x148f96d28': 'RmAuthoritySetMissileClassKey',
+  '0x148f96d48': 'RmAuthoritySetNetworkedUserMaxArmed',
+  '0x1487a6db8': 'MulticastDetachFromEntity',
+  '0x148d2b410': 'EAPlayer.authRequestSlotBooking',
+  '0x148d2b3f0': 'EAPlayer.authRequestSpawn',
+  '0x148f09f28': 'CSCActorActionHandler::RmTokenForceTeleportInStaging',
+  '0x148cd1b48': 'CEntityComponentEAPlayableAreaController::m_rmMulticastUpdateUI',
+  '0x14858cea0': 'CEntityComponentEAPlayableAreaController::m_rmMulticastPlayAudio',
+  '0x148f25398': 'CWeaponCommandBuffer::RmMulticastReceiveFirePress',
+  '0x148c4f450': 'Explode',
+  '0x148ad3c08': 'EAPlayer.authEntitySpawnNotification',
+  '0x1489e1d80': 'smac.rmMulticastEnqueueMissionAudio',
+  '0x1488b19c8': 'RmAuthorityRequestLockRatio',
+  '0x148ad3bc8': 'CSCPlayerGameRulesNetworkComponent::m_rmMulticastAddPoints',
+  '0x14858ce60': 'ph.rmAuthNotifyHostileAction',
+  '0x14858ce80': 'ph.rmAuthNotifyHostileActionPerformed',
+  '0x1488af5f8': 'CActor::RmMulticastKill',
+  '0x148cd1b68': 'CEntityComponentEAPlayableAreaController::m_rmMulticastInvokeAreaListener',
+  '0x148e3d9d0': 'm_rmAuthorityEstablishCommunicationWith',
+  '0x148e3da90': 'm_rmMulticastAddConnection',
+  '0x148ad3ba8': 'CSCPlayerGameRulesNetworkComponent::m_rmMulticastFriendlyFireMessage',
+  '0x148caedf0': 'RmAuthorityRequestLaunchState',
+  '0x148caee30': 'RmMulticastExplode',
+};
+
+function bootstrapDispatchDecoders() {
+    let seeded = 0, missing = 0;
+    for (const [ptrStr, name] of Object.entries(KNOWN_DISPATCH_PTRS)) {
+        const d = decoders[name];
+        if (!d) { missing++; continue; }
+        dispatchDecoders.set(ptrStr, d);
+        seeded++;
+    }
+    console.log(`[dispatch] seeded ${seeded} dispatch->decoder mappings (${missing} unmapped names)`);
+}
+
+function decodePayload(name, argRefs, argDispatch) {
+  if (!argRefs || argRefs.isNull()) return null;
+  let decoder = decoders[name];
+  const dispKey = (argDispatch && !argDispatch.isNull()) ? argDispatch.toString() : null;
+
+  // Name match wins; also record the dispatch -> decoder mapping so the next
+  // observation of a sibling name (same dispatch, new name string) resolves.
+  if (decoder) {
+    if (dispKey && !dispatchDecoders.has(dispKey)) dispatchDecoders.set(dispKey, decoder);
+  } else if (dispKey) {
+    decoder = dispatchDecoders.get(dispKey);
+  }
+  if (!decoder) return null;
   try {
     return decoder(argRefs);
   } catch (_) {
@@ -1426,7 +1973,7 @@ function hook() {
                 return;
             }
 
-            const payload = decodePayload(reg.name, argRefs);
+            const payload = decodePayload(reg.name, argRefs, reg.argDispatch);
 
             sequence++;
             console.log('');
@@ -1477,6 +2024,7 @@ function hook() {
     });
 }
 
+bootstrapDispatchDecoders();
 hook();
 
 if (TRIAGE_ENABLED) {
