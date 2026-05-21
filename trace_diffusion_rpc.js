@@ -1,0 +1,1492 @@
+'use strict';
+
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+const RVAS = {
+    // ?SendRemoteMethodCall@CSerializedComponent@@...
+    SendRemoteMethodCall: 0x2A5B330,
+};
+
+// SSerializedRemoteMethodReg, sizeof 0x40. Offsets confirmed against decompile.
+const REG_SIZE = 0x40;
+const REG_NAME = 0x00; // CryStringT<char>::m_str -> char*
+const REG_COMPONENT = 0x0C; // u16, key for GetComponentName/SubSystem
+const REG_DIRECTION = 0x10; // u32, switch 0/1/2
+const REG_MODE = 0x14; // u8,  compared ==1 / ==2
+const REG_DISPATCH = 0x18; // SRemoteMethodBase* m_pRemoteMethod
+const REG_ARGDISP = 0x20; // arg serializer: [0]=sizeInBits(args), [1]=serialize
+const REG_STATS = 0x28; // counter obj: +0x28 calls, +0x2C accumulated bytes
+const REG_GATE = 0x30; // ptr; +0x8D byte gates direction routing
+const REG_DIRTY = 0x3C; // u16, dirty-flags variable index
+
+// CSerializedComponent layout (table region used for id-indexed lookup).
+const TABLE_BEGIN = 0x98;
+const TABLE_END = 0xA0;
+
+const MAX_TABLE_SPAN = 1 << 22;
+const MAX_NAME_LEN = 512;
+
+const DUMP_ARGS = true;
+const ARG_DUMP_LEN = 48;
+const MEASURE_ARG_BITS = true; // calls vtable[0] on the arg-serializer; size-only, no side effects per decompile
+
+// Substring filters against the resolved method name. Empty = no filtering.
+// '<unresolved>' entries bypass both lists so they are never hidden.
+const SHOW_ONLY = [];
+const SUPPRESS = [
+    'CSCActorActionHandler::RmAuthoritySendActions'
+];
+
+// ---------------------------------------------------------------------------
+// Triage mode: builds a per-method profile so decoder targets can be picked
+// from real traffic. Live logging is unchanged; triage runs alongside it.
+// ---------------------------------------------------------------------------
+
+const TRIAGE_ENABLED = false;
+const TRIAGE_PATH = '/tmp/diffusion_rpc_triage.json';
+const TRIAGE_FLUSH_EVERY = 2000; // total RMI sends between auto-flushes
+const TRIAGE_FP_HEX_LEN = 32; // bytes of raw argRefs captured on first sight
+const TRIAGE_SLOT_PROBE = 4; // pointer slots in argRefs to deref
+const TRIAGE_SLOT_HEAD_LEN = 16; // bytes read from each derefed slot
+const TRIAGE_SIZE_SAMPLES = 32; // measureArgBits calls per reg (min/max only need a handful)
+
+// ---------------------------------------------------------------------------
+// Module
+// ---------------------------------------------------------------------------
+
+const mainModule = Process.enumerateModules()[0];
+const base = mainModule.base;
+const rva = (offset) => base.add(offset);
+
+console.log(`[+] module=${mainModule.name} base=${base}`);
+
+// ---------------------------------------------------------------------------
+// Safe memory readers
+// ---------------------------------------------------------------------------
+
+function readPointer(address) {
+    try {
+        return (address && !address.isNull()) ? address.readPointer() : NULL;
+    } catch (_) {
+        return NULL;
+    }
+}
+
+function readU8(address) {
+    try {
+        return address.readU8();
+    } catch (_) {
+        return -1;
+    }
+}
+
+function readU16(address) {
+    try {
+        return address.readU16();
+    } catch (_) {
+        return -1;
+    }
+}
+
+function readU32(address) {
+    try {
+        return address.readU32();
+    } catch (_) {
+        return -1;
+    }
+}
+
+function readHex(address, length) {
+    if (!address || address.isNull()) return '';
+    const bytes = [];
+    for (let i = 0; i < length; i++) {
+        const value = readU8(address.add(i));
+        if (value < 0) break;
+        bytes.push(value.toString(16).padStart(2, '0'));
+    }
+    return bytes.join(' ');
+}
+
+// ---------------------------------------------------------------------------
+// Name resolution (CryStringT is a single char*, so one deref reaches the text)
+// ---------------------------------------------------------------------------
+
+const nameCache = new Map();
+
+function readName(stringPointer) {
+    if (!stringPointer || stringPointer.isNull()) return null;
+
+    const key = stringPointer.toString();
+    if (nameCache.has(key)) return nameCache.get(key);
+
+    let name = null;
+
+    // Null-terminated read first: never over-reads past the terminator, so it
+    // can't fault on a string that sits near a page boundary.
+    try {
+        const raw = stringPointer.readUtf8String();
+        if (raw && raw.length >= 3 && raw.length < MAX_NAME_LEN && /^[\x20-\x7e]+$/.test(raw)) {
+            name = raw;
+        }
+    } catch (_) {
+        // Fallback: byte-by-byte up to the terminator, tolerant of page-crossing.
+        name = readNameBytewise(stringPointer);
+    }
+
+    nameCache.set(key, name);
+    return name;
+}
+
+function readNameBytewise(stringPointer) {
+    const bytes = [];
+    for (let i = 0; i < MAX_NAME_LEN; i++) {
+        const value = readU8(stringPointer.add(i));
+        if (value < 0) return null; // hit unmapped memory before terminator
+        if (value === 0) break; // end of string
+        if (value < 0x20 || value > 0x7e) return null; // not an RMI name
+        bytes.push(value);
+    }
+    if (bytes.length < 3 || bytes.length >= MAX_NAME_LEN) return null;
+    return String.fromCharCode.apply(null, bytes);
+}
+
+// ---------------------------------------------------------------------------
+// Table resolution
+// ---------------------------------------------------------------------------
+
+const tableCache = new Map();
+
+let resolveFailCount = 0;
+const RESOLVE_FAIL_LOG_LIMIT = 20;
+
+function resolveTable(thisPointer) {
+    if (!thisPointer || thisPointer.isNull()) return null;
+
+    const begin = readPointer(thisPointer.add(TABLE_BEGIN));
+    const end = readPointer(thisPointer.add(TABLE_END));
+
+    if (begin.isNull() || end.isNull() || end.compare(begin) < 0) return null;
+    try {
+        const span = end.sub(begin).toUInt32();
+        if (span > 0 && span <= MAX_TABLE_SPAN && (span % REG_SIZE) === 0) {
+            return { begin, end, count: span / REG_SIZE };
+        }
+    } catch (_) {}
+    return null;
+}
+
+function registrationAt(thisPointer, id) {
+    const table = resolveTable(thisPointer);
+    if (!table || id < 0 || id >= table.count) return null;
+    return table.begin.add(id * REG_SIZE);
+}
+
+// ---------------------------------------------------------------------------
+// Registration decode
+// ---------------------------------------------------------------------------
+
+function directionName(value) {
+    return {
+        0: 'Default',
+        1: 'Dir1',
+        2: 'Dir2'
+    } [value] || `Dir${value}`;
+}
+
+function modeName(value) {
+    return {
+        0: 'Local',
+        1: 'Respond',
+        2: 'RemoteRespond'
+    } [value] || `Mode${value}`;
+}
+
+function sourceName(value) {
+    return {
+        0: 'Local',
+        1: 'Respond',
+        2: 'Remote'
+    } [value] || 'Unknown';
+}
+
+function readRegistration(thisPointer, id) {
+    const reg = registrationAt(thisPointer, id);
+    if (!reg) {
+        return {
+            reg: NULL,
+            name: null
+        };
+    }
+
+    const namePointer = readPointer(reg.add(REG_NAME));
+    const name = readName(namePointer);
+    const stats = readPointer(reg.add(REG_STATS));
+    const gate = readPointer(reg.add(REG_GATE));
+
+    return {
+        reg,
+        name,
+        namePointer,
+        nameBytes: name ? '' : readHex(namePointer, 32),
+        componentId: readU16(reg.add(REG_COMPONENT)),
+        direction: readU32(reg.add(REG_DIRECTION)),
+        mode: readU8(reg.add(REG_MODE)),
+        dirtyIndex: readU16(reg.add(REG_DIRTY)),
+        dispatch: readPointer(reg.add(REG_DISPATCH)),
+        argDispatch: readPointer(reg.add(REG_ARGDISP)),
+        stats,
+        gate,
+        statCalls: stats.isNull() ? -1 : readU32(stats.add(0x28)),
+        statBytes: stats.isNull() ? -1 : readU32(stats.add(0x2C)),
+        gateByte: gate.isNull() ? -1 : readU8(gate.add(0x8D)),
+    };
+}
+
+// Measures serialized arg size in bits by calling the size dispatcher (index 0).
+// Side-effect free per the decompile, but isolated so a fault never costs a log line.
+function measureArgBits(argDispatch, argRefs) {
+    if (argDispatch.isNull() || argRefs.isNull()) return -1;
+    try {
+        const vtable = readPointer(argDispatch);
+        if (vtable.isNull()) return -1;
+        const sizeFn = new NativeFunction(vtable, 'uint64', ['pointer']);
+        return sizeFn(argRefs).toNumber();
+    } catch (_) {
+        return -1;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Filtering
+// ---------------------------------------------------------------------------
+
+function isFiltered(name) {
+    if (!name) return false; // never hide unresolved entries
+    if (SHOW_ONLY.length && !SHOW_ONLY.some((s) => name.indexOf(s) !== -1)) return true;
+    if (SUPPRESS.some((s) => name.indexOf(s) !== -1)) return true;
+    return false;
+}
+
+// ---------------------------------------------------------------------------
+// Per-method payload decoders, keyed by resolved name.
+//
+// argRefs is `const SArgRefs<TArgs...>*` — the same struct passed to the
+// dispatch template's Write/GetBufferBitSize. The struct is recursively
+// defined: `SArgRefs<A, B, C>` derives from `SArgRefs<B, C>` and adds a
+// trailing `const A* m_head`. Standard C++ layout places the base subobject
+// first, so the in-memory order is REVERSE of the template order:
+//
+//   SArgRefs<A,B,C>  @ +0x00 : SArgRefs<B,C>  base
+//                              @ +0x00 : SArgRefs<C> base
+//                                        @ +0x00 : const C* m_head
+//                              @ +0x08 : const B* m_head
+//                    @ +0x10 : const A* m_head
+//
+// So: physical offset 0 always holds the LAST template arg, offset 8 the
+// second-to-last, etc. The ctx ref is NOT in SArgRefs — it travels through
+// CSerializedComponent::SendRemoteMethodCall as its own arg.
+//
+// Each slot is a pointer to the actual arg value, even for scalars.
+// ---------------------------------------------------------------------------
+
+// Read SArgRefs slot N where slot 0 == last template param. Helpers below
+// chain that with a typed deref of the pointed-at arg value.
+function slotPtr(argRefs, slot) {
+    return readPointer(argRefs.add(slot * 8));
+}
+function argU8(argRefs, slot)   { const p = slotPtr(argRefs, slot); return p.isNull() ? -1 : readU8(p); }
+function argU16(argRefs, slot)  { const p = slotPtr(argRefs, slot); return p.isNull() ? -1 : readU16(p); }
+function argU32(argRefs, slot)  { const p = slotPtr(argRefs, slot); return p.isNull() ? -1 : readU32(p); }
+function argU64Hex(argRefs, slot) {
+    const p = slotPtr(argRefs, slot);
+    if (p.isNull()) return '?';
+    try { return '0x' + p.readU64().toString(16); } catch (_) { return '?'; }
+}
+function argFloat(argRefs, slot) {
+    const p = slotPtr(argRefs, slot);
+    if (p.isNull()) return NaN;
+    try { return p.readFloat(); } catch (_) { return NaN; }
+}
+function argBool(argRefs, slot) {
+    const v = argU8(argRefs, slot);
+    return v < 0 ? '?' : (v ? 'true' : 'false');
+}
+function argI32(argRefs, slot) {
+    const p = slotPtr(argRefs, slot);
+    if (p.isNull()) return '?';
+    try { return p.readS32(); } catch (_) { return '?'; }
+}
+function argI64Hex(argRefs, slot) { return argU64Hex(argRefs, slot); }
+function argDouble(argRefs, slot) {
+    const p = slotPtr(argRefs, slot);
+    if (p.isNull()) return NaN;
+    try { return p.readDouble(); } catch (_) { return NaN; }
+}
+
+function readU64(address) {
+  try { return address.readU64().toString(16); } catch (_) { return '?'; }
+}
+function readU64Raw(address) {
+  try { return address.readU64(); } catch (_) { return null; }
+}
+
+// CryStringT<char>: single member `char* m_str` at offset 0. The arg-ref points
+// to the wrapper, so one deref gives the C string base.
+function readCryString(wrapperPtr, maxLen) {
+    if (!wrapperPtr || wrapperPtr.isNull()) return null;
+    try {
+        const strPtr = wrapperPtr.readPointer();
+        if (strPtr.isNull()) return '';
+        return strPtr.readUtf8String(maxLen || 64);
+    } catch (_) { return null; }
+}
+
+// std::vector<T>: { _Myfirst, _Mylast, _Myend } at offsets 0/8/0x10. Returns
+// element count given a known element size. Returns -1 on read failure.
+function readVectorSize(vecPtr, elemSize) {
+    if (!vecPtr || vecPtr.isNull() || !elemSize) return -1;
+    try {
+        const first = vecPtr.readPointer();
+        const last  = vecPtr.add(8).readPointer();
+        if (first.isNull() || last.isNull() || last.compare(first) < 0) return -1;
+        const bytes = last.sub(first).toUInt32();
+        return Math.floor(bytes / elemSize);
+    } catch (_) { return -1; }
+}
+
+// CryGUID is two u64s at offsets 0 and 8. Stringify as `hi-lo` for compactness.
+function readGuid(ptr) {
+    if (!ptr || ptr.isNull()) return null;
+    try {
+        const lo = ptr.readU64().toString(16);
+        const hi = ptr.add(8).readU64().toString(16);
+        return `${hi}-${lo}`;
+    } catch (_) { return null; }
+}
+
+// Vec3<float> and Vec3<double>.
+function readVec3f(ptr) {
+    if (!ptr || ptr.isNull()) return null;
+    try { return `(${ptr.readFloat().toFixed(3)},${ptr.add(4).readFloat().toFixed(3)},${ptr.add(8).readFloat().toFixed(3)})`; }
+    catch (_) { return null; }
+}
+function readVec3d(ptr) {
+    if (!ptr || ptr.isNull()) return null;
+    try { return `(${ptr.readDouble().toFixed(3)},${ptr.add(8).readDouble().toFixed(3)},${ptr.add(16).readDouble().toFixed(3)})`; }
+    catch (_) { return null; }
+}
+
+// CTimeValue is i64 nanoseconds in CryEngine.
+function readTimeValue(ptr) {
+    if (!ptr || ptr.isNull()) return '?';
+    try { return ptr.readS64().toString(); } catch (_) { return '?'; }
+}
+
+// ---- Enum tables (extracted verbatim from types.h; only defined values are
+// listed. Unknown numeric values render as `<number>(?)`.) ----
+// EHailStatus @ types.h:93410
+const E_HAIL_STATUS         = { 1: 'Calling', 2: 'IncomingCall', 3: 'Established' };
+// Missile::EExplosionSafety @ types.h:35740
+const E_EXPLOSION_SAFETY    = { 0: 'SafetyOn', 1: 'SafetyOff' };
+// ERespawnSettingType (bitmask) @ types.h:135420
+const E_RESPAWN_SETTING     = { 1: 'Transferring', 2: 'Releasing' };
+// ECommsRequestType = EMobiGlasAppType::Enum @ types.h:131888
+const E_COMMS_REQUEST       = {
+    0:  'MissionMgr',    1:  'EasyShop',        2:  'CryAstro',
+    3:  'PortModification', 5: 'Notification',  6:  'Cargo',
+    7:  'Finance',       8:  'SkyLine',         9:  'PersonalManager',
+    10: 'VehicleManager',11: 'InventoryManager',12: 'ContactsScreen',
+};
+// EDisconnectType @ types.h:116726
+const E_DISCONNECT_TYPE     = { 1: 'VehicleBedLogout' };
+// EAIQTReason @ types.h:93442
+const E_AI_QT_REASON        = { 0: 'Escape', 1: 'Travel', 2: 'NonAIQT' };
+// EDockingTubeAnimationStage @ types.h:38280
+const E_DOCKING_TUBE_STAGE  = { 0: 'NotSet', 2: 'PreDocked', 3: 'Docked' };
+// EOperatorMode @ types.h:37813 (only high values defined in decompile)
+const E_OPERATOR_MODE       = { 7: 'Mining', 8: 'QuantumNavigation', 9: 'Refuel', 10: 'AirTrafficController' };
+// CSCItemElevator::EElevatorState @ types.h:145429
+const E_ELEVATOR_STATE      = {
+    0: 'Rest', 1: 'OpeningDoor', 2: 'OpenForPassengers',
+    3: 'ClosingDoor', 4: 'InTransit',
+};
+// CIGRadarSystem::EPingWaveActions @ types.h:121193
+const E_PING_WAVE           = { 0: 'StartWave', 1: 'ReleaseWave' };
+// ESnapshotSlotType @ types.h:23173
+const E_SNAPSHOT_SLOT       = { 2: 'Customized' };
+// Weapon::ECommand @ types.h:117133
+const E_WEAPON_COMMAND      = {
+    0x02: 'ChangeFiremode', 0x03: 'AuxiliaryAction', 0x04: 'PauseAuxActionAuth',
+    0x05: 'ResetCooldown',  0x06: 'ZeroingIncrease', 0x07: 'ZeroingDecrease',
+    0x08: 'ActivateChargeDrainPrimed', 0x09: 'SetRegenRateAuth',
+    0x0A: 'SetAdditionalBurstShots',   0x0B: 'SetMaxAmmoCountAuth',
+    0x0C: 'SetModInterpolFactorAuth',  0x0D: 'SetEnergyConsumpMultAuth',
+    0x0E: 'SetFireModeAuth',           0x0F: 'SetSalvageRepairAmmoCount',
+    0x10: 'SetSalvageRepairTarget',    0x11: 'SetSalvageHasCargoSpace',
+    0x12: 'SetAmmoContainer',          0x13: 'SetGimbalModeModifier',
+    0x14: 'EnableFireModeSwitching',   0x15: 'SetOverheatLockedState',
+    0x16: 'SetMisfireState',           0x17: 'ShootTractorBeamTargetInDir',
+    0x18: 'ReqDesiredTractorBeamDist', 0x19: 'RequestTractorBeamTarget',
+    0x1A: 'ZoomInOut',                 0x1B: 'CancelCharge',
+    0x1C: 'SetTrackviewSeed',
+};
+// Weapon::ETrigger @ types.h:117181
+const E_WEAPON_TRIGGER      = { 0: 'Press', 1: 'Release' };
+// Weapon::Network::EValidationState @ types.h:118415
+const E_WEAPON_VAL_STATE    = { 2: 'TooLate', 3: 'OutOfOrder' };
+
+function enumName(table, v) {
+    if (v < 0) return '?';
+    return table[v] || '?';
+}
+
+// CStringHash @ types.h:208505 sizeof=0x18: m_hash(u32)@0, m_str(char*)@8, m_strLen(u64)@0x10.
+// Returns "0xHEX(name)" if the name pointer is readable, else "0xHEX".
+function stringHashStr(p) {
+    if (!p || p.isNull()) return '?';
+    const hash = readU32(p.add(0)) >>> 0;
+    const name = readCryString(p.add(8), 64);
+    return name ? `0x${hash.toString(16)}(${name})` : `0x${hash.toString(16)}`;
+}
+
+// SInteractionMetaData shared decoder used by SvRequestInteract/SvRequestSharedInteract.
+function interactionMetaDecoder(p) {
+    if (!p || p.isNull()) return '?';
+    const interactorType = readU32(p.add(0)) >>> 0;
+    const interactorData = readU32(p.add(4)) >>> 0;
+    const interableType  = readU32(p.add(8)) >>> 0;
+    const interableData  = readU32(p.add(0xC)) >>> 0;
+    const skipUsable     = readU8(p.add(0x10));
+    const skipUse        = readU8(p.add(0x11));
+    return `(iorType=${interactorType} iorData=${interactorData} iableType=${interableType} iableData=${interableData} skipUsable=${skipUsable} skipUse=${skipUse})`;
+}
+
+// SNavTarget shared decoder (used under two registered names).
+function navTargetDecoder(argRefs) {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const refEntity = readU64(p.add(0));
+    const shape     = readU32(p.add(0x30));
+    let radius = NaN, distance = NaN;
+    try { radius   = p.add(0x48).readDouble(); } catch (_) {}
+    try { distance = p.add(0x50).readDouble(); } catch (_) {}
+    const beyond    = readU8(p.add(0x58));
+    const permanent = readU8(p.add(0x59));
+    return `refEntity=0x${refEntity} shape=${shape} radius=${radius} distance=${distance} beyondRange=${beyond} permanent=${permanent}`;
+}
+
+const decoders = {
+  // SArgRefs<SRemoteObservableUpdateInfo>  (sizeof 8: one slot)
+  // SRemoteObservableUpdateInfo @ 0x10: eId(u64) idx(u32) visible(u8) fov(u8) stance(u8)
+  'CVisionComponent::RmAuthorityRemoteObservableUpdate': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const eId     = readU64(p.add(0x00));
+    const idx     = readU32(p.add(0x08));
+    const visible = readU8(p.add(0x0C));
+    const fov     = readU8(p.add(0x0D));
+    const stance  = readU8(p.add(0x0E));
+    return `eId=0x${eId} idx=${idx} visible=${visible} fov=${fov} stance=${stance}`;
+  },
+
+  // SArgRefs<__int64>  — single scalar; observed values ~small ints
+  'RmAuthorityConsumeThrusterFuel': (argRefs) => {
+    return `value=${argU64Hex(argRefs, 0)}`;
+  },
+
+  // SArgRefs<SAttachableSerializationAttach>  — single struct ptr
+  // Struct 0x70: entity(EntityId)@0x00, port(SItemPortId)@0x08, reason(u32)@0x18,
+  // detach(u32)@0x1C, animTrig@0x24, useOffset@0x25, useInterior@0x26,
+  // offset(QuatT<double>)@0x28, jointCRC(int)@0x60, isStatic@0x64, instigator(EID)@0x68
+  'AuthorityAttachToPort': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const entity     = readU64(p.add(0x00));
+    const reason     = readU32(p.add(0x18));
+    const detach     = readU32(p.add(0x1C));
+    const animTrig   = readU8(p.add(0x24));
+    const jointCRC   = readU32(p.add(0x60));
+    const isStatic   = readU8(p.add(0x64));
+    const instigator = readU64(p.add(0x68));
+    return `entity=0x${entity} reason=${reason} detach=${detach} anim=${animTrig} jointCRC=0x${(jointCRC>>>0).toString(16)} static=${isStatic} instigator=0x${instigator}`;
+  },
+
+  // SArgRefs<HitInfo const &>  — single struct ptr (HitInfo, 0x168 bytes)
+  // Key fields read here; full layout in types.h:289013.
+  'CSCPlayerGameRulesNetworkComponent::m_rmAuthorityRequestHit': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    // IEntityPtr is a shared-ptr-like; offset 0 is the raw entity ptr.
+    const pShooter    = readPointer(p.add(0x00));
+    const pTarget     = readPointer(p.add(0x08));
+    const pWeapon     = readPointer(p.add(0x10));
+    const projId      = readU32(p.add(0x28));
+    const material    = readU32(p.add(0x74));
+    const type        = readU32(p.add(0x78));
+    const partId      = readU32(p.add(0x7C));
+    const projCls     = readU32(p.add(0xE4));
+    const weaponCls   = readU32(p.add(0xE8));
+    const remote      = readU8(p.add(0xEC));
+    const explosion   = readU8(p.add(0xED));
+    return `shooter=${pShooter} target=${pTarget} weapon=${pWeapon} projId=${projId} type=${type} material=${material} partId=${partId} projCls=0x${(projCls>>>0).toString(16)} weaponCls=0x${(weaponCls>>>0).toString(16)} remote=${remote} expl=${explosion}`;
+  },
+
+  // SArgRefs<bool>
+  'CSCPlayer::RmAuthorityOnInteractionStateChange': (argRefs) => `enabled=${argBool(argRefs, 0)}`,
+  'AuthorityOnInteractionStateChange':              (argRefs) => `enabled=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<CStringHash, EHailStatus>  — last template at @0
+  'm_rmMulticastSetHailStatus': (argRefs) => {
+    const status = argU8(argRefs, 0);
+    const hash   = stringHashStr(slotPtr(argRefs, 1));
+    return `hash=${hash} status=${status}(${enumName(E_HAIL_STATUS, status)})`;
+  },
+
+  // SArgRefs<unsigned __int16, float>  — @0 = float, @8 = u16
+  'RmAuthorityUpdateInputDevice': (argRefs) => {
+    const time   = argFloat(argRefs, 0);
+    const device = argU16(argRefs, 1);
+    return `device=${device} time=${time}`;
+  },
+
+  // SArgRefs<EntityId target, EntityId newMainTractor>
+  'CTractorBeamMultitractorUtils::RmAuthorityRequestNewLead': (argRefs) => {
+    const newLead = argU64Hex(argRefs, 0);
+    const target  = argU64Hex(argRefs, 1);
+    return `target=${target} newLead=${newLead}`;
+  },
+
+  // SArgRefs<EntityId, CTimeValue>  — CTimeValue is 8 bytes (int64 nanoseconds)
+  'CWeaponActionFireTractorBeam::RmAuthoritySetTarget': (argRefs) => {
+    const time   = argU64Hex(argRefs, 0);
+    const target = argU64Hex(argRefs, 1);
+    return `target=${target} time=${time}`;
+  },
+
+  // SArgRefs<int>  — ammo count
+  'CWeaponActionFireTractorBeam::RmAuthoritySetAmmoCount': (argRefs) => `count=${argU32(argRefs, 0)}`,
+
+  // SArgRefs<EntityId>
+  'CEntityComponentKioskInteraction::RmAuthoritySetUserId': (argRefs) => `userId=${argU64Hex(argRefs, 0)}`,
+
+  // SArgRefs<Missile::EExplosionSafety>
+  'RmAuthorityRequestExplosionSafety': (argRefs) => {
+    const v = argU8(argRefs, 0);
+    return `safety=${v}(${E_EXPLOSION_SAFETY[v] || '?'})`;
+  },
+
+  // SArgRefs<unsigned int>
+  'CSCItemElevator::RmMulticastSetTargetStop': (argRefs) => {
+    const v = argU32(argRefs, 0) >>> 0;
+    return `targetStop=${v === 0xFFFFFFFF ? '-1' : v}`;
+  },
+
+  // SArgRefs<unsigned __int8>  — CSCItemElevator::EElevatorState
+  'CSCItemElevator::RmMulticastSetElevatorState': (argRefs) => {
+    const v = argU8(argRefs, 0);
+    return `state=${v}(${enumName(E_ELEVATOR_STATE, v)})`;
+  },
+
+  // ============================================================================
+  // The remaining decoders below are mechanical and grounded against
+  // CRemoteMethodDispatchTemplate<void, TArgs...>::s_dispatch signatures in
+  // /media/null/ares/StarCitizen.exe.c. SArgRefs layout: last template arg
+  // at offset 0 (base-class first), first template arg at largest offset.
+  // ctx is never in SArgRefs.
+  // ============================================================================
+
+  // ---- No-arg ----------------------------------------------------------------
+  // SArgRefs<>  (zero bits)
+  'CTargetedEntries::m_rmAuthorityRemoveAllPinnedTargets': () => '(no args)',
+
+  // ---- Single scalar / enum --------------------------------------------------
+  // SArgRefs<EDisconnectType>  — single byte enum (size 8 bits)
+  'CActor::RmAuthorityRequestDisconnect': (argRefs) => {
+    const v = argU8(argRefs, 0);
+    return `disconnect=${v}(${E_DISCONNECT_TYPE[v] || '?'})`;
+  },
+
+  // SArgRefs<EAIQTReason>
+  'RmAuthorityOnActionTryBeginQuantumTravel': (argRefs) => {
+    const v = argU8(argRefs, 0);
+    return `reason=${v}(${E_AI_QT_REASON[v] || '?'})`;
+  },
+
+  // SArgRefs<ERespawnSettingType>
+  'CEntityComponentCloneLocationUIProvider::RmAuthorityOnPopupChanged': (argRefs) => {
+    const v = argU8(argRefs, 0);
+    return `popup=${v}(${E_RESPAWN_SETTING[v] || '?'})`;
+  },
+
+  // SArgRefs<CStringHash>  — surfaces the string name if available.
+  'irc_authoritySetState': (argRefs) => `hash=${stringHashStr(slotPtr(argRefs, 0))}`,
+
+  // ---- Two-scalar / id pairs -------------------------------------------------
+  // SArgRefs<bool extract, bool snap>
+  'RmAuthRequestStateChange': (argRefs) => `extract=${argBool(argRefs, 1)} snap=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<EntityId, bool>
+  'pi.RmAuthorityNotifyLootEntityAccessed': (argRefs) =>
+    `entity=${argU64Hex(argRefs, 1)} bool=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<EntityId, int>
+  'shopUI.rmAuthSetTransactionMode': (argRefs) =>
+    `entity=${argU64Hex(argRefs, 1)} mode=${argI32(argRefs, 0)}`,
+
+  // SArgRefs<EPingWaveActions, CTimeValue>
+  'ping.requestWaveState': (argRefs) => {
+    const t = readTimeValue(slotPtr(argRefs, 0));
+    const a = argU8(argRefs, 1);
+    return `action=${a}(${E_PING_WAVE[a] || '?'}) time=${t}`;
+  },
+
+  // SArgRefs<IEntityPtr, bool>  — IEntityPtr first 8 bytes is the raw entity*
+  'CSCItemNavigation:RmAuthorityBeginRouteCalculation': (argRefs) => {
+    const p = slotPtr(argRefs, 1);
+    const ent = p.isNull() ? NULL : readPointer(p);
+    return `entity=${ent} bool=${argBool(argRefs, 0)}`;
+  },
+
+  // SArgRefs<EntityId, unsigned __int64>  — request id
+  'commodityUI.m_rmAuthority_CargoLocationDataRequest': (argRefs) =>
+    `playerId=${argU64Hex(argRefs, 1)} requestId=${argU64Hex(argRefs, 0)}`,
+
+  // SArgRefs<EntityId, ECommsRequestType>
+  'RmAuthorityATCRequest': (argRefs) => {
+    const t = argU8(argRefs, 0);
+    return `playerId=${argU64Hex(argRefs, 1)} type=${t}(${E_COMMS_REQUEST[t] || '?'})`;
+  },
+
+  // SArgRefs<EntityId, CStringHash>
+  'm_rmAuthorityStopCommunicationWith': (argRefs) =>
+    `partner=${argU64Hex(argRefs, 1)} channel=${stringHashStr(slotPtr(argRefs, 0))}`,
+
+  // SArgRefs<unsigned int id, int index>
+  'CEntityComponentCriminalRecordUIProvider::RmAuthorityPayFine': (argRefs) =>
+    `id=${argU32(argRefs, 1) >>> 0} index=${argI32(argRefs, 0)}`,
+
+  // SArgRefs<SItemPortId, EntityId>
+  // SItemPortId @ types.h:291067 sizeof=0x10: Owner(EntityId)@0, Id(u16)@8
+  'pi.m_rmAuthorityRequestChangePortOnEquippedItem': (argRefs) => {
+    const entity = argU64Hex(argRefs, 0);
+    const portPtr = slotPtr(argRefs, 1);
+    if (portPtr.isNull()) return `entity=${entity} port=?`;
+    const owner = readU64(portPtr.add(0));
+    const id    = readU16(portPtr.add(8));
+    return `entity=${entity} port=(owner=0x${owner} id=${id})`;
+  },
+
+  // ---- Three+ scalars --------------------------------------------------------
+  // SArgRefs<EntityId inv, EntityId by, bool start>
+  'pi.RmAuthorityOnContainerAccessed': (argRefs) =>
+    `inv=${argU64Hex(argRefs, 2)} by=${argU64Hex(argRefs, 1)} start=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<int prio, int toggle, bool ignore>
+  'CSCItemEnergyController::RmAuthorityRequestTogglePowerGroupState': (argRefs) =>
+    `priorityGroup=${argI32(argRefs, 2)} toggleMode=${argI32(argRefs, 1)} ignoreControl=${argBool(argRefs, 0)}`,
+
+  // SArgRefs<int index, unsigned int selectId, unsigned int removeId, unsigned int payId>
+  'CEntityComponentCriminalRecordUIProvider::RmAuthoritySetBindingTriggerIds': (argRefs) =>
+    `index=${argI32(argRefs, 3)} selectId=${argU32(argRefs, 2) >>> 0} removeId=${argU32(argRefs, 1) >>> 0} payId=${argU32(argRefs, 0) >>> 0}`,
+
+  // SArgRefs<EntityId, unsigned int, unsigned __int64>
+  'RmAuthorityRequestActiveInventoryId': (argRefs) =>
+    `entity=${argU64Hex(argRefs, 2)} u32=${argU32(argRefs, 1) >>> 0} u64=${argU64Hex(argRefs, 0)}`,
+
+  // SArgRefs<EOperatorMode, CTimeValue, CTimeValue>
+  'ControlContext_AuthorityRequestOperatorMode': (argRefs) => {
+    const t1 = readTimeValue(slotPtr(argRefs, 1));
+    const t0 = readTimeValue(slotPtr(argRefs, 0));
+    const m  = argU8(argRefs, 2);
+    return `mode=${m}(${E_OPERATOR_MODE[m] || '?'}) t1=${t1} t0=${t0}`;
+  },
+
+  // SArgRefs<CryGUID, EntityId>  — CryGUID is 16 bytes (hi,lo)
+  'RmAuthorityRequestVehicleInfos': (argRefs) =>
+    `entity=${argU64Hex(argRefs, 0)} guid=${readGuid(slotPtr(argRefs, 1))}`,
+
+  // SArgRefs<EntityId poi, Vec3<double>* eyePos, Vec3<float>* eyeDir>
+  'CSCActorSpatialAwareness::RmAuthorityLookAtPOIRequest': (argRefs) => {
+    const eyeDir  = readVec3f(slotPtr(argRefs, 0));
+    const eyePos  = readVec3d(slotPtr(argRefs, 1));
+    const poi     = argU64Hex(argRefs, 2);
+    return `poi=${poi} eyePos=${eyePos} eyeDir=${eyeDir}`;
+  },
+
+  // ---- Single struct ptr -----------------------------------------------------
+  // SArgRefs<SBufferedCommand>
+  // SBufferedCommand @ types.h:314473 sizeof=0x38:
+  //   tick(u32)@0, command(Weapon::ECommand u8)@4, trigger(Weapon::ETrigger u8)@5,
+  //   validationState(Weapon::Network::EValidationState u8)@6,
+  //   data(CigVariant<...> sizeof=0x30)@8 with m_which at offset 8+0x28 = 0x30
+  'CWeaponCommandBuffer::RmAuthorityRequestCommand': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const tick     = readU32(p.add(0)) >>> 0;
+    const cmd      = readU8(p.add(4));
+    const trig     = readU8(p.add(5));
+    const valState = readU8(p.add(6));
+    const which    = readU8(p.add(0x30));
+    const VARIANT = ['SEntityCommandData','SSetAmmoContainerData','SSetGimbalModeModifierData',
+                     'SSetModifierInterpolationData','Vec3f','EntityId','float','int','uint','uchar'];
+    const variantName = VARIANT[which] || '?';
+    return `tick=${tick} cmd=${cmd}(${enumName(E_WEAPON_COMMAND, cmd)}) trig=${trig}(${enumName(E_WEAPON_TRIGGER, trig)}) valState=${valState}(${enumName(E_WEAPON_VAL_STATE, valState)}) data=${which}(${variantName})`;
+  },
+
+  // SArgRefs<SNavTarget>
+  // SNavTarget @ types.h:390238 sizeof=0x60:
+  //   m_referenceEntityId@0, m_targetPos_zs(SZoneTransform<Vec3<double>> 0x28)@8,
+  //   m_traversalShape(u32)@0x30, m_arrivalRadius(double)@0x48,
+  //   m_travelDistance(double)@0x50, m_bTargetBeyondRange@0x58,
+  //   m_bIsPermanentQuantumMarker@0x59
+  // Triage name has no class prefix (registered string differs from C++ symbol).
+  'RmAuthorityOnAlignedToTarget':                       (argRefs) => navTargetDecoder(argRefs),
+  'CSCItemQuantumDrive::RmAuthorityOnAlignedToTarget':  (argRefs) => navTargetDecoder(argRefs),
+
+  // SArgRefs<SInventoryManagementRequest const &>
+  // SInventoryManagementRequest @ types.h:300881 sizeof=0x1D0
+  'pi.RmAuthorityProcessInventoryManagementOperation': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const moveId   = readU32(p.add(0)) >>> 0;
+    const type     = readU32(p.add(4)) >>> 0;
+    const userId   = readU64(p.add(8));
+    const srcInv   = readU64(p.add(0x10));
+    const dstInv   = readU64(p.add(0x28));
+    const srcCls   = readU32(p.add(0x58)) >>> 0;
+    const srcAmt   = readU32(p.add(0x5C));
+    const dstCls   = readU32(p.add(0x80)) >>> 0;
+    const dstAmt   = readU32(p.add(0x84));
+    const itemEnt  = readU64(p.add(0xA8));
+    const bStack   = readU8(p.add(0xC4));
+    const flags    = readU8(p.add(0x1C8));
+    return `move=${moveId} type=${type} user=0x${userId} src=(inv=0x${srcInv} cls=0x${srcCls.toString(16)} amt=${srcAmt}) dst=(inv=0x${dstInv} cls=0x${dstCls.toString(16)} amt=${dstAmt}) item=0x${itemEnt} stack=${bStack} flags=0x${flags.toString(16)}`;
+  },
+
+  // SArgRefs<SMasterModeData>
+  // SMasterModeData @ types.h:292159 sizeof=0x10:
+  //   state(EMasterMode u32)@0, spooledTimestamp(CTimeValue i64)@8
+  'ControllableManager_RequestMasterMode': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const state = readU32(p.add(0));
+    const ts    = readTimeValue(p.add(8));
+    return `state=${state} spooledAt=${ts}`;
+  },
+
+  // SArgRefs<SSerializationReserveUserRequest>
+  // SSerializationReserveUserRequest @ types.h:2187092 sizeof=0x8:
+  //   m_userId(EntityId)@0
+  'AuthorityReserveUser': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    return `userId=0x${readU64(p.add(0))}`;
+  },
+
+  // SArgRefs<SLocation const &>
+  // CEntityComponentShopUIProvider::SLocation @ types.h:3483325 sizeof=0x68:
+  //   m_nameHash(CLocIdentifierHash u32)@0, m_entityId(EntityId)@8,
+  //   m_inventoryId(SInventoryId 0x18)@0x10, m_inventoryParams(CryGUID)@0x28,
+  //   m_inventoryCapacity(i64)@0x38, m_inventoryOccupancy(i64)@0x40,
+  //   m_inventoryVolume(Vec3f)@0x48, m_locationSource(u8)@0x54,
+  //   m_itemType(EItemType u32)@0x58, m_itemSubType(u32)@0x5C,
+  //   m_state(ELocationState u32)@0x60
+  'shopUI.m_rmAuthority_OnSelectedLocationChanged': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const nameHash = readU32(p.add(0)) >>> 0;
+    const entity   = readU64(p.add(8));
+    let cap = '?', occ = '?';
+    try { cap = p.add(0x38).readS64().toString(); } catch (_) {}
+    try { occ = p.add(0x40).readS64().toString(); } catch (_) {}
+    const vol      = readVec3f(p.add(0x48));
+    const src      = readU8(p.add(0x54));
+    const itemType = readU32(p.add(0x58)) >>> 0;
+    const subType  = readU32(p.add(0x5C)) >>> 0;
+    const state    = readU32(p.add(0x60)) >>> 0;
+    return `nameHash=0x${nameHash.toString(16)} entity=0x${entity} cap=${cap} occ=${occ} vol=${vol} src=${src} itemType=${itemType} subType=${subType} state=${state}`;
+  },
+
+  // SArgRefs<SServiceBeaconParams const &>
+  // SServiceBeaconParams @ types.h:376078 sizeof=0xA0:
+  //   ___u0(0x20 variant)@0, creator(SServiceBeaconCreator 0x28)@0x20,
+  //   contractor(SServiceBeaconContractor 0x10)@0x48,
+  //   missionProperties(SServiceBeaconMissionProperties 0x18)@0x58,
+  //   queriedObjectivePosition_zs(Vec3<double>)@0x70, zoneHostId@0x88,
+  //   uecAmount(u32)@0x90, creationFeeAmount(u32)@0x94,
+  //   eBeaconType(EServiceBeaconType u32)@0x98, reputationRequirement(float)@0x9C
+  'pml.AuthCreateMissionServiceBeacon': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const pos     = readVec3d(p.add(0x70));
+    const host    = readU64(p.add(0x88));
+    const uec     = readU32(p.add(0x90)) >>> 0;
+    const fee     = readU32(p.add(0x94)) >>> 0;
+    const type    = readU32(p.add(0x98)) >>> 0;
+    let rep = NaN;
+    try { rep = p.add(0x9C).readFloat(); } catch (_) {}
+    return `pos=${pos} zoneHost=0x${host} uec=${uec} creationFee=${fee} beaconType=${type} rep=${rep}`;
+  },
+
+  // SArgRefs<SShopRentalRequest const &>
+  // SShopRentalRequest : SShopRequest(0x20) — base @ 0..0x1F
+  //   playerId@0, shopId@8, kioskId@0x10, amount(double)@0x18
+  //   + itemClassGuid(CryGUID)@0x20, rentalOffering(u64)@0x30,
+  //     days(u8)@0x38, licenseAwarded(bool)@0x39
+  'RmRentalRequest': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const player = readU64(p.add(0));
+    const shop   = readU64(p.add(8));
+    const kiosk  = readU64(p.add(0x10));
+    let amount = NaN;
+    try { amount = p.add(0x18).readDouble(); } catch (_) {}
+    const guid   = readGuid(p.add(0x20));
+    const offering = readU64(p.add(0x30));
+    const days   = readU8(p.add(0x38));
+    const lic    = readU8(p.add(0x39));
+    return `player=0x${player} shop=0x${shop} kiosk=0x${kiosk} amount=${amount} item=${guid} offering=0x${offering} days=${days} licenseAwarded=${lic}`;
+  },
+
+  // SArgRefs<SShopBuyRequest const &>
+  // SShopBuyRequest : SShopRequest(0x20) — base same as above
+  //   + itemClassGuid(CryGUID)@0x20, attachmentGuids(vec<CryGUID>)@0x30,
+  //     quantity(u64)@0x48, inventoryId(SInventoryId 0x18)@0x50
+  'RmStandardItemBuyShopRequest': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const player = readU64(p.add(0));
+    const shop   = readU64(p.add(8));
+    const kiosk  = readU64(p.add(0x10));
+    let amount = NaN;
+    try { amount = p.add(0x18).readDouble(); } catch (_) {}
+    const guid   = readGuid(p.add(0x20));
+    const att    = readVectorSize(p.add(0x30), 0x10);
+    const qty    = readU64(p.add(0x48));
+    const inv    = readU64(p.add(0x50));
+    return `player=0x${player} shop=0x${shop} kiosk=0x${kiosk} amount=${amount} item=${guid} attachments=${att} qty=0x${qty} inv=0x${inv}`;
+  },
+
+  // SArgRefs<SReducedDamageMapHitInfo const &>
+  // SReducedDamageMapHitInfo @ types.h:2262847 sizeof=0x48:
+  //   hitType(EDamageMapHitType u8)@0, requesterId@8, pos_ls(Vec3f)@0x10,
+  //   dir_ls(Vec3f)@0x1C, totalEnergyDamage(float)@0x28,
+  //   physicalDamage(float)@0x2C, projectileHitTime(float)@0x30,
+  //   hitRadius(float)@0x34, seed(u32)@0x38, timeStamp(CTimeValue)@0x40
+  'RmAuthorityRequestDamageMapHitFromHitInfo': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const hitType   = readU8(p.add(0));
+    const requester = readU64(p.add(8));
+    const pos       = readVec3f(p.add(0x10));
+    const dir       = readVec3f(p.add(0x1C));
+    let energyDmg = NaN, physDmg = NaN, projTime = NaN, radius = NaN;
+    try { energyDmg = p.add(0x28).readFloat(); } catch (_) {}
+    try { physDmg   = p.add(0x2C).readFloat(); } catch (_) {}
+    try { projTime  = p.add(0x30).readFloat(); } catch (_) {}
+    try { radius    = p.add(0x34).readFloat(); } catch (_) {}
+    const seed      = readU32(p.add(0x38)) >>> 0;
+    const ts        = readTimeValue(p.add(0x40));
+    return `hitType=${hitType} requester=0x${requester} pos=${pos} dir=${dir} energy=${energyDmg} phys=${physDmg} t=${projTime} radius=${radius} seed=${seed} ts=${ts}`;
+  },
+
+  // SArgRefs<SCEvtControl_BuildingBlocksSetState>
+  // @ types.h:1849964 sizeof=0x10: m_userPtr(IEntityPtr)@0, m_stateType(u32)@8, m_state(u32)@0xC
+  'CEntityComponentUIBindingsInteractions::RmBuildingBlocksSetState': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const user = readPointer(p.add(0));
+    const stateType = readU32(p.add(8)) >>> 0;
+    const state     = readU32(p.add(0xC)) >>> 0;
+    return `user=${user} stateType=0x${stateType.toString(16)} state=0x${state.toString(16)}`;
+  },
+
+  // SArgRefs<SCEvtControl_BuildingBlocksPerformInteraction>
+  // @ types.h:1849971 sizeof=0x10: m_userPtr(IEntityPtr)@0, m_interaction(u32)@8
+  'CEntityComponentUIBindingsInteractions::RmBuildingBlocksPerformInteraction': (argRefs) => {
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return null;
+    const user = readPointer(p.add(0));
+    const interaction = readU32(p.add(8)) >>> 0;
+    return `user=${user} interaction=0x${interaction.toString(16)}`;
+  },
+
+  // SArgRefs<vector<SInventoryId> &&, unsigned __int64>
+  // SInventoryId is typically 0x18 bytes (CryGUID + extras); read vector size + reqId.
+  'commodityUI.m_rmAuthority_CargoInventoryDataRequest': (argRefs) => {
+    const vec = slotPtr(argRefs, 1);
+    const sz  = readVectorSize(vec, 0x18);
+    return `inventoryIds.size=${sz} requestId=${argU64Hex(argRefs, 0)}`;
+  },
+
+  // ---- Complex multi-arg with struct ----------------------------------------
+  // SArgRefs<CTimeValue start, SActionCollectionBase*, CTimeValue sendTime>
+  'CSCActorActionHandler::RmAuthoritySendActions': (argRefs) => {
+    const sendTime = readTimeValue(slotPtr(argRefs, 0));
+    const actions  = slotPtr(argRefs, 1);
+    const start    = readTimeValue(slotPtr(argRefs, 2));
+    return `start=${start} sendTime=${sendTime} actions=${actions}`;
+  },
+
+  // SArgRefs<CryGUID, EntityId, unsigned int>
+  'mbi.AuthAbandonMissionRequest': (argRefs) => {
+    const guid    = readGuid(slotPtr(argRefs, 2));
+    const player  = argU64Hex(argRefs, 1);
+    const reqId   = argU32(argRefs, 0) >>> 0;
+    return `guid=${guid} playerId=${player} requestId=${reqId}`;
+  },
+
+  // SArgRefs<SMissionEntryDetails const &, EntityId, unsigned int>
+  // SMissionEntryDetails @ types.h:376540 sizeof=0x138:
+  //   seed(u32)@0, title(CLocIdentifierHash u32)@4, titleHUD@8, description@0xC,
+  //   missionGiverName@0x10, missionDifficulty(int)@0x14, reward(int)@0x18,
+  //   rewardMax(int)@0x1C, buyInAmount(int)@0x20, creationFee(int)@0x24,
+  //   currencyType(u8)@0x28, missionType(CryGUID)@0x30,
+  //   timeOutTime(CTimeValue)@0x40, brokerEntryId(CryGUID)@0x48,
+  //   contractTemplateId(CryGUID)@0x58, properties(vec)@0x68,
+  //   missionId(CryGUID)@0x80, cannotShareWith(vec)@0x90,
+  //   flags(EMissionEntryFlags u32)@0xA8, missionOwnerId@0xB0,
+  //   objectiveTokens(vec)@0xB8
+  'mbi.AuthAcceptMissionRequest': (argRefs) => {
+    const player  = argU64Hex(argRefs, 1);
+    const reqId   = argU32(argRefs, 0) >>> 0;
+    const p       = slotPtr(argRefs, 2);
+    if (p.isNull()) return `playerId=${player} requestId=${reqId} details=?`;
+    const seed       = readU32(p.add(0)) >>> 0;
+    const difficulty = readU32(p.add(0x14));
+    const reward     = readU32(p.add(0x18));
+    const rewardMax  = readU32(p.add(0x1C));
+    const buyIn      = readU32(p.add(0x20));
+    const fee        = readU32(p.add(0x24));
+    const currency   = readU8(p.add(0x28));
+    const missionTy  = readGuid(p.add(0x30));
+    const ts         = readTimeValue(p.add(0x40));
+    const brokerId   = readGuid(p.add(0x48));
+    const tmplId     = readGuid(p.add(0x58));
+    const missionId  = readGuid(p.add(0x80));
+    const flags      = readU32(p.add(0xA8)) >>> 0;
+    const owner      = readU64(p.add(0xB0));
+    return `playerId=${player} requestId=${reqId} seed=${seed} difficulty=${difficulty} reward=${reward}..${rewardMax} buyIn=${buyIn} fee=${fee} currency=${currency} missionType=${missionTy} brokerId=${brokerId} tmplId=${tmplId} missionId=${missionId} flags=0x${flags.toString(16)} owner=0x${owner} timeOut=${ts}`;
+  },
+
+  // SArgRefs<unsigned int varId, SUserVariableBase<float> const &>
+  // SUserVariableBase carries a current value at offset 0 typically.
+  'CEntityComponentUserVariables::RmAuthorityChangeFloatVariable': (argRefs) => {
+    const ub  = slotPtr(argRefs, 0);
+    const varId = argU32(argRefs, 1) >>> 0;
+    let val = NaN;
+    try { val = ub.isNull() ? NaN : ub.readFloat(); } catch (_) {}
+    return `varId=${varId} value=${val}`;
+  },
+
+  // SArgRefs<unsigned int varId, SUserVariableBase<bool> const &>
+  'CEntityComponentUserVariables::RmAuthorityChangeBoolVariable': (argRefs) => {
+    const ub  = slotPtr(argRefs, 0);
+    const varId = argU32(argRefs, 1) >>> 0;
+    const val = ub.isNull() ? -1 : readU8(ub);
+    return `varId=${varId} value=${val}`;
+  },
+
+  // SArgRefs<CryStringT<char>, EntityId>
+  'AuthoritySendAISignal': (argRefs) => {
+    const name  = readCryString(slotPtr(argRefs, 1), 64);
+    const rcpt  = argU64Hex(argRefs, 0);
+    return `signal=${JSON.stringify(name)} recipient=${rcpt}`;
+  },
+
+  // SArgRefs<vector<CryGUID> const &, CryGUID const &, bool>
+  'RmHandleAppData': (argRefs) => {
+    const vec  = slotPtr(argRefs, 2);
+    const sz   = readVectorSize(vec, 0x10);
+    const guid = readGuid(slotPtr(argRefs, 1));
+    const flag = argBool(argRefs, 0);
+    return `recordGUIDs.size=${sz} appGUID=${guid} isDefault=${flag}`;
+  },
+
+  // SArgRefs<EDockingTubeAnimationStage, bool>
+  'SvOnSetState': (argRefs) => {
+    const stage = argU8(argRefs, 1);
+    const flag  = argBool(argRefs, 0);
+    return `stage=${stage}(${E_DOCKING_TUBE_STAGE[stage] || '?'}) flag=${flag}`;
+  },
+
+  // SArgRefs<int, vector<CryGUID>>
+  'RmAuthorityFetchPrices': (argRefs) => {
+    const vec = slotPtr(argRefs, 0);
+    const sz  = readVectorSize(vec, 0x10);
+    return `int=${argI32(argRefs, 1)} guids.size=${sz}`;
+  },
+
+  // SArgRefs<CryGUID, CSCURN, ESnapshotSlotType, double>
+  // CSCURN @ types.h:296463 sizeof=0x28 — pointer slot reads first 8 bytes for compact display.
+  // ESnapshotSlotType @ types.h:23173 (bitmask, only Customized=0x2 defined).
+  'RmAuthorityRequestClaim': (argRefs) => {
+    const dbl  = argDouble(argRefs, 0);
+    const slot = argU8(argRefs, 1);
+    const urn  = argU64Hex(argRefs, 2);
+    const guid = readGuid(slotPtr(argRefs, 3));
+    return `guid=${guid} urn=${urn} slot=${slot}(${enumName(E_SNAPSHOT_SLOT, slot)}) double=${dbl}`;
+  },
+
+  // SArgRefs<SATCActionRequest, bool>
+  // SATCActionRequest @ types.h:562209 sizeof=0x80:
+  //   m_playerId@0, m_vehicleId@8, m_tokenId@0x10,
+  //   m_requestMode(EATCActionRequestType u32)@0x18,
+  //   m_notificationType(EATCNotificationType u32)@0x1C,
+  //   m_validAreaFlags(u8)@0x20, m_requestTime(CTimeValue)@0x28,
+  //   m_atcLocationId(u32)@0x30, m_locationInventoryId(SInventoryId)@0x38,
+  //   m_notifiedWaitingOperator(bool)@0x50, m_notifiedWaitingQueue(bool)@0x51,
+  //   m_lastTimeWaitingNotified(CTimeValue)@0x58,
+  //   m_requestEntityClassName(CryStringT)@0x60, m_nameFilter(CryStringT)@0x68
+  'RmAuthorityRequestPermission': (argRefs) => {
+    const requeued = argBool(argRefs, 0);
+    const p = slotPtr(argRefs, 1);
+    if (p.isNull()) return `requeued=${requeued} req=?`;
+    const player    = readU64(p.add(0));
+    const vehicle   = readU64(p.add(8));
+    const token     = readU64(p.add(0x10));
+    const mode      = readU32(p.add(0x18));
+    const notify    = readU32(p.add(0x1C));
+    const flags     = readU8(p.add(0x20));
+    const reqTime   = readTimeValue(p.add(0x28));
+    const locId     = readU32(p.add(0x30)) >>> 0;
+    const locInv    = readU64(p.add(0x38));
+    const cls       = readCryString(p.add(0x60), 64);
+    return `requeued=${requeued} player=0x${player} vehicle=0x${vehicle} token=0x${token} mode=${mode} notify=${notify} areaFlags=0x${flags.toString(16)} reqTime=${reqTime} locId=${locId} locInv=0x${locInv} class=${JSON.stringify(cls)}`;
+  },
+
+  // SArgRefs<CStringHash typeName, CStringHash stateName, int index>
+  'RmAuthorityOnSelectNavigationTab': (argRefs) =>
+    `typeName=${stringHashStr(slotPtr(argRefs, 2))} stateName=${stringHashStr(slotPtr(argRefs, 1))} index=${argI32(argRefs, 0)}`,
+
+  // SArgRefs<CStringHash, CStringHash>
+  'RmAuthoritySetInteractionState': (argRefs) =>
+    `typeName=${stringHashStr(slotPtr(argRefs, 1))} stateName=${stringHashStr(slotPtr(argRefs, 0))}`,
+
+  // SArgRefs<EntityId, EntityId, EntityId, float>  — from dispatcher signature
+  'CTargetedEntries::m_rmAuthorityOnExchangedLockedTarget': (argRefs) => {
+    const m  = argFloat(argRefs, 0);
+    const e3 = argU64Hex(argRefs, 1);
+    const e2 = argU64Hex(argRefs, 2);
+    const e1 = argU64Hex(argRefs, 3);
+    return `e1=${e1} e2=${e2} e3=${e3} m=${m}`;
+  },
+
+  // SArgRefs<unsigned int index, float dosage>
+  'RmAuthoritySetDrugDose': (argRefs) =>
+    `index=${argU32(argRefs, 1) >>> 0} dose=${argFloat(argRefs, 0)}`,
+
+  // ---- Vector/Map containers -------------------------------------------------
+  // SArgRefs<vector<SJournalEntryId_GUID>>
+  // SJournalEntryId_GUID @ types.h:1487647 sizeof=0x20 (guid + missionId, both CryGUID).
+  // Also sample the first entry when present.
+  'journal.rmAuthEntriesViewed': (argRefs) => {
+    const vec = slotPtr(argRefs, 0);
+    const sz  = readVectorSize(vec, 0x20);
+    if (sz <= 0) return `entries.size=${sz}`;
+    let firstGuid = null, firstMission = null;
+    try {
+        const first = vec.readPointer();
+        firstGuid    = readGuid(first);
+        firstMission = readGuid(first.add(0x10));
+    } catch (_) {}
+    return `entries.size=${sz} first.guid=${firstGuid} first.missionId=${firstMission}`;
+  },
+
+  // SArgRefs<VectorMap<EItemType, __int64>>  — VectorMap is a vector<pair<K,V>> wrapper;
+  // first 0x18 mirrors std::vector layout. Pair sizeof = 1 byte enum + 7 padding + 8 i64 = 0x10.
+  'rmAuthorityRequestPoolTargets': (argRefs) => {
+    const vmap = slotPtr(argRefs, 0);
+    const sz   = readVectorSize(vmap, 0x10);
+    return `targets.size=${sz}`;
+  },
+
+  // ---- Big multi-arg interact -----------------------------------------------
+  // SArgRefs<CTimeValue, u64, u32, EntityId, SInteractionMetaData, IEntityPtr>
+  // SInteractionMetaData @ types.h:296940 sizeof=0x14:
+  //   interactorDataType(EInteractorDataType u32)@0, interactorData(u32)@4,
+  //   interactableDataType[4]@8, interactableData(u32)@0xC,
+  //   skipUsableEntry(bool)@0x10, skipUseInteraction(bool)@0x11
+  // IEntityPtr is sizeof=0x8 (raw entity ptr).
+  'SvRequestSharedInteract': (argRefs) => {
+    const time    = readTimeValue(slotPtr(argRefs, 5));
+    const u64_    = argU64Hex(argRefs, 4);
+    const u32_    = argU32(argRefs, 3) >>> 0;
+    const ent     = argU64Hex(argRefs, 2);
+    const meta    = interactionMetaDecoder(slotPtr(argRefs, 1));
+    const ePtr    = slotPtr(argRefs, 0);
+    const rawEnt  = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
+    return `time=${time} u64=${u64_} u32=${u32_} entity=${ent} meta=${meta} pIEntity=${rawEnt}`;
+  },
+
+  // SArgRefs<CTimeValue, u64, u32, u32, EntityId, SInteractionMetaData, IEntityPtr>
+  'SvRequestInteract': (argRefs) => {
+    const time    = readTimeValue(slotPtr(argRefs, 6));
+    const u64_    = argU64Hex(argRefs, 5);
+    const u32a    = argU32(argRefs, 4) >>> 0;
+    const u32b    = argU32(argRefs, 3) >>> 0;
+    const ent     = argU64Hex(argRefs, 2);
+    const meta    = interactionMetaDecoder(slotPtr(argRefs, 1));
+    const ePtr    = slotPtr(argRefs, 0);
+    const rawEnt  = ePtr.isNull() ? '0x0' : readPointer(ePtr).toString();
+    return `time=${time} u64=${u64_} u32a=${u32a} u32b=${u32b} entity=${ent} meta=${meta} pIEntity=${rawEnt}`;
+  },
+
+  // SArgRefs<int, SPlayerTradeRequest>
+  // SPlayerTradeRequest @ types.h:2758665 sizeof=0x10:
+  //   currencyType(ECurrencyType u8)@0, currencyAmount(i64)@8
+  'SvRequestTrade': (argRefs) => {
+    const intArg = argI32(argRefs, 1);
+    const p = slotPtr(argRefs, 0);
+    if (p.isNull()) return `int=${intArg} req=?`;
+    const curType = readU8(p.add(0));
+    let amount = '?';
+    try { amount = p.add(8).readS64().toString(); } catch (_) {}
+    return `int=${intArg} currencyType=${curType} amount=${amount}`;
+  },
+};
+
+function decodePayload(name, argRefs) {
+  const decoder = decoders[name];
+  if (!decoder || !argRefs || argRefs.isNull()) return null;
+  try {
+    return decoder(argRefs);
+  } catch (_) {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Inventory: one entry per unique reg. Full record on first sight; thereafter
+// only a periodic stats snapshot, so repeated hot calls don't flood output.
+// ---------------------------------------------------------------------------
+
+// Dedup the live log by *logical method*, not per-instance reg. The same RMI
+// method shares one argDispatch across every entity/component instance, so
+// keying by argDispatch collapses N reg pointers down to one "(new)" log.
+// Name is fallback when argDispatch is null; reg is last-resort.
+const inventory = new Map(); // methodKey -> { count, lastLoggedCount }
+const SNAPSHOT_EVERY = 5000; // re-log a known method every N total calls
+
+function methodKey(reg, name) {
+    if (reg.argDispatch && !reg.argDispatch.isNull()) return `disp:${reg.argDispatch}`;
+    if (name) return `name:${name}`;
+    return `reg:${reg.reg}`;
+}
+
+function shouldLog(reg, name) {
+    const key = methodKey(reg, name);
+    const entry = inventory.get(key);
+    if (!entry) {
+        inventory.set(key, {
+            count: 1,
+            lastLoggedCount: 1
+        });
+        return {
+            log: true,
+            first: true
+        };
+    }
+    entry.count++;
+    if (entry.count - entry.lastLoggedCount >= SNAPSHOT_EVERY) {
+        entry.lastLoggedCount = entry.count;
+        return {
+            log: true,
+            first: false
+        };
+    }
+    return {
+        log: false,
+        first: false
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Triage state
+// ---------------------------------------------------------------------------
+//
+// Keyed by reg pointer so duplicate (this, id) pairs collapse to the same
+// registration. Each entry carries:
+//   - identity:   name, componentId, direction, mode, dispatch, argDispatch
+//   - load:       count, resultCounts {OK, NotRegistered, ...}, sourceCounts
+//   - payload:    sizeBitsMin/Max/Sum/Count (if MEASURE_ARG_BITS), argRefsHex
+//   - shape:      slots[]  — per-pointer probe of argRefs[0..N], captured once
+//
+// Same argDispatch ptr across methods => same serializer => same arg layout,
+// so the dispatch ptr is the canonical grouping key for decoder reuse.
+
+const triage = TRIAGE_ENABLED ? new Map() : null; // reg.toString() -> entry
+let triageCalls = 0;
+
+function captureFingerprint(argRefs) {
+    if (!argRefs || argRefs.isNull()) return null;
+    const hex = readHex(argRefs, TRIAGE_FP_HEX_LEN);
+    const slots = [];
+    for (let i = 0; i < TRIAGE_SLOT_PROBE; i++) {
+        const slotAddr = argRefs.add(i * Process.pointerSize);
+        const ptr = readPointer(slotAddr);
+        if (ptr.isNull()) {
+            slots.push({ ptr: '0x0', head: null });
+            continue;
+        }
+        slots.push({ ptr: ptr.toString(), head: readHex(ptr, TRIAGE_SLOT_HEAD_LEN) || null });
+    }
+    return { hex, slots };
+}
+
+function triageRecord(reg, source, argRefs) {
+    if (!triage) return;
+    const key = (reg.argDispatch && !reg.argDispatch.isNull())
+        ? `disp:${reg.argDispatch}`
+        : `reg:${reg.reg}`;
+    let entry = triage.get(key);
+    if (!entry) {
+        entry = {
+            reg: key,
+            name: reg.name,
+            nameBytes: reg.name ? null : reg.nameBytes,
+            componentId: reg.componentId,
+            direction: reg.direction,
+            directionName: directionName(reg.direction),
+            mode: reg.mode,
+            modeName: modeName(reg.mode),
+            dispatch: reg.dispatch.toString(),
+            argDispatch: reg.argDispatch.toString(),
+            dirtyIndex: reg.dirtyIndex,
+            count: 0,
+            sourceCounts: {},
+            resultCounts: {},
+            sizeBitsMin: null,
+            sizeBitsMax: null,
+            sizeBitsSum: 0,
+            sizeBitsCount: 0,
+            fingerprint: captureFingerprint(argRefs),
+            firstSeenSeq: triageCalls + 1,
+        };
+        triage.set(key, entry);
+    }
+    entry.count++;
+    const sk = String(source);
+    entry.sourceCounts[sk] = (entry.sourceCounts[sk] || 0) + 1;
+
+    // Cap size sampling per reg: enough for min/max characterization on
+    // variable-length args without paying the vtable call on every hot send.
+    if (MEASURE_ARG_BITS && entry.sizeBitsCount < TRIAGE_SIZE_SAMPLES &&
+        argRefs && !argRefs.isNull() && !reg.argDispatch.isNull()) {
+        const bits = measureArgBits(reg.argDispatch, argRefs);
+        if (bits >= 0 && bits < (1 << 30)) {
+            entry.sizeBitsSum += bits;
+            entry.sizeBitsCount++;
+            if (entry.sizeBitsMin === null || bits < entry.sizeBitsMin) entry.sizeBitsMin = bits;
+            if (entry.sizeBitsMax === null || bits > entry.sizeBitsMax) entry.sizeBitsMax = bits;
+        }
+    }
+}
+
+function triageRecordResult(reg, resultCode) {
+    if (!triage) return;
+    const entry = triage.get(reg.reg.toString());
+    if (!entry) return;
+    const rk = String(resultCode);
+    entry.resultCounts[rk] = (entry.resultCounts[rk] || 0) + 1;
+}
+
+function triageFlush(reason) {
+    if (!triage) return 0;
+    const rows = [];
+    for (const entry of triage.values()) {
+        rows.push({
+            name: entry.name || `<unresolved:${entry.nameBytes || ''}>`,
+            count: entry.count,
+            componentId: entry.componentId,
+            direction: `${entry.direction}(${entry.directionName})`,
+            mode: `${entry.mode}(${entry.modeName})`,
+            argDispatch: entry.argDispatch,
+            dispatch: entry.dispatch,
+            sizeBits: entry.sizeBitsCount ? {
+                min: entry.sizeBitsMin,
+                max: entry.sizeBitsMax,
+                mean: Math.round(entry.sizeBitsSum / entry.sizeBitsCount),
+                samples: entry.sizeBitsCount,
+            } : null,
+            sourceCounts: entry.sourceCounts,
+            resultCounts: entry.resultCounts,
+            reg: entry.reg,
+            firstSeenSeq: entry.firstSeenSeq,
+            fingerprint: entry.fingerprint,
+        });
+    }
+    rows.sort((a, b) => b.count - a.count);
+    const payload = {
+        ts: Date.now(),
+        reason,
+        totalCalls: triageCalls,
+        uniqueRegs: rows.length,
+        moduleBase: base.toString(),
+        rows,
+    };
+    try {
+        const f = new File(TRIAGE_PATH, 'w');
+        f.write(JSON.stringify(payload, null, 2));
+        f.close();
+        console.log(`[triage] ${reason}: ${rows.length} regs, ${triageCalls} calls -> ${TRIAGE_PATH}`);
+    } catch (e) {
+        console.log(`[triage] write failed: ${e && e.message}`);
+    }
+    return rows.length;
+}
+
+rpc.exports = {
+    report() { return triageFlush('rpc'); },
+    clear() {
+        if (triage) triage.clear();
+        triageCalls = 0;
+        return 0;
+    },
+    top(n) {
+        if (!triage) return [];
+        const rows = Array.from(triage.values())
+            .sort((a, b) => b.count - a.count)
+            .slice(0, n || 20)
+            .map((e) => ({ name: e.name || '<unresolved>', count: e.count, argDispatch: e.argDispatch }));
+        return rows;
+    },
+};
+
+function isPlausibleReg(reg) {
+    // Strong invariants from the struct/decompile. A reg violating these came
+    // from a mis-resolved table — never feed it to measureArgBits (which calls
+    // through reg.argDispatch's vtable) or to triage (which persists it).
+    if (!reg.reg || reg.reg.isNull()) return false;
+    if (reg.componentId < 0 || reg.componentId > 0xFFFF) return false;
+    if (reg.direction > 2) return false;   // ESerializedRemoteMethodDirection: 0/1/2
+    if (reg.mode > 3) return false;          // observed 0/1/2
+    if (!reg.name && reg.namePointer.isNull()) return false;
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+// Hook
+// ---------------------------------------------------------------------------
+
+let sequence = 0;
+
+function hook() {
+    const target = rva(RVAS.SendRemoteMethodCall);
+    console.log(`[+] hooking SendRemoteMethodCall @ ${target}`);
+    console.log(`[+] symbol=${DebugSymbol.fromAddress(target)}`);
+
+    Interceptor.attach(target, {
+        onEnter(args) {
+            const thisPointer = args[0];
+            const result = args[1];
+            const id = args[2].toInt32() & 0xFFFF;
+            const callContext = args[3]; // SSerializedRemoteMethodCallContext*, NOT this.context
+
+            let argRefs = NULL;
+            try {
+                argRefs = this.context.rsp.add(0x28).readPointer(); // here this.context (CPU regs) IS correct
+            } catch (_) {}
+
+            const reg = readRegistration(thisPointer, id);
+
+            if (!isPlausibleReg(reg)) {
+                if (resolveFailCount < RESOLVE_FAIL_LOG_LIMIT) {
+                    resolveFailCount++;
+                    console.log(`[RMI] resolve fail #${resolveFailCount}: this=${thisPointer} id=${id} reg=${reg.reg} component=${reg.componentId} dir=${reg.direction}`);
+                }
+                this.state = { skip: true };
+                return;
+            }
+
+            const name = reg.name || '<unresolved>';
+            const skip = isFiltered(name);
+
+            const source = readU32(callContext);
+            triageCalls++;
+            if (reg.reg && !reg.reg.isNull()) {
+                triageRecord(reg, source, argRefs);
+                if (TRIAGE_ENABLED && (triageCalls % TRIAGE_FLUSH_EVERY) === 0) {
+                    triageFlush('auto');
+                }
+            }
+
+            this.state = {
+                result,
+                reg,
+                skip
+            };
+            if (skip) return;
+
+            const decision = shouldLog(reg, reg.name);
+            if (!decision.log) {
+                this.state.quiet = true;
+                return;
+            }
+
+            const payload = decodePayload(reg.name, argRefs);
+
+            sequence++;
+            console.log('');
+            console.log(`[RMI #${sequence}] ${decision.first ? '(new)' : '(snapshot)'} id=${id} name=${JSON.stringify(name)} source=${source}(${sourceName(source)})`);
+            console.log(`    this=${thisPointer} reg=${reg.reg} component=${reg.componentId} direction=${reg.direction}(${directionName(reg.direction)}) mode=${reg.mode}(${modeName(reg.mode)})`);
+            console.log(`    pRemoteMethod=${reg.dispatch} pArgDispatch=${reg.argDispatch} dirtyIndex=${reg.dirtyIndex} gateByte=0x${(reg.gateByte >>> 0).toString(16)}`);
+            console.log(`    stats=${reg.stats} calls=${reg.statCalls} accumBytes=${reg.statBytes}`);
+
+            if (payload) {
+                console.log(`    payload: ${payload}`);
+            } else if (DUMP_ARGS && !argRefs.isNull()) {
+                console.log(`    args@${argRefs}: ${readHex(argRefs, ARG_DUMP_LEN)}`);
+            }
+        },
+
+        onLeave() {
+            const state = this.state;
+            if (!state) return;
+
+            let resultCode = -1;
+            let callLocalImmediate = -1;
+            try {
+                if (state.result && !state.result.isNull()) {
+                    resultCode = state.result.readU32();
+                    callLocalImmediate = state.result.add(4).readU8();
+                }
+            } catch (_) {}
+
+            if (state.reg && state.reg.reg && !state.reg.reg.isNull()) {
+                triageRecordResult(state.reg, resultCode);
+            }
+
+            if (state.skip || state.quiet) return;
+
+            const resultName = {
+                0: 'OK',
+                1: 'NotRegistered',
+                2: 'NotBoundToNetwork',
+                3: 'OverBudget',
+            } [resultCode] || resultCode;
+
+            const callsAfter = (state.reg && !state.reg.stats.isNull()) ?
+                readU32(state.reg.stats.add(0x28)) :
+                -1;
+
+            console.log(`[RMI #${sequence}] -> result=${resultCode}(${resultName}) callLocalImmediate=${callLocalImmediate} callsAfter=${callsAfter}`);
+        },
+    });
+}
+
+hook();
+
+if (TRIAGE_ENABLED) {
+    console.log(`[triage] enabled — auto-flush every ${TRIAGE_FLUSH_EVERY} calls to ${TRIAGE_PATH}`);
+    console.log('[triage] interactive: rpc.exports.report() | .top(n) | .clear()');
+}
+
+// Frida invokes this when the script is unloaded. Last chance to persist data.
+function dispose() {
+    if (TRIAGE_ENABLED) triageFlush('dispose');
+}
+// eslint-disable-next-line no-undef
+globalThis.dispose = dispose;
