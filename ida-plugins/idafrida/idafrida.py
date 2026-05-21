@@ -2656,7 +2656,7 @@ class Frida:
                 # startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 # startupinfo.wShowWindow = subprocess.SW_HIDE
 
-            proc = subprocess.Popen(final_cmd_str, shell=True, # Use shell=True carefully
+            proc = subprocess.Popen(cmd_parts,
                                     creationflags=creationflags, startupinfo=startupinfo,
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
             log_info(f"Frida process started with PID: {proc.pid} (Output may not show in IDA).")
