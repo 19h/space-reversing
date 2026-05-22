@@ -2,7 +2,7 @@
 
 const PTR_SIZE = Process.pointerSize;
 const MODULE_BASE = Process.enumerateModules()[0].base;
-const GENV_ADDR = MODULE_BASE.add("0xA284E80");
+const GENV_ADDR = MODULE_BASE.add("0xa294ef0");
 
 function lower48(value) {
     return ptr(value).and(ptr("0xFFFFFFFFFFFF"));
@@ -18616,36 +18616,3 @@ Interceptor.attach(FN_ENTRY, {
         });
     }
 });
-
-Interceptor.attach(FN_AFTER_SPILL, {
-    onEnter() {
-        const rec = thisByThread.get(this.threadId);
-        if (!rec) return;
-        // At this PC: RAX == entry-RSP, push rbp hasn't happened yet,
-        // so [rax+0x10] still holds the spilled float.
-        // But we can't read RAX directly here either without context regs.
-        // Instead: at this exact PC, rsp == entry_rsp - 0 (no pushes yet
-        // between FN_ENTRY and FN_AFTER_SPILL because the only thing
-        // between them is `mov rax,rsp` and the spill itself).
-        // So [rsp + 0x10] == the home slot.
-        const dt = this.context.rsp.add(0x10).readFloat();
-        rec.dt = dt;
-        rec.vtbl = rec.self.readPointer();
-        // ... etc
-        logCall(rec);
-        thisByThread.delete(this.threadId);
-    }
-});
-
-function logCall(rec) {
-    const fmt = v => v.map(x => x.toFixed(3)).join(',');
-    const accl = [0x484, 0x488, 0x48C].map(o => rec.self.add(o).readFloat());
-    const prev = [0x46C, 0x470, 0x474].map(o => rec.self.add(o).readFloat());
-    const jerk = [0x478, 0x47C, 0x480].map(o => rec.self.add(o).readFloat());
-    const invalid = (rec.self.add(0x484).readU32() & 0xFFA00000) === 0xFFA00000;
-    console.log(
-        `self=${rec.self} dt=${rec.dt.toFixed(5)} vtbl=${rec.vtbl}` +
-        `${invalid ? ' [INVALID]' : ''}\n` +
-        `  prev=(${fmt(prev)}) jerk=(${fmt(jerk)}) accl=(${fmt(accl)})`
-    );
-}
