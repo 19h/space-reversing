@@ -2,7 +2,7 @@
     "Territories": [
         {
             "Name": "Stanton",
-            "UnitClaimLabel": "default",
+            "UnitClaimLabel": "",
             "StreamingGroups": [
                 {
                     "EntitiesMoveable": 40706,
@@ -19,7 +19,7 @@
         },
         {
             "Name": "Pyro",
-            "UnitClaimLabel": "default",
+            "UnitClaimLabel": "",
             "StreamingGroups": [
                 {
                     "EntitiesMoveable": 10803,
@@ -35,7 +35,7 @@
             ]
         },
         {
-            "UnitClaimLabel": "default",
+            "UnitClaimLabel": "",
             "Name": "Nyx Space",
             "StreamingGroups": [
                 {
@@ -52,7 +52,7 @@
             ]
         },
         {
-            "UnitClaimLabel": "default",
+            "UnitClaimLabel": "",
             "Name": "Nyx B",
             "StreamingGroups": [
                 {
