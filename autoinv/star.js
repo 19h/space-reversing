@@ -3,6 +3,7 @@
 const PTR_SIZE = Process.pointerSize;
 const MODULE_BASE = Process.enumerateModules()[0].base;
 const GENV_ADDR = MODULE_BASE.add("0xa294ef0");
+const CActor__GetBoneTransform_ADDR = MODULE_BASE.add("0x2f5c630");
 
 function lower48(value) {
     return ptr(value).and(ptr("0xFFFFFFFFFFFF"));
@@ -311,6 +312,119 @@ function tryCallVFunc(thisPtr, index, returnType, argTypes = [], args = [], name
     } catch (_) {
         return null;
     }
+}
+
+
+class QuatTFloat {
+    constructor(address) {
+        this.ptr = ptr(address);
+        this.q = {
+            x: this.ptr.add(0x00).readFloat(),
+            y: this.ptr.add(0x04).readFloat(),
+            z: this.ptr.add(0x08).readFloat(),
+            w: this.ptr.add(0x0c).readFloat(),
+        };
+        this.t = {
+            x: this.ptr.add(0x10).readFloat(),
+            y: this.ptr.add(0x14).readFloat(),
+            z: this.ptr.add(0x18).readFloat(),
+        };
+    }
+
+    get finite() {
+        return Number.isFinite(this.q.x) && Number.isFinite(this.q.y) && Number.isFinite(this.q.z) && Number.isFinite(this.q.w) &&
+            Number.isFinite(this.t.x) && Number.isFinite(this.t.y) && Number.isFinite(this.t.z);
+    }
+
+    get identityFallback() {
+        return Math.abs(this.q.x) < 0.0001 && Math.abs(this.q.y) < 0.0001 && Math.abs(this.q.z) < 0.0001 &&
+            Math.abs(this.q.w - 1.0) < 0.0001 && Math.abs(this.t.x) < 0.0001 && Math.abs(this.t.y) < 0.0001 && Math.abs(this.t.z) < 0.0001;
+    }
+
+    toObject() {
+        return { q: this.q, t: this.t, finite: this.finite, identityFallback: this.identityFallback };
+    }
+}
+
+const BoneId = Object.freeze({
+    ROOT: 0,
+    PELVIS: 1,
+    SPINE01: 2,
+    SPINE02: 3,
+    SPINE03: 4,
+    NECK: 5,
+    R_EYE: 6,
+    L_EYE: 7,
+    R_FOOT: 10,
+    L_FOOT: 11,
+    R_SHOULDER: 12,
+    L_SHOULDER: 13,
+    R_ELBOW: 14,
+    L_ELBOW: 15,
+    R_HAND: 16,
+    L_HAND: 17,
+    R_KNEE: 18,
+    L_KNEE: 19,
+    HEAD: 20,
+    R_HIP: 21,
+    L_HIP: 22,
+});
+
+const BoneList = Object.freeze([
+    [0, "root"],
+    [1, "pelvis"],
+    [2, "spine01"],
+    [3, "spine02"],
+    [4, "spine03"],
+    [5, "neck"],
+    [6, "r_eye"],
+    [7, "l_eye"],
+    [10, "r_foot"],
+    [11, "l_foot"],
+    [12, "r_shoulder"],
+    [13, "l_shoulder"],
+    [14, "r_elbow"],
+    [15, "l_elbow"],
+    [16, "r_hand"],
+    [17, "l_hand"],
+    [18, "r_knee"],
+    [19, "l_knee"],
+    [20, "head"],
+    [21, "r_hip"],
+    [22, "l_hip"],
+]);
+
+const BoneConnections = Object.freeze([
+    [BoneId.HEAD, BoneId.NECK],
+    [BoneId.NECK, BoneId.SPINE03],
+    [BoneId.SPINE03, BoneId.SPINE02],
+    [BoneId.SPINE02, BoneId.SPINE01],
+    [BoneId.SPINE01, BoneId.PELVIS],
+    [BoneId.SPINE03, BoneId.R_SHOULDER],
+    [BoneId.R_SHOULDER, BoneId.R_ELBOW],
+    [BoneId.R_ELBOW, BoneId.R_HAND],
+    [BoneId.SPINE03, BoneId.L_SHOULDER],
+    [BoneId.L_SHOULDER, BoneId.L_ELBOW],
+    [BoneId.L_ELBOW, BoneId.L_HAND],
+    [BoneId.PELVIS, BoneId.R_HIP],
+    [BoneId.R_HIP, BoneId.R_KNEE],
+    [BoneId.R_KNEE, BoneId.R_FOOT],
+    [BoneId.PELVIS, BoneId.L_HIP],
+    [BoneId.L_HIP, BoneId.L_KNEE],
+    [BoneId.L_KNEE, BoneId.L_FOOT],
+]);
+
+function boneName(id) {
+    const entry = BoneList.find(([boneId]) => boneId === id);
+    return entry ? entry[1] : `bone_${id}`;
+}
+
+let CActorGetBoneTransformNative = null;
+function cActorGetBoneTransformNative() {
+    if (!CActorGetBoneTransformNative) {
+        CActorGetBoneTransformNative = new NativeFunction(CActor__GetBoneTransform_ADDR, "pointer", ["pointer", "pointer", "uint"]);
+    }
+    return CActorGetBoneTransformNative;
 }
 
 class DVec3 {
@@ -12961,6 +13075,45 @@ class CActor {
         return new CSerializedRemoteMethod(this.ptr.add(0x900), "CSerializedRemoteMethod<void(SKillParams)>");
     }
 
+
+    getBoneTransform(boneId) {
+        const id = Number(boneId);
+        const output = Memory.alloc(0x20);
+        zeroMemory(output, 0x20);
+        try {
+            const returned = cActorGetBoneTransformNative()(this.ptr, output, id);
+            const transform = new QuatTFloat(output);
+            return {
+                actor: this.ptr.toString(),
+                boneId: id,
+                name: boneName(id),
+                returned: returned.toString(),
+                transform: transform.toObject(),
+                valid: transform.finite && !transform.identityFallback,
+            };
+        } catch (error) {
+            return {
+                actor: this.ptr.toString(),
+                boneId: id,
+                name: boneName(id),
+                valid: false,
+                error: String(error && error.stack ? error.stack : error),
+            };
+        }
+    }
+
+    getBoneTransforms(bones = BoneList) {
+        return bones.map(([boneId]) => this.getBoneTransform(boneId));
+    }
+
+    scanBoneIds(maxBoneId = 0x16) {
+        const result = [];
+        for (let id = 0; id <= maxBoneId; id++) {
+            result.push(this.getBoneTransform(id));
+        }
+        return result;
+    }
+
     toObject() {
         return {
             ptr: this.ptr.toString(),
@@ -14206,6 +14359,142 @@ function actorPathSurface() {
         actor: actor ? actor.toObject() : null,
         actorEntity: actorEntity ? actorEntity.toObject() : null
     };
+}
+
+
+function safe(callable, fallback = null) {
+    try {
+        return callable();
+    } catch (_) {
+        return fallback;
+    }
+}
+
+function summarizeBoneTransforms(bones) {
+    const valid = bones.filter(bone => bone.valid);
+    const identity = bones.filter(bone => bone.transform && bone.transform.identityFallback);
+    const errors = bones.filter(bone => bone.error);
+    return {
+        total: bones.length,
+        valid: valid.length,
+        identityFallback: identity.length,
+        errors: errors.length,
+        validBoneIds: valid.map(bone => bone.boneId),
+        errorSamples: errors.slice(0, 4).map(bone => ({ boneId: bone.boneId, name: bone.name, error: bone.error })),
+    };
+}
+
+function resolveActorForBoneProbe(entity) {
+    if (!entity) return null;
+    try {
+        const actor = entity.actor;
+        if (actor && !actor.ptr.isNull()) return actor;
+    } catch (_) {}
+    try {
+        const actorEntity = entity.actorEntity;
+        const parent = actorEntity ? actorEntity.parentEntity : null;
+        if (parent && !parent.ptr.equals(entity.ptr)) {
+            const actor = parent.actor;
+            if (actor && !actor.ptr.isNull()) return actor;
+        }
+    } catch (_) {}
+    try {
+        const playerObject = player();
+        if (playerObject && playerObject.ptr.equals(entity.ptr)) {
+            const localPlayer = scPlayer();
+            if (localPlayer && localPlayer.currentActor && !localPlayer.currentActor.ptr.isNull()) return localPlayer.currentActor;
+        }
+    } catch (_) {}
+    return null;
+}
+
+function boneProbeEntity(entityValue, options = {}) {
+    const entity = entityValue instanceof CEntity ? entityValue : new CEntity(lower48(ptr(entityValue)));
+    const actor = options.actor ? (options.actor instanceof CActor ? options.actor : new CActor(lower48(ptr(options.actor)))) : resolveActorForBoneProbe(entity);
+    const result = {
+        entity: entity.ptr.toString(),
+        entityId: safe(() => entity.id.toString(), null),
+        name: safe(() => entity.name, null),
+        className: safe(() => entity.className, null),
+        worldPos: safe(() => entity.worldPos, null),
+        actor: actor ? actor.ptr.toString() : null,
+        actorEntity: safe(() => entity.actorEntity ? entity.actorEntity.ptr.toString() : null, null),
+        bones: [],
+        summary: null,
+    };
+    if (!actor || actor.ptr.isNull()) {
+        result.error = "No CActor component resolved for entity";
+        return result;
+    }
+    result.bones = actor.getBoneTransforms();
+    result.summary = summarizeBoneTransforms(result.bones);
+    if (options.rawScan === true) {
+        result.scan = actor.scanBoneIds(options.scanMaxBoneId ?? 0x16);
+        result.scanSummary = summarizeBoneTransforms(result.scan);
+    }
+    return result;
+}
+
+function boneProbe(options = {}) {
+    const limit = options.limit ?? 24;
+    const result = {
+        getBoneTransform: CActor__GetBoneTransform_ADDR.toString(),
+        local: null,
+        candidates: [],
+        summary: {
+            candidateCount: 0,
+            actorCount: 0,
+            validCandidateCount: 0,
+        },
+    };
+
+    const localEntity = safe(() => player(), null);
+    if (localEntity) {
+        result.local = boneProbeEntity(localEntity, options);
+    }
+
+    const candidates = safe(() => gEnv.entitySystem.findEntities({ component: "Actor", limit }), []) || [];
+    for (const candidate of candidates) {
+        if (!candidate || !candidate.ptr || candidate.ptr.isNull()) continue;
+        if (localEntity && candidate.ptr.equals(localEntity.ptr)) continue;
+        const probe = boneProbeEntity(candidate, options);
+        result.candidates.push(probe);
+    }
+
+    result.summary.candidateCount = result.candidates.length;
+    result.summary.actorCount = result.candidates.filter(candidate => !!candidate.actor).length + (result.local && result.local.actor ? 1 : 0);
+    result.summary.validCandidateCount = result.candidates.filter(candidate => candidate.summary && candidate.summary.valid > 0).length +
+        (result.local && result.local.summary && result.local.summary.valid > 0 ? 1 : 0);
+    return result;
+}
+
+function foobar(options = {}) {
+    const result = boneProbe({ limit: 4, ...options });
+    const compactEntity = entity => entity ? ({
+        entity: entity.entity,
+        entityId: entity.entityId,
+        name: entity.name,
+        className: entity.className,
+        actor: entity.actor,
+        actorEntity: entity.actorEntity,
+        worldPos: entity.worldPos,
+        summary: entity.summary,
+        sampleBones: (entity.bones || []).filter(bone => bone.valid).slice(0, 3).map(bone => ({
+            id: bone.boneId,
+            name: bone.name,
+            t: bone.transform.t,
+            q: bone.transform.q,
+        })),
+        error: entity.error,
+    }) : null;
+    const compact = {
+        getBoneTransform: result.getBoneTransform,
+        summary: result.summary,
+        local: compactEntity(result.local),
+        candidates: result.candidates.map(compactEntity),
+    };
+    console.log(JSON.stringify(compact, null, 2));
+    return compact.summary;
 }
 
 function actorEntityMovementState() {
@@ -18079,6 +18368,13 @@ Object.assign(globalThis, {
     CActor,
     CEntity,
     CActorEntity,
+    QuatTFloat,
+    BoneId,
+    BoneList,
+    BoneConnections,
+    boneProbeEntity,
+    boneProbe,
+    foobar,
     EPE_Action,
     EPEActionMoveMode,
     PEActionMove,
@@ -18228,6 +18524,9 @@ Object.assign(globalThis, {
 NativePointer.prototype.ent = function() { return new CEntity(this); };
 NativePointer.prototype.physent = function() { return new CPhysicalEntity(this); };
 NativePointer.prototype.rigent = function() { return new CRigidEntity(this); };
+
+NativePointer.prototype.actor = function() { return new CActor(this); };
+NativePointer.prototype.boneprobe = function(options = {}) { return boneProbeEntity(this, options); };
 NativePointer.prototype.actorent = function() { return new CActorEntity(this); };
 NativePointer.prototype.peactionmove = function() { return new PEActionMove(this); };
 NativePointer.prototype.charactermoverequest = function() { return new SCharacterMoveRequest(this); };
