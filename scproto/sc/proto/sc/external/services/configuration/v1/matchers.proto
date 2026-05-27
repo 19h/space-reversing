@@ -10,4 +10,5 @@ message ConfigMatchers {
   string product = 4;
   string branch = 5;
   string build_cl = 6;
+  repeated string labels = 7;
 }

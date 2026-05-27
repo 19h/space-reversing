@@ -4,8 +4,9 @@ package sc.internal.services.dynamic_game_assets.v1;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "sc/internal/services/dynamic_game_assets/v1/types.proto";
+import "sc/external/services/dynamic_game_assets/v1/types.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     info: {
@@ -30,7 +31,11 @@ message ListAssetsRequest {
 }
 
 message ListAssetsResponse {
-    repeated AssetAssignment assets = 1;
+    repeated sc.external.services.dynamic_game_assets.v1.AssetAssignment assets = 1;
+}
+
+message DeleteAssetRequest {
+    string id = 1;
 }
 
 service DynamicGameAssetsService {
@@ -38,7 +43,6 @@ service DynamicGameAssetsService {
       RegisterAsset
       Called by Hex UI to register a new asset for a given screen.
       If valid_from is in the past, the asset becomes active immediately (subject to cache TTL).
-      Registering a new asset invalidates the Redis cache for the given screen_id.
     */
     rpc RegisterAsset(RegisterAssetRequest) returns (RegisterAssetResponse) {
         option (google.api.http) = {
@@ -55,6 +59,16 @@ service DynamicGameAssetsService {
     rpc ListAssets(ListAssetsRequest) returns (ListAssetsResponse) {
         option (google.api.http) = {
             get: "/v1/internal/dynamic_game_assets/screens/{screen_id}/assets"
+        };
+    }
+
+    /*
+      DeleteAsset
+      Called by Hex UI to delete a registered asset by its ID.
+    */
+    rpc DeleteAsset(DeleteAssetRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/internal/dynamic_game_assets/assets/{id}"
         };
     }
 }

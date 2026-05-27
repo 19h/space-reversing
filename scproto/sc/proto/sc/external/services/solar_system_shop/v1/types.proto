@@ -1,0 +1,27 @@
+syntax = "proto3";
+package sc.external.services.solar_system_shop.v1;
+
+// Shop Inventory
+message RentalOffering {
+  uint32 days = 1;
+  double price = 2;
+}
+message ShopLoadout {
+  string id = 1;
+  string name = 2;
+}
+message InventoryItem {
+  string id = 1;
+  double buy_price = 2;
+  double sell_price = 3;
+  uint32 current_inventory = 4;
+  uint32 max_inventory = 5;
+  bool gold_licenses_required = 6;
+  bool platinum_licenses_required = 7;
+  repeated RentalOffering rental_offerings = 8;
+  bool hidden_perk_item = 9;
+  bool licence_perk_item = 10;
+  uint32 available_box_sizes = 11;
+  repeated ShopLoadout shop_loadouts = 12;
+}
+

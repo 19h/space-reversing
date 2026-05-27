@@ -26,6 +26,7 @@ message WriteConfigMatchers {
   string branch = 5;
   string build_cl = 6;
   float probability = 7;
+  string label = 8;
 }
 
 message WriteRequest {

@@ -1,0 +1,32 @@
+syntax = "proto3";
+package sc.external.services.solar_system_shop.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "sc/external/services/solar_system_shop/v1/types.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "sc.external.services.solar_system_shop.v1.SolarSystemShopService",
+      version: "1.0",
+      description: "Definitions of the external API of the shop service"
+    }
+};
+
+message GetGlobalInventoryRequest {
+}
+message GetGlobalInventoryResponse {
+  repeated InventoryItem inventory_items = 1;
+}
+
+service SolarSystemShopService {
+  // Get global inventory for clients [used by AC/SM and rental information]
+  // Note: There is a single shop in data marked with "global" = true
+  rpc GetGlobalInventory(GetGlobalInventoryRequest) returns (GetGlobalInventoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/solar_system_shop/get_global_inventory"
+      body: "*"
+    };
+  }
+}
+

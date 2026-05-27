@@ -1,0 +1,33 @@
+syntax = "proto3";
+package sc.internal.services.solar_system_shop.v1;
+
+import "sc/external/services/solar_system_shop/v1/types.proto";
+
+// Shop Inventory
+message ShopInventory {
+  repeated sc.external.services.solar_system_shop.v1.InventoryItem inventory = 1;
+}
+
+// Global Commodities
+message GlobalCommoditiesData {
+  string item_id = 1;
+  string name = 2;
+  double base_price = 3;
+  double max_discount_percentage = 4;
+  double max_premium_percentage = 5;
+}
+
+// Shop Transaction
+enum TransactionType
+{
+  TRANSACTION_TYPE_UNSPECIFIED = 0;
+  TRANSACTION_TYPE_BUY = 1;
+  TRANSACTION_TYPE_RENT = 2;
+  TRANSACTION_TYPE_SELL = 3;
+}
+
+message ShopTransactionItem
+{
+  string item_id = 1;
+  uint32 quantity = 2;
+}
