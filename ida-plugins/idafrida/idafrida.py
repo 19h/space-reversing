@@ -2644,7 +2644,7 @@ class Frida:
         try:
             # Run in a way that doesn't block IDA, but output capture is lost easily.
             # For interactive use, running in a separate terminal is often better.
-            # Using shell=True is convenient but carries security risks if cmd is untrusted.
+            # Direct invocation via cmd_parts avoids shell interpretation and keeps argument boundaries explicit.
             # On Windows, creationflags might be needed to hide console.
             creationflags = 0
             startupinfo = None
@@ -2656,7 +2656,7 @@ class Frida:
                 # startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 # startupinfo.wShowWindow = subprocess.SW_HIDE
 
-            proc = subprocess.Popen(final_cmd_str, shell=True, # Use shell=True carefully
+            proc = subprocess.Popen(cmd_parts,
                                     creationflags=creationflags, startupinfo=startupinfo,
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
             log_info(f"Frida process started with PID: {proc.pid} (Output may not show in IDA).")
