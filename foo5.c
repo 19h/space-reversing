@@ -23,7 +23,7 @@ void dump_message(const char *buf, int len)
     if (!home)
         home = ".";
     char dumpDir[512];
-    sprintf(dumpDir, "%s\\sc_dumps", home);
+    snprintf(dumpDir, sizeof(dumpDir), "%s\\sc_dumps", home);
     _mkdir(dumpDir);
     FILETIME ft;
     GetSystemTimeAsFileTime(&ft);
@@ -33,7 +33,7 @@ void dump_message(const char *buf, int len)
     const unsigned long long EPOCH_DIFF = 116444736000000000ULL;
     unsigned long long microtimestamp = (uli.QuadPart - EPOCH_DIFF) / 10;
     char filePath[1024];
-    sprintf(filePath, "%s\\%llu.bin", dumpDir, microtimestamp);
+    snprintf(filePath, sizeof(filePath), "%s\\%llu.bin", dumpDir, microtimestamp);
     FILE *f = fopen(filePath, "wb");
     if (f)
     {
